@@ -1,18 +1,11 @@
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../features/example_feature/presentation/pages/item_page.dart';
-import '../../../features/example_feature/presentation/bloc/item_bloc.dart';
-import '../../di.dart' as di;
+import '../../../features/onboarding/presentation/pages/splash_screen.dart';
 import 'app_routes.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        name: AppRoutes.itemsRouteName,
-        builder: (context, state) => BlocProvider<ItemBloc>(create: (_) => di.sl<ItemBloc>(), child: const ItemPage()),
-      ),
-    ],
+    initialLocation: AppRoutes.splashRouteName,
+    debugLogDiagnostics: true,
+    routes: [GoRoute(path: AppRoutes.splashRouteName, name: AppRoutes.splashRouteName, builder: (context, state) => const SplashScreen())],
   );
 }
