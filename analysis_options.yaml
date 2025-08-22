@@ -22,7 +22,14 @@ linter:
   # producing the lint.
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    lines_longer_than_80_chars: false  # Disable 80 character line limit
+    # You can also use: prefer_single_quotes: true
+
+# Configure line length for the analyzer
+analyzer:
+  errors:
+    # Allow lines up to 150 characters
+    lines_longer_than_80_chars: ignore
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

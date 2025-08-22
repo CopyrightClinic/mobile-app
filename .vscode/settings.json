@@ -1,0 +1,22 @@
+{
+    "editor.rulers": [
+        150
+    ],
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 150,
+    "dart.lineLength": 150,
+    "dart.formatOnSave": true,
+    "dart.formatOnType": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "[dart]": {
+        "editor.defaultFormatter": "Dart-Code.dart-code",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.rulers": [
+            152
+        ],
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 150
+    }
+}
