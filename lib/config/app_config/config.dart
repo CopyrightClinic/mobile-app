@@ -7,11 +7,7 @@ class Config {
   // For example, API endpoints, feature flags, etc.
 
   // Example of a configuration setting
-  static const String baseUrl = String.fromEnvironment(
-    'BASE_URL',
-    defaultValue: 'https://api.example.com',
-  );
-  static const String fontFamily = 'Outfit';
+  static const String baseUrl = String.fromEnvironment('BASE_URL', defaultValue: 'https://api.example.com');
   static const double designScreenWidth = 375;
   static const double designScreenHeight = 812;
 }

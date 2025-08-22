@@ -25,7 +25,7 @@ class AppTheme {
 
   // Custom Gradient Background Colors
   static const Color gradientBgDark1 = Color(0xFF6882F7); // #6882F7 with 36% opacity
-  static const Color gradientBgDark2 = Color(0xFF1E6892); // #1E6892 with 5% opacity  
+  static const Color gradientBgDark2 = Color(0xFF1E6892); // #1E6892 with 5% opacity
   static const Color gradientBgDark3 = Color(0xFF16181E); // #16181E with 0% opacity
 
   // Custom Gradient Background
@@ -63,31 +63,15 @@ class AppTheme {
   static const double spacingMedium = 16.0;
   static const double spacingLarge = 24.0;
 
-  static const String fontFamily = 'Outfit';
+  static const String fontFamily = 'Urbanist';
 
-  static const TextStyle headlineStyle = TextStyle(
-    fontSize: 24.0,
-    fontWeight: FontWeight.w600,
-    fontFamily: fontFamily,
-  );
+  static const TextStyle headlineStyle = TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600, fontFamily: fontFamily);
 
-  static const TextStyle titleStyle = TextStyle(
-    fontSize: 18.0,
-    fontWeight: FontWeight.w500,
-    fontFamily: fontFamily,
-  );
+  static const TextStyle titleStyle = TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500, fontFamily: fontFamily);
 
-  static const TextStyle bodyStyle = TextStyle(
-    fontSize: 16.0,
-    fontWeight: FontWeight.w400,
-    fontFamily: fontFamily,
-  );
+  static const TextStyle bodyStyle = TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400, fontFamily: fontFamily);
 
-  static const TextStyle captionStyle = TextStyle(
-    fontSize: 14.0,
-    fontWeight: FontWeight.w400,
-    fontFamily: fontFamily,
-  );
+  static const TextStyle captionStyle = TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400, fontFamily: fontFamily);
 
   ThemeData get light => _buildLightTheme();
   ThemeData get dark => _buildDarkTheme();
@@ -116,12 +100,7 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
-          color: textPrimary,
-          fontSize: 18.0,
-          fontWeight: FontWeight.w600,
-          fontFamily: fontFamily,
-        ),
+        titleTextStyle: TextStyle(color: textPrimary, fontSize: 18.0, fontWeight: FontWeight.w600, fontFamily: fontFamily),
         iconTheme: IconThemeData(color: textPrimary),
       ),
       tabBarTheme: const TabBarTheme(
@@ -138,46 +117,26 @@ class AppTheme {
           foregroundColor: Colors.white,
           disabledBackgroundColor: placeholder,
           disabledForegroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radiusSmall),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
-            fontFamily: fontFamily,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall)),
+          textStyle: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           foregroundColor: WidgetStateProperty.all<Color>(primary),
-          shape: WidgetStateProperty.all<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall)),
-          ),
-          textStyle: WidgetStateProperty.all<TextStyle>(
-            const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily),
-          ),
+          shape: WidgetStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall))),
+          textStyle: WidgetStateProperty.all<TextStyle>(const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily)),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
           foregroundColor: WidgetStateProperty.all<Color>(primary),
-          shape: WidgetStateProperty.all<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall)),
-          ),
+          shape: WidgetStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall))),
           side: WidgetStateProperty.all<BorderSide>(const BorderSide(color: primary)),
-          textStyle: WidgetStateProperty.all<TextStyle>(
-            const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily),
-          ),
+          textStyle: WidgetStateProperty.all<TextStyle>(const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily)),
         ),
       ),
-      cardTheme: CardTheme(
-        color: Colors.white,
-        elevation: 2.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-        ),
-      ),
+      cardTheme: CardTheme(color: Colors.white, elevation: 2.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMedium))),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: primary,
@@ -189,22 +148,10 @@ class AppTheme {
         hintStyle: const TextStyle(color: placeholder, fontFamily: fontFamily),
         prefixIconColor: placeholder,
         suffixIconColor: placeholder,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: primary, width: 2.0),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: red),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: border)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: border)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: primary, width: 2.0)),
+        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: red)),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: red, width: 2.0),
@@ -256,12 +203,7 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
-          color: darkTextPrimary,
-          fontSize: 18.0,
-          fontWeight: FontWeight.w600,
-          fontFamily: fontFamily,
-        ),
+        titleTextStyle: TextStyle(color: darkTextPrimary, fontSize: 18.0, fontWeight: FontWeight.w600, fontFamily: fontFamily),
         iconTheme: IconThemeData(color: darkTextPrimary),
       ),
       tabBarTheme: const TabBarTheme(
@@ -278,46 +220,26 @@ class AppTheme {
           foregroundColor: Colors.white,
           disabledBackgroundColor: darkTextSecondary,
           disabledForegroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radiusSmall),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
-            fontFamily: fontFamily,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall)),
+          textStyle: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           foregroundColor: WidgetStateProperty.all<Color>(primary),
-          shape: WidgetStateProperty.all<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall)),
-          ),
-          textStyle: WidgetStateProperty.all<TextStyle>(
-            const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily),
-          ),
+          shape: WidgetStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall))),
+          textStyle: WidgetStateProperty.all<TextStyle>(const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily)),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: ButtonStyle(
           foregroundColor: WidgetStateProperty.all<Color>(primary),
-          shape: WidgetStateProperty.all<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall)),
-          ),
+          shape: WidgetStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSmall))),
           side: WidgetStateProperty.all<BorderSide>(const BorderSide(color: primary)),
-          textStyle: WidgetStateProperty.all<TextStyle>(
-            const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily),
-          ),
+          textStyle: WidgetStateProperty.all<TextStyle>(const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily)),
         ),
       ),
-      cardTheme: CardTheme(
-        color: filledBgDark,
-        elevation: 2.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-        ),
-      ),
+      cardTheme: CardTheme(color: filledBgDark, elevation: 2.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMedium))),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: filledBgDark,
         selectedItemColor: primary,
@@ -329,22 +251,10 @@ class AppTheme {
         hintStyle: const TextStyle(color: darkTextSecondary, fontFamily: fontFamily),
         prefixIconColor: darkTextSecondary,
         suffixIconColor: darkTextSecondary,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: gradientBgDark),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: gradientBgDark),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: primary, width: 2.0),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusSmall),
-          borderSide: const BorderSide(color: red),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: gradientBgDark)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: gradientBgDark)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: primary, width: 2.0)),
+        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusSmall), borderSide: const BorderSide(color: red)),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: red, width: 2.0),
