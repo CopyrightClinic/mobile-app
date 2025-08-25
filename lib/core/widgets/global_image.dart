@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../config/theme/app_theme.dart';
-import '../utils/extensions/responsive_extensions.dart';
+import '../utils/extensions/extensions.dart';
 
 /// A comprehensive global image widget that handles all types of images
 /// with full customization, error handling, and loading states.
@@ -299,13 +299,11 @@ class GlobalImage extends StatelessWidget {
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) {
           onImageLoaded?.call();
-          return fadeIn
-              ? FadeInImage.assetNetwork(placeholder: '', image: assetPath!, width: width, height: height, fit: fit, fadeInDuration: fadeInDuration)
-              : child;
+          return fadeIn ? AnimatedOpacity(opacity: 1.0, duration: fadeInDuration, child: child) : child;
         }
         if (frame != null) {
           onImageLoaded?.call();
-          return child;
+          return fadeIn ? AnimatedOpacity(opacity: 1.0, duration: fadeInDuration, child: child) : child;
         }
         onImageLoading?.call();
         return _buildPlaceholder();
