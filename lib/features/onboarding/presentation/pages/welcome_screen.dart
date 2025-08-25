@@ -7,6 +7,8 @@ import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
+import 'dart:ui';
+import '../widgets/gradient_border_painter.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -81,7 +83,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                           children: [
                             TranslatedText(
                               AppStrings.welcomeTo,
-                              style: TextStyle(color: Colors.white, fontSize: 24.f, fontWeight: FontWeight.w400),
+                              style: TextStyle(color: Colors.white, fontSize: 32.f, fontWeight: FontWeight.w700),
                               textAlign: TextAlign.center,
                             ),
                             TranslatedText(
@@ -96,11 +98,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 
                     const Spacer(),
 
-                    _buildAnimatedInfoButton(animation: _staggerAnimations[1], icon: Icons.info, title: AppStrings.aboutUs, onTap: () {}),
+                    _buildAnimatedInfoButton(
+                      animation: _staggerAnimations[1],
+                      icon: Icons.info,
+                      title: AppStrings.aboutUs,
+                      onTap: () {
+                        context.push(AppRoutes.aboutUsRouteName);
+                      },
+                    ),
 
                     SizedBox(height: 16.h),
 
-                    _buildAnimatedInfoButton(animation: _staggerAnimations[2], icon: Icons.lightbulb, title: AppStrings.whatWeDo, onTap: () {}),
+                    _buildAnimatedInfoButton(
+                      animation: _staggerAnimations[2],
+                      icon: Icons.lightbulb,
+                      title: AppStrings.whatWeDo,
+                      onTap: () {
+                        context.push(AppRoutes.whatWeDoRouteName);
+                      },
+                    ),
 
                     SizedBox(height: 16.h),
 
@@ -115,9 +131,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              context.go(AppRoutes.itemsRouteName);
-                            },
+                            onPressed: () {},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Colors.black,
@@ -184,17 +198,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(animation),
           child: SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: onTap,
-              icon: Icon(icon, color: Colors.white, size: 20.f),
-              label: TranslatedText(title, style: TextStyle(color: Colors.white, fontSize: 16.f, fontWeight: FontWeight.w500)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black.withValues(alpha: 0.7),
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)),
-                elevation: 0,
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100.r),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+                child: CustomPaint(
+                  painter: WelcomeScreenGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.5), borderRadius: 100.r),
+                  child: ElevatedButton.icon(
+                    onPressed: onTap,
+                    icon: Icon(icon, color: Colors.white, size: 20.f),
+                    label: TranslatedText(title, style: TextStyle(color: Colors.white, fontSize: 16.f, fontWeight: FontWeight.w500)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)),
+                      elevation: 0,
+                      side: BorderSide.none,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

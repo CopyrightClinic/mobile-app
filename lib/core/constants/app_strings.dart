@@ -5,12 +5,25 @@ class AppStrings {
   // Welcome Screen
   static const welcomeTo = 'welcomeTo';
   static const copyrightClinic = 'copyrightClinic';
-  static const aboutUs = 'aboutUs';
   static const whatWeDo = 'whatWeDo';
   static const askHaroldAI = 'askHaroldAI';
   static const signUp = 'signUp';
   static const login = 'login';
   static const alreadyHaveAccount = 'alreadyHaveAccount';
+
+  // About Us Screen
+  static const aboutUs = 'aboutUs';
+  static const learnAboutUsAndOurTeam = 'learnAboutUsAndOurTeam';
+  static const cassiusTitusDescription = 'cassiusTitusDescription';
+  static const sarahChen = 'sarahChen';
+  static const michaelRoss = 'michaelRoss';
+  static const emmaWilson = 'emmaWilson';
+  static const seniorAttorney = 'seniorAttorney';
+  static const legalCounsel = 'legalCounsel';
+  static const ipSpecialist = 'ipSpecialist';
+  static const legalAdvisor = 'legalAdvisor';
+  static const copyrightExpert = 'copyrightExpert';
+  static const legalAnalyst = 'legalAnalyst';
 
   // Coming Soon Messages
   static const aboutUsComingSoon = 'aboutUsComingSoon';
@@ -41,4 +54,17 @@ class AppStrings {
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';
+
+  // What We Do Screen
+  static const whatWeDoDescription = 'whatWeDoDescription';
+  static const musicLicensing = 'musicLicensing';
+  static const musicLicensingDescription = 'musicLicensingDescription';
+  static const visualArtistsRights = 'visualArtistsRights';
+  static const visualArtistsRightsDescription = 'visualArtistsRightsDescription';
+  static const videoAndMedia = 'videoAndMedia';
+  static const videoAndMediaDescription = 'videoAndMediaDescription';
+  static const artificialIntelligence = 'artificialIntelligence';
+  static const artificialIntelligenceDescription = 'artificialIntelligenceDescription';
+  static const writers = 'writers';
+  static const writersDescription = 'writersDescription';
 }
