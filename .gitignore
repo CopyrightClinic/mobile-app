@@ -46,6 +46,14 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
+# Documentation files
+*.md
+
+# Platform-specific folders
+macos/
+linux/
+web/
+
 # Android related
 **/android/**/gradle-wrapper.jar
 .gradle/
