@@ -70,7 +70,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
               builder: (context, child) {
                 return Column(
                   children: [
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.16),
+                    SizedBox(height: MediaQuery.sizeOf(context).height * 0.16),
                     Hero(tag: 'app_logo', child: GlobalImage(assetPath: ImageConstants.logo, width: 105.8.w)),
                     SizedBox(height: 16.h),
                     SlideTransition(

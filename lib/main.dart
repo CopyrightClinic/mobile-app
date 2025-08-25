@@ -6,6 +6,7 @@ import 'app.dart';
 import 'di.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:device_preview/device_preview.dart';
+import 'core/constants/language_constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +20,9 @@ void main() async {
       enabled: false,
       builder:
           (context) => EasyLocalization(
-            supportedLocales: const [Locale('en', 'US'), Locale('ar', 'SA')],
+            supportedLocales: SupportedLanguage.supportedLocales,
             path: 'assets/translations',
-            fallbackLocale: const Locale('en', 'US'),
+            fallbackLocale: SupportedLanguage.fallbackLocale,
             child: const MyApp(),
           ),
     ),

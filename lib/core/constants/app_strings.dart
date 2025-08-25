@@ -21,7 +21,6 @@ class AppStrings {
 
   // Language and Settings
   static const english = 'english';
-  static const arabic = 'arabic';
   static const language = 'language';
   static const system = 'system';
   static const settings = 'settings';
