@@ -42,22 +42,6 @@ class AppTheme {
     stops: [0.0, 0.4, 1.0],
   );
 
-  // // Legacy color constants for backward compatibility
-  // static const Color primaryColor = primary;
-  // static const Color secondaryColor = secondary;
-  // static const Color lightBackground = greyLight;
-  // static const Color darkBackground = bgDark;
-  // static const Color lightSurface = Colors.white;
-  // static const Color darkSurface = filledBgDark;
-  // static const Color lightText = textPrimary;
-  // static const Color darkText = darkTextPrimary;
-  // static const Color subtleText = textBodyLight;
-  // static const Color successColor = green;
-  // static const Color errorColor = red;
-  // static const Color warningColor = orange;
-  // static const Color lightBorder = border;
-  // static const Color darkBorder = Color(0xFF38393A);
-
   static const double radiusSmall = 8.0;
   static const double radiusMedium = 12.0;
   static const double radiusLarge = 16.0;
