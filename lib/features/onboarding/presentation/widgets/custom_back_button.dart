@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
@@ -33,7 +35,7 @@ class CustomBackButton extends StatelessWidget {
           child: InkWell(
             onTap: onPressed ?? () => context.pop(),
             borderRadius: BorderRadius.circular((size / 2).w),
-            child: Center(child: Icon(Icons.arrow_back_ios_new_rounded, color: iconColor, size: (size * 0.4).w)),
+            child: Center(child: Icon(Icons.arrow_back, color: iconColor, size: (size * 0.5).w)),
           ),
         ),
       ),

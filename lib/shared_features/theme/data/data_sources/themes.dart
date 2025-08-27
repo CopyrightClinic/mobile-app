@@ -18,7 +18,7 @@ class AppThemeData {
 
   static ThemeModel get system => themes.firstWhere((t) => t.themeMode == ThemeMode.system);
 
-  static ThemeModel get defaultTheme => themes.first;
+  static ThemeModel get defaultTheme => themes[1];
 
   static ThemeModel getThemeByMode(ThemeMode mode) {
     return themes.firstWhere((t) => t.themeMode == mode, orElse: () => defaultTheme);

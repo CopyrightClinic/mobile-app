@@ -7,9 +7,30 @@ extension ThemeColors on BuildContext {
   Color get backgroundColor => Theme.of(this).scaffoldBackgroundColor;
   Color get surfaceColor => Theme.of(this).colorScheme.surface;
   Color get textColor => Theme.of(this).colorScheme.onSurface;
-  Color get successColor => AppTheme.successColor;
-  Color get errorColor => AppTheme.errorColor;
-  Color get warningColor => AppTheme.warningColor;
+
+  // AppTheme color extensions
+  Color get primary => AppTheme.primary;
+  Color get textPrimary => AppTheme.textPrimary;
+  Color get textBody => AppTheme.textBody;
+  Color get textBodyLight => AppTheme.textBodyLight;
+  Color get border => AppTheme.border;
+  Color get placeholder => AppTheme.placeholder;
+  Color get green => AppTheme.green;
+  Color get orange => AppTheme.orange;
+  Color get red => AppTheme.red;
+  Color get secondary => AppTheme.secondary;
+  Color get secondary2 => AppTheme.secondary2;
+  Color get greyLight => AppTheme.greyLight;
+  Color get bgDark => AppTheme.bgDark;
+  Color get gradientBgDark => AppTheme.gradientBgDark;
+  Color get darkTextPrimary => AppTheme.darkTextPrimary;
+  Color get darkTextSecondary => AppTheme.darkTextSecondary;
+  Color get filledBgDark => AppTheme.filledBgDark;
+  Color get darkSecondary => AppTheme.darkSecondary;
+  Color get bgDark2 => AppTheme.bgDark2;
+  Color get secondary2Alt => AppTheme.secondary2Alt;
+  Color get buttonDiabled => AppTheme.buttonDiabled;
+  Color get white => AppTheme.white;
 }
 
 extension ThemeSpacing on BuildContext {

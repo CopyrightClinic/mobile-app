@@ -17,11 +17,13 @@ class AppTheme {
   static const Color bgDark = Color(0xFF16181D);
   static const Color gradientBgDark = Color(0xFF38393A);
   static const Color darkTextPrimary = Color(0xFFFFFFFF);
-  static const Color darkTextSecondary = Color(0xFF7F8F9E);
+  static const Color darkTextSecondary = Color(0xFF7F909F);
   static const Color filledBgDark = Color(0xFF1F232B);
   static const Color darkSecondary = Color(0xFFBBEBFF);
   static const Color bgDark2 = Color(0xFF202427);
   static const Color secondary2Alt = Color(0xFFE8EBEC);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color buttonDiabled = Color(0xFF3E414A);
 
   // Custom Gradient Background Colors
   static const Color gradientBgDark1 = Color(0xFF6882F7); // #6882F7 with 36% opacity
@@ -29,32 +31,32 @@ class AppTheme {
   static const Color gradientBgDark3 = Color(0xFF16181E); // #16181E with 0% opacity
 
   // Custom Gradient Background
-  static const LinearGradient customBackgroundGradient = LinearGradient(
+  static LinearGradient customBackgroundGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0x5C6882F7), // #6882F7 with 36% opacity (0x5C = 36%)
+      Color(0x4C6882F7), // #6882F7 with 36% opacity (0x5C = 36%)
       Color(0x0D1E6892), // #1E6892 with 5% opacity (0x0D = 5%)
       Color(0x0016181E), // #16181E with 0% opacity (0x00 = 0%)
     ],
-    stops: [0.0, 0.21, 1.0], // 21%, 5%, 0% positions
+    stops: [0.0, 0.4, 1.0],
   );
 
-  // Legacy color constants for backward compatibility
-  static const Color primaryColor = primary;
-  static const Color secondaryColor = secondary;
-  static const Color lightBackground = greyLight;
-  static const Color darkBackground = bgDark;
-  static const Color lightSurface = Colors.white;
-  static const Color darkSurface = filledBgDark;
-  static const Color lightText = textPrimary;
-  static const Color darkText = darkTextPrimary;
-  static const Color subtleText = textBodyLight;
-  static const Color successColor = green;
-  static const Color errorColor = red;
-  static const Color warningColor = orange;
-  static const Color lightBorder = border;
-  static const Color darkBorder = Color(0xFF38393A);
+  // // Legacy color constants for backward compatibility
+  // static const Color primaryColor = primary;
+  // static const Color secondaryColor = secondary;
+  // static const Color lightBackground = greyLight;
+  // static const Color darkBackground = bgDark;
+  // static const Color lightSurface = Colors.white;
+  // static const Color darkSurface = filledBgDark;
+  // static const Color lightText = textPrimary;
+  // static const Color darkText = darkTextPrimary;
+  // static const Color subtleText = textBodyLight;
+  // static const Color successColor = green;
+  // static const Color errorColor = red;
+  // static const Color warningColor = orange;
+  // static const Color lightBorder = border;
+  // static const Color darkBorder = Color(0xFF38393A);
 
   static const double radiusSmall = 8.0;
   static const double radiusMedium = 12.0;
