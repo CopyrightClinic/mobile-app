@@ -30,19 +30,19 @@ mixin Validator {
     }
 
     if (!value.contains(RegExp(r'[A-Z]'))) {
-      return 'Password must contain at least 1 uppercase letter';
+      return tr(AppStrings.passwordMustContainUppercase);
     }
 
     if (!value.contains(RegExp(r'[a-z]'))) {
-      return 'Password must contain at least 1 lowercase letter';
+      return tr(AppStrings.passwordMustContainLowercase);
     }
 
     if (!value.contains(RegExp(r'[0-9]'))) {
-      return 'Password must contain at least 1 digit';
+      return tr(AppStrings.passwordMustContainDigit);
     }
 
     if (!value.contains(RegExp(r'''[!@#\$%\^&\*\(\)_\+\-=\[\]\{\}\\\|;:,<>\./\?]'''))) {
-      return 'Password must contain at least 1 special character (!@#\$%^&*()_+-=[]{}|\\;:,<>./?)';
+      return tr(AppStrings.passwordMustContainSpecialChar);
     }
 
     return null;

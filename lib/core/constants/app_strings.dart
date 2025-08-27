@@ -48,6 +48,10 @@ class AppStrings {
   static const passwordIsRequired = 'passwordIsRequired';
   static const passwordMustBeAtLeastXCharacters = 'passwordMustBeAtLeastXCharacters';
   static const passwordNoSpaces = 'passwordNoSpaces';
+  static const passwordMustContainUppercase = 'passwordMustContainUppercase';
+  static const passwordMustContainLowercase = 'passwordMustContainLowercase';
+  static const passwordMustContainDigit = 'passwordMustContainDigit';
+  static const passwordMustContainSpecialChar = 'passwordMustContainSpecialChar';
   static const confirmPasswordIsRequired = 'confirmPasswordIsRequired';
   static const passwordsDoNotMatch = 'passwordsDoNotMatch';
   static const nameIsRequired = 'nameIsRequired';
