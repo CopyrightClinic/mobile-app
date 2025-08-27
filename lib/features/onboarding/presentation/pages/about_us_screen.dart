@@ -1,4 +1,5 @@
 import 'package:copyright_clinic_flutter/core/constants/image_constants.dart';
+import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
@@ -28,18 +29,21 @@ class AboutUsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10.h),
-                TranslatedText(AppStrings.aboutUs, style: TextStyle(color: Colors.white, fontSize: 24.f, fontWeight: FontWeight.w700)),
+                SizedBox(height: DimensionConstants.gap10Px),
+                TranslatedText(
+                  AppStrings.aboutUs,
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px, fontWeight: FontWeight.w700),
+                ),
                 TranslatedText(
                   AppStrings.learnAboutUsAndOurTeam,
-                  style: TextStyle(color: Colors.white, fontSize: 14.f, fontWeight: FontWeight.w400, height: 1.5),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px, fontWeight: FontWeight.w400, height: 1.5),
                 ),
-                SizedBox(height: 25.h),
+                SizedBox(height: DimensionConstants.gap24Px),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [_buildCassiusTitusCard(), SizedBox(height: 30.h), _buildTeamSection()],
+                      children: [_buildCassiusTitusCard(), SizedBox(height: DimensionConstants.gap30Px), _buildTeamSection()],
                     ),
                   ),
                 ),
@@ -62,7 +66,7 @@ class AboutUsScreen extends StatelessWidget {
           child: CustomPaint(
             painter: RoundedGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.4), borderRadius: 20.r),
             child: Container(
-              padding: EdgeInsets.all(15.w),
+              padding: EdgeInsets.all(DimensionConstants.gap15Px),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.r)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,10 +79,10 @@ class AboutUsScreen extends StatelessWidget {
                       image: const DecorationImage(image: AssetImage(ImageConstants.client1), fit: BoxFit.cover),
                     ),
                   ),
-                  SizedBox(height: 10.h),
+                  SizedBox(height: DimensionConstants.gap10Px),
                   TranslatedText(
                     AppStrings.cassiusTitusDescription,
-                    style: TextStyle(color: Colors.white, fontSize: 14.f, fontWeight: FontWeight.w400, height: 1.5),
+                    style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px, fontWeight: FontWeight.w400, height: 1.5),
                   ),
                 ],
               ),
@@ -95,8 +99,8 @@ class AboutUsScreen extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: 16.w,
-        mainAxisSpacing: 24.h,
+        crossAxisSpacing: DimensionConstants.gap16Px,
+        mainAxisSpacing: DimensionConstants.gap24Px,
         childAspectRatio: 0.78,
       ),
       itemCount: 6,
@@ -125,19 +129,19 @@ class AboutUsScreen extends StatelessWidget {
           height: 87.w,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40.r),
-            image: DecorationImage(image: AssetImage(member['image']!), fit: BoxFit.cover),
+            image: DecorationImage(image: AssetImage(member['image'] ?? ''), fit: BoxFit.cover),
           ),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: DimensionConstants.gap8Px),
         TranslatedText(
-          member['name']!,
-          style: TextStyle(color: Colors.white, fontSize: 12.f, fontWeight: FontWeight.w600),
+          member['name'] ?? '',
+          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px, fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 2.h),
+        SizedBox(height: DimensionConstants.gap2Px),
         TranslatedText(
-          member['title']!,
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12.f, fontWeight: FontWeight.w400),
+          member['title'] ?? '',
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: DimensionConstants.font12Px, fontWeight: FontWeight.w400),
           textAlign: TextAlign.center,
         ),
       ],

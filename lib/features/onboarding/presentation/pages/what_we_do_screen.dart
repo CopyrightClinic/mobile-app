@@ -1,3 +1,4 @@
+import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/constants/image_constants.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
@@ -30,23 +31,23 @@ class WhatWeDoScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10.h),
+                SizedBox(height: DimensionConstants.gap10Px),
                 TranslatedText(
                   AppStrings.whatWeDo,
-                  style: TextStyle(color: Colors.white, fontSize: 24.f, fontWeight: FontWeight.w700),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px, fontWeight: FontWeight.w700),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: DimensionConstants.gap8Px),
                 TranslatedText(
                   AppStrings.whatWeDoDescription,
-                  style: TextStyle(color: Colors.white, fontSize: 14.f, fontWeight: FontWeight.w400, height: 1.5),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px, fontWeight: FontWeight.w400, height: 1.5),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: DimensionConstants.gap20Px),
                 Expanded(
                   child: ListView.separated(
                     itemCount: 5,
                     padding: EdgeInsets.zero,
-                    separatorBuilder: (context, index) => SizedBox(height: 6.h),
+                    separatorBuilder: (context, index) => SizedBox(height: DimensionConstants.gap6Px),
                     itemBuilder: (context, index) {
                       return _buildServiceCardByIndex(index);
                     },
@@ -91,29 +92,37 @@ class WhatWeDoScreen extends StatelessWidget {
           child: CustomPaint(
             painter: RoundedGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.5), borderRadius: 16.r),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px, vertical: DimensionConstants.gap12Px),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.r)),
               child: Row(
                 children: [
                   Container(
-                    width: 48.w,
-                    height: 48.w,
+                    width: DimensionConstants.gap48Px,
+                    height: DimensionConstants.gap48Px,
                     decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(24.r)),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(24.r),
                       child: GlobalImage(assetPath: imagePath, width: 48.w, height: 48.w, fit: BoxFit.cover, showLoading: false, showError: false),
                     ),
                   ),
-                  SizedBox(width: 16.w),
+                  SizedBox(width: DimensionConstants.gap16Px),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TranslatedText(title, style: TextStyle(color: Colors.white, fontSize: 16.f, fontWeight: FontWeight.w600)),
-                        SizedBox(height: 4.h),
+                        TranslatedText(
+                          title,
+                          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(height: DimensionConstants.gap4Px),
                         TranslatedText(
                           description,
-                          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14.f, fontWeight: FontWeight.w400, height: 1.4),
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            fontSize: DimensionConstants.font14Px,
+                            fontWeight: FontWeight.w400,
+                            height: 1.4,
+                          ),
                         ),
                       ],
                     ),
