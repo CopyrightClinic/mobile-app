@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:copyright_clinic_flutter/features/onboarding/presentation/widgets/onboarding_background.dart';
 import 'package:copyright_clinic_flutter/core/constants/image_constants.dart';
+import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
+import 'dart:ui';
+import '../widgets/gradient_border_painter.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -64,7 +67,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
       body: OnboardingBackground(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px),
             child: AnimatedBuilder(
               animation: _staggerController,
               builder: (context, child) {
@@ -72,7 +75,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                   children: [
                     SizedBox(height: MediaQuery.sizeOf(context).height * 0.16),
                     Hero(tag: 'app_logo', child: GlobalImage(assetPath: ImageConstants.logo, width: 105.8.w)),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: DimensionConstants.gap16Px),
                     SlideTransition(
                       position: _slideAnimation,
                       child: FadeTransition(
@@ -81,12 +84,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                           children: [
                             TranslatedText(
                               AppStrings.welcomeTo,
-                              style: TextStyle(color: Colors.white, fontSize: 24.f, fontWeight: FontWeight.w400),
+                              style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font32Px, fontWeight: FontWeight.w700),
                               textAlign: TextAlign.center,
                             ),
                             TranslatedText(
                               AppStrings.copyrightClinic,
-                              style: TextStyle(color: Colors.white, fontSize: 32.f, fontWeight: FontWeight.w700),
+                              style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font32Px, fontWeight: FontWeight.w700),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -96,17 +99,31 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 
                     const Spacer(),
 
-                    _buildAnimatedInfoButton(animation: _staggerAnimations[1], icon: Icons.info, title: AppStrings.aboutUs, onTap: () {}),
+                    _buildAnimatedInfoButton(
+                      animation: _staggerAnimations[1],
+                      icon: Icons.info,
+                      title: AppStrings.aboutUs,
+                      onTap: () {
+                        context.push(AppRoutes.aboutUsRouteName);
+                      },
+                    ),
 
-                    SizedBox(height: 16.h),
+                    SizedBox(height: DimensionConstants.gap16Px),
 
-                    _buildAnimatedInfoButton(animation: _staggerAnimations[2], icon: Icons.lightbulb, title: AppStrings.whatWeDo, onTap: () {}),
+                    _buildAnimatedInfoButton(
+                      animation: _staggerAnimations[2],
+                      icon: Icons.lightbulb,
+                      title: AppStrings.whatWeDo,
+                      onTap: () {
+                        context.push(AppRoutes.whatWeDoRouteName);
+                      },
+                    ),
 
-                    SizedBox(height: 16.h),
+                    SizedBox(height: DimensionConstants.gap16Px),
 
                     _buildAnimatedInfoButton(animation: _staggerAnimations[3], icon: Icons.auto_awesome, title: AppStrings.askHaroldAI, onTap: () {}),
 
-                    SizedBox(height: 40.h),
+                    SizedBox(height: DimensionConstants.gap40Px),
 
                     FadeTransition(
                       opacity: _staggerAnimations[4],
@@ -115,23 +132,24 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              context.go(AppRoutes.itemsRouteName);
-                            },
+                            onPressed: () {},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Colors.black,
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
+                              padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)),
                               elevation: 2,
                             ),
-                            child: TranslatedText(AppStrings.signUp, style: TextStyle(fontSize: 16.f, fontWeight: FontWeight.w600)),
+                            child: TranslatedText(
+                              AppStrings.signUp,
+                              style: TextStyle(fontSize: DimensionConstants.font16Px, fontWeight: FontWeight.w600),
+                            ),
                           ),
                         ),
                       ),
                     ),
 
-                    SizedBox(height: 20.h),
+                    SizedBox(height: DimensionConstants.gap20Px),
 
                     FadeTransition(
                       opacity: _staggerAnimations[5],
@@ -142,14 +160,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                           children: [
                             TranslatedText(
                               AppStrings.alreadyHaveAccount,
-                              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14.f),
+                              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: DimensionConstants.font14Px),
                             ),
                             SizedBox(width: 4.w),
                             TranslatedText(
                               AppStrings.login,
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 14.f,
+                                fontSize: DimensionConstants.font14Px,
                                 fontWeight: FontWeight.w600,
                                 decoration: TextDecoration.underline,
                               ),
@@ -159,7 +177,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                       ),
                     ),
 
-                    SizedBox(height: 10.h),
+                    SizedBox(height: DimensionConstants.gap10Px),
                   ],
                 );
               },
@@ -184,17 +202,29 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(animation),
           child: SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: onTap,
-              icon: Icon(icon, color: Colors.white, size: 20.f),
-              label: TranslatedText(title, style: TextStyle(color: Colors.white, fontSize: 16.f, fontWeight: FontWeight.w500)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black.withValues(alpha: 0.7),
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)),
-                elevation: 0,
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100.r),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+                child: CustomPaint(
+                  painter: WelcomeScreenGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.5), borderRadius: 100.r),
+                  child: ElevatedButton.icon(
+                    onPressed: onTap,
+                    icon: Icon(icon, color: Colors.white, size: DimensionConstants.font20Px),
+                    label: TranslatedText(
+                      title,
+                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px, fontWeight: FontWeight.w500),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px, horizontal: DimensionConstants.gap20Px),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)),
+                      elevation: 0,
+                      side: BorderSide.none,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

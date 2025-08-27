@@ -4,14 +4,15 @@ import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
 
 class OnboardingBackground extends StatelessWidget {
   final Widget child;
+  final String imagePath;
 
-  const OnboardingBackground({super.key, required this.child});
+  const OnboardingBackground({super.key, required this.child, this.imagePath = ImageConstants.splash});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        GlobalImage(assetPath: ImageConstants.splash, height: double.infinity, width: double.infinity),
+        GlobalImage(assetPath: imagePath, height: double.infinity, width: double.infinity),
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
