@@ -1,7 +1,9 @@
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
+import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
 import 'package:copyright_clinic_flutter/core/utils/logger/logger.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../core/utils/extensions/theme_extensions.dart';
@@ -33,9 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   void Function(void Function())? _passwordState;
   void Function(void Function())? _confirmPasswordState;
 
-  // Password strength tracking
   PasswordStrengthResult? _passwordStrength;
-  String? _passwordError;
 
   @override
   void dispose() {
@@ -68,11 +68,9 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   void _handleSignUp() {
     if (_formKey.currentState!.validate()) {
       _confirmPasswordFocusNode.unfocus();
-      Log.d('SignUpScreen', 'Sign up form validated successfully');
+      context.go(AppRoutes.signupSuccessRouteName);
     }
   }
-
-  void _handleForgotPassword() {}
 
   String? _validateConfirmPassword(String? password, String? confirmPassword, String Function(String) tr) {
     if (confirmPassword == null || confirmPassword.isEmpty) {
@@ -85,26 +83,20 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
 
   void _handlePasswordChange(String value) {
     if (value.isEmpty) {
-      _passwordError = null;
       _passwordStrength = null;
       _buttonSetState?.call(() {});
       _passwordState?.call(() {});
     } else {
       if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text != value) {
-        _confirmPasswordState?.call(() {
-          // Update confirm password error state if needed
-        });
+        _confirmPasswordState?.call(() {});
         _buttonSetState?.call(() {});
       }
       if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text == value) {
-        _confirmPasswordState?.call(() {
-          // Update confirm password success state if needed
-        });
+        _confirmPasswordState?.call(() {});
         _buttonSetState?.call(() {});
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _passwordError = null;
         _passwordStrength = PasswordStrengthHelper.evaluatePasswordStrength(value);
         _buttonSetState?.call(() {});
         _passwordState?.call(() {});
@@ -115,10 +107,8 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   void _handleConfirmPasswordChange(String value) {
     if (value.isNotEmpty && _passwordController.text.isNotEmpty) {
       if (_passwordController.text.trim() == value) {
-        // Passwords match
         _buttonSetState?.call(() {});
       } else {
-        // Passwords don't match
         _buttonSetState?.call(() {});
       }
     }

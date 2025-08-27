@@ -67,7 +67,7 @@ class AppStrings {
   static const confirmPassword = 'confirmPassword';
   static const congratulations = 'congratulations';
   static const yourAccountHasBeenCreated = 'yourAccountHasBeenCreated';
-
+  static const setupProfile = 'setupProfile';
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';

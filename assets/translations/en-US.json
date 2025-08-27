@@ -48,7 +48,6 @@
   "medium": "Medium",
   "strong": "Strong",
   "matchPassword": "Passwords match",
-  "passwordNoSpaces": "Password cannot contain spaces",
   "nameIsRequired": "Name is required",
   "nameMustBeAtLeastXCharacters": "Name must be at least {X} characters",
   "phoneIsRequired": "Phone number is required",
@@ -74,5 +73,6 @@
   "createYourAccount": "Create your account to stay connected!",
   "congratulations": "Congratulations",
   "yourAccountHasBeenCreated": "Your account has been created successfully",
-  "confirmPassword": "Confirm Password"
+  "confirmPassword": "Confirm Password",
+  "setupProfile": "Setup Profile"
 }
