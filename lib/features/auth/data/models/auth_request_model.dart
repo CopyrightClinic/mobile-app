@@ -1,0 +1,29 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'auth_request_model.g.dart';
+
+@JsonSerializable()
+class LoginRequestModel {
+  final String email;
+  final String password;
+
+  const LoginRequestModel({required this.email, required this.password});
+
+  factory LoginRequestModel.fromJson(Map<String, dynamic> json) => _$LoginRequestModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LoginRequestModelToJson(this);
+}
+
+@JsonSerializable()
+class SignupRequestModel {
+  final String email;
+  final String password;
+  @JsonKey(name: 'confirmPassword')
+  final String confirmPassword;
+
+  const SignupRequestModel({required this.email, required this.password, required this.confirmPassword});
+
+  factory SignupRequestModel.fromJson(Map<String, dynamic> json) => _$SignupRequestModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SignupRequestModelToJson(this);
+}

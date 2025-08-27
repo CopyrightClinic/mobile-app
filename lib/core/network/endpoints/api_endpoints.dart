@@ -12,8 +12,8 @@ class ApiEndpoint {
   static String auth(AuthEndpoint endpoint) {
     const path = '/auth';
     switch (endpoint) {
-      case AuthEndpoint.REGISTER:
-        return '$path/register';
+      case AuthEndpoint.SIGNUP:
+        return '$path/signup';
       case AuthEndpoint.LOGIN:
         return '$path/login';
       case AuthEndpoint.REFRESH_TOKEN:
@@ -29,11 +29,7 @@ class ApiEndpoint {
     }
   }
 
-  static String students(
-    StudentEndpoint endpoint, {
-    String? erp,
-    int? extendedResourceId,
-  }) {
+  static String students(StudentEndpoint endpoint, {String? erp, int? extendedResourceId}) {
     const path = '/students';
     switch (endpoint) {
       case StudentEndpoint.BASE:
@@ -45,47 +41,29 @@ class ApiEndpoint {
         }
       case StudentEndpoint.ORGANIZED_ACTIVITIES:
         {
-          assert(
-            erp != null,
-            'studentErp is required for ORGANIZED_ACTIVITIES endpoint',
-          );
+          assert(erp != null, 'studentErp is required for ORGANIZED_ACTIVITIES endpoint');
           return '$path/$erp/organized-activities';
         }
       case StudentEndpoint.ATTENDED_ACTIVITIES:
         {
-          assert(
-            erp != null,
-            'studentErp is required for ATTENDED_ACTIVITIES endpoint',
-          );
+          assert(erp != null, 'studentErp is required for ATTENDED_ACTIVITIES endpoint');
           return '$path/$erp/attended-activities';
         }
       case StudentEndpoint.SAVED_ACTIVITIES_BASE:
         {
-          assert(
-            erp != null,
-            'studentErp is required for SAVED_ACTIVITIES_BASE endpoint',
-          );
+          assert(erp != null, 'studentErp is required for SAVED_ACTIVITIES_BASE endpoint');
           return '$path/$erp/saved-activities';
         }
       case StudentEndpoint.SAVED_ACTIVITIES_BY_ID:
         {
-          assert(
-            erp != null,
-            'studentErp is required for SAVED_ACTIVITIES_BY_ID endpoint',
-          );
-          assert(
-            extendedResourceId != null,
-            'extendedResourceId is required for SAVED_ACTIVITIES_BY_ID endpoint',
-          );
+          assert(erp != null, 'studentErp is required for SAVED_ACTIVITIES_BY_ID endpoint');
+          assert(extendedResourceId != null, 'extendedResourceId is required for SAVED_ACTIVITIES_BY_ID endpoint');
           return '$path/$erp/saved-activities/$extendedResourceId';
         }
     }
   }
 
-  static String studentConnections(
-    StudentConnectionEndpoint endpoint, {
-    int? id,
-  }) {
+  static String studentConnections(StudentConnectionEndpoint endpoint, {int? id}) {
     const path = '/student-connections';
     switch (endpoint) {
       case StudentConnectionEndpoint.BASE:
@@ -94,10 +72,7 @@ class ApiEndpoint {
         return '$path/requests';
       case StudentConnectionEndpoint.BY_ID:
         {
-          assert(
-            id != null,
-            'studentConnectionId is required for BY_ID endpoint',
-          );
+          assert(id != null, 'studentConnectionId is required for BY_ID endpoint');
           return '$path/$id';
         }
     }
@@ -112,35 +87,9 @@ class ApiEndpoint {
   }
 }
 
-enum AuthEndpoint {
-  REGISTER,
+enum AuthEndpoint { SIGNUP, LOGIN, REFRESH_TOKEN, CHANGE_PASSWORD, FORGOT_PW_RESET_PASSWORD, FORGOT_PW_SEND_OTP, FORGOT_PW_VERIFY_OTP }
 
-  LOGIN,
-
-  REFRESH_TOKEN,
-
-  CHANGE_PASSWORD,
-
-  FORGOT_PW_RESET_PASSWORD,
-
-  FORGOT_PW_SEND_OTP,
-
-  FORGOT_PW_VERIFY_OTP,
-}
-
-enum StudentEndpoint {
-  BASE,
-
-  BY_ERP,
-
-  ORGANIZED_ACTIVITIES,
-
-  SAVED_ACTIVITIES_BASE,
-
-  SAVED_ACTIVITIES_BY_ID,
-
-  ATTENDED_ACTIVITIES,
-}
+enum StudentEndpoint { BASE, BY_ERP, ORGANIZED_ACTIVITIES, SAVED_ACTIVITIES_BASE, SAVED_ACTIVITIES_BY_ID, ATTENDED_ACTIVITIES }
 
 enum StudentConnectionEndpoint { BASE, REQUESTS, BY_ID }
 

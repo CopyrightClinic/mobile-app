@@ -13,6 +13,12 @@ import 'features/example_feature/data/repositories/item_repository_impl.dart';
 import 'features/example_feature/domain/repositories/item_repository.dart';
 import 'features/example_feature/domain/usecases/get_items_usecase.dart';
 import 'features/example_feature/presentation/bloc/item_bloc.dart';
+import 'features/auth/data/datasources/auth_remote_data_source.dart';
+import 'features/auth/data/repositories/auth_repository_impl.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/domain/usecases/login_usecase.dart';
+import 'features/auth/domain/usecases/signup_usecase.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -31,7 +37,12 @@ Future<void> init() async {
     return DioService(
       dioClient: sl<Dio>(),
       globalCacheOptions: cacheOptions,
-      interceptors: [ApiInterceptor(), DioCacheInterceptor(options: cacheOptions), if (kDebugMode) LoggingInterceptor(), RefreshTokenInterceptor(dioClient: sl<Dio>())],
+      interceptors: [
+        ApiInterceptor(),
+        DioCacheInterceptor(options: cacheOptions),
+        if (kDebugMode) LoggingInterceptor(),
+        // RefreshTokenInterceptor(dioClient: sl<Dio>()),
+      ],
     );
   });
 
@@ -40,13 +51,18 @@ Future<void> init() async {
 
   // Data sources
   sl.registerLazySingleton<ItemRemoteDataSource>(() => ItemRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
   sl.registerLazySingleton<ItemRepository>(() => ItemRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetItemsUseCase(sl()));
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => SignupUseCase(sl()));
 
   // Bloc
   sl.registerFactory(() => ItemBloc(getItemsUseCase: sl()));
+  sl.registerFactory(() => AuthBloc(loginUseCase: sl(), signupUseCase: sl(), authRepository: sl()));
 }

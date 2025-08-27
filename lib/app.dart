@@ -9,6 +9,8 @@ import 'shared_features/theme/data/models/theme_model.dart';
 import 'shared_features/theme/view_models/bloc/theme_cubit.dart';
 import 'shared_features/localization/view_models/bloc/localization_cubit.dart';
 import 'shared_features/localization/data/models/localization_model.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'di.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -19,6 +21,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
         BlocProvider<LocalizationCubit>(create: (context) => LocalizationCubit()),
+        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
       ],
       child: BlocBuilder<LocalizationCubit, LocalizationModel>(
         builder: (context, localization) {
