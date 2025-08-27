@@ -132,7 +132,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              context.push(AppRoutes.signupRouteName);
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Colors.black,
@@ -154,7 +156,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                     FadeTransition(
                       opacity: _staggerAnimations[5],
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          context.push(AppRoutes.loginRouteName);
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

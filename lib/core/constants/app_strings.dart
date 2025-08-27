@@ -42,6 +42,7 @@ class AppStrings {
 
   // Form Validation
   static const password = 'password';
+  static const email = 'email';
   static const emailIsRequired = 'emailIsRequired';
   static const pleaseEnterAValidEmail = 'pleaseEnterAValidEmail';
   static const passwordIsRequired = 'passwordIsRequired';
@@ -50,6 +51,12 @@ class AppStrings {
   static const nameMustBeAtLeastXCharacters = 'nameMustBeAtLeastXCharacters';
   static const phoneIsRequired = 'phoneIsRequired';
   static const pleaseEnterAValidPhoneNumber = 'pleaseEnterAValidPhoneNumber';
+
+  // Login Screen
+  static const welcomeBackMessage = 'welcomeBackMessage';
+  static const enterYourEmail = 'enterYourEmail';
+  static const enterYourPassword = 'enterYourPassword';
+  static const forgotPassword = 'forgotPassword';
 
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';

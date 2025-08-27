@@ -30,9 +30,7 @@ class CustomScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: AppTheme.customBackgroundGradient,
-      ),
+      decoration: BoxDecoration(gradient: AppTheme.customBackgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: appBar,
