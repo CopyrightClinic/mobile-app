@@ -98,7 +98,7 @@ class _CustomTextFieldState extends State<CustomTextField> with Validator {
           onTap: widget.onTap,
           onEditingComplete: widget.onEditingComplete,
           onChanged: widget.onChanged,
-          validator: widget.validator ?? _getDefaultValidator(),
+          validator: widget.validator,
           style: TextStyle(color: context.textColor, fontSize: 16.f, fontWeight: FontWeight.w400),
           decoration: InputDecoration(
             hintText: widget.placeholder.tr(),
@@ -139,18 +139,5 @@ class _CustomTextFieldState extends State<CustomTextField> with Validator {
         ),
       ],
     );
-  }
-
-  String? Function(String?)? _getDefaultValidator() {
-    if (widget.label.toLowerCase().contains('email')) {
-      return (value) => validateEmail(value, (key) => key.tr());
-    } else if (widget.label.toLowerCase().contains('password')) {
-      return (value) => validatePassword(value, (key) => key.tr());
-    } else if (widget.label.toLowerCase().contains('name')) {
-      return (value) => validateName(value, (key) => key.tr());
-    } else if (widget.label.toLowerCase().contains('phone')) {
-      return (value) => validatePhone(value, (key) => key.tr());
-    }
-    return null;
   }
 }

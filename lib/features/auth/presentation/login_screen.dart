@@ -42,7 +42,10 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
 
     Log.d('LoginScreen', 'email: $email, password: $password');
 
-    return email.isNotEmpty && password.isNotEmpty;
+    final emailValidation = validateEmail(email, tr);
+    final passwordValidation = validatePassword(password, tr, isLogin: true);
+
+    return emailValidation == null && passwordValidation == null;
   }
 
   void _onFieldChanged() {
@@ -97,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                           controller: _emailController,
                           focusNode: _emailFocusNode,
                           keyboardType: TextInputType.emailAddress,
+                          validator: (value) => validateEmail(value, tr),
                           onEditingComplete: () => _passwordFocusNode.requestFocus(),
                           onChanged: (value) {
                             _onFieldChanged();
