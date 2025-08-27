@@ -23,8 +23,9 @@ class AuthRepositoryImpl implements AuthRepository {
       final response = await remoteDataSource.login(request);
       Log.d('AuthRepositoryImpl', 'Login response received: ${response.message}');
 
-      await TokenStorage.saveTokens(response.accessToken, response.accessToken);
-      Log.d('AuthRepositoryImpl', 'Tokens saved successfully');
+      // Save access token
+      await TokenStorage.saveAccessToken(response.accessToken);
+      Log.d('AuthRepositoryImpl', 'Access token saved successfully');
 
       return Right(AuthResult(user: response.toEntity(), message: response.message));
     } on CustomException catch (e) {
@@ -45,8 +46,9 @@ class AuthRepositoryImpl implements AuthRepository {
       final response = await remoteDataSource.signup(request);
       Log.d('AuthRepositoryImpl', 'Signup response received: ${response.message}');
 
-      await TokenStorage.saveTokens(response.accessToken, response.accessToken);
-      Log.d('AuthRepositoryImpl', 'Tokens saved successfully');
+      // Save access token
+      await TokenStorage.saveAccessToken(response.accessToken);
+      Log.d('AuthRepositoryImpl', 'Access token saved successfully');
 
       return Right(AuthResult(user: response.toEntity(), message: response.message));
     } on CustomException catch (e) {
@@ -60,7 +62,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async {
-    await TokenStorage.clearTokens();
+    await TokenStorage.clearAccessToken();
   }
 
   @override
@@ -71,6 +73,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserEntity?> getCurrentUser() async {
+    // This would typically fetch user data from local storage or make an API call
+    // For now, we'll return null as we need to implement user storage
     return null;
   }
 }

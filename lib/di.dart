@@ -7,12 +7,6 @@ import 'core/network/dio_service.dart';
 import 'core/network/endpoints/api_endpoints.dart';
 import 'core/network/interceptors/api_interceptor.dart';
 import 'core/network/interceptors/logging_interceptor.dart';
-import 'core/network/interceptors/refresh_token_interceptor.dart';
-import 'features/example_feature/data/datasources/item_remote_data_source.dart';
-import 'features/example_feature/data/repositories/item_repository_impl.dart';
-import 'features/example_feature/domain/repositories/item_repository.dart';
-import 'features/example_feature/domain/usecases/get_items_usecase.dart';
-import 'features/example_feature/presentation/bloc/item_bloc.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -50,19 +44,15 @@ Future<void> init() async {
   sl.registerLazySingleton<ApiService>(() => ApiService(sl<DioService>()));
 
   // Data sources
-  sl.registerLazySingleton<ItemRemoteDataSource>(() => ItemRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
-  sl.registerLazySingleton<ItemRepository>(() => ItemRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
-  sl.registerLazySingleton(() => GetItemsUseCase(sl()));
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => SignupUseCase(sl()));
 
   // Bloc
-  sl.registerFactory(() => ItemBloc(getItemsUseCase: sl()));
   sl.registerFactory(() => AuthBloc(loginUseCase: sl(), signupUseCase: sl(), authRepository: sl()));
 }
