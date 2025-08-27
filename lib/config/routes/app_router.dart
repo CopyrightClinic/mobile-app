@@ -4,6 +4,7 @@ import '../../../features/onboarding/presentation/pages/splash_screen.dart';
 import '../../../features/onboarding/presentation/pages/what_we_do_screen.dart';
 import '../../../features/onboarding/presentation/pages/welcome_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/sign_up_screen.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -16,6 +17,7 @@ class AppRouter {
       GoRoute(path: AppRoutes.aboutUsRouteName, name: AppRoutes.aboutUsRouteName, builder: (context, state) => const AboutUsScreen()),
       GoRoute(path: AppRoutes.whatWeDoRouteName, name: AppRoutes.whatWeDoRouteName, builder: (context, state) => const WhatWeDoScreen()),
       GoRoute(path: AppRoutes.loginRouteName, name: AppRoutes.loginRouteName, builder: (context, state) => const LoginScreen()),
+      GoRoute(path: AppRoutes.signupRouteName, name: AppRoutes.signupRouteName, builder: (context, state) => const SignUpScreen()),
     ],
   );
 }
