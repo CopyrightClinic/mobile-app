@@ -47,6 +47,7 @@ class AppStrings {
   static const pleaseEnterAValidEmail = 'pleaseEnterAValidEmail';
   static const passwordIsRequired = 'passwordIsRequired';
   static const passwordMustBeAtLeastXCharacters = 'passwordMustBeAtLeastXCharacters';
+  static const passwordNoSpaces = 'passwordNoSpaces';
   static const confirmPasswordIsRequired = 'confirmPasswordIsRequired';
   static const passwordsDoNotMatch = 'passwordsDoNotMatch';
   static const nameIsRequired = 'nameIsRequired';

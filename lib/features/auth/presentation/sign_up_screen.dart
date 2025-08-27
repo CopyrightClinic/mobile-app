@@ -10,6 +10,8 @@ import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/mixin/validator.dart';
+import '../../../core/utils/password_strength.dart';
+import '../../../core/widgets/password_strength_indicator.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -28,6 +30,12 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   final _confirmPasswordFocusNode = FocusNode();
 
   void Function(void Function())? _buttonSetState;
+  void Function(void Function())? _passwordState;
+  void Function(void Function())? _confirmPasswordState;
+
+  // Password strength tracking
+  PasswordStrengthResult? _passwordStrength;
+  String? _passwordError;
 
   @override
   void dispose() {
@@ -75,6 +83,47 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
     return null;
   }
 
+  void _handlePasswordChange(String value) {
+    if (value.isEmpty) {
+      _passwordError = null;
+      _passwordStrength = null;
+      _buttonSetState?.call(() {});
+      _passwordState?.call(() {});
+    } else {
+      if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text != value) {
+        _confirmPasswordState?.call(() {
+          // Update confirm password error state if needed
+        });
+        _buttonSetState?.call(() {});
+      }
+      if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text == value) {
+        _confirmPasswordState?.call(() {
+          // Update confirm password success state if needed
+        });
+        _buttonSetState?.call(() {});
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _passwordError = null;
+        _passwordStrength = PasswordStrengthHelper.evaluatePasswordStrength(value);
+        _buttonSetState?.call(() {});
+        _passwordState?.call(() {});
+      });
+    }
+  }
+
+  void _handleConfirmPasswordChange(String value) {
+    if (value.isNotEmpty && _passwordController.text.isNotEmpty) {
+      if (_passwordController.text.trim() == value) {
+        // Passwords match
+        _buttonSetState?.call(() {});
+      } else {
+        // Passwords don't match
+        _buttonSetState?.call(() {});
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -95,6 +144,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
+                    padding: EdgeInsets.only(bottom: DimensionConstants.gap20Px.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -122,46 +172,55 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                           },
                         ),
                         SizedBox(height: DimensionConstants.gap20Px.h),
-                        CustomTextField(
-                          label: AppStrings.password,
-                          placeholder: AppStrings.enterYourPassword,
-                          controller: _passwordController,
-                          focusNode: _passwordFocusNode,
-                          isPassword: true,
-                          validator: (value) => validatePassword(value, tr, isLogin: false),
-                          onEditingComplete: _handleSignUp,
-                          onChanged: (value) {
-                            _onFieldChanged();
+                        StatefulBuilder(
+                          builder: (context, state) {
+                            _passwordState = state;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomTextField(
+                                  label: AppStrings.password,
+                                  placeholder: AppStrings.enterYourPassword,
+                                  controller: _passwordController,
+                                  focusNode: _passwordFocusNode,
+                                  isPassword: true,
+                                  validator: (value) => validatePassword(value, tr, isLogin: false),
+                                  onEditingComplete: () => _confirmPasswordFocusNode.requestFocus(),
+                                  onChanged: (value) {
+                                    _onFieldChanged();
+                                    _handlePasswordChange(value);
+                                  },
+                                ),
+                                PasswordStrengthIndicator(passwordStrength: _passwordStrength, isVisible: _passwordController.text.isNotEmpty),
+                              ],
+                            );
                           },
                         ),
                         SizedBox(height: DimensionConstants.gap20Px.h),
-                        CustomTextField(
-                          label: AppStrings.confirmPassword,
-                          placeholder: AppStrings.confirmPassword,
-                          controller: _confirmPasswordController,
-                          focusNode: _confirmPasswordFocusNode,
-                          isPassword: true,
-                          validator: (value) => _validateConfirmPassword(_passwordController.text.trim(), value, tr),
-                          onChanged: (value) {
-                            _onFieldChanged();
+                        StatefulBuilder(
+                          builder: (context, state) {
+                            _confirmPasswordState = state;
+                            return CustomTextField(
+                              label: AppStrings.confirmPassword,
+                              placeholder: AppStrings.confirmPassword,
+                              controller: _confirmPasswordController,
+                              focusNode: _confirmPasswordFocusNode,
+                              isPassword: true,
+                              validator: (value) => _validateConfirmPassword(_passwordController.text.trim(), value, tr),
+                              onEditingComplete: _handleSignUp,
+                              onChanged: (value) {
+                                _onFieldChanged();
+                                _handleConfirmPasswordChange(value);
+                              },
+                            );
                           },
-                        ),
-                        SizedBox(height: DimensionConstants.gap16Px.h),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: _handleForgotPassword,
-                            child: TranslatedText(
-                              AppStrings.forgotPassword,
-                              style: TextStyle(color: context.primaryColor, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
-                            ),
-                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
                   width: double.infinity,
                   child: StatefulBuilder(
                     builder: (context, setState) {
@@ -190,7 +249,6 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                     },
                   ),
                 ),
-                SizedBox(height: DimensionConstants.gap32Px.h),
               ],
             ),
           ),

@@ -80,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
+                    padding: EdgeInsets.only(bottom: DimensionConstants.gap20Px.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -134,7 +135,8 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                     ),
                   ),
                 ),
-                SizedBox(
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
                   width: double.infinity,
                   child: StatefulBuilder(
                     builder: (context, setState) {
@@ -163,7 +165,6 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                     },
                   ),
                 ),
-                SizedBox(height: DimensionConstants.gap32Px.h),
               ],
             ),
           ),

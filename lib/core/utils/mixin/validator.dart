@@ -13,16 +13,36 @@ mixin Validator {
   }
 
   String? validatePassword(String? value, String Function(String) tr, {bool isLogin = false}) {
+    if (value == null || value.isEmpty) {
+      return tr(AppStrings.passwordIsRequired);
+    }
+
     if (isLogin) {
-      if (value == null || value.isEmpty) {
-        return tr(AppStrings.passwordIsRequired);
-      }
-    } else {
-      if (value == null || value.isEmpty) {
-        return tr(AppStrings.passwordIsRequired);
-      } else if (value.length < 6) {
-        return tr(AppStrings.passwordMustBeAtLeastXCharacters).replaceAll('{X}', '6');
-      }
+      return null;
+    }
+
+    if (value.length < 8) {
+      return tr(AppStrings.passwordMustBeAtLeastXCharacters).replaceAll('{X}', '8');
+    }
+
+    if (value.contains(' ')) {
+      return tr(AppStrings.passwordNoSpaces);
+    }
+
+    if (!value.contains(RegExp(r'[A-Z]'))) {
+      return 'Password must contain at least 1 uppercase letter';
+    }
+
+    if (!value.contains(RegExp(r'[a-z]'))) {
+      return 'Password must contain at least 1 lowercase letter';
+    }
+
+    if (!value.contains(RegExp(r'[0-9]'))) {
+      return 'Password must contain at least 1 digit';
+    }
+
+    if (!value.contains(RegExp(r'''[!@#\$%\^&\*\(\)_\+\-=\[\]\{\}\\\|;:,<>\./\?]'''))) {
+      return 'Password must contain at least 1 special character (!@#\$%^&*()_+-=[]{}|\\;:,<>./?)';
     }
 
     return null;
