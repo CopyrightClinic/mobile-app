@@ -154,16 +154,12 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is SignupSuccess) {
-          // Show the API message in snackbar
           final message = _formatApiMessage(state.message);
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
-
-          // Navigate to success screen
-          context.go(AppRoutes.signupSuccessRouteName);
+          context.push(AppRoutes.verifyEmailRouteName, extra: _emailController.text.trim());
         } else if (state is SignupError) {
-          // Show error message with proper styling
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(_formatErrorMessage(state.message)),

@@ -9,6 +9,7 @@ import '../models/auth_response_model.dart';
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login(LoginRequestModel request);
   Future<SignupResponseModel> signup(SignupRequestModel request);
+  Future<VerifyOtpResponseModel> verifyEmail(VerifyOtpRequestModel request);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -70,6 +71,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return response;
     } catch (e, stackTrace) {
       Log.e('AuthRemoteDataSourceImpl', 'Error in signup API call: $e', stackTrace);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<VerifyOtpResponseModel> verifyEmail(VerifyOtpRequestModel request) async {
+    try {
+      Log.d('AuthRemoteDataSourceImpl', 'Making verify OTP API call to: ${ApiEndpoint.auth(AuthEndpoint.VERIFY_EMAIL)}');
+      Log.d('AuthRemoteDataSourceImpl', 'Request data: ${request.toJson()}');
+
+      final response = await apiService.postData<VerifyOtpResponseModel>(
+        endpoint: ApiEndpoint.auth(AuthEndpoint.VERIFY_EMAIL),
+        data: request.toJson(),
+        requiresAuthToken: false,
+        converter: (ResponseModel<JSON> response) {
+          Log.d('AuthRemoteDataSourceImpl', 'Raw API response: ${response.data}');
+          try {
+            final verifyOtpResponse = VerifyOtpResponseModel.fromJson(response.data);
+            Log.d('AuthRemoteDataSourceImpl', 'Parsed verify OTP response: ${verifyOtpResponse.message}');
+            return verifyOtpResponse;
+          } catch (e, stackTrace) {
+            Log.e('AuthRemoteDataSourceImpl', 'Error parsing verify OTP response: $e', stackTrace);
+            rethrow;
+          }
+        },
+      );
+      return response;
+    } catch (e, stackTrace) {
+      Log.e('AuthRemoteDataSourceImpl', 'Error in verify OTP API call: $e', stackTrace);
       rethrow;
     }
   }

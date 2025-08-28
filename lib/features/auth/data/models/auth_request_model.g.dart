@@ -28,3 +28,14 @@ Map<String, dynamic> _$SignupRequestModelToJson(SignupRequestModel instance) =>
       'password': instance.password,
       'confirmPassword': instance.confirmPassword,
     };
+
+VerifyOtpRequestModel _$VerifyOtpRequestModelFromJson(
+  Map<String, dynamic> json,
+) => VerifyOtpRequestModel(
+  email: json['email'] as String,
+  otp: json['otp'] as String,
+);
+
+Map<String, dynamic> _$VerifyOtpRequestModelToJson(
+  VerifyOtpRequestModel instance,
+) => <String, dynamic>{'email': instance.email, 'otp': instance.otp};

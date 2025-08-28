@@ -12,7 +12,9 @@ import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/domain/usecases/login_usecase.dart';
 import 'features/auth/domain/usecases/signup_usecase.dart';
+import 'features/auth/domain/usecases/verify_email_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/cubit/resend_otp_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -52,7 +54,11 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => SignupUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyEmailUseCase(sl()));
 
   // Bloc
-  sl.registerFactory(() => AuthBloc(loginUseCase: sl(), signupUseCase: sl(), authRepository: sl()));
+  sl.registerFactory(() => AuthBloc(loginUseCase: sl(), signupUseCase: sl(), verifyEmailUseCase: sl(), authRepository: sl()));
+
+  // Cubit
+  sl.registerFactory(() => ResendOtpCubit());
 }

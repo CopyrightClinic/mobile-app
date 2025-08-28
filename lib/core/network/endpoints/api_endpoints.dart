@@ -14,6 +14,7 @@ class ApiEndpoint {
   /// Provides authentication operations:
   /// - LOGIN: User login
   /// - SIGNUP: User registration
+  /// - VERIFY_EMAIL: Email verification
   static String auth(AuthEndpoint endpoint) {
     const path = '/auth';
     switch (endpoint) {
@@ -21,6 +22,8 @@ class ApiEndpoint {
         return '$path/signup';
       case AuthEndpoint.LOGIN:
         return '$path/login';
+      case AuthEndpoint.VERIFY_EMAIL:
+        return '$path/verify-email';
     }
   }
 }
@@ -31,4 +34,5 @@ class ApiEndpoint {
 enum AuthEndpoint {
   SIGNUP, // POST /auth/signup
   LOGIN, // POST /auth/login
+  VERIFY_EMAIL, // POST /auth/verify-email
 }

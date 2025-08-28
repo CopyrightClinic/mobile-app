@@ -8,6 +8,7 @@ import '../models/auth_request_model.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/auth_result.dart';
+import '../../domain/entities/otp_verification_result.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -56,6 +57,25 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(ServerFailure(e.message));
     } catch (e, stackTrace) {
       Log.e('AuthRepositoryImpl', 'Unexpected error during signup: $e', stackTrace);
+      return Left(ServerFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, OtpVerificationResult>> verifyEmail(String email, String otp) async {
+    try {
+      final request = VerifyOtpRequestModel(email: email, otp: otp);
+      Log.d('AuthRepositoryImpl', 'Making OTP verification request for email: $email');
+
+      final response = await remoteDataSource.verifyEmail(request);
+      Log.d('AuthRepositoryImpl', 'OTP verification response received: ${response.message}');
+
+      return Right(OtpVerificationResult(message: response.message, isValid: response.isVerified));
+    } on CustomException catch (e) {
+      Log.e('AuthRepositoryImpl', 'CustomException during OTP verification: ${e.message}', StackTrace.current);
+      return Left(ServerFailure(e.message));
+    } catch (e, stackTrace) {
+      Log.e('AuthRepositoryImpl', 'Unexpected error during OTP verification: $e', stackTrace);
       return Left(ServerFailure('An unexpected error occurred: $e'));
     }
   }
