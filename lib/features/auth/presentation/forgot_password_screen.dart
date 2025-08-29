@@ -1,86 +1,76 @@
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
+import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
+import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
+import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
+import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_strings.dart';
-import '../../../core/utils/extensions/responsive_extensions.dart';
-import '../../../core/utils/extensions/theme_extensions.dart';
-import '../../../core/widgets/custom_scaffold.dart';
-import '../../../core/widgets/custom_text_field.dart';
-import '../../../core/widgets/custom_back_button.dart';
-import '../../../core/widgets/translated_text.dart';
-import '../../../core/utils/mixin/validator.dart';
+import '../../../core/utils/enumns/ui/verification_type.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with Validator {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Validator {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _emailFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
 
   void Function(void Function())? _buttonSetState;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
     super.dispose();
   }
 
   bool get _isFormValid {
     final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
     final emailValidation = validateEmail(email, tr);
-    final passwordValidation = validatePassword(password, tr, isLogin: true);
-
-    return emailValidation == null && passwordValidation == null;
+    return emailValidation == null;
   }
 
   void _onFieldChanged() {
     _buttonSetState?.call(() {});
   }
 
-  void _handleLogin() {
+  void _handleResetPassword(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
 
-      context.read<AuthBloc>().add(LoginRequested(email: email, password: password));
+      context.read<AuthBloc>().add(ForgotPasswordRequested(email: email));
 
-      _passwordFocusNode.unfocus();
+      _emailFocusNode.unfocus();
     }
-  }
-
-  void _handleForgotPassword() {
-    context.go('/forgot-password');
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is LoginSuccess) {
+        if (state is ForgotPasswordSuccess) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
-        } else if (state is LoginError) {
+          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.green, duration: const Duration(seconds: 2)));
+
+          // Navigate to verification screen with password reset type
+          context.go('/verify-code', extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.passwordReset});
+        } else if (state is ForgotPasswordError) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red, duration: const Duration(seconds: 3)));
+          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.red, duration: const Duration(seconds: 3)));
         }
       },
       child: CustomScaffold(
@@ -107,12 +97,12 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                         children: [
                           SizedBox(height: DimensionConstants.gap20Px.h),
                           TranslatedText(
-                            AppStrings.login,
+                            AppStrings.forgotPassword,
                             style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font32Px.f, fontWeight: FontWeight.w700),
                           ),
                           SizedBox(height: DimensionConstants.gap4Px.h),
                           TranslatedText(
-                            AppStrings.welcomeBackMessage,
+                            AppStrings.forgotPasswordSubtitle,
                             style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
                           ),
                           SizedBox(height: DimensionConstants.gap40Px.h),
@@ -123,34 +113,10 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) => validateEmail(value, tr),
-                            onEditingComplete: () => _passwordFocusNode.requestFocus(),
+                            onEditingComplete: () => _handleResetPassword(context),
                             onChanged: (value) {
                               _onFieldChanged();
                             },
-                          ),
-                          SizedBox(height: DimensionConstants.gap24Px.h),
-                          CustomTextField(
-                            label: AppStrings.password,
-                            placeholder: AppStrings.enterYourPassword,
-                            controller: _passwordController,
-                            focusNode: _passwordFocusNode,
-                            isPassword: true,
-                            validator: (value) => validatePassword(value, tr, isLogin: true),
-                            onEditingComplete: _handleLogin,
-                            onChanged: (value) {
-                              _onFieldChanged();
-                            },
-                          ),
-                          SizedBox(height: DimensionConstants.gap16Px.h),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: _handleForgotPassword,
-                              child: TranslatedText(
-                                AppStrings.forgotPassword,
-                                style: TextStyle(color: context.primaryColor, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
-                              ),
-                            ),
                           ),
                         ],
                       ),
@@ -158,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                   ),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
-                      final isLoading = state is LoginLoading;
+                      final isLoading = state is ForgotPasswordLoading;
 
                       return Container(
                         padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
@@ -167,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                           builder: (context, setState) {
                             _buttonSetState = setState;
                             return ElevatedButton(
-                              onPressed: _isFormValid && !isLoading ? _handleLogin : null,
+                              onPressed: _isFormValid && !isLoading ? () => _handleResetPassword(context) : null,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: context.primary,
                                 foregroundColor: context.white,
@@ -186,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                                         child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
                                       )
                                       : TranslatedText(
-                                        AppStrings.login,
+                                        AppStrings.resetPassword,
                                         style: TextStyle(
                                           color: _isFormValid ? context.darkTextPrimary : context.darkTextSecondary,
                                           fontSize: DimensionConstants.font16Px.f,

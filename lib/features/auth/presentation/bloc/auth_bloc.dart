@@ -17,6 +17,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLoginRequested);
     on<SignupRequested>(_onSignupRequested);
     on<VerifyEmailRequested>(_onVerifyEmailRequested);
+    on<ForgotPasswordRequested>(_onForgotPasswordRequested);
+    on<VerifyPasswordResetRequested>(_onVerifyPasswordResetRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthStatus>(_onCheckAuthStatus);
   }
@@ -57,6 +59,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogoutRequested(LogoutRequested event, Emitter<AuthState> emit) async {
     await authRepository.logout();
     emit(AuthUnauthenticated());
+  }
+
+  Future<void> _onForgotPasswordRequested(ForgotPasswordRequested event, Emitter<AuthState> emit) async {
+    emit(ForgotPasswordLoading());
+
+    // TODO: Implement forgot password use case when backend support is added
+    // For now, simulate success
+    await Future.delayed(const Duration(seconds: 1));
+    emit(ForgotPasswordSuccess('Reset code sent to ${event.email}'));
+
+    // Example implementation when use case is ready:
+    // final result = await forgotPasswordUseCase(ForgotPasswordParams(email: event.email));
+    // result.fold(
+    //   (failure) => emit(ForgotPasswordError(failure.message ?? 'Failed to send reset code')),
+    //   (result) => emit(ForgotPasswordSuccess(result.message)),
+    // );
+  }
+
+  Future<void> _onVerifyPasswordResetRequested(VerifyPasswordResetRequested event, Emitter<AuthState> emit) async {
+    emit(VerifyPasswordResetLoading());
+
+    // TODO: Implement verify password reset use case when backend support is added
+    // For now, simulate success
+    await Future.delayed(const Duration(seconds: 1));
+    emit(VerifyPasswordResetSuccess('Password reset code verified successfully'));
+
+    // Example implementation when use case is ready:
+    // final result = await verifyPasswordResetUseCase(VerifyPasswordResetParams(email: event.email, otp: event.otp));
+    // result.fold(
+    //   (failure) => emit(VerifyPasswordResetError(failure.message ?? 'Invalid reset code')),
+    //   (result) => emit(VerifyPasswordResetSuccess(result.message)),
+    // );
   }
 
   Future<void> _onCheckAuthStatus(CheckAuthStatus event, Emitter<AuthState> emit) async {

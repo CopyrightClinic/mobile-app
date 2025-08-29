@@ -72,6 +72,16 @@ class AppStrings {
   static const congratulations = 'congratulations';
   static const yourAccountHasBeenCreated = 'yourAccountHasBeenCreated';
   static const setupProfile = 'setupProfile';
+
+  // Forgot Password Screen
+  static const resetPassword = 'resetPassword';
+  static const forgotPasswordTitle = 'forgotPasswordTitle';
+  static const forgotPasswordSubtitle = 'forgotPasswordSubtitle';
+  static const resetPasswordMessage = 'resetPasswordMessage';
+  static const sendResetLink = 'sendResetLink';
+  static const resetLinkSent = 'resetLinkSent';
+  static const checkYourEmail = 'checkYourEmail';
+
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';

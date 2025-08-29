@@ -14,6 +14,7 @@ import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/mixin/validator.dart';
 import '../../../core/utils/password_strength.dart';
 import '../../../core/widgets/password_strength_indicator.dart';
+import '../../../core/utils/enumns/ui/verification_type.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -147,7 +148,10 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
-          context.push(AppRoutes.verifyEmailRouteName, extra: _emailController.text.trim());
+          context.go(
+            AppRoutes.verifyCodeRouteName,
+            extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.emailVerification},
+          );
         } else if (state is SignupError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

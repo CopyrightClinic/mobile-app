@@ -93,3 +93,43 @@ class VerifyEmailError extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+class ForgotPasswordLoading extends AuthState {}
+
+class ForgotPasswordSuccess extends AuthState {
+  final String message;
+
+  const ForgotPasswordSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class ForgotPasswordError extends AuthState {
+  final String message;
+
+  const ForgotPasswordError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class VerifyPasswordResetLoading extends AuthState {}
+
+class VerifyPasswordResetSuccess extends AuthState {
+  final String message;
+
+  const VerifyPasswordResetSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class VerifyPasswordResetError extends AuthState {
+  final String message;
+
+  const VerifyPasswordResetError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

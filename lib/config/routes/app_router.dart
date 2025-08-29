@@ -3,10 +3,12 @@ import '../../../features/onboarding/presentation/pages/about_us_screen.dart';
 import '../../../features/onboarding/presentation/pages/splash_screen.dart';
 import '../../../features/onboarding/presentation/pages/what_we_do_screen.dart';
 import '../../../features/onboarding/presentation/pages/welcome_screen.dart';
+import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/sign_up_screen.dart';
 import '../../features/auth/presentation/signup_success_screen.dart';
-import '../../features/auth/presentation/verify_email_screen.dart';
+import '../../features/auth/presentation/unified_verification_screen.dart';
+import '../../core/utils/enumns/ui/verification_type.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -25,10 +27,19 @@ class AppRouter {
         name: AppRoutes.signupSuccessRouteName,
         builder: (context, state) => const SignupSuccessScreen(),
       ),
+
       GoRoute(
-        path: AppRoutes.verifyEmailRouteName,
-        name: AppRoutes.verifyEmailRouteName,
-        builder: (context, state) => VerifyEmailScreen(email: state.extra.toString()),
+        path: AppRoutes.verifyCodeRouteName,
+        name: AppRoutes.verifyCodeRouteName,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return UnifiedVerificationScreen(email: extra['email'] as String, verificationType: extra['verificationType'] as VerificationType);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPasswordRouteName,
+        name: AppRoutes.forgotPasswordRouteName,
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
     ],
   );

@@ -78,5 +78,12 @@
   "congratulations": "Congratulations",
   "yourAccountHasBeenCreated": "Your account has been created successfully",
   "confirmPassword": "Confirm Password",
-  "setupProfile": "Setup Profile"
+  "setupProfile": "Setup Profile",
+  "resetPassword": "Reset Password",
+  "forgotPasswordTitle": "Forgot Password",
+  "forgotPasswordSubtitle": "Enter your email to recover your account.",
+  "resetPasswordMessage": "We'll send you a password reset link to your email address.",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "Reset link has been sent to your email",
+  "checkYourEmail": "Check your email for the reset link"
 }
