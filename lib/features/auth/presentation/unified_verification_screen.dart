@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../config/routes/app_routes.dart';
 import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/constants/dimensions.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../config/theme/app_theme.dart';
 import '../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../core/utils/enumns/ui/verification_type.dart';
@@ -31,20 +33,7 @@ class UnifiedVerificationScreen extends StatefulWidget {
 class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   final TextEditingController _otpController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final AuthBloc _authBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _authBloc = sl<AuthBloc>();
-  }
-
-  @override
-  void dispose() {
-    _otpController.dispose();
-    _authBloc.close();
-    super.dispose();
-  }
+  final AuthBloc _authBloc = sl<AuthBloc>();
 
   void _onOtpChanged(String value) {
     if (value.length == 6) {
@@ -64,21 +53,12 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   void _resendCode(ResendOtpCubit cubit) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${widget.verificationType.resendText} sent!'), backgroundColor: AppTheme.primary, duration: const Duration(seconds: 2)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(tr(AppStrings.codeSent)), backgroundColor: AppTheme.primary, duration: const Duration(seconds: 2)));
 
     cubit.resetTimer();
     cubit.startResendTimer();
-  }
-
-  bool _isLoading(AuthState state) {
-    switch (widget.verificationType) {
-      case VerificationType.emailVerification:
-        return state is VerifyEmailLoading;
-      case VerificationType.passwordReset:
-        return state is VerifyPasswordResetLoading;
-    }
   }
 
   void _handleSuccess(AuthState state) {
@@ -87,7 +67,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
 
     if (state is VerifyEmailSuccess) {
       message = state.message;
-      route = AppRoutes.signupSuccessRouteName;
+      route = AppRoutes.passwordSignupRouteName;
     } else if (state is VerifyPasswordResetSuccess) {
       message = state.message;
     }
@@ -97,7 +77,11 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
     ).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.green, duration: const Duration(seconds: 2)));
 
     if (route.isNotEmpty) {
-      context.go(route);
+      if (route == AppRoutes.passwordSignupRouteName) {
+        context.go(route, extra: widget.email);
+      } else {
+        context.go(route);
+      }
     }
   }
 
@@ -119,9 +103,10 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [BlocProvider.value(value: _authBloc), BlocProvider(create: (context) => sl<ResendOtpCubit>())],
+    return BlocProvider(
+      create: (context) => sl<ResendOtpCubit>(),
       child: BlocListener<AuthBloc, AuthState>(
+        bloc: _authBloc,
         listener: (context, state) {
           if (state is VerifyEmailSuccess || state is VerifyPasswordResetSuccess) {
             _handleSuccess(state);
@@ -159,7 +144,6 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
                       ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w), child: _buildVerifyButton()),
                 ],
               ),
             ),
@@ -202,7 +186,6 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
         length: 6,
         controller: _otpController,
         onChanged: _onOtpChanged,
-        onCompleted: _verifyOtp,
         textStyle: TextStyle(
           color: AppTheme.white,
           fontSize: DimensionConstants.font24Px.f,
@@ -264,50 +247,6 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
               ),
             ),
           ],
-        );
-      },
-    );
-  }
-
-  Widget _buildVerifyButton() {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        final isOtpComplete = _otpController.text.length == 6;
-        final isLoading = _isLoading(state);
-        final isEnabled = isOtpComplete && !isLoading;
-
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-          child: ElevatedButton(
-            onPressed: isEnabled ? () => _verifyOtp(_otpController.text) : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isEnabled ? AppTheme.primary : AppTheme.buttonDiabled,
-              foregroundColor: AppTheme.white,
-              disabledBackgroundColor: AppTheme.buttonDiabled,
-              disabledForegroundColor: AppTheme.white,
-              padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-              elevation: 0,
-              side: BorderSide.none,
-            ),
-            child:
-                isLoading
-                    ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(AppTheme.white)),
-                    )
-                    : Text(
-                      widget.verificationType.buttonText,
-                      style: TextStyle(
-                        color: isEnabled ? AppTheme.white : AppTheme.darkTextSecondary,
-                        fontSize: DimensionConstants.font16Px.f,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: AppTheme.fontFamily,
-                      ),
-                    ),
-          ),
         );
       },
     );

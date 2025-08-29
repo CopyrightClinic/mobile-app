@@ -7,6 +7,7 @@ import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/sign_up_screen.dart';
 import '../../features/auth/presentation/signup_success_screen.dart';
+import '../../features/auth/presentation/password_signup_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import 'app_routes.dart';
@@ -26,6 +27,14 @@ class AppRouter {
         path: AppRoutes.signupSuccessRouteName,
         name: AppRoutes.signupSuccessRouteName,
         builder: (context, state) => const SignupSuccessScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.passwordSignupRouteName,
+        name: AppRoutes.passwordSignupRouteName,
+        builder: (context, state) {
+          final email = state.extra as String;
+          return PasswordSignupScreen(email: email);
+        },
       ),
 
       GoRoute(

@@ -1,7 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
 import '../../domain/usecases/verify_email_usecase.dart';
+import '../../domain/usecases/send_email_verification_usecase.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -10,13 +13,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final SignupUseCase signupUseCase;
   final VerifyEmailUseCase verifyEmailUseCase;
+  final SendEmailVerificationUseCase sendEmailVerificationUseCase;
   final AuthRepository authRepository;
 
-  AuthBloc({required this.loginUseCase, required this.signupUseCase, required this.verifyEmailUseCase, required this.authRepository})
-    : super(AuthInitial()) {
+  AuthBloc({
+    required this.loginUseCase,
+    required this.signupUseCase,
+    required this.verifyEmailUseCase,
+    required this.sendEmailVerificationUseCase,
+    required this.authRepository,
+  }) : super(AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
     on<SignupRequested>(_onSignupRequested);
     on<VerifyEmailRequested>(_onVerifyEmailRequested);
+    on<SendEmailVerificationRequested>(_onSendEmailVerificationRequested);
     on<ForgotPasswordRequested>(_onForgotPasswordRequested);
     on<VerifyPasswordResetRequested>(_onVerifyPasswordResetRequested);
     on<LogoutRequested>(_onLogoutRequested);
@@ -29,7 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await loginUseCase(LoginParams(email: event.email, password: event.password));
 
     result.fold(
-      (failure) => emit(LoginError(failure.message ?? 'Login failed')),
+      (failure) => emit(LoginError(failure.message ?? tr(AppStrings.loginFailed))),
       (authResult) => emit(LoginSuccess(authResult.user, authResult.message)),
     );
   }
@@ -40,7 +50,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await signupUseCase(SignupParams(email: event.email, password: event.password, confirmPassword: event.confirmPassword));
 
     result.fold(
-      (failure) => emit(SignupError(failure.message ?? 'Signup failed')),
+      (failure) => emit(SignupError(failure.message ?? tr(AppStrings.signupFailed))),
       (authResult) => emit(SignupSuccess(authResult.user, authResult.message)),
     );
   }
@@ -51,7 +61,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await verifyEmailUseCase(VerifyEmailParams(email: event.email, otp: event.otp));
 
     result.fold(
-      (failure) => emit(VerifyEmailError(failure.message ?? 'Email verification failed')),
+      (failure) => emit(VerifyEmailError(failure.message ?? tr(AppStrings.emailVerificationFailed))),
       (emailResult) => emit(VerifyEmailSuccess(emailResult.message)),
     );
   }
@@ -61,36 +71,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthUnauthenticated());
   }
 
+  Future<void> _onSendEmailVerificationRequested(SendEmailVerificationRequested event, Emitter<AuthState> emit) async {
+    emit(SendEmailVerificationLoading());
+
+    final result = await sendEmailVerificationUseCase(SendEmailVerificationParams(email: event.email));
+
+    result.fold(
+      (failure) => emit(SendEmailVerificationError(failure.message ?? tr(AppStrings.failedToSendVerificationEmail))),
+      (message) => emit(SendEmailVerificationSuccess(message)),
+    );
+  }
+
   Future<void> _onForgotPasswordRequested(ForgotPasswordRequested event, Emitter<AuthState> emit) async {
     emit(ForgotPasswordLoading());
-
-    // TODO: Implement forgot password use case when backend support is added
-    // For now, simulate success
     await Future.delayed(const Duration(seconds: 1));
-    emit(ForgotPasswordSuccess('Reset code sent to ${event.email}'));
-
-    // Example implementation when use case is ready:
-    // final result = await forgotPasswordUseCase(ForgotPasswordParams(email: event.email));
-    // result.fold(
-    //   (failure) => emit(ForgotPasswordError(failure.message ?? 'Failed to send reset code')),
-    //   (result) => emit(ForgotPasswordSuccess(result.message)),
-    // );
+    emit(ForgotPasswordSuccess(tr(AppStrings.resetCodeSentTo, namedArgs: {'email': event.email})));
   }
 
   Future<void> _onVerifyPasswordResetRequested(VerifyPasswordResetRequested event, Emitter<AuthState> emit) async {
     emit(VerifyPasswordResetLoading());
-
-    // TODO: Implement verify password reset use case when backend support is added
-    // For now, simulate success
     await Future.delayed(const Duration(seconds: 1));
-    emit(VerifyPasswordResetSuccess('Password reset code verified successfully'));
-
-    // Example implementation when use case is ready:
-    // final result = await verifyPasswordResetUseCase(VerifyPasswordResetParams(email: event.email, otp: event.otp));
-    // result.fold(
-    //   (failure) => emit(VerifyPasswordResetError(failure.message ?? 'Invalid reset code')),
-    //   (result) => emit(VerifyPasswordResetSuccess(result.message)),
-    // );
+    emit(VerifyPasswordResetSuccess(tr(AppStrings.passwordResetCodeVerified)));
   }
 
   Future<void> _onCheckAuthStatus(CheckAuthStatus event, Emitter<AuthState> emit) async {

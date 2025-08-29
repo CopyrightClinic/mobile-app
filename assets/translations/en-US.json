@@ -74,6 +74,7 @@
   "writers": "Writers",
   "writersDescription": "Get advice on fair use, co-authorship, infringement and registration.",
   "createAccount": "Create Account",
+  "enterEmailForVerification": "Enter your email for verification",
   "createYourAccount": "Create your account to stay connected!",
   "congratulations": "Congratulations",
   "yourAccountHasBeenCreated": "Your account has been created successfully",
@@ -85,5 +86,14 @@
   "resetPasswordMessage": "We'll send you a password reset link to your email address.",
   "sendResetLink": "Send Reset Link",
   "resetLinkSent": "Reset link has been sent to your email",
-  "checkYourEmail": "Check your email for the reset link"
+  "checkYourEmail": "Check your email for the reset link",
+  "verifyEmail": "Verify Email",
+  "dismiss": "Dismiss",
+  "loginFailed": "Login failed",
+  "signupFailed": "Signup failed",
+  "emailVerificationFailed": "Email verification failed",
+  "failedToSendVerificationEmail": "Failed to send verification email",
+  "resetCodeSentTo": "Reset code sent to {email}",
+  "passwordResetCodeVerified": "Password reset code verified successfully",
+  "codeSent": "Code sent!"
 }

@@ -1,48 +1,49 @@
-enum VerificationType { emailVerification, passwordReset }
+enum VerificationType {
+  emailVerification,
+  passwordReset;
 
-extension VerificationTypeExtension on VerificationType {
   String get title {
     switch (this) {
-      case VerificationType.emailVerification:
-        return 'Verification Code';
-      case VerificationType.passwordReset:
-        return 'Verification Code';
+      case emailVerification:
+        return 'Email Verification';
+      case passwordReset:
+        return 'Password Reset';
     }
   }
 
   String get description {
     switch (this) {
-      case VerificationType.emailVerification:
-        return 'Enter the verification code that we have sent to your email';
-      case VerificationType.passwordReset:
-        return 'Enter the verification code that we have sent to your email';
+      case emailVerification:
+        return 'We have sent a verification code to your email address. Please enter the code below to verify your account.';
+      case passwordReset:
+        return 'We have sent a reset code to your email address. Please enter the code below to reset your password.';
     }
   }
 
   String get buttonText {
     switch (this) {
-      case VerificationType.emailVerification:
-        return 'Verify';
-      case VerificationType.passwordReset:
+      case emailVerification:
+        return 'Verify Email';
+      case passwordReset:
         return 'Verify Code';
     }
   }
 
   String get resendText {
     switch (this) {
-      case VerificationType.emailVerification:
-        return 'Resend Code';
-      case VerificationType.passwordReset:
-        return 'Resend Code';
+      case emailVerification:
+        return 'Verification code';
+      case passwordReset:
+        return 'Reset code';
     }
   }
 
   String get successRoute {
     switch (this) {
-      case VerificationType.emailVerification:
-        return '/signup-success';
-      case VerificationType.passwordReset:
-        return '/reset-password'; // TODO: Add reset password route
+      case emailVerification:
+        return '/password-signup';
+      case passwordReset:
+        return '/reset-password';
     }
   }
 }

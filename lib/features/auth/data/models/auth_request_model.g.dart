@@ -6,6 +6,14 @@ part of 'auth_request_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+SendEmailVerificationRequestModel _$SendEmailVerificationRequestModelFromJson(
+  Map<String, dynamic> json,
+) => SendEmailVerificationRequestModel(email: json['email'] as String);
+
+Map<String, dynamic> _$SendEmailVerificationRequestModelToJson(
+  SendEmailVerificationRequestModel instance,
+) => <String, dynamic>{'email': instance.email};
+
 LoginRequestModel _$LoginRequestModelFromJson(Map<String, dynamic> json) =>
     LoginRequestModel(
       email: json['email'] as String,

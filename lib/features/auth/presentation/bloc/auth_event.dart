@@ -57,6 +57,15 @@ class VerifyPasswordResetRequested extends AuthEvent {
   List<Object?> get props => [email, otp];
 }
 
+class SendEmailVerificationRequested extends AuthEvent {
+  final String email;
+
+  const SendEmailVerificationRequested({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}
+
 class LogoutRequested extends AuthEvent {}
 
 class CheckAuthStatus extends AuthEvent {}

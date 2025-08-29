@@ -8,6 +8,7 @@ abstract class AuthRepository {
   Future<Either<Failure, AuthResult>> login(String email, String password);
   Future<Either<Failure, AuthResult>> signup(String email, String password, String confirmPassword);
   Future<Either<Failure, OtpVerificationResult>> verifyEmail(String email, String otp);
+  Future<Either<Failure, String>> sendEmailVerification(String email);
   Future<void> logout();
   Future<bool> isLoggedIn();
   Future<UserEntity?> getCurrentUser();

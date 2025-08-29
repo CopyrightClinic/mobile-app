@@ -12,8 +12,7 @@ import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/mixin/validator.dart';
-import '../../../core/utils/password_strength.dart';
-import '../../../core/widgets/password_strength_indicator.dart';
+
 import '../../../core/utils/enumns/ui/verification_type.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
@@ -29,85 +28,27 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> with Validator {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _emailFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
-  final _confirmPasswordController = TextEditingController();
-  final _confirmPasswordFocusNode = FocusNode();
 
   void Function(void Function())? _buttonSetState;
-  void Function(void Function())? _passwordState;
-  void Function(void Function())? _confirmPasswordState;
-
-  PasswordStrengthResult? _passwordStrength;
 
   bool get _isFormValid {
     final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
-
     final emailValidation = validateEmail(email, tr);
-    final passwordValidation = validatePassword(password, tr, isLogin: false);
-    final confirmPasswordValidation = _validateConfirmPassword(password, confirmPassword, tr);
-
-    return emailValidation == null && passwordValidation == null && confirmPasswordValidation == null;
+    return emailValidation == null;
   }
 
   void _onFieldChanged() {
     _buttonSetState?.call(() {});
   }
 
-  void _handleSignUp() {
+  void _handleVerifyEmail() {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-      final confirmPassword = _confirmPasswordController.text.trim();
 
-      context.read<AuthBloc>().add(SignupRequested(email: email, password: password, confirmPassword: confirmPassword));
+      context.read<AuthBloc>().add(SendEmailVerificationRequested(email: email));
 
-      _confirmPasswordFocusNode.unfocus();
-    }
-  }
-
-  String? _validateConfirmPassword(String? password, String? confirmPassword, String Function(String) tr) {
-    if (confirmPassword == null || confirmPassword.isEmpty) {
-      return tr(AppStrings.confirmPasswordIsRequired);
-    } else if (password != confirmPassword) {
-      return tr(AppStrings.passwordsDoNotMatch);
-    }
-    return null;
-  }
-
-  void _handlePasswordChange(String value) {
-    if (value.isEmpty) {
-      _passwordStrength = null;
-      _buttonSetState?.call(() {});
-      _passwordState?.call(() {});
-    } else {
-      if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text != value) {
-        _confirmPasswordState?.call(() {});
-        _buttonSetState?.call(() {});
-      }
-      if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text == value) {
-        _confirmPasswordState?.call(() {});
-        _buttonSetState?.call(() {});
-      }
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _passwordStrength = PasswordStrengthHelper.evaluatePasswordStrength(value);
-        _buttonSetState?.call(() {});
-        _passwordState?.call(() {});
-      });
-    }
-  }
-
-  void _handleConfirmPasswordChange(String value) {
-    if (value.isNotEmpty && _passwordController.text.isNotEmpty) {
-      if (_passwordController.text.trim() == value) {
-        _buttonSetState?.call(() {});
-      } else {
-        _buttonSetState?.call(() {});
-      }
+      _emailFocusNode.unfocus();
     }
   }
 
@@ -143,23 +84,23 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is SignupSuccess) {
+        if (state is SendEmailVerificationSuccess) {
           final message = _formatApiMessage(state.message);
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
-          context.go(
+          context.push(
             AppRoutes.verifyCodeRouteName,
             extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.emailVerification},
           );
-        } else if (state is SignupError) {
+        } else if (state is SendEmailVerificationError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(_formatErrorMessage(state.message)),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 4),
               action: SnackBarAction(
-                label: 'Dismiss',
+                label: tr(AppStrings.dismiss),
                 textColor: Colors.white,
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -198,7 +139,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                           ),
                           SizedBox(height: DimensionConstants.gap4Px.h),
                           TranslatedText(
-                            AppStrings.createYourAccount,
+                            AppStrings.enterEmailForVerification,
                             style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                           ),
                           SizedBox(height: DimensionConstants.gap20Px.h),
@@ -209,53 +150,9 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) => validateEmail(value, tr),
-                            onEditingComplete: () => _passwordFocusNode.requestFocus(),
+                            onEditingComplete: _handleVerifyEmail,
                             onChanged: (value) {
                               _onFieldChanged();
-                            },
-                          ),
-                          SizedBox(height: DimensionConstants.gap20Px.h),
-                          StatefulBuilder(
-                            builder: (context, state) {
-                              _passwordState = state;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomTextField(
-                                    label: AppStrings.password,
-                                    placeholder: AppStrings.enterYourPassword,
-                                    controller: _passwordController,
-                                    focusNode: _passwordFocusNode,
-                                    isPassword: true,
-                                    validator: (value) => validatePassword(value, tr, isLogin: false),
-                                    onEditingComplete: () => _confirmPasswordFocusNode.requestFocus(),
-                                    onChanged: (value) {
-                                      _onFieldChanged();
-                                      _handlePasswordChange(value);
-                                    },
-                                  ),
-                                  PasswordStrengthIndicator(passwordStrength: _passwordStrength, isVisible: _passwordController.text.isNotEmpty),
-                                ],
-                              );
-                            },
-                          ),
-                          SizedBox(height: DimensionConstants.gap20Px.h),
-                          StatefulBuilder(
-                            builder: (context, state) {
-                              _confirmPasswordState = state;
-                              return CustomTextField(
-                                label: AppStrings.confirmPassword,
-                                placeholder: AppStrings.confirmPassword,
-                                controller: _confirmPasswordController,
-                                focusNode: _confirmPasswordFocusNode,
-                                isPassword: true,
-                                validator: (value) => _validateConfirmPassword(_passwordController.text.trim(), value, tr),
-                                onEditingComplete: _handleSignUp,
-                                onChanged: (value) {
-                                  _onFieldChanged();
-                                  _handleConfirmPasswordChange(value);
-                                },
-                              );
                             },
                           ),
                         ],
@@ -264,7 +161,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                   ),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
-                      final isLoading = state is SignupLoading;
+                      final isLoading = state is SendEmailVerificationLoading;
 
                       return Container(
                         padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
@@ -273,7 +170,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                           builder: (context, setState) {
                             _buttonSetState = setState;
                             return ElevatedButton(
-                              onPressed: _isFormValid && !isLoading ? _handleSignUp : null,
+                              onPressed: _isFormValid && !isLoading ? _handleVerifyEmail : null,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: context.primary,
                                 foregroundColor: context.white,
@@ -292,7 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                                         child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
                                       )
                                       : TranslatedText(
-                                        AppStrings.signUp,
+                                        AppStrings.verifyEmail,
                                         style: TextStyle(
                                           color: _isFormValid ? context.darkTextPrimary : context.darkTextSecondary,
                                           fontSize: DimensionConstants.font16Px.f,
@@ -317,11 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
-    _confirmPasswordController.dispose();
-    _confirmPasswordFocusNode.dispose();
     super.dispose();
   }
 }

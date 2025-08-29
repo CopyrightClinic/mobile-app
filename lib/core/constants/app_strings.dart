@@ -67,8 +67,10 @@ class AppStrings {
 
   // Sign Up Screen
   static const createAccount = 'createAccount';
+  static const enterEmailForVerification = 'enterEmailForVerification';
   static const createYourAccount = 'createYourAccount';
   static const confirmPassword = 'confirmPassword';
+  static const verifyEmail = 'verifyEmail';
   static const congratulations = 'congratulations';
   static const yourAccountHasBeenCreated = 'yourAccountHasBeenCreated';
   static const setupProfile = 'setupProfile';
@@ -81,6 +83,14 @@ class AppStrings {
   static const sendResetLink = 'sendResetLink';
   static const resetLinkSent = 'resetLinkSent';
   static const checkYourEmail = 'checkYourEmail';
+  static const dismiss = 'dismiss';
+  static const loginFailed = 'loginFailed';
+  static const signupFailed = 'signupFailed';
+  static const emailVerificationFailed = 'emailVerificationFailed';
+  static const failedToSendVerificationEmail = 'failedToSendVerificationEmail';
+  static const resetCodeSentTo = 'resetCodeSentTo';
+  static const passwordResetCodeVerified = 'passwordResetCodeVerified';
+  static const codeSent = 'codeSent';
 
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';

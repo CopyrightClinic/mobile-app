@@ -6,6 +6,14 @@ part of 'auth_response_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+SendEmailVerificationResponseModel _$SendEmailVerificationResponseModelFromJson(
+  Map<String, dynamic> json,
+) => SendEmailVerificationResponseModel(message: json['message'] as String);
+
+Map<String, dynamic> _$SendEmailVerificationResponseModelToJson(
+  SendEmailVerificationResponseModel instance,
+) => <String, dynamic>{'message': instance.message};
+
 AuthResponseModel _$AuthResponseModelFromJson(Map<String, dynamic> json) =>
     AuthResponseModel(
       message: json['message'] as String,

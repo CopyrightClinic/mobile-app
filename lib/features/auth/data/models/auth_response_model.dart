@@ -5,6 +5,17 @@ import 'user_model.dart';
 part 'auth_response_model.g.dart';
 
 @JsonSerializable()
+class SendEmailVerificationResponseModel {
+  final String message;
+
+  const SendEmailVerificationResponseModel({required this.message});
+
+  factory SendEmailVerificationResponseModel.fromJson(Map<String, dynamic> json) => _$SendEmailVerificationResponseModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SendEmailVerificationResponseModelToJson(this);
+}
+
+@JsonSerializable()
 class AuthResponseModel {
   final String message;
   final UserModel user;

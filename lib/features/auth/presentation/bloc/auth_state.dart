@@ -133,3 +133,23 @@ class VerifyPasswordResetError extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+class SendEmailVerificationLoading extends AuthState {}
+
+class SendEmailVerificationSuccess extends AuthState {
+  final String message;
+
+  const SendEmailVerificationSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class SendEmailVerificationError extends AuthState {
+  final String message;
+
+  const SendEmailVerificationError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

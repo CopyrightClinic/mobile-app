@@ -25,6 +25,8 @@ class ApiEndpoint {
         return '$path/login';
       case AuthEndpoint.VERIFY_EMAIL:
         return '$path/verify-email';
+      case AuthEndpoint.SEND_EMAIL_VERIFICATION:
+        return '$path/send-email-verification';
     }
   }
 }

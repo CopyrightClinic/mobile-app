@@ -3,6 +3,17 @@ import 'package:json_annotation/json_annotation.dart';
 part 'auth_request_model.g.dart';
 
 @JsonSerializable()
+class SendEmailVerificationRequestModel {
+  final String email;
+
+  const SendEmailVerificationRequestModel({required this.email});
+
+  factory SendEmailVerificationRequestModel.fromJson(Map<String, dynamic> json) => _$SendEmailVerificationRequestModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SendEmailVerificationRequestModelToJson(this);
+}
+
+@JsonSerializable()
 class LoginRequestModel {
   final String email;
   final String password;

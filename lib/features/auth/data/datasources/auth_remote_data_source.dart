@@ -11,6 +11,7 @@ abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login(LoginRequestModel request);
   Future<SignupResponseModel> signup(SignupRequestModel request);
   Future<VerifyOtpResponseModel> verifyEmail(VerifyOtpRequestModel request);
+  Future<SendEmailVerificationResponseModel> sendEmailVerification(SendEmailVerificationRequestModel request);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -101,6 +102,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return response;
     } catch (e, stackTrace) {
       Log.e('AuthRemoteDataSourceImpl', 'Error in verify OTP API call: $e', stackTrace);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<SendEmailVerificationResponseModel> sendEmailVerification(SendEmailVerificationRequestModel request) async {
+    try {
+      final response = await apiService.postData<SendEmailVerificationResponseModel>(
+        endpoint: ApiEndpoint.auth(AuthEndpoint.SEND_EMAIL_VERIFICATION),
+        data: request.toJson(),
+        requiresAuthToken: false,
+        converter: (ResponseModel<JSON> response) {
+          return SendEmailVerificationResponseModel.fromJson(response.data);
+        },
+      );
+      return response;
+    } catch (e, stackTrace) {
+      Log.e('AuthRemoteDataSourceImpl', 'Error in send email verification API call: $e', stackTrace);
       rethrow;
     }
   }

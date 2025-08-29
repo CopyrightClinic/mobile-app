@@ -97,4 +97,15 @@ class AuthRepositoryImpl implements AuthRepository {
     // For now, we'll return null as we need to implement user storage
     return null;
   }
+
+  @override
+  Future<Either<Failure, String>> sendEmailVerification(String email) async {
+    try {
+      final request = SendEmailVerificationRequestModel(email: email);
+      final response = await remoteDataSource.sendEmailVerification(request);
+      return Right(response.message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
 }
