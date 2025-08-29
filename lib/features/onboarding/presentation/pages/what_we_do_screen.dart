@@ -27,27 +27,27 @@ class WhatWeDoScreen extends StatelessWidget {
         imagePath: ImageConstants.whatWeDoBG,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: DimensionConstants.gap10Px),
+                SizedBox(height: DimensionConstants.gap10Px.h),
                 TranslatedText(
                   AppStrings.whatWeDo,
-                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px, fontWeight: FontWeight.w700),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: DimensionConstants.gap8Px),
+                SizedBox(height: DimensionConstants.gap8Px.h),
                 TranslatedText(
                   AppStrings.whatWeDoDescription,
-                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px, fontWeight: FontWeight.w400, height: 1.5),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
                 ),
-                SizedBox(height: DimensionConstants.gap20Px),
+                SizedBox(height: DimensionConstants.gap20Px.h),
                 Expanded(
                   child: ListView.separated(
                     itemCount: 5,
                     padding: EdgeInsets.zero,
-                    separatorBuilder: (context, index) => SizedBox(height: DimensionConstants.gap6Px),
+                    separatorBuilder: (context, index) => SizedBox(height: DimensionConstants.gap6Px.h),
                     itemBuilder: (context, index) {
                       return _buildServiceCardByIndex(index);
                     },
@@ -92,34 +92,34 @@ class WhatWeDoScreen extends StatelessWidget {
           child: CustomPaint(
             painter: RoundedGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.5), borderRadius: 16.r),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px, vertical: DimensionConstants.gap12Px),
+              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap12Px.h),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.r)),
               child: Row(
                 children: [
                   Container(
-                    width: DimensionConstants.gap48Px,
-                    height: DimensionConstants.gap48Px,
+                    width: DimensionConstants.gap48Px.w,
+                    height: DimensionConstants.gap48Px.h,
                     decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(24.r)),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(24.r),
                       child: GlobalImage(assetPath: imagePath, width: 48.w, height: 48.w, fit: BoxFit.cover, showLoading: false, showError: false),
                     ),
                   ),
-                  SizedBox(width: DimensionConstants.gap16Px),
+                  SizedBox(width: DimensionConstants.gap16Px.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TranslatedText(
                           title,
-                          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(height: DimensionConstants.gap4Px),
+                        SizedBox(height: DimensionConstants.gap4Px.h),
                         TranslatedText(
                           description,
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.8),
-                            fontSize: DimensionConstants.font14Px,
+                            fontSize: DimensionConstants.font14Px.f,
                             fontWeight: FontWeight.w400,
                             height: 1.4,
                           ),

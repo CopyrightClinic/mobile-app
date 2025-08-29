@@ -25,4 +25,5 @@ class ImageConstants {
   static const String videoAndMedia = '$png/video_media.png';
   static const String artificialIntelligence = '$png/ai.png';
   static const String writers = '$png/writers.png';
+  static const String signupSuccess = '$svg/signup_success.svg';
 }

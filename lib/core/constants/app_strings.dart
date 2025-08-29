@@ -47,6 +47,13 @@ class AppStrings {
   static const pleaseEnterAValidEmail = 'pleaseEnterAValidEmail';
   static const passwordIsRequired = 'passwordIsRequired';
   static const passwordMustBeAtLeastXCharacters = 'passwordMustBeAtLeastXCharacters';
+  static const passwordNoSpaces = 'passwordNoSpaces';
+  static const passwordMustContainUppercase = 'passwordMustContainUppercase';
+  static const passwordMustContainLowercase = 'passwordMustContainLowercase';
+  static const passwordMustContainDigit = 'passwordMustContainDigit';
+  static const passwordMustContainSpecialChar = 'passwordMustContainSpecialChar';
+  static const confirmPasswordIsRequired = 'confirmPasswordIsRequired';
+  static const passwordsDoNotMatch = 'passwordsDoNotMatch';
   static const nameIsRequired = 'nameIsRequired';
   static const nameMustBeAtLeastXCharacters = 'nameMustBeAtLeastXCharacters';
   static const phoneIsRequired = 'phoneIsRequired';
@@ -58,6 +65,13 @@ class AppStrings {
   static const enterYourPassword = 'enterYourPassword';
   static const forgotPassword = 'forgotPassword';
 
+  // Sign Up Screen
+  static const createAccount = 'createAccount';
+  static const createYourAccount = 'createYourAccount';
+  static const confirmPassword = 'confirmPassword';
+  static const congratulations = 'congratulations';
+  static const yourAccountHasBeenCreated = 'yourAccountHasBeenCreated';
+  static const setupProfile = 'setupProfile';
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';

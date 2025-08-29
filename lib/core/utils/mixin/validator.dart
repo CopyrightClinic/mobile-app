@@ -13,16 +13,36 @@ mixin Validator {
   }
 
   String? validatePassword(String? value, String Function(String) tr, {bool isLogin = false}) {
+    if (value == null || value.isEmpty) {
+      return tr(AppStrings.passwordIsRequired);
+    }
+
     if (isLogin) {
-      if (value == null || value.isEmpty) {
-        return tr(AppStrings.passwordIsRequired);
-      }
-    } else {
-      if (value == null || value.isEmpty) {
-        return tr(AppStrings.passwordIsRequired);
-      } else if (value.length < 6) {
-        return tr(AppStrings.passwordMustBeAtLeastXCharacters).replaceAll('{X}', '6');
-      }
+      return null;
+    }
+
+    if (value.length < 8) {
+      return tr(AppStrings.passwordMustBeAtLeastXCharacters).replaceAll('{X}', '8');
+    }
+
+    if (value.contains(' ')) {
+      return tr(AppStrings.passwordNoSpaces);
+    }
+
+    if (!value.contains(RegExp(r'[A-Z]'))) {
+      return tr(AppStrings.passwordMustContainUppercase);
+    }
+
+    if (!value.contains(RegExp(r'[a-z]'))) {
+      return tr(AppStrings.passwordMustContainLowercase);
+    }
+
+    if (!value.contains(RegExp(r'[0-9]'))) {
+      return tr(AppStrings.passwordMustContainDigit);
+    }
+
+    if (!value.contains(RegExp(r'''[!@#\$%\^&\*\(\)_\+\-=\[\]\{\}\\\|;:,<>\./\?]'''))) {
+      return tr(AppStrings.passwordMustContainSpecialChar);
     }
 
     return null;
