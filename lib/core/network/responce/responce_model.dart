@@ -2,35 +2,11 @@
 import '../../utils/typedefs/type_defs.dart';
 
 class ResponseModel<T> {
-  final _ResponseHeadersModel headers;
-  final T body;
+  final T data;
 
-  const ResponseModel({required this.headers, required this.body});
+  const ResponseModel({required this.data});
 
   factory ResponseModel.fromJson(JSON json) {
-    return ResponseModel(
-      headers: _ResponseHeadersModel.fromJson(json['headers'] as JSON),
-      body: json['body'] as T,
-    );
-  }
-}
-
-class _ResponseHeadersModel {
-  final bool error;
-  final String message;
-  final String? code;
-
-  const _ResponseHeadersModel({
-    required this.error,
-    required this.message,
-    this.code,
-  });
-
-  factory _ResponseHeadersModel.fromJson(JSON json) {
-    return _ResponseHeadersModel(
-      error: json['error'],
-      message: json['message'] as String,
-      code: json['code'] as String?,
-    );
+    return ResponseModel(data: json as T);
   }
 }

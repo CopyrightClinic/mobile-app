@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 enum _ExceptionType {
-  TokenExpiredException,
   CancelException,
   ConnectTimeoutException,
   SendTimeoutException,
@@ -22,13 +21,9 @@ class CustomException implements Exception {
   final int? statusCode;
   final _ExceptionType exceptionType;
 
-  CustomException({
-    this.code,
-    int? statusCode,
-    required this.message,
-    this.exceptionType = _ExceptionType.ApiException,
-  }) : statusCode = statusCode ?? 500,
-       name = exceptionType.name;
+  CustomException({this.code, int? statusCode, required this.message, this.exceptionType = _ExceptionType.ApiException})
+    : statusCode = statusCode ?? 500,
+      name = exceptionType.name;
 
   factory CustomException.fromDioException(Exception error) {
     try {
@@ -59,27 +54,30 @@ class CustomException implements Exception {
               message: 'Failed to receive',
             );
           case DioExceptionType.badCertificate:
-            return CustomException(
-              exceptionType: _ExceptionType.ApiException,
-              statusCode: error.response?.statusCode,
-              message: 'Bad certificate',
-            );
+            return CustomException(exceptionType: _ExceptionType.ApiException, statusCode: error.response?.statusCode, message: 'Bad certificate');
           case DioExceptionType.badResponse:
-            final name = error.response?.data['headers']['code'] as String?;
-            final message =
-                error.response?.data['headers']['message'] as String?;
-            if (name == null || message == null) {
-              return CustomException(
-                exceptionType: _ExceptionType.UnrecognizedException,
-                statusCode: error.response?.statusCode,
-                message: 'Unknown error',
-              );
+            // For your API, error responses come directly in the response data
+            final responseData = error.response?.data;
+            if (responseData != null && responseData is Map<String, dynamic>) {
+              final message = responseData['message'];
+              final statusCode = responseData['statusCode'];
+              final errorType = responseData['error'];
+
+              if (message != null) {
+                return CustomException(
+                  exceptionType: _ExceptionType.ApiException,
+                  code: errorType?.toString(),
+                  statusCode: statusCode ?? error.response?.statusCode,
+                  message: message is List ? message.join(', ') : message.toString(),
+                );
+              }
             }
+
+            // Fallback for unknown error structure
             return CustomException(
-              exceptionType: _ExceptionType.ApiException,
-              code: name,
+              exceptionType: _ExceptionType.UnrecognizedException,
               statusCode: error.response?.statusCode,
-              message: message,
+              message: error.response?.statusMessage ?? 'Unknown error',
             );
           case DioExceptionType.connectionError:
             return CustomException(
@@ -88,62 +86,48 @@ class CustomException implements Exception {
               message: 'Connection error',
             );
           case DioExceptionType.unknown:
-            if (error.message != null &&
-                error.message!.contains(_ExceptionType.SocketException.name)) {
+            if (error.message != null && error.message!.contains(_ExceptionType.SocketException.name)) {
               return CustomException(
                 exceptionType: _ExceptionType.FetchDataException,
                 statusCode: error.response?.statusCode,
                 message: 'No internet connectivity',
               );
             }
-            if (error.response?.data['headers']['code'] == null) {
-              return CustomException(
-                exceptionType: _ExceptionType.UnrecognizedException,
-                statusCode: error.response?.statusCode,
-                message: error.response?.statusMessage ?? 'Unknown',
-              );
+            // Check if it's a token expired error (you can customize this based on your API)
+            final responseData = error.response?.data;
+            if (responseData != null && responseData is Map<String, dynamic>) {
+              final message = responseData['message'];
+              final statusCode = responseData['statusCode'];
+              final errorType = responseData['error'];
+
+              if (message != null) {
+                return CustomException(
+                  exceptionType: _ExceptionType.ApiException,
+                  code: errorType?.toString(),
+                  statusCode: statusCode ?? error.response?.statusCode,
+                  message: message is List ? message.join(', ') : message.toString(),
+                );
+              }
             }
-            final name = error.response?.data['headers']['code'] as String;
-            final message =
-                error.response?.data['headers']['message'] as String;
-            if (name == _ExceptionType.TokenExpiredException.name) {
-              return CustomException(
-                exceptionType: _ExceptionType.TokenExpiredException,
-                code: name,
-                statusCode: error.response?.statusCode,
-                message: message,
-              );
-            }
+
             return CustomException(
-              message: message,
-              code: name,
+              exceptionType: _ExceptionType.UnrecognizedException,
               statusCode: error.response?.statusCode,
+              message: error.response?.statusMessage ?? 'Unknown error',
             );
         }
       } else {
-        return CustomException(
-          exceptionType: _ExceptionType.UnrecognizedException,
-          message: 'Error unrecognized',
-        );
+        return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: 'Error unrecognized');
       }
     } on FormatException catch (e) {
-      return CustomException(
-        exceptionType: _ExceptionType.FormatException,
-        message: e.message,
-      );
+      return CustomException(exceptionType: _ExceptionType.FormatException, message: e.message);
     } on Exception catch (_) {
-      return CustomException(
-        exceptionType: _ExceptionType.UnrecognizedException,
-        message: 'Error unrecognized',
-      );
+      return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: 'Error unrecognized');
     }
   }
 
   factory CustomException.fromParsingException(Exception error) {
     debugPrint('$error');
-    return CustomException(
-      exceptionType: _ExceptionType.SerializationException,
-      message: 'Failed to parse network response to model or vice versa',
-    );
+    return CustomException(exceptionType: _ExceptionType.SerializationException, message: 'Failed to parse network response to model or vice versa');
   }
 }
