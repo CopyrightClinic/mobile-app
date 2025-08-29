@@ -3,4 +3,5 @@
 enum AuthEndpoint {
   SIGNUP, // POST /auth/signup
   LOGIN, // POST /auth/login
+  VERIFY_EMAIL, // POST /auth/verify-email
 }
