@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../config/app_config/config.dart';
+import '../../utils/enumns/api/export.dart';
 
 @immutable
 class ApiEndpoint {
@@ -26,13 +27,4 @@ class ApiEndpoint {
         return '$path/verify-email';
     }
   }
-}
-
-/// Authentication endpoint types
-///
-/// Defines the available authentication operations
-enum AuthEndpoint {
-  SIGNUP, // POST /auth/signup
-  LOGIN, // POST /auth/login
-  VERIFY_EMAIL, // POST /auth/verify-email
 }

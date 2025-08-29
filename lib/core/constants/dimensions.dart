@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class DimensionConstants {
   // FontSize
   static const double font2Px = 2.0;
@@ -54,4 +56,21 @@ class DimensionConstants {
   static const double gap112Px = 112.0;
   static const double gap120Px = 120.0;
   static const double gap128Px = 128.0;
+
+  // Radius
+  static const double radius4Px = 4.0;
+  static const double radius8Px = 8.0;
+  static const double radius12Px = 12.0;
+  static const double radius16Px = 16.0;
+  static const double radius20Px = 20.0;
+  static const double radius24Px = 24.0;
+  static const double radius28Px = 28.0;
+
+  static const double icon16Px = 16.0;
+  static const double icon24Px = 24.0;
+  static const double icon32Px = 32.0;
+  static const double icon48Px = 48.0;
+  static const double icon64Px = 64.0;
+  static const double icon80Px = 80.0;
+  static const double icon96Px = 96.0;
 }

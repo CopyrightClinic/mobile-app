@@ -40,17 +40,6 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
 
   PasswordStrengthResult? _passwordStrength;
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
-    _confirmPasswordController.dispose();
-    _confirmPasswordFocusNode.dispose();
-    super.dispose();
-  }
-
   bool get _isFormValid {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -319,5 +308,16 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _confirmPasswordController.dispose();
+    _confirmPasswordFocusNode.dispose();
+    super.dispose();
   }
 }
