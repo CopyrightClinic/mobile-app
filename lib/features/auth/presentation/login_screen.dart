@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
   }
 
   void _handleForgotPassword() {
-    context.go(AppRoutes.forgotPasswordRouteName);
+    context.push(AppRoutes.forgotPasswordRouteName);
   }
 
   @override

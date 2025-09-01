@@ -101,6 +101,15 @@ class AppStrings {
   static const verifyCodeButton = 'verifyCodeButton';
   static const resendCodeButton = 'resendCodeButton';
 
+  // Reset Password Screen
+  static const resetPasswordTitle = 'resetPasswordTitle';
+  static const setNewPassword = 'setNewPassword';
+  static const newPassword = 'newPassword';
+  static const enterNewPassword = 'enterNewPassword';
+  static const updatePassword = 'updatePassword';
+  static const passwordResetSuccess = 'passwordResetSuccess';
+  static const passwordResetFailed = 'passwordResetFailed';
+
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';

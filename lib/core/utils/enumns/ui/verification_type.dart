@@ -42,7 +42,7 @@ enum VerificationType {
       case emailVerification:
         return AppRoutes.passwordSignupRouteName;
       case passwordReset:
-        return '/reset-password'; // TODO: Add resetPasswordRouteName to AppRoutes when implemented
+        return AppRoutes.resetPasswordRouteName;
     }
   }
 }

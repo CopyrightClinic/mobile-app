@@ -10,4 +10,5 @@ class AppRoutes {
   static const String passwordSignupRouteName = '/password-signup';
   static const String verifyCodeRouteName = '/verify-code';
   static const String forgotPasswordRouteName = '/forgot-password';
+  static const String resetPasswordRouteName = '/reset-password';
 }

@@ -75,6 +75,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
       route = AppRoutes.passwordSignupRouteName;
     } else if (state is VerifyPasswordResetSuccess) {
       message = state.message;
+      route = AppRoutes.resetPasswordRouteName;
     }
 
     ScaffoldMessenger.of(
@@ -83,9 +84,11 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
 
     if (route.isNotEmpty) {
       if (route == AppRoutes.passwordSignupRouteName) {
-        context.go(route, extra: widget.email);
+        context.push(route, extra: widget.email);
+      } else if (route == AppRoutes.resetPasswordRouteName) {
+        context.pushReplacement(route, extra: {'email': widget.email, 'otp': _otpController.text});
       } else {
-        context.go(route);
+        context.push(route);
       }
     }
   }

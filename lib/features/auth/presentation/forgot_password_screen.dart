@@ -65,9 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Valida
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.green, duration: const Duration(seconds: 2)));
-
-          // Navigate to verification screen with password reset type
-          context.go(
+          context.pushReplacement(
             AppRoutes.verifyCodeRouteName,
             extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.passwordReset},
           );
