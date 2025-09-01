@@ -4,6 +4,7 @@ import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:copyright_clinic_flutter/core/utils/password_strength.dart';
@@ -250,42 +251,11 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
                       builder: (context, state) {
                         final isLoading = state is SignupLoading;
 
-                        return Container(
-                          padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                          width: double.infinity,
-                          child: StatefulBuilder(
-                            builder: (context, setState) {
-                              _buttonSetState = setState;
-                              return ElevatedButton(
-                                onPressed: _isFormValid && !isLoading ? _handleSignUp : null,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: context.primary,
-                                  foregroundColor: context.white,
-                                  disabledBackgroundColor: context.buttonDiabled,
-                                  disabledForegroundColor: context.white,
-                                  padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                                  elevation: 0,
-                                  side: BorderSide.none,
-                                ),
-                                child:
-                                    isLoading
-                                        ? SizedBox(
-                                          height: 20.h,
-                                          width: 20.w,
-                                          child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
-                                        )
-                                        : TranslatedText(
-                                          AppStrings.signUp,
-                                          style: TextStyle(
-                                            color: _isFormValid ? context.darkTextPrimary : context.darkTextSecondary,
-                                            fontSize: DimensionConstants.font16Px.f,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                              );
-                            },
-                          ),
+                        return StatefulBuilder(
+                          builder: (context, setState) {
+                            _buttonSetState = setState;
+                            return AuthButton(text: AppStrings.signUp, onPressed: _handleSignUp, isLoading: isLoading, isEnabled: _isFormValid);
+                          },
                         );
                       },
                     ),

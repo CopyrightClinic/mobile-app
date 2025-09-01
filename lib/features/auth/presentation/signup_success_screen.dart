@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/image_constants.dart';
 import '../../../core/widgets/custom_scaffold.dart';
+import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/global_image.dart';
 import '../../../core/widgets/translated_text.dart';
 
@@ -40,27 +41,7 @@ class SignupSuccessScreen extends StatelessWidget {
                 style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
               ),
               Spacer(),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.primary,
-                    foregroundColor: context.white,
-                    disabledBackgroundColor: context.buttonDiabled,
-                    disabledForegroundColor: context.white,
-                    padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                    elevation: 0,
-                    side: BorderSide.none,
-                  ),
-                  child: TranslatedText(
-                    AppStrings.setupProfile,
-                    style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
+              AuthButton(text: AppStrings.setupProfile, onPressed: () {}, isLoading: false, isEnabled: true),
             ],
           ),
         ),

@@ -1,4 +1,6 @@
-import 'package:copyright_clinic_flutter/core/utils/extensions/responsive_extensions.dart';
+import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
+import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
+import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -19,7 +21,8 @@ class CustomButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
   });
-  final VoidCallback onPressed;
+
+  final VoidCallback? onPressed;
   final Widget child;
   final Color? backgroundColor;
   final Color? textColor;
@@ -45,6 +48,52 @@ class CustomButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 0)),
       ),
       child: isLoading ? const CircularProgressIndicator() : child,
+    );
+  }
+}
+
+/// Standardized button widget for authentication screens
+class AuthButton extends StatelessWidget {
+  const AuthButton({super.key, required this.text, required this.onPressed, this.isLoading = false, this.isEnabled = true});
+
+  final String text;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final bool isEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: isEnabled && !isLoading ? onPressed : null,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: context.primary,
+          foregroundColor: context.white,
+          disabledBackgroundColor: context.buttonDiabled,
+          disabledForegroundColor: context.white,
+          padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
+          elevation: 0,
+          side: BorderSide.none,
+        ),
+        child:
+            isLoading
+                ? SizedBox(
+                  height: 20.h,
+                  width: 20.w,
+                  child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
+                )
+                : TranslatedText(
+                  text,
+                  style: TextStyle(
+                    color: isEnabled ? context.darkTextPrimary : context.darkTextSecondary,
+                    fontSize: DimensionConstants.font16Px.f,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+      ),
     );
   }
 }

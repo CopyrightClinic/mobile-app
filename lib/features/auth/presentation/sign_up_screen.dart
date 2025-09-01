@@ -10,6 +10,7 @@ import '../../../core/utils/extensions/theme_extensions.dart';
 import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_back_button.dart';
+import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/mixin/validator.dart';
 
@@ -161,42 +162,16 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                     builder: (context, state) {
                       final isLoading = state is SendEmailVerificationLoading;
 
-                      return Container(
-                        padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                        width: double.infinity,
-                        child: StatefulBuilder(
-                          builder: (context, setState) {
-                            _buttonSetState = setState;
-                            return ElevatedButton(
-                              onPressed: _isFormValid && !isLoading ? _handleVerifyEmail : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: context.primary,
-                                foregroundColor: context.white,
-                                disabledBackgroundColor: context.buttonDiabled,
-                                disabledForegroundColor: context.white,
-                                padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                                elevation: 0,
-                                side: BorderSide.none,
-                              ),
-                              child:
-                                  isLoading
-                                      ? SizedBox(
-                                        height: 20.h,
-                                        width: 20.w,
-                                        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
-                                      )
-                                      : TranslatedText(
-                                        AppStrings.verifyEmail,
-                                        style: TextStyle(
-                                          color: _isFormValid ? context.darkTextPrimary : context.darkTextSecondary,
-                                          fontSize: DimensionConstants.font16Px.f,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                            );
-                          },
-                        ),
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          _buttonSetState = setState;
+                          return AuthButton(
+                            text: AppStrings.verifyEmail,
+                            onPressed: _handleVerifyEmail,
+                            isLoading: isLoading,
+                            isEnabled: _isFormValid,
+                          );
+                        },
                       );
                     },
                   ),
