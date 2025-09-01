@@ -11,6 +11,7 @@ import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/translated_text.dart';
+import '../../../core/utils/ui/snackbar_utils.dart';
 import '../../../core/utils/mixin/validator.dart';
 import '../../../config/routes/app_routes.dart';
 import 'bloc/auth_bloc.dart';
@@ -76,13 +77,9 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
+          SnackBarUtils.showSuccess(context, state.message);
         } else if (state is LoginError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red, duration: const Duration(seconds: 3)));
+          SnackBarUtils.showError(context, state.message, duration: const Duration(seconds: 3), showDismissAction: false);
         }
       },
       child: CustomScaffold(

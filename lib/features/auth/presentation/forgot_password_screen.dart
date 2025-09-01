@@ -6,6 +6,7 @@ import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
+import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -63,17 +64,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Valida
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is ForgotPasswordSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.green, duration: const Duration(seconds: 2)));
+          SnackBarUtils.showSuccess(context, state.message, duration: const Duration(seconds: 2));
           context.pushReplacement(
             AppRoutes.verifyCodeRouteName,
             extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.passwordReset},
           );
         } else if (state is ForgotPasswordError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.red, duration: const Duration(seconds: 3)));
+          SnackBarUtils.showError(context, state.message, duration: const Duration(seconds: 3), showDismissAction: false);
         }
       },
       child: CustomScaffold(

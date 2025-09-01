@@ -12,6 +12,7 @@ import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/translated_text.dart';
+import '../../../core/utils/ui/snackbar_utils.dart';
 import '../../../core/utils/mixin/validator.dart';
 
 import '../../../core/utils/enumns/ui/verification_type.dart';
@@ -85,28 +86,13 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
         if (state is SendEmailVerificationSuccess && !_hasNavigatedAway) {
           _hasNavigatedAway = true;
           final message = _formatApiMessage(state.message);
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
+          SnackBarUtils.showSuccess(context, message);
           context.push(
             AppRoutes.verifyCodeRouteName,
             extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.emailVerification},
           );
         } else if (state is SendEmailVerificationError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_formatErrorMessage(state.message)),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: tr(AppStrings.dismiss),
-                textColor: Colors.white,
-                onPressed: () {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                },
-              ),
-            ),
-          );
+          SnackBarUtils.showError(context, _formatErrorMessage(state.message));
         }
       },
       child: CustomScaffold(

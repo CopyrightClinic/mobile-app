@@ -8,6 +8,7 @@ import '../../../config/routes/app_routes.dart';
 import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/constants/dimensions.dart';
+import '../../../core/utils/ui/snackbar_utils.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../config/theme/app_theme.dart';
 import '../../../core/utils/extensions/responsive_extensions.dart';
@@ -78,9 +79,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
       route = AppRoutes.resetPasswordRouteName;
     }
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.green, duration: const Duration(seconds: 2)));
+    SnackBarUtils.showSuccess(context, message, duration: const Duration(seconds: 2));
 
     if (route.isNotEmpty) {
       if (route == AppRoutes.passwordSignupRouteName) {
@@ -103,17 +102,13 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
     }
 
     if (message.isNotEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.red, duration: const Duration(seconds: 3)));
+      SnackBarUtils.showError(context, message, duration: const Duration(seconds: 3), showDismissAction: false);
     }
   }
 
   void _handleResendSuccess(AuthState state) {
     String message = tr(AppStrings.codeSent);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.primary, duration: const Duration(seconds: 2)));
+    SnackBarUtils.showInfo(context, message, duration: const Duration(seconds: 2));
   }
 
   void _handleResendError(AuthState state) {
@@ -126,9 +121,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
     }
 
     if (message.isNotEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.red, duration: const Duration(seconds: 3)));
+      SnackBarUtils.showError(context, message, duration: const Duration(seconds: 3), showDismissAction: false);
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
+import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:copyright_clinic_flutter/core/utils/password_strength.dart';
 import 'package:copyright_clinic_flutter/core/widgets/password_strength_indicator.dart';
@@ -125,25 +126,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
       bloc: sl<AuthBloc>(),
       listener: (context, state) {
         if (state is ResetPasswordSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
+          SnackBarUtils.showSuccess(context, state.message);
           context.pop();
         } else if (state is ResetPasswordError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: tr(AppStrings.dismiss),
-                textColor: Colors.white,
-                onPressed: () {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                },
-              ),
-            ),
-          );
+          SnackBarUtils.showError(context, state.message);
         }
       },
       child: CustomScaffold(
