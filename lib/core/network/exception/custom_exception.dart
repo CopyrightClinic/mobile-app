@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names, library_private_types_in_public_api
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import '../models/api_error_model.dart';
 
 enum _ExceptionType {
   CancelException,
@@ -56,24 +57,21 @@ class CustomException implements Exception {
           case DioExceptionType.badCertificate:
             return CustomException(exceptionType: _ExceptionType.ApiException, statusCode: error.response?.statusCode, message: 'Bad certificate');
           case DioExceptionType.badResponse:
-            // For your API, error responses come directly in the response data
             final responseData = error.response?.data;
-            if (responseData != null && responseData is Map<String, dynamic>) {
-              final message = responseData['message'];
-              final statusCode = responseData['statusCode'];
-              final errorType = responseData['error'];
-
-              if (message != null) {
+            if (responseData != null) {
+              try {
+                final apiError = ApiErrorModel.fromResponse(responseData);
                 return CustomException(
                   exceptionType: _ExceptionType.ApiException,
-                  code: errorType?.toString(),
-                  statusCode: statusCode ?? error.response?.statusCode,
-                  message: message is List ? message.join(', ') : message.toString(),
+                  code: apiError.error,
+                  statusCode: apiError.statusCode,
+                  message: apiError.message,
                 );
+              } catch (e) {
+                debugPrint('Failed to parse API error: $e');
               }
             }
 
-            // Fallback for unknown error structure
             return CustomException(
               exceptionType: _ExceptionType.UnrecognizedException,
               statusCode: error.response?.statusCode,
@@ -93,20 +91,18 @@ class CustomException implements Exception {
                 message: 'No internet connectivity',
               );
             }
-            // Check if it's a token expired error (you can customize this based on your API)
             final responseData = error.response?.data;
-            if (responseData != null && responseData is Map<String, dynamic>) {
-              final message = responseData['message'];
-              final statusCode = responseData['statusCode'];
-              final errorType = responseData['error'];
-
-              if (message != null) {
+            if (responseData != null) {
+              try {
+                final apiError = ApiErrorModel.fromResponse(responseData);
                 return CustomException(
                   exceptionType: _ExceptionType.ApiException,
-                  code: errorType?.toString(),
-                  statusCode: statusCode ?? error.response?.statusCode,
-                  message: message is List ? message.join(', ') : message.toString(),
+                  code: apiError.error,
+                  statusCode: apiError.statusCode,
+                  message: apiError.message,
                 );
+              } catch (e) {
+                debugPrint('Failed to parse API error: $e');
               }
             }
 
