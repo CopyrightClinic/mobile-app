@@ -50,3 +50,28 @@ class VerifyOtpRequestModel {
 
   Map<String, dynamic> toJson() => _$VerifyOtpRequestModelToJson(this);
 }
+
+@JsonSerializable()
+class ForgotPasswordRequestModel {
+  final String email;
+
+  const ForgotPasswordRequestModel({required this.email});
+
+  factory ForgotPasswordRequestModel.fromJson(Map<String, dynamic> json) => _$ForgotPasswordRequestModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ForgotPasswordRequestModelToJson(this);
+}
+
+@JsonSerializable()
+class ResetPasswordRequestModel {
+  final String email;
+  final String otp;
+  final String newPassword;
+  final String confirmPassword;
+
+  const ResetPasswordRequestModel({required this.email, required this.otp, required this.newPassword, required this.confirmPassword});
+
+  factory ResetPasswordRequestModel.fromJson(Map<String, dynamic> json) => _$ResetPasswordRequestModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ResetPasswordRequestModelToJson(this);
+}

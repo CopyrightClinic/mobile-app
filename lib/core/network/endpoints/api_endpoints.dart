@@ -27,6 +27,12 @@ class ApiEndpoint {
         return '$path/verify-email';
       case AuthEndpoint.SEND_EMAIL_VERIFICATION:
         return '$path/send-email-verification';
+      case AuthEndpoint.FORGOT_PASSWORD:
+        return '$path/forgot-password';
+      case AuthEndpoint.VERIFY_OTP:
+        return '$path/verify-otp';
+      case AuthEndpoint.RESET_PASSWORD:
+        return '$path/reset-password';
     }
   }
 }

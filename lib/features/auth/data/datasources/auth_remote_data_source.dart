@@ -12,6 +12,9 @@ abstract class AuthRemoteDataSource {
   Future<SignupResponseModel> signup(SignupRequestModel request);
   Future<VerifyOtpResponseModel> verifyEmail(VerifyOtpRequestModel request);
   Future<SendEmailVerificationResponseModel> sendEmailVerification(SendEmailVerificationRequestModel request);
+  Future<ForgotPasswordResponseModel> forgotPassword(ForgotPasswordRequestModel request);
+  Future<VerifyPasswordResetOtpResponseModel> verifyPasswordResetOtp(VerifyOtpRequestModel request);
+  Future<ResetPasswordResponseModel> resetPassword(ResetPasswordRequestModel request);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -120,6 +123,60 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return response;
     } catch (e, stackTrace) {
       Log.e('AuthRemoteDataSourceImpl', 'Error in send email verification API call: $e', stackTrace);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ForgotPasswordResponseModel> forgotPassword(ForgotPasswordRequestModel request) async {
+    try {
+      final response = await apiService.postData<ForgotPasswordResponseModel>(
+        endpoint: ApiEndpoint.auth(AuthEndpoint.FORGOT_PASSWORD),
+        data: request.toJson(),
+        requiresAuthToken: false,
+        converter: (ResponseModel<JSON> response) {
+          return ForgotPasswordResponseModel.fromJson(response.data);
+        },
+      );
+      return response;
+    } catch (e, stackTrace) {
+      Log.e('AuthRemoteDataSourceImpl', 'Error in forgot password API call: $e', stackTrace);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<VerifyPasswordResetOtpResponseModel> verifyPasswordResetOtp(VerifyOtpRequestModel request) async {
+    try {
+      final response = await apiService.postData<VerifyPasswordResetOtpResponseModel>(
+        endpoint: ApiEndpoint.auth(AuthEndpoint.VERIFY_OTP),
+        data: request.toJson(),
+        requiresAuthToken: false,
+        converter: (ResponseModel<JSON> response) {
+          return VerifyPasswordResetOtpResponseModel.fromJson(response.data);
+        },
+      );
+      return response;
+    } catch (e, stackTrace) {
+      Log.e('AuthRemoteDataSourceImpl', 'Error in verify password reset OTP API call: $e', stackTrace);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ResetPasswordResponseModel> resetPassword(ResetPasswordRequestModel request) async {
+    try {
+      final response = await apiService.postData<ResetPasswordResponseModel>(
+        endpoint: ApiEndpoint.auth(AuthEndpoint.RESET_PASSWORD),
+        data: request.toJson(),
+        requiresAuthToken: false,
+        converter: (ResponseModel<JSON> response) {
+          return ResetPasswordResponseModel.fromJson(response.data);
+        },
+      );
+      return response;
+    } catch (e, stackTrace) {
+      Log.e('AuthRemoteDataSourceImpl', 'Error in reset password API call: $e', stackTrace);
       rethrow;
     }
   }

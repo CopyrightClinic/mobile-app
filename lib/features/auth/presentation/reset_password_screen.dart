@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../di.dart';
 import 'bloc/auth_bloc.dart';
+import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -64,10 +65,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
 
   void _handleResetPassword() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(AppStrings.passwordResetSuccess)), backgroundColor: Colors.green, duration: const Duration(seconds: 3)),
+      final newPassword = _newPasswordController.text.trim();
+      final confirmPassword = _confirmPasswordController.text.trim();
+
+      context.read<AuthBloc>().add(
+        ResetPasswordRequested(email: widget.email, otp: widget.otp, newPassword: newPassword, confirmPassword: confirmPassword),
       );
-      context.pop();
+
       _confirmPasswordFocusNode.unfocus();
     }
   }
@@ -118,7 +122,29 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       bloc: sl<AuthBloc>(),
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is ResetPasswordSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
+          context.pop();
+        } else if (state is ResetPasswordError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+              action: SnackBarAction(
+                label: tr(AppStrings.dismiss),
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
+          );
+        }
+      },
       child: CustomScaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -199,45 +225,50 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
                       ),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                    width: double.infinity,
-                    child: StatefulBuilder(
-                      builder: (context, setState) {
-                        _buttonSetState = setState;
-                        // TODO: Update loading state when backend is implemented
-                        const isLoading = false;
+                  BlocBuilder<AuthBloc, AuthState>(
+                    bloc: sl<AuthBloc>(),
+                    builder: (context, state) {
+                      final isLoading = state is ResetPasswordLoading;
 
-                        return ElevatedButton(
-                          onPressed: _isFormValid && !isLoading ? _handleResetPassword : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: context.primary,
-                            foregroundColor: context.white,
-                            disabledBackgroundColor: context.buttonDiabled,
-                            disabledForegroundColor: context.white,
-                            padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                            elevation: 0,
-                            side: BorderSide.none,
-                          ),
-                          child:
-                              isLoading
-                                  ? SizedBox(
-                                    height: 20.h,
-                                    width: 20.w,
-                                    child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
-                                  )
-                                  : TranslatedText(
-                                    AppStrings.updatePassword,
-                                    style: TextStyle(
-                                      color: _isFormValid ? context.darkTextPrimary : context.darkTextSecondary,
-                                      fontSize: DimensionConstants.font16Px.f,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                        );
-                      },
-                    ),
+                      return Container(
+                        padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+                        width: double.infinity,
+                        child: StatefulBuilder(
+                          builder: (context, setState) {
+                            _buttonSetState = setState;
+
+                            return ElevatedButton(
+                              onPressed: _isFormValid && !isLoading ? _handleResetPassword : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: context.primary,
+                                foregroundColor: context.white,
+                                disabledBackgroundColor: context.buttonDiabled,
+                                disabledForegroundColor: context.white,
+                                padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
+                                elevation: 0,
+                                side: BorderSide.none,
+                              ),
+                              child:
+                                  isLoading
+                                      ? SizedBox(
+                                        height: 20.h,
+                                        width: 20.w,
+                                        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
+                                      )
+                                      : TranslatedText(
+                                        AppStrings.updatePassword,
+                                        style: TextStyle(
+                                          color: _isFormValid ? context.darkTextPrimary : context.darkTextSecondary,
+                                          fontSize: DimensionConstants.font16Px.f,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
