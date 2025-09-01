@@ -30,12 +30,7 @@ enum VerificationType {
   }
 
   String get resendText {
-    switch (this) {
-      case emailVerification:
-        return 'Verification code';
-      case passwordReset:
-        return 'Reset code';
-    }
+    return 'Resend Code';
   }
 
   String get successRoute {

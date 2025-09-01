@@ -53,9 +53,14 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   void _resendCode(ResendOtpCubit cubit) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(tr(AppStrings.codeSent)), backgroundColor: AppTheme.primary, duration: const Duration(seconds: 2)));
+    switch (widget.verificationType) {
+      case VerificationType.emailVerification:
+        _authBloc.add(SendEmailVerificationRequested(email: widget.email));
+        break;
+      case VerificationType.passwordReset:
+        _authBloc.add(ForgotPasswordRequested(email: widget.email));
+        break;
+    }
 
     cubit.resetTimer();
     cubit.startResendTimer();
@@ -101,6 +106,29 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
     }
   }
 
+  void _handleResendSuccess(AuthState state) {
+    String message = tr(AppStrings.codeSent);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.primary, duration: const Duration(seconds: 2)));
+  }
+
+  void _handleResendError(AuthState state) {
+    String message = '';
+
+    if (state is SendEmailVerificationError) {
+      message = state.message;
+    } else if (state is ForgotPasswordError) {
+      message = state.message;
+    }
+
+    if (message.isNotEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.red, duration: const Duration(seconds: 3)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -112,6 +140,10 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
             _handleSuccess(state);
           } else if (state is VerifyEmailError || state is VerifyPasswordResetError) {
             _handleError(state);
+          } else if (state is SendEmailVerificationSuccess || state is ForgotPasswordSuccess) {
+            _handleResendSuccess(state);
+          } else if (state is SendEmailVerificationError || state is ForgotPasswordError) {
+            _handleResendError(state);
           }
         },
         child: TimerStarter(

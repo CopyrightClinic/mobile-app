@@ -29,6 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _emailFocusNode = FocusNode();
+  bool _hasNavigatedAway = false;
 
   void Function(void Function())? _buttonSetState;
 
@@ -52,9 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
     }
   }
 
-  /// Formats API success messages for better display
   String _formatApiMessage(String message) {
-    // Handle common API messages and make them more user-friendly
     if (message.toLowerCase().contains('successful')) {
       return '🎉 $message';
     } else if (message.toLowerCase().contains('welcome')) {
@@ -65,9 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
     return message;
   }
 
-  /// Formats error messages for better display
   String _formatErrorMessage(String message) {
-    // Handle common error patterns and make them more user-friendly
     if (message.toLowerCase().contains('invalid')) {
       return '❌ $message';
     } else if (message.toLowerCase().contains('required')) {
@@ -84,7 +81,8 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is SendEmailVerificationSuccess) {
+        if (state is SendEmailVerificationSuccess && !_hasNavigatedAway) {
+          _hasNavigatedAway = true;
           final message = _formatApiMessage(state.message);
           ScaffoldMessenger.of(
             context,
