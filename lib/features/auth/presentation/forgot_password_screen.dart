@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/utils/enumns/ui/verification_type.dart';
+import '../../../config/routes/app_routes.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -66,7 +67,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Valida
           ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.green, duration: const Duration(seconds: 2)));
 
           // Navigate to verification screen with password reset type
-          context.go('/verify-code', extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.passwordReset});
+          context.go(
+            AppRoutes.verifyCodeRouteName,
+            extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.passwordReset},
+          );
         } else if (state is ForgotPasswordError) {
           ScaffoldMessenger.of(
             context,

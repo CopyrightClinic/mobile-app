@@ -92,6 +92,15 @@ class AppStrings {
   static const passwordResetCodeVerified = 'passwordResetCodeVerified';
   static const codeSent = 'codeSent';
 
+  // Verification Screen
+  static const emailVerificationTitle = 'emailVerificationTitle';
+  static const passwordResetTitle = 'passwordResetTitle';
+  static const emailVerificationDescription = 'emailVerificationDescription';
+  static const passwordResetDescription = 'passwordResetDescription';
+  static const verifyEmailButton = 'verifyEmailButton';
+  static const verifyCodeButton = 'verifyCodeButton';
+  static const resendCodeButton = 'resendCodeButton';
+
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';

@@ -1,3 +1,7 @@
+import '../../../constants/app_strings.dart';
+import '../../../../config/routes/app_routes.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 enum VerificationType {
   emailVerification,
   passwordReset;
@@ -5,40 +9,40 @@ enum VerificationType {
   String get title {
     switch (this) {
       case emailVerification:
-        return 'Email Verification';
+        return tr(AppStrings.emailVerificationTitle);
       case passwordReset:
-        return 'Password Reset';
+        return tr(AppStrings.passwordResetTitle);
     }
   }
 
   String get description {
     switch (this) {
       case emailVerification:
-        return 'We have sent a verification code to your email address. Please enter the code below to verify your account.';
+        return tr(AppStrings.emailVerificationDescription);
       case passwordReset:
-        return 'We have sent a reset code to your email address. Please enter the code below to reset your password.';
+        return tr(AppStrings.passwordResetDescription);
     }
   }
 
   String get buttonText {
     switch (this) {
       case emailVerification:
-        return 'Verify Email';
+        return tr(AppStrings.verifyEmailButton);
       case passwordReset:
-        return 'Verify Code';
+        return tr(AppStrings.verifyCodeButton);
     }
   }
 
   String get resendText {
-    return 'Resend Code';
+    return tr(AppStrings.resendCodeButton);
   }
 
   String get successRoute {
     switch (this) {
       case emailVerification:
-        return '/password-signup';
+        return AppRoutes.passwordSignupRouteName;
       case passwordReset:
-        return '/reset-password';
+        return '/reset-password'; // TODO: Add resetPasswordRouteName to AppRoutes when implemented
     }
   }
 }

@@ -11,6 +11,7 @@ import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/mixin/validator.dart';
+import '../../../config/routes/app_routes.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -66,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
   }
 
   void _handleForgotPassword() {
-    context.go('/forgot-password');
+    context.go(AppRoutes.forgotPasswordRouteName);
   }
 
   @override

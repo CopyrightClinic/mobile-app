@@ -95,5 +95,12 @@
   "failedToSendVerificationEmail": "Failed to send verification email",
   "resetCodeSentTo": "Reset code sent to {email}",
   "passwordResetCodeVerified": "Password reset code verified successfully",
-  "codeSent": "Code sent!"
+  "codeSent": "Code sent!",
+  "emailVerificationTitle": "Email Verification",
+  "passwordResetTitle": "Password Reset",
+  "emailVerificationDescription": "We have sent a verification code to your email address. Please enter the code below to verify your account.",
+  "passwordResetDescription": "We have sent a reset code to your email address. Please enter the code below to reset your password.",
+  "verifyEmailButton": "Verify Email",
+  "verifyCodeButton": "Verify Code",
+  "resendCodeButton": "Resend Code"
 }
