@@ -108,7 +108,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
 
   void _handleResendSuccess(AuthState state) {
     String message = tr(AppStrings.codeSent);
-    SnackBarUtils.showInfo(context, message, duration: const Duration(seconds: 2));
+    SnackBarUtils.showSuccess(context, message, duration: const Duration(seconds: 2));
   }
 
   void _handleResendError(AuthState state) {
