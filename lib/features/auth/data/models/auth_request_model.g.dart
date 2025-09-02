@@ -73,3 +73,19 @@ Map<String, dynamic> _$ResetPasswordRequestModelToJson(
   'newPassword': instance.newPassword,
   'confirmPassword': instance.confirmPassword,
 };
+
+CompleteProfileRequestModel _$CompleteProfileRequestModelFromJson(
+  Map<String, dynamic> json,
+) => CompleteProfileRequestModel(
+  name: json['name'] as String,
+  phoneNumber: json['phoneNumber'] as String,
+  address: json['address'] as String,
+);
+
+Map<String, dynamic> _$CompleteProfileRequestModelToJson(
+  CompleteProfileRequestModel instance,
+) => <String, dynamic>{
+  'name': instance.name,
+  'phoneNumber': instance.phoneNumber,
+  'address': instance.address,
+};

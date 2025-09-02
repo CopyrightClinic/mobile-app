@@ -9,6 +9,7 @@ import '../../features/auth/presentation/sign_up_screen.dart';
 import '../../features/auth/presentation/signup_success_screen.dart';
 import '../../features/auth/presentation/password_signup_screen.dart';
 import '../../features/auth/presentation/reset_password_screen.dart';
+import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import 'app_routes.dart';
@@ -58,6 +59,11 @@ class AppRouter {
           final extra = state.extra as Map<String, dynamic>;
           return ResetPasswordScreen(email: extra['email'] as String, otp: extra['otp'] as String);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.completeProfileRouteName,
+        name: AppRoutes.completeProfileRouteName,
+        builder: (context, state) => const CompleteProfileScreen(),
       ),
     ],
   );

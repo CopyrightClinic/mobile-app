@@ -110,6 +110,26 @@ class AppStrings {
   static const passwordResetSuccess = 'passwordResetSuccess';
   static const passwordResetFailed = 'passwordResetFailed';
 
+  // Complete Profile Screen
+  static const completeYourProfile = 'completeYourProfile';
+  static const fullName = 'fullName';
+  static const phoneNumber = 'phoneNumber';
+  static const address = 'address';
+  static const enterYourFullName = 'enterYourFullName';
+  static const enterYourPhoneNumber = 'enterYourPhoneNumber';
+  static const enterYourAddress = 'enterYourAddress';
+  static const skip = 'skip';
+  static const save = 'save';
+
+  // Complete Profile Validation
+  static const fullNameIsRequired = 'fullNameIsRequired';
+  static const fullNameMustBeAtLeast2Characters = 'fullNameMustBeAtLeast2Characters';
+  static const fullNameCanOnlyContainLetters = 'fullNameCanOnlyContainLetters';
+  static const phoneNumberIsRequired = 'phoneNumberIsRequired';
+  static const phoneNumberMustBeAtLeast10Digits = 'phoneNumberMustBeAtLeast10Digits';
+  static const addressIsRequired = 'addressIsRequired';
+  static const addressMustBeAtLeast5Characters = 'addressMustBeAtLeast5Characters';
+
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';
@@ -126,4 +146,7 @@ class AppStrings {
   static const artificialIntelligenceDescription = 'artificialIntelligenceDescription';
   static const writers = 'writers';
   static const writersDescription = 'writersDescription';
+
+  // Complete Profile
+  static const profileUpdateFailed = 'profileUpdateFailed';
 }

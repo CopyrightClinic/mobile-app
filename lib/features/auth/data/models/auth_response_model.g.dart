@@ -82,3 +82,14 @@ ResetPasswordResponseModel _$ResetPasswordResponseModelFromJson(
 Map<String, dynamic> _$ResetPasswordResponseModelToJson(
   ResetPasswordResponseModel instance,
 ) => <String, dynamic>{'message': instance.message};
+
+CompleteProfileResponseModel _$CompleteProfileResponseModelFromJson(
+  Map<String, dynamic> json,
+) => CompleteProfileResponseModel(
+  message: json['message'] as String,
+  user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$CompleteProfileResponseModelToJson(
+  CompleteProfileResponseModel instance,
+) => <String, dynamic>{'message': instance.message, 'user': instance.user};

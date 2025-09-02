@@ -75,3 +75,16 @@ class ResetPasswordRequestModel {
 
   Map<String, dynamic> toJson() => _$ResetPasswordRequestModelToJson(this);
 }
+
+@JsonSerializable()
+class CompleteProfileRequestModel {
+  final String name;
+  final String phoneNumber;
+  final String address;
+
+  const CompleteProfileRequestModel({required this.name, required this.phoneNumber, required this.address});
+
+  factory CompleteProfileRequestModel.fromJson(Map<String, dynamic> json) => _$CompleteProfileRequestModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CompleteProfileRequestModelToJson(this);
+}

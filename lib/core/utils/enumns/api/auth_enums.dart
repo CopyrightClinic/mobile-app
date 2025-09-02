@@ -8,4 +8,5 @@ enum AuthEndpoint {
   FORGOT_PASSWORD, // POST /auth/forgot-password
   VERIFY_OTP, // POST /auth/verify-otp
   RESET_PASSWORD, // POST /auth/reset-password
+  COMPLETE_PROFILE, // PATCH /auth/complete-profile
 }

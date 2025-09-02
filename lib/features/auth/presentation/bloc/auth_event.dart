@@ -78,6 +78,17 @@ class ResetPasswordRequested extends AuthEvent {
   List<Object?> get props => [email, otp, newPassword, confirmPassword];
 }
 
+class CompleteProfileRequested extends AuthEvent {
+  final String name;
+  final String phoneNumber;
+  final String address;
+
+  const CompleteProfileRequested({required this.name, required this.phoneNumber, required this.address});
+
+  @override
+  List<Object?> get props => [name, phoneNumber, address];
+}
+
 class LogoutRequested extends AuthEvent {}
 
 class CheckAuthStatus extends AuthEvent {}

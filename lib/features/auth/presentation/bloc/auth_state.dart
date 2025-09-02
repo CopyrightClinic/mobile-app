@@ -173,3 +173,23 @@ class ResetPasswordError extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+class CompleteProfileLoading extends AuthState {}
+
+class CompleteProfileSuccess extends AuthState {
+  final String message;
+
+  const CompleteProfileSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class CompleteProfileError extends AuthState {
+  final String message;
+
+  const CompleteProfileError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

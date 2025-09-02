@@ -141,4 +141,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(ServerFailure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> completeProfile(String name, String phoneNumber, String address) async {
+    try {
+      final request = CompleteProfileRequestModel(name: name, phoneNumber: phoneNumber, address: address);
+      final response = await remoteDataSource.completeProfile(request);
+      return Right(response.message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
 }

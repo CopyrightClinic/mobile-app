@@ -109,5 +109,22 @@
   "enterNewPassword": "Enter your new password",
   "updatePassword": "Update Password",
   "passwordResetSuccess": "Password updated successfully",
-  "passwordResetFailed": "Failed to update password"
+  "passwordResetFailed": "Failed to update password",
+  "completeYourProfile": "Complete your profile",
+  "fullName": "Full Name",
+  "phoneNumber": "Phone Number",
+  "address": "Address",
+  "enterYourFullName": "Enter your full name",
+  "enterYourPhoneNumber": "Enter your phone number",
+  "enterYourAddress": "Enter your Address",
+  "skip": "Skip",
+  "save": "Save",
+  "fullNameIsRequired": "Full name is required",
+  "fullNameMustBeAtLeast2Characters": "Full name must be at least 2 characters",
+  "fullNameCanOnlyContainLetters": "Full name can only contain letters and spaces",
+  "phoneNumberIsRequired": "Phone number is required",
+  "phoneNumberMustBeAtLeast10Digits": "Phone number must be at least 10 digits",
+  "addressIsRequired": "Address is required",
+  "addressMustBeAtLeast5Characters": "Address must be at least 5 characters",
+  "profileUpdateFailed": "Failed to update profile. Please try again."
 }

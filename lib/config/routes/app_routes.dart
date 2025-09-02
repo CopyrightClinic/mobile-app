@@ -11,4 +11,5 @@ class AppRoutes {
   static const String verifyCodeRouteName = '/verify-code';
   static const String forgotPasswordRouteName = '/forgot-password';
   static const String resetPasswordRouteName = '/reset-password';
+  static const String completeProfileRouteName = '/complete-profile';
 }

@@ -16,6 +16,7 @@ import 'features/auth/domain/usecases/verify_email_usecase.dart';
 import 'features/auth/domain/usecases/send_email_verification_usecase.dart';
 import 'features/auth/domain/usecases/verify_password_reset_otp_usecase.dart';
 import 'features/auth/domain/usecases/reset_password_usecase.dart';
+import 'features/auth/domain/usecases/complete_profile_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/cubit/resend_otp_cubit.dart';
 
@@ -61,6 +62,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SendEmailVerificationUseCase(sl()));
   sl.registerLazySingleton(() => VerifyPasswordResetOtpUseCase(sl()));
   sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
+  sl.registerLazySingleton(() => CompleteProfileUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -71,6 +73,7 @@ Future<void> init() async {
       sendEmailVerificationUseCase: sl(),
       verifyPasswordResetOtpUseCase: sl(),
       resetPasswordUseCase: sl(),
+      completeProfileUseCase: sl(),
       authRepository: sl(),
     ),
   );

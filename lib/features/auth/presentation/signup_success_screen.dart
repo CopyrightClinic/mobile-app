@@ -1,5 +1,6 @@
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/dimensions.dart';
@@ -8,6 +9,7 @@ import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/global_image.dart';
 import '../../../core/widgets/translated_text.dart';
+import '../../../config/routes/app_routes.dart';
 
 class SignupSuccessScreen extends StatelessWidget {
   const SignupSuccessScreen({super.key});
@@ -41,7 +43,12 @@ class SignupSuccessScreen extends StatelessWidget {
                 style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
               ),
               Spacer(),
-              AuthButton(text: AppStrings.setupProfile, onPressed: () {}, isLoading: false, isEnabled: true),
+              AuthButton(
+                text: AppStrings.setupProfile,
+                onPressed: () => context.go(AppRoutes.completeProfileRouteName),
+                isLoading: false,
+                isEnabled: true,
+              ),
             ],
           ),
         ),
