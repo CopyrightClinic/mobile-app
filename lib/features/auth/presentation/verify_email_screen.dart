@@ -38,36 +38,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   @override
-  void dispose() {
-    _otpController.dispose();
-    _authBloc.close();
-    super.dispose();
-  }
-
-  void _onOtpChanged(String value) {
-    if (value.length == 6) {
-      _verifyOtp(value);
-    }
-  }
-
-  void _verifyOtp(String otp) {
-    _authBloc.add(VerifyEmailRequested(email: widget.email, otp: otp));
-  }
-
-  void _resendCode(ResendOtpCubit cubit) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Verification code resent!'), backgroundColor: AppTheme.primary, duration: Duration(seconds: 2)));
-
-    cubit.resetTimer();
-    cubit.startResendTimer();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [BlocProvider.value(value: _authBloc), BlocProvider(create: (context) => sl<ResendOtpCubit>())],
+    return BlocProvider(
+      create: (context) => sl<ResendOtpCubit>(),
       child: BlocListener<AuthBloc, AuthState>(
+        bloc: _authBloc,
         listener: (context, state) {
           if (state is VerifyEmailSuccess) {
             ScaffoldMessenger.of(
@@ -125,6 +100,25 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         ),
       ),
     );
+  }
+
+  void _onOtpChanged(String value) {
+    if (value.length == 6) {
+      _verifyOtp(value);
+    }
+  }
+
+  void _verifyOtp(String otp) {
+    _authBloc.add(VerifyEmailRequested(email: widget.email, otp: otp));
+  }
+
+  void _resendCode(ResendOtpCubit cubit) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Verification code resent!'), backgroundColor: AppTheme.primary, duration: Duration(seconds: 2)));
+
+    cubit.resetTimer();
+    cubit.startResendTimer();
   }
 
   Widget _buildTitle() {
@@ -194,7 +188,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   Widget _buildResendCode() {
     return BlocBuilder<ResendOtpCubit, ResendOtpState>(
       builder: (context, state) {
-        final cubit = context.read<ResendOtpCubit>();
+        final cubit = sl<ResendOtpCubit>();
         final canResend = cubit.canResend;
 
         return Column(
@@ -271,5 +265,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    _authBloc.close();
+    super.dispose();
   }
 }
