@@ -149,4 +149,6 @@ class AppStrings {
 
   // Complete Profile
   static const profileUpdateFailed = 'profileUpdateFailed';
+  static const invalidPhoneNumber = 'invalidPhoneNumber';
+  static const phoneNumberRequired = 'phoneNumberRequired';
 }

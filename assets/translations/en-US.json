@@ -126,5 +126,7 @@
   "phoneNumberMustBeAtLeast10Digits": "Phone number must be at least 10 digits",
   "addressIsRequired": "Address is required",
   "addressMustBeAtLeast5Characters": "Address must be at least 5 characters",
-  "profileUpdateFailed": "Failed to update profile. Please try again."
+  "profileUpdateFailed": "Failed to update profile. Please try again.",
+  "invalidPhoneNumber": "Please enter a valid phone number",
+  "phoneNumberRequired": "Phone number is required"
 }

@@ -3,6 +3,8 @@ import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_phone_field.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
@@ -30,8 +32,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
   final _fullNameFocusNode = FocusNode();
   final _phoneFocusNode = FocusNode();
   final _addressFocusNode = FocusNode();
+  final GlobalKey<CustomPhoneFieldState> _phoneFieldKey = GlobalKey<CustomPhoneFieldState>();
 
   void Function(void Function())? _buttonSetState;
+  PhoneNumber? _phoneNumber;
 
   @override
   void dispose() {
@@ -46,9 +50,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
 
   bool get _isFormValid {
     final fullNameValidation = validateFullName(_fullNameController.text.trim(), tr);
-    final phoneValidation = validatePhoneNumber(_phoneController.text.trim(), tr);
     final addressValidation = validateAddress(_addressController.text.trim(), tr);
-    return fullNameValidation == null && phoneValidation == null && addressValidation == null;
+    final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
+    return fullNameValidation == null && addressValidation == null && isPhoneValid;
   }
 
   void _onFieldChanged() {
@@ -56,9 +60,15 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
   }
 
   void _handleSave() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && _phoneNumber != null) {
+      final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
+      if (!isPhoneValid) {
+        SnackBarUtils.showError(context, tr(AppStrings.invalidPhoneNumber));
+        return;
+      }
+
       final name = _fullNameController.text.trim();
-      final phoneNumber = _phoneController.text.trim();
+      final phoneNumber = _phoneNumber!.phoneNumber ?? '';
       final address = _addressController.text.trim();
 
       context.read<AuthBloc>().add(CompleteProfileRequested(name: name, phoneNumber: phoneNumber, address: address));
@@ -69,10 +79,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
     }
   }
 
-  void _handleSkip() {
-    // TODO: Navigate to main app without saving profile
-    // context.go('/home'); // Replace with your main app route
-  }
+  void _handleSkip() {}
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +89,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
         listener: (context, state) {
           if (state is CompleteProfileSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
-            // TODO: Navigate to main app after successful profile completion
-            // context.go('/home'); // Replace with your main app route
           } else if (state is CompleteProfileError) {
             SnackBarUtils.showError(context, state.message);
           }
@@ -148,15 +153,27 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                             ),
                             SizedBox(height: DimensionConstants.gap20Px.h),
 
-                            CustomTextField(
+                            CustomPhoneField(
+                              key: _phoneFieldKey,
                               label: AppStrings.phoneNumber,
                               placeholder: AppStrings.enterYourPhoneNumber,
                               controller: _phoneController,
                               focusNode: _phoneFocusNode,
-                              keyboardType: TextInputType.phone,
-                              validator: (value) => validatePhoneNumber(value, tr),
+                              validator: (value) {
+                                if (_phoneNumber == null || _phoneNumber!.phoneNumber == null || _phoneNumber!.phoneNumber!.isEmpty) {
+                                  return tr(AppStrings.phoneNumberRequired);
+                                }
+                                if (!(_phoneFieldKey.currentState?.isPhoneValid ?? false)) {
+                                  return tr(AppStrings.invalidPhoneNumber);
+                                }
+                                return null;
+                              },
                               onEditingComplete: () => _addressFocusNode.requestFocus(),
-                              onChanged: (value) => _onFieldChanged(),
+                              onChanged: (PhoneNumber phoneNumber) {
+                                _phoneNumber = phoneNumber;
+                                _onFieldChanged();
+                              },
+                              initialCountryCode: 'US',
                             ),
                             SizedBox(height: DimensionConstants.gap20Px.h),
 
