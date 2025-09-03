@@ -67,11 +67,49 @@ class AppStrings {
 
   // Sign Up Screen
   static const createAccount = 'createAccount';
+  static const enterEmailForVerification = 'enterEmailForVerification';
   static const createYourAccount = 'createYourAccount';
   static const confirmPassword = 'confirmPassword';
+  static const verifyEmail = 'verifyEmail';
   static const congratulations = 'congratulations';
   static const yourAccountHasBeenCreated = 'yourAccountHasBeenCreated';
   static const setupProfile = 'setupProfile';
+
+  // Forgot Password Screen
+  static const resetPassword = 'resetPassword';
+  static const forgotPasswordTitle = 'forgotPasswordTitle';
+  static const forgotPasswordSubtitle = 'forgotPasswordSubtitle';
+  static const resetPasswordMessage = 'resetPasswordMessage';
+  static const sendResetLink = 'sendResetLink';
+  static const resetLinkSent = 'resetLinkSent';
+  static const checkYourEmail = 'checkYourEmail';
+  static const dismiss = 'dismiss';
+  static const loginFailed = 'loginFailed';
+  static const signupFailed = 'signupFailed';
+  static const emailVerificationFailed = 'emailVerificationFailed';
+  static const failedToSendVerificationEmail = 'failedToSendVerificationEmail';
+  static const resetCodeSentTo = 'resetCodeSentTo';
+  static const passwordResetCodeVerified = 'passwordResetCodeVerified';
+  static const codeSent = 'codeSent';
+
+  // Verification Screen
+  static const emailVerificationTitle = 'emailVerificationTitle';
+  static const passwordResetTitle = 'passwordResetTitle';
+  static const emailVerificationDescription = 'emailVerificationDescription';
+  static const passwordResetDescription = 'passwordResetDescription';
+  static const verifyEmailButton = 'verifyEmailButton';
+  static const verifyCodeButton = 'verifyCodeButton';
+  static const resendCodeButton = 'resendCodeButton';
+
+  // Reset Password Screen
+  static const resetPasswordTitle = 'resetPasswordTitle';
+  static const setNewPassword = 'setNewPassword';
+  static const newPassword = 'newPassword';
+  static const enterNewPassword = 'enterNewPassword';
+  static const updatePassword = 'updatePassword';
+  static const passwordResetSuccess = 'passwordResetSuccess';
+  static const passwordResetFailed = 'passwordResetFailed';
+
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';

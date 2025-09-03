@@ -80,4 +80,48 @@ class AuthRepositoryImpl implements AuthRepository {
     // For now, we'll return null as we need to implement user storage
     return null;
   }
+
+  @override
+  Future<Either<Failure, String>> sendEmailVerification(String email) async {
+    try {
+      final request = SendEmailVerificationRequestModel(email: email);
+      final response = await remoteDataSource.sendEmailVerification(request);
+      return Right(response.message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> forgotPassword(String email) async {
+    try {
+      final request = ForgotPasswordRequestModel(email: email);
+      final response = await remoteDataSource.forgotPassword(request);
+      return Right(response.message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> verifyPasswordResetOtp(String email, String otp) async {
+    try {
+      final request = VerifyOtpRequestModel(email: email, otp: otp);
+      final response = await remoteDataSource.verifyPasswordResetOtp(request);
+      return Right(response.message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> resetPassword(String email, String otp, String newPassword, String confirmPassword) async {
+    try {
+      final request = ResetPasswordRequestModel(email: email, otp: otp, newPassword: newPassword, confirmPassword: confirmPassword);
+      final response = await remoteDataSource.resetPassword(request);
+      return Right(response.message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
 }

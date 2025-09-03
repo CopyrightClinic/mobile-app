@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'gradient_border_painter.dart';
 
-class CustomBackButton extends StatelessWidget {
+class OnboardingCustomBackButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final double size;
   final Color backgroundColor;
@@ -11,7 +11,7 @@ class CustomBackButton extends StatelessWidget {
   final Color borderColor;
   final double borderWidth;
 
-  const CustomBackButton({
+  const OnboardingCustomBackButton({
     super.key,
     this.onPressed,
     this.size = 44,

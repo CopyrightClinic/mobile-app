@@ -2,14 +2,19 @@ import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../core/utils/extensions/theme_extensions.dart';
+import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/translated_text.dart';
+import '../../../core/utils/ui/snackbar_utils.dart';
 import '../../../core/utils/mixin/validator.dart';
+import '../../../config/routes/app_routes.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -64,25 +69,23 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
     }
   }
 
-  void _handleForgotPassword() {}
+  void _handleForgotPassword() {
+    context.push(AppRoutes.forgotPasswordRouteName);
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
+          SnackBarUtils.showSuccess(context, state.message);
         } else if (state is LoginError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red, duration: const Duration(seconds: 3)));
+          SnackBarUtils.showError(context, state.message, duration: const Duration(seconds: 3), showDismissAction: false);
         }
       },
       child: CustomScaffold(
         extendBodyBehindAppBar: true,
-        appBar: CustomAppBar.transparent(),
+        appBar: CustomAppBar(leading: CustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
@@ -152,42 +155,11 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                     builder: (context, state) {
                       final isLoading = state is LoginLoading;
 
-                      return Container(
-                        padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                        width: double.infinity,
-                        child: StatefulBuilder(
-                          builder: (context, setState) {
-                            _buttonSetState = setState;
-                            return ElevatedButton(
-                              onPressed: _isFormValid && !isLoading ? _handleLogin : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: context.primary,
-                                foregroundColor: context.white,
-                                disabledBackgroundColor: context.buttonDiabled,
-                                disabledForegroundColor: context.white,
-                                padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                                elevation: 0,
-                                side: BorderSide.none,
-                              ),
-                              child:
-                                  isLoading
-                                      ? SizedBox(
-                                        height: 20.h,
-                                        width: 20.w,
-                                        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.white)),
-                                      )
-                                      : TranslatedText(
-                                        AppStrings.login,
-                                        style: TextStyle(
-                                          color: _isFormValid ? context.darkTextPrimary : context.darkTextSecondary,
-                                          fontSize: DimensionConstants.font16Px.f,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                            );
-                          },
-                        ),
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          _buttonSetState = setState;
+                          return AuthButton(text: AppStrings.login, onPressed: _handleLogin, isLoading: isLoading, isEnabled: _isFormValid);
+                        },
                       );
                     },
                   ),

@@ -1,40 +1,44 @@
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
-import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
+import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
+import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_app_bar.dart';
+import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
+import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
+import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_strings.dart';
-import '../../../core/utils/extensions/responsive_extensions.dart';
-import '../../../core/utils/extensions/theme_extensions.dart';
-import '../../../core/widgets/custom_back_button.dart';
-import '../../../core/widgets/custom_scaffold.dart';
-import '../../../core/widgets/custom_text_field.dart';
-import '../../../core/widgets/custom_button.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/translated_text.dart';
-import '../../../core/utils/ui/snackbar_utils.dart';
-import '../../../core/utils/mixin/validator.dart';
-
 import '../../../core/utils/enumns/ui/verification_type.dart';
+import '../../../config/routes/app_routes.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> with Validator {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Validator {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _emailFocusNode = FocusNode();
-  bool _hasNavigatedAway = false;
 
   void Function(void Function())? _buttonSetState;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _emailFocusNode.dispose();
+    super.dispose();
+  }
 
   bool get _isFormValid {
     final email = _emailController.text.trim();
@@ -46,54 +50,28 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
     _buttonSetState?.call(() {});
   }
 
-  void _handleVerifyEmail() {
+  void _handleResetPassword(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
 
-      context.read<AuthBloc>().add(SendEmailVerificationRequested(email: email));
+      context.read<AuthBloc>().add(ForgotPasswordRequested(email: email));
 
       _emailFocusNode.unfocus();
     }
-  }
-
-  String _formatApiMessage(String message) {
-    if (message.toLowerCase().contains('successful')) {
-      return '🎉 $message';
-    } else if (message.toLowerCase().contains('welcome')) {
-      return '👋 $message';
-    } else if (message.toLowerCase().contains('created')) {
-      return '✅ $message';
-    }
-    return message;
-  }
-
-  String _formatErrorMessage(String message) {
-    if (message.toLowerCase().contains('invalid')) {
-      return '❌ $message';
-    } else if (message.toLowerCase().contains('required')) {
-      return '⚠️ $message';
-    } else if (message.toLowerCase().contains('already exists')) {
-      return '🚫 $message';
-    } else if (message.toLowerCase().contains('network') || message.toLowerCase().contains('connection')) {
-      return '🌐 $message';
-    }
-    return message;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is SendEmailVerificationSuccess && !_hasNavigatedAway) {
-          _hasNavigatedAway = true;
-          final message = _formatApiMessage(state.message);
-          SnackBarUtils.showSuccess(context, message);
-          context.push(
+        if (state is ForgotPasswordSuccess) {
+          SnackBarUtils.showSuccess(context, state.message, duration: const Duration(seconds: 2));
+          context.pushReplacement(
             AppRoutes.verifyCodeRouteName,
-            extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.emailVerification},
+            extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.passwordReset},
           );
-        } else if (state is SendEmailVerificationError) {
-          SnackBarUtils.showError(context, _formatErrorMessage(state.message));
+        } else if (state is ForgotPasswordError) {
+          SnackBarUtils.showError(context, state.message, duration: const Duration(seconds: 3), showDismissAction: false);
         }
       },
       child: CustomScaffold(
@@ -115,15 +93,15 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                         children: [
                           SizedBox(height: DimensionConstants.gap20Px.h),
                           TranslatedText(
-                            AppStrings.createAccount,
-                            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
+                            AppStrings.forgotPassword,
+                            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font32Px.f, fontWeight: FontWeight.w700),
                           ),
                           SizedBox(height: DimensionConstants.gap4Px.h),
                           TranslatedText(
-                            AppStrings.enterEmailForVerification,
-                            style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+                            AppStrings.forgotPasswordSubtitle,
+                            style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
                           ),
-                          SizedBox(height: DimensionConstants.gap20Px.h),
+                          SizedBox(height: DimensionConstants.gap40Px.h),
                           CustomTextField(
                             label: AppStrings.email,
                             placeholder: AppStrings.enterYourEmail,
@@ -131,7 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) => validateEmail(value, tr),
-                            onEditingComplete: _handleVerifyEmail,
+                            onEditingComplete: () => _handleResetPassword(context),
                             onChanged: (value) {
                               _onFieldChanged();
                             },
@@ -142,14 +120,14 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                   ),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
-                      final isLoading = state is SendEmailVerificationLoading;
+                      final isLoading = state is ForgotPasswordLoading;
 
                       return StatefulBuilder(
                         builder: (context, setState) {
                           _buttonSetState = setState;
                           return AuthButton(
-                            text: AppStrings.verifyEmail,
-                            onPressed: _handleVerifyEmail,
+                            text: AppStrings.resetPassword,
+                            onPressed: () => _handleResetPassword(context),
                             isLoading: isLoading,
                             isEnabled: _isFormValid,
                           );
@@ -164,12 +142,5 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _emailFocusNode.dispose();
-    super.dispose();
   }
 }

@@ -7,5 +7,8 @@ class AppRoutes {
   static const String loginRouteName = '/login';
   static const String signupRouteName = '/signup';
   static const String signupSuccessRouteName = '/signup-success';
-  static const String verifyEmailRouteName = '/verify-email';
+  static const String passwordSignupRouteName = '/password-signup';
+  static const String verifyCodeRouteName = '/verify-code';
+  static const String forgotPasswordRouteName = '/forgot-password';
+  static const String resetPasswordRouteName = '/reset-password';
 }

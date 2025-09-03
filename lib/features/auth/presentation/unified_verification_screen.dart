@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../config/routes/app_routes.dart';
-import '../../../../core/widgets/custom_scaffold.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
-import '../../../../core/constants/dimensions.dart';
-import '../../../../config/theme/app_theme.dart';
-import '../../../../core/utils/extensions/responsive_extensions.dart';
-import '../../../../di.dart';
+import '../../../core/widgets/custom_app_bar.dart';
+import '../../../core/widgets/custom_back_button.dart';
+import '../../../core/widgets/custom_scaffold.dart';
+import '../../../core/constants/dimensions.dart';
+import '../../../core/utils/ui/snackbar_utils.dart';
+import '../../../core/constants/app_strings.dart';
+import '../../../config/theme/app_theme.dart';
+import '../../../core/utils/extensions/responsive_extensions.dart';
+import '../../../core/utils/enumns/ui/verification_type.dart';
+import '../../../di.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -17,25 +22,20 @@ import 'cubit/resend_otp_cubit.dart';
 import 'cubit/resend_otp_state.dart';
 import 'widgets/timer_widget.dart';
 
-class VerifyEmailScreen extends StatefulWidget {
+class UnifiedVerificationScreen extends StatefulWidget {
   final String email;
+  final VerificationType verificationType;
 
-  const VerifyEmailScreen({super.key, required this.email});
+  const UnifiedVerificationScreen({super.key, required this.email, required this.verificationType});
 
   @override
-  State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
+  State<UnifiedVerificationScreen> createState() => _UnifiedVerificationScreenState();
 }
 
-class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
+class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   final TextEditingController _otpController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final AuthBloc _authBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _authBloc = sl<AuthBloc>();
-  }
+  final AuthBloc _authBloc = sl<AuthBloc>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,21 +44,20 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       child: BlocListener<AuthBloc, AuthState>(
         bloc: _authBloc,
         listener: (context, state) {
-          if (state is VerifyEmailSuccess) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppTheme.green, duration: const Duration(seconds: 2)));
-            context.go(AppRoutes.signupSuccessRouteName);
-          } else if (state is VerifyEmailError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppTheme.red, duration: const Duration(seconds: 3)));
+          if (state is VerifyEmailSuccess || state is VerifyPasswordResetSuccess) {
+            _handleSuccess(state);
+          } else if (state is VerifyEmailError || state is VerifyPasswordResetError) {
+            _handleError(state);
+          } else if (state is SendEmailVerificationSuccess || state is ForgotPasswordSuccess) {
+            _handleResendSuccess(state);
+          } else if (state is SendEmailVerificationError || state is ForgotPasswordError) {
+            _handleResendError(state);
           }
         },
         child: TimerStarter(
           child: CustomScaffold(
             extendBodyBehindAppBar: true,
-            appBar: CustomAppBar.transparent(),
+            appBar: CustomAppBar(leading: CustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
             body: SafeArea(
               child: Column(
                 children: [
@@ -69,25 +68,17 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: DimensionConstants.gap20Px.h),
-
                           _buildTitle(),
-
                           SizedBox(height: DimensionConstants.gap8Px.h),
-
                           _buildDescription(),
-
                           SizedBox(height: DimensionConstants.gap40Px.h),
-
                           _buildOtpInput(),
-
                           SizedBox(height: DimensionConstants.gap24Px.h),
-
                           _buildResendCode(),
                         ],
                       ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w), child: _buildVerifyButton()),
                 ],
               ),
             ),
@@ -116,9 +107,67 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     cubit.startResendTimer();
   }
 
+  void _handleSuccess(AuthState state) {
+    String message = '';
+    String route = '';
+
+    if (state is VerifyEmailSuccess) {
+      message = state.message;
+      route = AppRoutes.passwordSignupRouteName;
+    } else if (state is VerifyPasswordResetSuccess) {
+      message = state.message;
+      route = AppRoutes.resetPasswordRouteName;
+    }
+
+    SnackBarUtils.showSuccess(context, message, duration: const Duration(seconds: 2));
+
+    if (route.isNotEmpty) {
+      if (route == AppRoutes.passwordSignupRouteName) {
+        context.push(route, extra: widget.email);
+      } else if (route == AppRoutes.resetPasswordRouteName) {
+        context.pushReplacement(route, extra: {'email': widget.email, 'otp': _otpController.text});
+      } else {
+        context.push(route);
+      }
+    }
+  }
+
+  void _handleError(AuthState state) {
+    String message = '';
+
+    if (state is VerifyEmailError) {
+      message = state.message;
+    } else if (state is VerifyPasswordResetError) {
+      message = state.message;
+    }
+
+    if (message.isNotEmpty) {
+      SnackBarUtils.showError(context, message, duration: const Duration(seconds: 3), showDismissAction: false);
+    }
+  }
+
+  void _handleResendSuccess(AuthState state) {
+    String message = tr(AppStrings.codeSent);
+    SnackBarUtils.showInfo(context, message, duration: const Duration(seconds: 2));
+  }
+
+  void _handleResendError(AuthState state) {
+    String message = '';
+
+    if (state is SendEmailVerificationError) {
+      message = state.message;
+    } else if (state is ForgotPasswordError) {
+      message = state.message;
+    }
+
+    if (message.isNotEmpty) {
+      SnackBarUtils.showError(context, message, duration: const Duration(seconds: 3), showDismissAction: false);
+    }
+  }
+
   Widget _buildTitle() {
     return Text(
-      'Verification Code',
+      widget.verificationType.title,
       style: TextStyle(color: AppTheme.white, fontSize: DimensionConstants.font32Px.f, fontWeight: FontWeight.w700, fontFamily: AppTheme.fontFamily),
     );
   }
@@ -134,8 +183,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           height: 1.5,
         ),
         children: [
-          const TextSpan(text: 'Enter the verification code that we have sent to your email '),
-          TextSpan(text: '(${widget.email})', style: const TextStyle(color: AppTheme.white, fontWeight: FontWeight.w500)),
+          TextSpan(text: widget.verificationType.description),
+          TextSpan(text: ' (${widget.email})', style: const TextStyle(color: AppTheme.white, fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -149,7 +198,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         length: 6,
         controller: _otpController,
         onChanged: _onOtpChanged,
-        onCompleted: _verifyOtp,
         textStyle: TextStyle(
           color: AppTheme.white,
           fontSize: DimensionConstants.font24Px.f,
@@ -195,14 +243,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   style: TextStyle(color: AppTheme.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
                 ),
               ),
-
             SizedBox(height: DimensionConstants.gap8Px.h),
-
             Center(
               child: GestureDetector(
                 onTap: canResend ? () => _resendCode(cubit) : null,
                 child: Text(
-                  'Resend Code',
+                  widget.verificationType.resendText,
                   style: TextStyle(
                     color: canResend ? AppTheme.darkTextPrimary : AppTheme.darkTextSecondary,
                     fontSize: DimensionConstants.font12Px.f,
@@ -216,56 +262,5 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         );
       },
     );
-  }
-
-  Widget _buildVerifyButton() {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        final isOtpComplete = _otpController.text.length == 6;
-        final isLoading = state is VerifyEmailLoading;
-        final isEnabled = isOtpComplete && !isLoading;
-
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-          child: ElevatedButton(
-            onPressed: isEnabled ? () => _verifyOtp(_otpController.text) : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isEnabled ? AppTheme.primary : AppTheme.buttonDiabled,
-              foregroundColor: AppTheme.white,
-              disabledBackgroundColor: AppTheme.buttonDiabled,
-              disabledForegroundColor: AppTheme.white,
-              padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-              elevation: 0,
-              side: BorderSide.none,
-            ),
-            child:
-                isLoading
-                    ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(AppTheme.white)),
-                    )
-                    : Text(
-                      'Verify',
-                      style: TextStyle(
-                        color: isEnabled ? AppTheme.white : AppTheme.darkTextSecondary,
-                        fontSize: DimensionConstants.font16Px.f,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: AppTheme.fontFamily,
-                      ),
-                    ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _otpController.dispose();
-    _authBloc.close();
-    super.dispose();
   }
 }
