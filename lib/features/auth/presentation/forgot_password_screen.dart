@@ -5,6 +5,7 @@ import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_app_bar.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
@@ -75,12 +76,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Valida
       },
       child: CustomScaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap8Px.w), child: const CustomBackButton()),
-        ),
+        appBar: CustomAppBar(leading: CustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),

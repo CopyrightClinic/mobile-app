@@ -8,6 +8,7 @@ import 'dart:ui';
 import '../widgets/onboarding_background.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../widgets/gradient_border_painter.dart';
+import '../widgets/custom_back_button.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -16,7 +17,7 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: CustomAppBar.transparent(),
+      appBar: CustomAppBar(leading: OnboardingCustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
       body: OnboardingBackground(
         child: SafeArea(
           child: Padding(
