@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../../../core/utils/storage/token_storage.dart';
-import '../../../../core/utils/logger/logger.dart';
+
 import '../datasources/auth_remote_data_source.dart';
 import '../models/auth_request_model.dart';
 import '../../domain/entities/user_entity.dart';
@@ -19,21 +19,15 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, AuthResult>> login(String email, String password) async {
     try {
       final request = LoginRequestModel(email: email, password: password);
-      Log.d('AuthRepositoryImpl', 'Making login request for email: $email');
-
       final response = await remoteDataSource.login(request);
-      Log.d('AuthRepositoryImpl', 'Login response received: ${response.message}');
 
       // Save access token
       await TokenStorage.saveAccessToken(response.accessToken);
-      Log.d('AuthRepositoryImpl', 'Access token saved successfully');
 
       return Right(AuthResult(user: response.toEntity(), message: response.message));
     } on CustomException catch (e) {
-      Log.e('AuthRepositoryImpl', 'CustomException during login: ${e.message}', StackTrace.current);
       return Left(ServerFailure(e.message));
-    } catch (e, stackTrace) {
-      Log.e('AuthRepositoryImpl', 'Unexpected error during login: $e', stackTrace);
+    } catch (e) {
       return Left(ServerFailure('An unexpected error occurred: $e'));
     }
   }
@@ -42,21 +36,15 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, AuthResult>> signup(String email, String password, String confirmPassword) async {
     try {
       final request = SignupRequestModel(email: email, password: password, confirmPassword: confirmPassword);
-      Log.d('AuthRepositoryImpl', 'Making signup request for email: $email');
-
       final response = await remoteDataSource.signup(request);
-      Log.d('AuthRepositoryImpl', 'Signup response received: ${response.message}');
 
       // Save access token
       await TokenStorage.saveAccessToken(response.accessToken);
-      Log.d('AuthRepositoryImpl', 'Access token saved successfully');
 
       return Right(AuthResult(user: response.toEntity(), message: response.message));
     } on CustomException catch (e) {
-      Log.e('AuthRepositoryImpl', 'CustomException during signup: ${e.message}', StackTrace.current);
       return Left(ServerFailure(e.message));
-    } catch (e, stackTrace) {
-      Log.e('AuthRepositoryImpl', 'Unexpected error during signup: $e', stackTrace);
+    } catch (e) {
       return Left(ServerFailure('An unexpected error occurred: $e'));
     }
   }
@@ -65,17 +53,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, OtpVerificationResult>> verifyEmail(String email, String otp) async {
     try {
       final request = VerifyOtpRequestModel(email: email, otp: otp);
-      Log.d('AuthRepositoryImpl', 'Making OTP verification request for email: $email');
-
       final response = await remoteDataSource.verifyEmail(request);
-      Log.d('AuthRepositoryImpl', 'OTP verification response received: ${response.message}');
 
       return Right(OtpVerificationResult(message: response.message, isValid: response.isVerified));
     } on CustomException catch (e) {
-      Log.e('AuthRepositoryImpl', 'CustomException during OTP verification: ${e.message}', StackTrace.current);
       return Left(ServerFailure(e.message));
-    } catch (e, stackTrace) {
-      Log.e('AuthRepositoryImpl', 'Unexpected error during OTP verification: $e', stackTrace);
+    } catch (e) {
       return Left(ServerFailure('An unexpected error occurred: $e'));
     }
   }
