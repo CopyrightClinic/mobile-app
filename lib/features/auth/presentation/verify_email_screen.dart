@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../config/routes/app_routes.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
-import '../../../../core/widgets/custom_back_button.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../config/theme/app_theme.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -58,12 +58,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         child: TimerStarter(
           child: CustomScaffold(
             extendBodyBehindAppBar: true,
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap8Px.w), child: const CustomBackButton()),
-            ),
+            appBar: CustomAppBar.transparent(),
             body: SafeArea(
               child: Column(
                 children: [

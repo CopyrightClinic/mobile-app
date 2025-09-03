@@ -9,7 +9,7 @@ import '../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../core/utils/extensions/theme_extensions.dart';
 import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/widgets/custom_text_field.dart';
-import '../../../core/widgets/custom_back_button.dart';
+import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/mixin/validator.dart';
 import '../../../core/utils/password_strength.dart';
@@ -167,12 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
       },
       child: CustomScaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap8Px.w), child: const CustomBackButton()),
-        ),
+        appBar: CustomAppBar.transparent(),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
