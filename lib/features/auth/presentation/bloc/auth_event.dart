@@ -23,7 +23,6 @@ class VerifyEmailRequested extends AuthEvent {
 
   const VerifyEmailRequested({required this.email, required this.otp});
 
-  @override
   List<Object?> get props => [email, otp];
 }
 
