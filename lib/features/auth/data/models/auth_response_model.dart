@@ -34,3 +34,15 @@ class SignupResponseModel {
 
   UserEntity toEntity() => user.toEntity();
 }
+
+@JsonSerializable()
+class VerifyOtpResponseModel {
+  final String message;
+  final bool isVerified;
+
+  const VerifyOtpResponseModel({required this.message, required this.isVerified});
+
+  factory VerifyOtpResponseModel.fromJson(Map<String, dynamic> json) => _$VerifyOtpResponseModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VerifyOtpResponseModelToJson(this);
+}

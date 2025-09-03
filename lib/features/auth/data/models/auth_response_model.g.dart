@@ -36,3 +36,17 @@ Map<String, dynamic> _$SignupResponseModelToJson(
   'accessToken': instance.accessToken,
   'verificationEmailSent': instance.verificationEmailSent,
 };
+
+VerifyOtpResponseModel _$VerifyOtpResponseModelFromJson(
+  Map<String, dynamic> json,
+) => VerifyOtpResponseModel(
+  message: json['message'] as String,
+  isVerified: json['isVerified'] as bool,
+);
+
+Map<String, dynamic> _$VerifyOtpResponseModelToJson(
+  VerifyOtpResponseModel instance,
+) => <String, dynamic>{
+  'message': instance.message,
+  'isVerified': instance.isVerified,
+};

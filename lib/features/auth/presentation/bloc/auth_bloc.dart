@@ -1,19 +1,22 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
+import '../../domain/usecases/verify_email_usecase.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../../domain/entities/auth_result.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final SignupUseCase signupUseCase;
+  final VerifyEmailUseCase verifyEmailUseCase;
   final AuthRepository authRepository;
 
-  AuthBloc({required this.loginUseCase, required this.signupUseCase, required this.authRepository}) : super(AuthInitial()) {
+  AuthBloc({required this.loginUseCase, required this.signupUseCase, required this.verifyEmailUseCase, required this.authRepository})
+    : super(AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
     on<SignupRequested>(_onSignupRequested);
+    on<VerifyEmailRequested>(_onVerifyEmailRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthStatus>(_onCheckAuthStatus);
   }
@@ -37,6 +40,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(SignupError(failure.message ?? 'Signup failed')),
       (authResult) => emit(SignupSuccess(authResult.user, authResult.message)),
+    );
+  }
+
+  Future<void> _onVerifyEmailRequested(VerifyEmailRequested event, Emitter<AuthState> emit) async {
+    emit(VerifyEmailLoading());
+
+    final result = await verifyEmailUseCase(VerifyEmailParams(email: event.email, otp: event.otp));
+
+    result.fold(
+      (failure) => emit(VerifyEmailError(failure.message ?? 'Email verification failed')),
+      (emailResult) => emit(VerifyEmailSuccess(emailResult.message)),
     );
   }
 

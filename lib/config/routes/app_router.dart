@@ -6,6 +6,7 @@ import '../../../features/onboarding/presentation/pages/welcome_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/sign_up_screen.dart';
 import '../../features/auth/presentation/signup_success_screen.dart';
+import '../../features/auth/presentation/verify_email_screen.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -23,6 +24,11 @@ class AppRouter {
         path: AppRoutes.signupSuccessRouteName,
         name: AppRoutes.signupSuccessRouteName,
         builder: (context, state) => const SignupSuccessScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.verifyEmailRouteName,
+        name: AppRoutes.verifyEmailRouteName,
+        builder: (context, state) => VerifyEmailScreen(email: state.extra.toString()),
       ),
     ],
   );

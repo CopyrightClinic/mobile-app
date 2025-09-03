@@ -6,7 +6,7 @@ import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import '../widgets/custom_back_button.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../widgets/onboarding_background.dart';
 import '../widgets/gradient_border_painter.dart';
 
@@ -17,12 +17,7 @@ class WhatWeDoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: Padding(padding: EdgeInsets.only(left: 8.w), child: CustomBackButton()),
-      ),
+      appBar: CustomAppBar.transparent(),
       body: OnboardingBackground(
         imagePath: ImageConstants.whatWeDoBG,
         child: SafeArea(

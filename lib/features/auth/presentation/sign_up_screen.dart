@@ -9,7 +9,7 @@ import '../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../core/utils/extensions/theme_extensions.dart';
 import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/widgets/custom_text_field.dart';
-import '../../../core/widgets/custom_back_button.dart';
+import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/mixin/validator.dart';
 import '../../../core/utils/password_strength.dart';
@@ -143,16 +143,12 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is SignupSuccess) {
-          // Show the API message in snackbar
           final message = _formatApiMessage(state.message);
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green, duration: const Duration(seconds: 3)));
-
-          // Navigate to success screen
-          context.go(AppRoutes.signupSuccessRouteName);
+          context.push(AppRoutes.verifyEmailRouteName, extra: _emailController.text.trim());
         } else if (state is SignupError) {
-          // Show error message with proper styling
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(_formatErrorMessage(state.message)),
@@ -171,12 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
       },
       child: CustomScaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap8Px.w), child: const CustomBackButton()),
-        ),
+        appBar: CustomAppBar.transparent(),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),

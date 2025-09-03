@@ -73,3 +73,23 @@ class SignupError extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+class VerifyEmailLoading extends AuthState {}
+
+class VerifyEmailSuccess extends AuthState {
+  final String message;
+
+  const VerifyEmailSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class VerifyEmailError extends AuthState {
+  final String message;
+
+  const VerifyEmailError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
