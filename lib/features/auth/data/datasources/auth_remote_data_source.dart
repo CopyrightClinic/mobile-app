@@ -134,29 +134,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<CompleteProfileResponseModel> completeProfile(CompleteProfileRequestModel request) async {
     try {
-      Log.d('AuthRemoteDataSourceImpl', 'Making complete profile API call to: ${ApiEndpoint.auth(AuthEndpoint.COMPLETE_PROFILE)}');
-      Log.d('AuthRemoteDataSourceImpl', 'Request data: ${request.toJson()}');
-
       final response = await apiService.patchData<CompleteProfileResponseModel>(
         endpoint: ApiEndpoint.auth(AuthEndpoint.COMPLETE_PROFILE),
         data: request.toJson(),
         requiresAuthToken: true,
         converter: (ResponseModel<JSON> response) {
-          Log.d('AuthRemoteDataSourceImpl', 'Raw API response: ${response.data}');
           try {
             final completeProfileResponse = CompleteProfileResponseModel.fromJson(response.data);
-            Log.d('AuthRemoteDataSourceImpl', 'Parsed complete profile response: ${completeProfileResponse.message}');
             return completeProfileResponse;
-          } catch (e, stackTrace) {
-            Log.e('AuthRemoteDataSourceImpl', 'Error parsing complete profile response: $e', stackTrace);
-            rethrow;
+          } catch (e) {
+            throw CustomException.fromParsingException(e as Exception);
           }
         },
       );
       return response;
-    } catch (e, stackTrace) {
-      Log.e('AuthRemoteDataSourceImpl', 'Error in complete profile API call: $e', stackTrace);
-      rethrow;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
     }
   }
 }
