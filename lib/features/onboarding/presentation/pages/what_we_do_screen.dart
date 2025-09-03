@@ -4,6 +4,7 @@ import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
+import 'package:copyright_clinic_flutter/features/onboarding/presentation/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../../../core/widgets/custom_app_bar.dart';
@@ -17,7 +18,7 @@ class WhatWeDoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: CustomAppBar.transparent(),
+      appBar: CustomAppBar(leading: OnboardingCustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
       body: OnboardingBackground(
         imagePath: ImageConstants.whatWeDoBG,
         child: SafeArea(

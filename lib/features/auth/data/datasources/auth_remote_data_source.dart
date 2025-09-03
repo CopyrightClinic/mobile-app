@@ -1,5 +1,6 @@
 import '../../../../core/network/api_service/api_service.dart';
 import '../../../../core/network/endpoints/api_endpoints.dart';
+import '../../../../core/network/exception/custom_exception.dart';
 import '../../../../core/network/responce/responce_model.dart';
 import '../../../../core/utils/enumns/api/export.dart';
 import '../../../../core/utils/typedefs/type_defs.dart';
@@ -73,9 +74,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
       return response;
-    } catch (e, stackTrace) {
-      Log.e('AuthRemoteDataSourceImpl', 'Error in send email verification API call: $e', stackTrace);
-      rethrow;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
     }
   }
 
@@ -91,9 +91,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
       return response;
-    } catch (e, stackTrace) {
-      Log.e('AuthRemoteDataSourceImpl', 'Error in forgot password API call: $e', stackTrace);
-      rethrow;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
     }
   }
 
@@ -109,9 +108,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
       return response;
-    } catch (e, stackTrace) {
-      Log.e('AuthRemoteDataSourceImpl', 'Error in verify password reset OTP API call: $e', stackTrace);
-      rethrow;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
     }
   }
 
@@ -127,9 +125,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
       return response;
-    } catch (e, stackTrace) {
-      Log.e('AuthRemoteDataSourceImpl', 'Error in reset password API call: $e', stackTrace);
-      rethrow;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
     }
   }
 }

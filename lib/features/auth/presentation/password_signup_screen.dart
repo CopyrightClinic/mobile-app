@@ -1,6 +1,7 @@
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_app_bar.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
@@ -143,11 +144,8 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
         },
         child: CustomScaffold(
           extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap8Px.w), child: CustomBackButton(onPressed: _navigateToWelcome)),
+          appBar: CustomAppBar(
+            leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap4Px.w), child: CustomBackButton(onPressed: _navigateToWelcome)),
           ),
           body: SafeArea(
             child: Padding(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../constants/dimensions.dart';
 import '../utils/extensions/extensions.dart';
 import 'custom_back_button.dart';
@@ -28,13 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final bool automaticallyImplyLeading;
 
-  final SystemUiOverlayStyle? systemOverlayStyle;
-
   final double? height;
-
-  final bool showBottomBorder;
-
-  final Color? bottomBorderColor;
 
   final EdgeInsetsGeometry? leadingPadding;
 
@@ -51,85 +44,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.elevation = 0,
     this.scrolledUnderElevation = 0,
     this.automaticallyImplyLeading = false,
-    this.systemOverlayStyle,
     this.height,
-    this.showBottomBorder = false,
-    this.bottomBorderColor,
     this.leadingPadding,
   });
-
-  factory CustomAppBar.basic({
-    Key? key,
-    String? titleText,
-    TextStyle? titleStyle,
-    bool centerTitle = false,
-    List<Widget>? actions,
-    bool showBackButton = true,
-    Widget? customLeading,
-    EdgeInsetsGeometry? leadingPadding,
-  }) {
-    return CustomAppBar(
-      key: key,
-      titleText: titleText,
-      titleStyle: titleStyle,
-      centerTitle: centerTitle,
-      actions: actions,
-      showBackButton: showBackButton,
-      leading: customLeading,
-      leadingPadding: leadingPadding,
-    );
-  }
-
-  factory CustomAppBar.transparent({
-    Key? key,
-    String? titleText,
-    Widget? title,
-    TextStyle? titleStyle,
-    bool centerTitle = false,
-    List<Widget>? actions,
-    bool showBackButton = true,
-    Widget? customLeading,
-    EdgeInsetsGeometry? leadingPadding,
-  }) {
-    return CustomAppBar(
-      key: key,
-      title: title,
-      titleText: titleText,
-      titleStyle: titleStyle,
-      centerTitle: centerTitle,
-      actions: actions,
-      showBackButton: showBackButton,
-      leading: customLeading,
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      leadingPadding: leadingPadding,
-    );
-  }
-
-  factory CustomAppBar.withTitle({
-    Key? key,
-    required String titleText,
-    TextStyle? titleStyle,
-    bool centerTitle = true,
-    List<Widget>? actions,
-    bool showBackButton = true,
-    Widget? customLeading,
-    Color? backgroundColor,
-    EdgeInsetsGeometry? leadingPadding,
-  }) {
-    return CustomAppBar(
-      key: key,
-      titleText: titleText,
-      titleStyle: titleStyle,
-      centerTitle: centerTitle,
-      actions: actions,
-      showBackButton: showBackButton,
-      leading: customLeading,
-      backgroundColor: backgroundColor ?? Colors.transparent,
-      leadingPadding: leadingPadding,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,12 +83,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: elevation,
       scrolledUnderElevation: scrolledUnderElevation,
       automaticallyImplyLeading: automaticallyImplyLeading,
-      systemOverlayStyle: systemOverlayStyle,
+      leadingWidth: 60,
     );
-
-    if (showBottomBorder) {
-      return Column(mainAxisSize: MainAxisSize.min, children: [appBar, Container(height: 1, color: bottomBorderColor ?? context.greyLight)]);
-    }
 
     return appBar;
   }
@@ -179,21 +92,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize {
     double appBarHeight = height ?? kToolbarHeight;
-    if (showBottomBorder) {
-      appBarHeight += 1;
-    }
     return Size.fromHeight(appBarHeight);
-  }
-}
-
-extension CustomAppBarExtensions on CustomAppBar {
-  static CustomAppBar get simple => CustomAppBar.transparent();
-
-  static CustomAppBar withCustomBackButton({String? titleText, List<Widget>? actions, EdgeInsetsGeometry? backButtonPadding}) {
-    return CustomAppBar.transparent(
-      titleText: titleText,
-      actions: actions,
-      leadingPadding: backButtonPadding ?? EdgeInsets.only(left: DimensionConstants.gap8Px.w),
-    );
   }
 }

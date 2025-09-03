@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import '../../../config/routes/app_routes.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/widgets/custom_scaffold.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/utils/ui/snackbar_utils.dart';
@@ -56,7 +57,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
         child: TimerStarter(
           child: CustomScaffold(
             extendBodyBehindAppBar: true,
-            appBar: CustomAppBar.transparent(),
+            appBar: CustomAppBar(leading: CustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
             body: SafeArea(
               child: Column(
                 children: [
