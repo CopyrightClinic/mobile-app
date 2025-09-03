@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../../config/routes/app_routes.dart';
+import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_scaffold.dart';
-import '../../../core/widgets/custom_back_button.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/utils/ui/snackbar_utils.dart';
 import '../../../core/constants/app_strings.dart';
@@ -36,6 +36,57 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthBloc _authBloc = sl<AuthBloc>();
 
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<ResendOtpCubit>(),
+      child: BlocListener<AuthBloc, AuthState>(
+        bloc: _authBloc,
+        listener: (context, state) {
+          if (state is VerifyEmailSuccess || state is VerifyPasswordResetSuccess) {
+            _handleSuccess(state);
+          } else if (state is VerifyEmailError || state is VerifyPasswordResetError) {
+            _handleError(state);
+          } else if (state is SendEmailVerificationSuccess || state is ForgotPasswordSuccess) {
+            _handleResendSuccess(state);
+          } else if (state is SendEmailVerificationError || state is ForgotPasswordError) {
+            _handleResendError(state);
+          }
+        },
+        child: TimerStarter(
+          child: CustomScaffold(
+            extendBodyBehindAppBar: true,
+            appBar: CustomAppBar.transparent(),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: DimensionConstants.gap20Px.h),
+                          _buildTitle(),
+                          SizedBox(height: DimensionConstants.gap8Px.h),
+                          _buildDescription(),
+                          SizedBox(height: DimensionConstants.gap40Px.h),
+                          _buildOtpInput(),
+                          SizedBox(height: DimensionConstants.gap24Px.h),
+                          _buildResendCode(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _onOtpChanged(String value) {
     if (value.length == 6) {
       _verifyOtp(value);
@@ -43,25 +94,13 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   void _verifyOtp(String otp) {
-    switch (widget.verificationType) {
-      case VerificationType.emailVerification:
-        _authBloc.add(VerifyEmailRequested(email: widget.email, otp: otp));
-        break;
-      case VerificationType.passwordReset:
-        _authBloc.add(VerifyPasswordResetRequested(email: widget.email, otp: otp));
-        break;
-    }
+    _authBloc.add(VerifyEmailRequested(email: widget.email, otp: otp));
   }
 
   void _resendCode(ResendOtpCubit cubit) {
-    switch (widget.verificationType) {
-      case VerificationType.emailVerification:
-        _authBloc.add(SendEmailVerificationRequested(email: widget.email));
-        break;
-      case VerificationType.passwordReset:
-        _authBloc.add(ForgotPasswordRequested(email: widget.email));
-        break;
-    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Verification code resent!'), backgroundColor: AppTheme.primary, duration: Duration(seconds: 2)));
 
     cubit.resetTimer();
     cubit.startResendTimer();
@@ -123,62 +162,6 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
     if (message.isNotEmpty) {
       SnackBarUtils.showError(context, message, duration: const Duration(seconds: 3), showDismissAction: false);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<ResendOtpCubit>(),
-      child: BlocListener<AuthBloc, AuthState>(
-        bloc: _authBloc,
-        listener: (context, state) {
-          if (state is VerifyEmailSuccess || state is VerifyPasswordResetSuccess) {
-            _handleSuccess(state);
-          } else if (state is VerifyEmailError || state is VerifyPasswordResetError) {
-            _handleError(state);
-          } else if (state is SendEmailVerificationSuccess || state is ForgotPasswordSuccess) {
-            _handleResendSuccess(state);
-          } else if (state is SendEmailVerificationError || state is ForgotPasswordError) {
-            _handleResendError(state);
-          }
-        },
-        child: TimerStarter(
-          child: CustomScaffold(
-            extendBodyBehindAppBar: true,
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap8Px.w), child: const CustomBackButton()),
-            ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: DimensionConstants.gap20Px.h),
-                          _buildTitle(),
-                          SizedBox(height: DimensionConstants.gap8Px.h),
-                          _buildDescription(),
-                          SizedBox(height: DimensionConstants.gap40Px.h),
-                          _buildOtpInput(),
-                          SizedBox(height: DimensionConstants.gap24Px.h),
-                          _buildResendCode(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildTitle() {
@@ -247,7 +230,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   Widget _buildResendCode() {
     return BlocBuilder<ResendOtpCubit, ResendOtpState>(
       builder: (context, state) {
-        final cubit = context.read<ResendOtpCubit>();
+        final cubit = sl<ResendOtpCubit>();
         final canResend = cubit.canResend;
 
         return Column(
