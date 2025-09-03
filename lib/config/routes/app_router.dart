@@ -44,7 +44,9 @@ class AppRouter {
         name: AppRoutes.verifyCodeRouteName,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return UnifiedVerificationScreen(email: extra['email'] as String, verificationType: extra['verificationType'] as VerificationType);
+          String email = extra['email'] ?? '';
+          VerificationType verificationType = extra['verificationType'] ?? VerificationType.emailVerification;
+          return UnifiedVerificationScreen(email: email, verificationType: verificationType);
         },
       ),
       GoRoute(
@@ -57,7 +59,9 @@ class AppRouter {
         name: AppRoutes.resetPasswordRouteName,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return ResetPasswordScreen(email: extra['email'] as String, otp: extra['otp'] as String);
+          String email = extra['email'] ?? '';
+          String otp = extra['otp'] ?? '';
+          return ResetPasswordScreen(email: email, otp: otp);
         },
       ),
       GoRoute(
