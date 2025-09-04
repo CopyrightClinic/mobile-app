@@ -12,4 +12,5 @@ class AppRoutes {
   static const String forgotPasswordRouteName = '/forgot-password';
   static const String resetPasswordRouteName = '/reset-password';
   static const String completeProfileRouteName = '/complete-profile';
+  static const String addPaymentMethodRouteName = '/add-payment-method';
 }

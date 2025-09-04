@@ -151,4 +151,29 @@ class AppStrings {
   static const profileUpdateFailed = 'profileUpdateFailed';
   static const invalidPhoneNumber = 'invalidPhoneNumber';
   static const phoneNumberRequired = 'phoneNumberRequired';
+  // Payment Strings
+  static const addPaymentMethod = 'addPaymentMethod';
+  static const nameOnCard = 'nameOnCard';
+  static const enterFullNameAsShownOnCard = 'enterFullNameAsShownOnCard';
+  static const cardNumber = 'cardNumber';
+  static const enterCardNumber = 'enterCardNumber';
+  static const expirationDate = 'expirationDate';
+  static const mmYy = 'mmYy';
+  static const cvv = 'cvv';
+  static const enterCvv = 'enterCvv';
+  static const paymentMethods = 'paymentMethods';
+  static const savedPaymentMethods = 'savedPaymentMethods';
+  static const deletePaymentMethod = 'deletePaymentMethod';
+  static const confirmDelete = 'confirmDelete';
+  static const paymentMethodAdded = 'paymentMethodAdded';
+  static const paymentMethodDeleted = 'paymentMethodDeleted';
+  static const failedToAddPaymentMethod = 'failedToAddPaymentMethod';
+  static const failedToDeletePaymentMethod = 'failedToDeletePaymentMethod';
+  static const invalidCardNumber = 'invalidCardNumber';
+  static const invalidExpirationDate = 'invalidExpirationDate';
+  static const invalidCvv = 'invalidCvv';
+  static const cardNumberIsRequired = 'cardNumberIsRequired';
+  static const expirationDateIsRequired = 'expirationDateIsRequired';
+  static const cvvIsRequired = 'cvvIsRequired';
+  static const cardholderNameIsRequired = 'cardholderNameIsRequired';
 }

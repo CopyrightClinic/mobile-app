@@ -1,3 +1,4 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../features/onboarding/presentation/pages/about_us_screen.dart';
 import '../../../features/onboarding/presentation/pages/splash_screen.dart';
@@ -11,7 +12,10 @@ import '../../features/auth/presentation/password_signup_screen.dart';
 import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
+import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/payments/presentation/bloc/payment_bloc.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
+import '../../di.dart';
 import 'app_routes.dart';
 
 class AppRouter {
