@@ -90,3 +90,17 @@ class ResetPasswordResponseModel {
 
   Map<String, dynamic> toJson() => _$ResetPasswordResponseModelToJson(this);
 }
+
+@JsonSerializable()
+class CompleteProfileResponseModel {
+  final String message;
+  final UserModel user;
+
+  const CompleteProfileResponseModel({required this.message, required this.user});
+
+  factory CompleteProfileResponseModel.fromJson(Map<String, dynamic> json) => _$CompleteProfileResponseModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CompleteProfileResponseModelToJson(this);
+
+  UserEntity toEntity() => user.toEntity();
+}

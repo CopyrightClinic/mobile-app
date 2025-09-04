@@ -9,8 +9,7 @@ class UserEntity extends Equatable {
   final String role;
   final String status;
   final int? totalSessions;
-  final bool isVerified;
-  final DateTime createdAt;
+  final DateTime? createdAt;
   final DateTime? updatedAt;
 
   const UserEntity({
@@ -22,11 +21,10 @@ class UserEntity extends Equatable {
     required this.role,
     required this.status,
     this.totalSessions,
-    required this.isVerified,
-    required this.createdAt,
+    this.createdAt,
     this.updatedAt,
   });
 
   @override
-  List<Object?> get props => [id, name, email, phoneNumber, address, role, status, totalSessions, isVerified, createdAt, updatedAt];
+  List<Object?> get props => [id, name, email, phoneNumber, address, role, status, totalSessions, createdAt, updatedAt];
 }

@@ -95,13 +95,19 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   void _verifyOtp(String otp) {
-    _authBloc.add(VerifyEmailRequested(email: widget.email, otp: otp));
+    if (widget.verificationType == VerificationType.emailVerification) {
+      _authBloc.add(VerifyEmailRequested(email: widget.email, otp: otp));
+    } else {
+      _authBloc.add(VerifyPasswordResetRequested(email: widget.email, otp: otp));
+    }
   }
 
   void _resendCode(ResendOtpCubit cubit) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Verification code resent!'), backgroundColor: AppTheme.primary, duration: Duration(seconds: 2)));
+    if (widget.verificationType == VerificationType.emailVerification) {
+      _authBloc.add(SendEmailVerificationRequested(email: widget.email));
+    } else {
+      _authBloc.add(ForgotPasswordRequested(email: widget.email));
+    }
 
     cubit.resetTimer();
     cubit.startResendTimer();
@@ -148,7 +154,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
 
   void _handleResendSuccess(AuthState state) {
     String message = tr(AppStrings.codeSent);
-    SnackBarUtils.showInfo(context, message, duration: const Duration(seconds: 2));
+    SnackBarUtils.showSuccess(context, message, duration: const Duration(seconds: 2));
   }
 
   void _handleResendError(AuthState state) {

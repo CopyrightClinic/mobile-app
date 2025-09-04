@@ -7,6 +7,7 @@ import '../../domain/usecases/verify_email_usecase.dart';
 import '../../domain/usecases/send_email_verification_usecase.dart';
 import '../../domain/usecases/verify_password_reset_otp_usecase.dart';
 import '../../domain/usecases/reset_password_usecase.dart';
+import '../../domain/usecases/complete_profile_usecase.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -18,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SendEmailVerificationUseCase sendEmailVerificationUseCase;
   final VerifyPasswordResetOtpUseCase verifyPasswordResetOtpUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
+  final CompleteProfileUseCase completeProfileUseCase;
   final AuthRepository authRepository;
 
   AuthBloc({
@@ -27,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.sendEmailVerificationUseCase,
     required this.verifyPasswordResetOtpUseCase,
     required this.resetPasswordUseCase,
+    required this.completeProfileUseCase,
     required this.authRepository,
   }) : super(AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
@@ -36,6 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ForgotPasswordRequested>(_onForgotPasswordRequested);
     on<VerifyPasswordResetRequested>(_onVerifyPasswordResetRequested);
     on<ResetPasswordRequested>(_onResetPasswordRequested);
+    on<CompleteProfileRequested>(_onCompleteProfileRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthStatus>(_onCheckAuthStatus);
   }
@@ -138,5 +142,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       emit(AuthUnauthenticated());
     }
+  }
+
+  Future<void> _onCompleteProfileRequested(CompleteProfileRequested event, Emitter<AuthState> emit) async {
+    emit(CompleteProfileLoading());
+    final result = await completeProfileUseCase(CompleteProfileParams(name: event.name, phoneNumber: event.phoneNumber, address: event.address));
+    result.fold(
+      (failure) => emit(CompleteProfileError(failure.message ?? tr(AppStrings.profileUpdateFailed))),
+      (message) => emit(CompleteProfileSuccess(message)),
+    );
   }
 }

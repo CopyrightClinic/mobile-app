@@ -33,6 +33,8 @@ class ApiEndpoint {
         return '$path/verify-otp';
       case AuthEndpoint.RESET_PASSWORD:
         return '$path/reset-password';
+      case AuthEndpoint.COMPLETE_PROFILE:
+        return '$path/complete-profile';
     }
   }
 }

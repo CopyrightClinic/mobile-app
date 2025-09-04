@@ -16,6 +16,7 @@ abstract class AuthRemoteDataSource {
   Future<ForgotPasswordResponseModel> forgotPassword(ForgotPasswordRequestModel request);
   Future<VerifyPasswordResetOtpResponseModel> verifyPasswordResetOtp(VerifyOtpRequestModel request);
   Future<ResetPasswordResponseModel> resetPassword(ResetPasswordRequestModel request);
+  Future<CompleteProfileResponseModel> completeProfile(CompleteProfileRequestModel request);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -122,6 +123,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         requiresAuthToken: false,
         converter: (ResponseModel<JSON> response) {
           return ResetPasswordResponseModel.fromJson(response.data);
+        },
+      );
+      return response;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
+
+  @override
+  Future<CompleteProfileResponseModel> completeProfile(CompleteProfileRequestModel request) async {
+    try {
+      final response = await apiService.patchData<CompleteProfileResponseModel>(
+        endpoint: ApiEndpoint.auth(AuthEndpoint.COMPLETE_PROFILE),
+        data: request.toJson(),
+        requiresAuthToken: true,
+        converter: (ResponseModel<JSON> response) {
+          try {
+            final completeProfileResponse = CompleteProfileResponseModel.fromJson(response.data);
+            return completeProfileResponse;
+          } catch (e) {
+            throw CustomException.fromParsingException(e as Exception);
+          }
         },
       );
       return response;

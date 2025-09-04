@@ -65,4 +65,35 @@ mixin Validator {
     }
     return null;
   }
+
+  String? validateFullName(String? value, String Function(String) tr) {
+    if (value == null || value.isEmpty) {
+      return tr(AppStrings.fullNameIsRequired);
+    } else if (value.trim().length < 2) {
+      return tr(AppStrings.fullNameMustBeAtLeast2Characters);
+    } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value.trim())) {
+      return tr(AppStrings.fullNameCanOnlyContainLetters);
+    }
+    return null;
+  }
+
+  String? validatePhoneNumber(String? value, String Function(String) tr) {
+    if (value == null || value.isEmpty) {
+      return tr(AppStrings.phoneNumberIsRequired);
+    } else if (value.length < 10) {
+      return tr(AppStrings.phoneNumberMustBeAtLeast10Digits);
+    } else if (!RegExp(r'^[+]?[0-9\s\-\(\)]+$').hasMatch(value)) {
+      return tr(AppStrings.pleaseEnterAValidPhoneNumber);
+    }
+    return null;
+  }
+
+  String? validateAddress(String? value, String Function(String) tr) {
+    if (value == null || value.isEmpty) {
+      return tr(AppStrings.addressIsRequired);
+    } else if (value.trim().length < 5) {
+      return tr(AppStrings.addressMustBeAtLeast5Characters);
+    }
+    return null;
+  }
 }
