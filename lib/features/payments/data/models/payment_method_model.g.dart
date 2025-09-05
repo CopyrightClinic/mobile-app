@@ -9,20 +9,42 @@ part of 'payment_method_model.dart';
 PaymentMethodModel _$PaymentMethodModelFromJson(Map<String, dynamic> json) =>
     PaymentMethodModel(
       id: json['id'] as String,
-      customerId: json['customer_id'] as String,
-      type: json['type'] as String,
-      card: CardModel.fromJson(json['card'] as Map<String, dynamic>),
-      createdAt: DateTime.parse(json['created_at'] as String),
+      userId: json['userId'] as String,
+      stripePaymentMethodId: json['stripePaymentMethodId'] as String,
+      isDefault: json['isDefault'] as bool,
+      paymentMethodDetail: PaymentMethodDetailModel.fromJson(
+        json['paymentMethodDetail'] as Map<String, dynamic>,
+      ),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$PaymentMethodModelToJson(PaymentMethodModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'customer_id': instance.customerId,
-      'type': instance.type,
-      'card': instance.card,
-      'created_at': instance.createdAt.toIso8601String(),
+      'userId': instance.userId,
+      'stripePaymentMethodId': instance.stripePaymentMethodId,
+      'isDefault': instance.isDefault,
+      'paymentMethodDetail': instance.paymentMethodDetail,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
     };
+
+PaymentMethodDetailModel _$PaymentMethodDetailModelFromJson(
+  Map<String, dynamic> json,
+) => PaymentMethodDetailModel(
+  id: json['id'] as String,
+  type: json['type'] as String,
+  card: CardModel.fromJson(json['card'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$PaymentMethodDetailModelToJson(
+  PaymentMethodDetailModel instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'type': instance.type,
+  'card': instance.card,
+};
 
 CardModel _$CardModelFromJson(Map<String, dynamic> json) => CardModel(
   brand: json['brand'] as String,

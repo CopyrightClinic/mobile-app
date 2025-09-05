@@ -6,20 +6,47 @@ part 'payment_method_model.g.dart';
 @JsonSerializable()
 class PaymentMethodModel {
   final String id;
-  @JsonKey(name: 'customer_id')
-  final String customerId;
-  final String type;
-  final CardModel card;
-  @JsonKey(name: 'created_at')
+  final String userId;
+  final String stripePaymentMethodId;
+  final bool isDefault;
+  final PaymentMethodDetailModel paymentMethodDetail;
   final DateTime createdAt;
+  final DateTime updatedAt;
 
-  const PaymentMethodModel({required this.id, required this.customerId, required this.type, required this.card, required this.createdAt});
+  const PaymentMethodModel({
+    required this.id,
+    required this.userId,
+    required this.stripePaymentMethodId,
+    required this.isDefault,
+    required this.paymentMethodDetail,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
   factory PaymentMethodModel.fromJson(Map<String, dynamic> json) => _$PaymentMethodModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$PaymentMethodModelToJson(this);
 
-  PaymentMethodEntity toEntity() => PaymentMethodEntity(id: id, customerId: customerId, type: type, card: card.toEntity(), createdAt: createdAt);
+  PaymentMethodEntity toEntity() => PaymentMethodEntity(
+    id: id,
+    customerId: userId,
+    type: paymentMethodDetail.type,
+    card: paymentMethodDetail.card.toEntity(),
+    createdAt: createdAt,
+  );
+}
+
+@JsonSerializable()
+class PaymentMethodDetailModel {
+  final String id;
+  final String type;
+  final CardModel card;
+
+  const PaymentMethodDetailModel({required this.id, required this.type, required this.card});
+
+  factory PaymentMethodDetailModel.fromJson(Map<String, dynamic> json) => _$PaymentMethodDetailModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PaymentMethodDetailModelToJson(this);
 }
 
 @JsonSerializable()

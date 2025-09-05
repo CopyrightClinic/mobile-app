@@ -23,8 +23,6 @@ import 'features/payments/data/datasources/payment_remote_data_source.dart';
 import 'features/payments/data/repositories/payment_repository_impl.dart';
 import 'features/payments/domain/repositories/payment_repository.dart';
 import 'features/payments/domain/usecases/add_payment_method_usecase.dart';
-import 'features/payments/domain/usecases/create_setup_intent_usecase.dart';
-import 'features/payments/domain/usecases/get_payment_methods_usecase.dart';
 import 'features/payments/presentation/bloc/payment_bloc.dart';
 
 final sl = GetIt.instance;
@@ -72,9 +70,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => VerifyPasswordResetOtpUseCase(sl()));
   sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
   sl.registerLazySingleton(() => CompleteProfileUseCase(sl()));
-  sl.registerLazySingleton(() => CreateSetupIntentUseCase(sl()));
   sl.registerLazySingleton(() => AddPaymentMethodUseCase(sl()));
-  sl.registerLazySingleton(() => GetPaymentMethodsUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -91,7 +87,7 @@ Future<void> init() async {
   );
 
   // Payment Bloc
-  sl.registerLazySingleton(() => PaymentBloc(createSetupIntentUseCase: sl(), addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl()));
+  sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

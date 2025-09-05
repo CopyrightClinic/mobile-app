@@ -56,7 +56,6 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
         if (state is PaymentMethodAdded) {
           Log.d('AddPaymentMethodScreen', 'Payment method added successfully - ID: ${state.paymentMethod.id}');
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
-          context.pop();
         } else if (state is PaymentError) {
           Log.e('AddPaymentMethodScreen', 'Payment method addition failed: ${state.message}');
           SnackBarUtils.showError(context, state.message);
