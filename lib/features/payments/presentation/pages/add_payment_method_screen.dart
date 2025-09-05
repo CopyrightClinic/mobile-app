@@ -1,18 +1,25 @@
+import 'package:copyright_clinic_flutter/di.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
-import '../../../../config/theme/app_theme.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
-import '../../../../core/widgets/gradient_background.dart';
+import '../../../../core/utils/extensions/responsive_extensions.dart';
+import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/widgets/custom_scaffold.dart';
+import '../../../../core/widgets/custom_text_field.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/translated_text.dart';
+import '../../../../core/utils/ui/snackbar_utils.dart';
+import '../../../../core/utils/mixin/validator.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../bloc/payment_bloc.dart';
 import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
-import '../widgets/card_input_formatters.dart';
-import '../widgets/custom_text_field.dart';
 
 class AddPaymentMethodScreen extends StatefulWidget {
   const AddPaymentMethodScreen({super.key});
@@ -21,90 +28,174 @@ class AddPaymentMethodScreen extends StatefulWidget {
   State<AddPaymentMethodScreen> createState() => _AddPaymentMethodScreenState();
 }
 
-class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> {
+class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Validator {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _cardNumberController = TextEditingController();
-  final _expiryController = TextEditingController();
-  final _cvvController = TextEditingController();
 
-  bool _isFormValid = false;
+  final ValueNotifier<bool> _cardCompleteNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _formValidNotifier = ValueNotifier<bool>(false);
+
+  final CardFormEditController _cardFormController = CardFormEditController();
+
+  final _nameFocusNode = FocusNode();
+
+  late PaymentBloc _paymentBloc;
 
   @override
   void initState() {
     super.initState();
     _addListeners();
+    _paymentBloc = sl<PaymentBloc>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<PaymentBloc, PaymentState>(
+      bloc: _paymentBloc,
+      listener: (context, state) {
+        if (state is PaymentMethodAdded) {
+          Log.d('AddPaymentMethodScreen', 'Payment method added successfully - ID: ${state.paymentMethod.id}');
+          SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
+          context.pop();
+        } else if (state is PaymentError) {
+          Log.e('AddPaymentMethodScreen', 'Payment method addition failed: ${state.message}');
+          SnackBarUtils.showError(context, state.message);
+        }
+      },
+      child: CustomScaffold(
+        extendBodyBehindAppBar: true,
+        appBar: CustomAppBar(
+          leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
+          title: TranslatedText(
+            AppStrings.addPaymentMethod,
+            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w600),
+          ),
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.white,
+                  foregroundColor: context.darkTextPrimary,
+                  elevation: 0,
+                  padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap20Px.w, vertical: DimensionConstants.gap12Px.h),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
+                  minimumSize: Size.zero,
+                ),
+                child: TranslatedText(
+                  AppStrings.skip,
+                  style: TextStyle(color: context.textPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(bottom: DimensionConstants.gap20Px.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: DimensionConstants.gap20Px.h),
+                          CustomTextField(
+                            label: AppStrings.nameOnCard,
+                            placeholder: AppStrings.enterFullNameAsShownOnCard,
+                            controller: _nameController,
+                            focusNode: _nameFocusNode,
+                            keyboardType: TextInputType.name,
+                            validator: _validateName,
+                            onEditingComplete: () {
+                              _cardFormController.focus();
+                            },
+                            onChanged: (value) => _validateForm(),
+                          ),
+
+                          SizedBox(height: DimensionConstants.gap24Px.h),
+
+                          TranslatedText(
+                            AppStrings.cardDetails,
+                            style: TextStyle(fontSize: DimensionConstants.font13Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
+                          ),
+                          SizedBox(height: DimensionConstants.gap8Px.h),
+                          SizedBox(
+                            height: 200.h,
+                            child: CardFormField(
+                              key: const ValueKey('stripe_card_form'),
+                              controller: _cardFormController,
+                              style: CardFormStyle(
+                                backgroundColor: context.filledBgDark,
+                                borderColor: context.primary,
+                                borderRadius: DimensionConstants.radius12Px.r.toInt(),
+                                cursorColor: context.primaryColor,
+                                fontSize: DimensionConstants.font16Px.f.toInt(),
+                                placeholderColor: context.darkTextSecondary,
+                                textColor: context.darkTextPrimary,
+                              ),
+                              onCardChanged: (details) {
+                                Log.d('AddPaymentMethodScreen', 'Card form changed: complete=${details?.complete}');
+                                final complete = details?.complete ?? false;
+                                if (complete != _cardCompleteNotifier.value) {
+                                  _cardCompleteNotifier.value = complete;
+                                  _validateForm();
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  BlocBuilder<PaymentBloc, PaymentState>(
+                    bloc: _paymentBloc,
+                    builder: (context, state) {
+                      final isLoading = state is PaymentLoading;
+
+                      return ValueListenableBuilder<bool>(
+                        valueListenable: _formValidNotifier,
+                        builder: (context, isFormValid, child) {
+                          return AuthButton(
+                            text: AppStrings.addPaymentMethod,
+                            onPressed: _onAddPaymentMethod,
+                            isLoading: isLoading,
+                            isEnabled: isFormValid,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void _addListeners() {
     _nameController.addListener(_validateForm);
-    _cardNumberController.addListener(_validateForm);
-    _expiryController.addListener(_validateForm);
-    _cvvController.addListener(_validateForm);
   }
 
   void _validateForm() {
-    final isValid =
-        _nameController.text.isNotEmpty &&
-        _cardNumberController.text.replaceAll(' ', '').length >= 13 &&
-        _expiryController.text.length == 5 &&
-        _cvvController.text.length >= 3;
+    final isNameValid = _nameController.text.isNotEmpty;
+    final isCardValid = _cardCompleteNotifier.value;
+    final newFormValid = isNameValid && isCardValid;
 
-    if (isValid != _isFormValid) {
-      setState(() {
-        _isFormValid = isValid;
-      });
-    }
-  }
+    Log.d('AddPaymentMethodScreen', 'Validation: name=$isNameValid, card=$isCardValid, form=$newFormValid');
 
-  String? _validateCardNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.cardNumberIsRequired.tr();
+    if (_formValidNotifier.value != newFormValid) {
+      _formValidNotifier.value = newFormValid;
     }
-    final cleanValue = value.replaceAll(' ', '');
-    if (cleanValue.length < 13 || cleanValue.length > 19) {
-      return AppStrings.invalidCardNumber.tr();
-    }
-    return null;
-  }
-
-  String? _validateExpiryDate(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.expirationDateIsRequired.tr();
-    }
-    if (value.length != 5) {
-      return AppStrings.invalidExpirationDate.tr();
-    }
-
-    final parts = value.split('/');
-    if (parts.length != 2) {
-      return AppStrings.invalidExpirationDate.tr();
-    }
-
-    final month = int.tryParse(parts[0]);
-    final year = int.tryParse(parts[1]);
-
-    if (month == null || year == null || month < 1 || month > 12) {
-      return AppStrings.invalidExpirationDate.tr();
-    }
-
-    final now = DateTime.now();
-    final expiry = DateTime(2000 + year, month);
-    if (expiry.isBefore(DateTime(now.year, now.month))) {
-      return AppStrings.invalidExpirationDate.tr();
-    }
-
-    return null;
-  }
-
-  String? _validateCVV(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.cvvIsRequired.tr();
-    }
-    if (value.length < 3 || value.length > 4) {
-      return AppStrings.invalidCvv.tr();
-    }
-    return null;
   }
 
   String? _validateName(String? value) {
@@ -115,210 +206,27 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> {
   }
 
   void _onAddPaymentMethod() {
-    if (_formKey.currentState?.validate() == true && _isFormValid) {
-      final expiry = _expiryController.text.split('/');
-      context.read<PaymentBloc>().add(
-        AddPaymentMethodRequested(
-          cardNumber: _cardNumberController.text.replaceAll(' ', ''),
-          expiryMonth: expiry[0],
-          expiryYear: '20${expiry[1]}',
-          cvv: _cvvController.text,
-          cardholderName: _nameController.text,
-        ),
-      );
+    Log.d('AddPaymentMethodScreen', 'Add payment method button pressed');
+    if (_formKey.currentState?.validate() == true && _formValidNotifier.value && _cardCompleteNotifier.value) {
+      Log.d('AddPaymentMethodScreen', 'Form validation passed - submitting payment method for ${_nameController.text}');
+
+      _paymentBloc.add(AddPaymentMethodRequested(cardholderName: _nameController.text));
+    } else {
+      Log.w('AddPaymentMethodScreen', 'Form validation failed or card details incomplete - cannot submit payment method');
+      if (!_cardCompleteNotifier.value) {
+        Log.w('AddPaymentMethodScreen', 'Card form is not complete');
+      }
     }
   }
 
   @override
   void dispose() {
+    Log.d('AddPaymentMethodScreen', 'Screen disposed');
     _nameController.dispose();
-    _cardNumberController.dispose();
-    _expiryController.dispose();
-    _cvvController.dispose();
+    _cardFormController.dispose();
+    _cardCompleteNotifier.dispose();
+    _formValidNotifier.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Scaffold(
-      backgroundColor: isDark ? AppTheme.bgDark : AppTheme.greyLight,
-      body: GradientBackground(
-        child: SafeArea(
-          child: BlocListener<PaymentBloc, PaymentState>(
-            listener: (context, state) {
-              if (state is PaymentMethodAdded) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(AppStrings.paymentMethodAdded.tr()), backgroundColor: AppTheme.green));
-                context.pop();
-              } else if (state is PaymentError) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppTheme.red));
-              }
-            },
-            child: Column(
-              children: [
-                // App Bar
-                _buildAppBar(context, isDark),
-
-                // Form Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(DimensionConstants.gap24Px),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          SizedBox(height: DimensionConstants.gap32Px),
-
-                          // Name on Card
-                          CustomTextField(
-                            label: AppStrings.nameOnCard,
-                            hint: AppStrings.enterFullNameAsShownOnCard,
-                            controller: _nameController,
-                            keyboardType: TextInputType.name,
-                            validator: _validateName,
-                          ),
-
-                          SizedBox(height: DimensionConstants.gap24Px),
-
-                          // Card Number
-                          CustomTextField(
-                            label: AppStrings.cardNumber,
-                            hint: AppStrings.enterCardNumber,
-                            controller: _cardNumberController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly, CardNumberInputFormatter()],
-                            validator: _validateCardNumber,
-                          ),
-
-                          SizedBox(height: DimensionConstants.gap24Px),
-
-                          // Expiry Date and CVV Row
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  label: AppStrings.expirationDate,
-                                  hint: AppStrings.mmYy,
-                                  controller: _expiryController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, ExpiryDateInputFormatter()],
-                                  validator: _validateExpiryDate,
-                                ),
-                              ),
-
-                              SizedBox(width: DimensionConstants.gap16Px),
-
-                              Expanded(
-                                child: CustomTextField(
-                                  label: AppStrings.cvv,
-                                  hint: AppStrings.enterCvv,
-                                  controller: _cvvController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, CVVInputFormatter()],
-                                  validator: _validateCVV,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Bottom Button
-                _buildBottomButton(context, isDark),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px, vertical: DimensionConstants.gap8Px),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () => context.pop(),
-            icon: Icon(Icons.arrow_back_ios, color: isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary),
-          ),
-
-          Expanded(
-            child: Text(
-              AppStrings.addPaymentMethod.tr(),
-              style: TextStyle(
-                fontSize: DimensionConstants.font18Px,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary,
-                fontFamily: AppTheme.fontFamily,
-              ),
-            ),
-          ),
-
-          TextButton(
-            onPressed: () => context.pop(),
-            child: Text(
-              AppStrings.skip.tr(),
-              style: TextStyle(
-                fontSize: DimensionConstants.font16Px,
-                fontWeight: FontWeight.w500,
-                color: isDark ? AppTheme.darkTextSecondary : AppTheme.textBodyLight,
-                fontFamily: AppTheme.fontFamily,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomButton(BuildContext context, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(DimensionConstants.gap24Px),
-      child: BlocBuilder<PaymentBloc, PaymentState>(
-        builder: (context, state) {
-          final isLoading = state is PaymentLoading;
-
-          return SizedBox(
-            width: double.infinity,
-            height: DimensionConstants.gap56Px,
-            child: ElevatedButton(
-              onPressed: _isFormValid && !isLoading ? _onAddPaymentMethod : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primary,
-                disabledBackgroundColor: isDark ? AppTheme.buttonDiabled : AppTheme.placeholder,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius12Px)),
-              ),
-              child:
-                  isLoading
-                      ? SizedBox(
-                        height: DimensionConstants.gap24Px,
-                        width: DimensionConstants.gap24Px,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(isDark ? AppTheme.darkTextPrimary : AppTheme.white),
-                        ),
-                      )
-                      : Text(
-                        AppStrings.addPaymentMethod.tr(),
-                        style: TextStyle(
-                          fontSize: DimensionConstants.font16Px,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.white,
-                          fontFamily: AppTheme.fontFamily,
-                        ),
-                      ),
-            ),
-          );
-        },
-      ),
-    );
   }
 }

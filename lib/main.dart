@@ -7,16 +7,15 @@ import 'di.dart' as di;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:device_preview/device_preview.dart';
 import 'core/constants/language_constants.dart';
+import 'config/app_config/config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await di.init();
 
-  Stripe.publishableKey = const String.fromEnvironment(
-    'STRIPE_PUBLISHABLE_KEY',
-    defaultValue: 'pk_test_51S3XrHE3O1wM3Mv5LDXTzeM8ehEHvrwedIyQVJNEbcNjk46CdEPiwdpYgyrpI9a24Nn7PrlKd8SHoGuCzudPHFlL00A97Ix1CI',
-  );
+  Stripe.publishableKey = Config.stripePublishableKey;
+  Stripe.merchantIdentifier = Config.merchantIdentifier;
   await Stripe.instance.applySettings();
 
   HydratedBloc.storage = await HydratedStorage.build(storageDirectory: HydratedStorageDirectory((await getTemporaryDirectory()).path));

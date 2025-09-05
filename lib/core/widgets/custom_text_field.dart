@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../constants/dimensions.dart';
 import '../utils/mixin/validator.dart';
 import '../utils/extensions/responsive_extensions.dart';
 import '../utils/extensions/theme_extensions.dart';
-import '../../config/theme/app_theme.dart';
 import 'translated_text.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -83,8 +83,11 @@ class _CustomTextFieldState extends State<CustomTextField> with Validator {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TranslatedText(widget.label, style: TextStyle(color: context.darkTextPrimary, fontSize: 13.f, fontWeight: FontWeight.w600)),
-        SizedBox(height: 8.h),
+        TranslatedText(
+          widget.label,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font13Px.f, fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: DimensionConstants.gap8Px.h),
         TextFormField(
           autovalidateMode: widget.autovalidateMode,
           controller: _controller,

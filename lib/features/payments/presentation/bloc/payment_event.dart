@@ -12,22 +12,12 @@ class CreateSetupIntentRequested extends PaymentEvent {
 }
 
 class AddPaymentMethodRequested extends PaymentEvent {
-  final String cardNumber;
-  final String expiryMonth;
-  final String expiryYear;
-  final String cvv;
   final String cardholderName;
 
-  const AddPaymentMethodRequested({
-    required this.cardNumber,
-    required this.expiryMonth,
-    required this.expiryYear,
-    required this.cvv,
-    required this.cardholderName,
-  });
+  const AddPaymentMethodRequested({required this.cardholderName});
 
   @override
-  List<Object> get props => [cardNumber, expiryMonth, expiryYear, cvv, cardholderName];
+  List<Object> get props => [cardholderName];
 }
 
 class GetPaymentMethodsRequested extends PaymentEvent {

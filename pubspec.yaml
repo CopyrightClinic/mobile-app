@@ -56,7 +56,7 @@ dependencies:
   intl_phone_number_input: ^0.7.4
   
   # Payment Processing
-  flutter_stripe: ^10.1.1
+  flutter_stripe: ^11.5.0
 
 dev_dependencies:
   flutter_test:
@@ -71,7 +71,7 @@ flutter:
   assets:
     - assets/images/svg/
     - assets/images/png/
-    - assets/images/png/clients/
+
     - assets/translations/
     
   fonts:

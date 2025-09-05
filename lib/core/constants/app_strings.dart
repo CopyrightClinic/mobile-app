@@ -156,6 +156,7 @@ class AppStrings {
   static const nameOnCard = 'nameOnCard';
   static const enterFullNameAsShownOnCard = 'enterFullNameAsShownOnCard';
   static const cardNumber = 'cardNumber';
+  static const cardDetails = 'cardDetails';
   static const enterCardNumber = 'enterCardNumber';
   static const expirationDate = 'expirationDate';
   static const mmYy = 'mmYy';

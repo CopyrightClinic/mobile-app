@@ -133,6 +133,7 @@
   "nameOnCard": "Name on card",
   "enterFullNameAsShownOnCard": "Enter full name as shown on card",
   "cardNumber": "Card Number",
+  "cardDetails": "Card Details",
   "enterCardNumber": "Enter card number",
   "expirationDate": "Expiration Date",
   "mmYy": "MM/YY",

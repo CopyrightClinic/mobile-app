@@ -91,7 +91,7 @@ Future<void> init() async {
   );
 
   // Payment Bloc
-  sl.registerFactory(() => PaymentBloc(createSetupIntentUseCase: sl(), addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl()));
+  sl.registerLazySingleton(() => PaymentBloc(createSetupIntentUseCase: sl(), addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());
