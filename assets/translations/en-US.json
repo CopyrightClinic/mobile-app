@@ -153,5 +153,20 @@
   "cardNumberIsRequired": "Card number is required",
   "expirationDateIsRequired": "Expiration date is required",
   "cvvIsRequired": "CVV is required",
-  "cardholderNameIsRequired": "Cardholder name is required"
+  "cardholderNameIsRequired": "Cardholder name is required",
+  "dashboard": "Dashboard",
+  "home": "Home",
+  "mySessions": "My Sessions",
+  "profile": "Profile",
+  "welcomeBack": "Welcome Back",
+  "upcomingSessions": "Upcoming Sessions",
+  "noUpcomingSessions": "No upcoming sessions",
+  "viewAllSessions": "View All Sessions",
+  "bookNewSession": "Book New Session",
+  "myProfile": "My Profile",
+  "editProfile": "Edit Profile",
+  "logout": "Logout",
+  "confirmLogout": "Confirm Logout",
+  "areYouSureLogout": "Are you sure you want to logout?",
+  "cancel": "Cancel"
 }

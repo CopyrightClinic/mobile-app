@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
+import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -56,6 +57,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
         if (state is PaymentMethodAdded) {
           Log.d('AddPaymentMethodScreen', 'Payment method added successfully - ID: ${state.paymentMethod.id}');
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
+          context.go(AppRoutes.homeRouteName);
         } else if (state is PaymentError) {
           Log.e('AddPaymentMethodScreen', 'Payment method addition failed: ${state.message}');
           SnackBarUtils.showError(context, state.message);
@@ -73,7 +75,9 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
             Padding(
               padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.go(AppRoutes.homeRouteName);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.white,
                   foregroundColor: context.darkTextPrimary,

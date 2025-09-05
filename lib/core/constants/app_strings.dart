@@ -177,4 +177,21 @@ class AppStrings {
   static const expirationDateIsRequired = 'expirationDateIsRequired';
   static const cvvIsRequired = 'cvvIsRequired';
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
+
+  // Dashboard
+  static const dashboard = 'dashboard';
+  static const home = 'home';
+  static const mySessions = 'mySessions';
+  static const profile = 'profile';
+  static const welcomeBack = 'welcomeBack';
+  static const upcomingSessions = 'upcomingSessions';
+  static const noUpcomingSessions = 'noUpcomingSessions';
+  static const viewAllSessions = 'viewAllSessions';
+  static const bookNewSession = 'bookNewSession';
+  static const myProfile = 'myProfile';
+  static const editProfile = 'editProfile';
+  static const logout = 'logout';
+  static const confirmLogout = 'confirmLogout';
+  static const areYouSureLogout = 'areYouSureLogout';
+  static const cancel = 'cancel';
 }

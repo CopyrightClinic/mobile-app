@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:copyright_clinic_flutter/core/constants/image_constants.dart';
 import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
@@ -7,6 +8,9 @@ import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/responsive_extensions.dart';
 import 'package:copyright_clinic_flutter/features/onboarding/presentation/widgets/onboarding_background.dart';
 import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
+import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_event.dart';
+import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_state.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.initState();
     _initializeAnimations();
     _startAnimations();
-    _navigateToWelcomeScreen();
+    _checkAuthStatusAndNavigate();
   }
 
   void _initializeAnimations() {
@@ -44,10 +48,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _fadeController.forward();
   }
 
-  void _navigateToWelcomeScreen() async {
+  void _checkAuthStatusAndNavigate() async {
+    // Wait for animations to complete
     await Future.delayed(const Duration(seconds: 3));
+
     if (mounted) {
-      context.go(AppRoutes.welcomeRouteName);
+      // Check authentication status
+      context.read<AuthBloc>().add(CheckAuthStatus());
     }
   }
 
@@ -60,36 +67,48 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: OnboardingBackground(
-        child: Center(
-          child: AnimatedBuilder(
-            animation: Listenable.merge([_fadeAnimation, _scaleAnimation]),
-            builder: (context, child) {
-              return FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Hero(tag: 'app_logo', child: GlobalImage(assetPath: ImageConstants.logo, width: 105.8.w)),
-                      SizedBox(height: 16.h),
-                      Hero(
-                        tag: 'app_name',
-                        child: Material(
-                          color: Colors.transparent,
-                          child: TranslatedText(
-                            AppStrings.appName,
-                            style: TextStyle(color: Colors.white, fontSize: 24.f, fontWeight: FontWeight.w700),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          // User is logged in, navigate to home screen
+          context.go(AppRoutes.homeRouteName);
+        } else if (state is AuthUnauthenticated) {
+          // User is not logged in, navigate to welcome screen
+          context.go(AppRoutes.welcomeRouteName);
+        }
+        // AuthLoading state - keep showing splash screen
+      },
+      child: Scaffold(
+        body: OnboardingBackground(
+          child: Center(
+            child: AnimatedBuilder(
+              animation: Listenable.merge([_fadeAnimation, _scaleAnimation]),
+              builder: (context, child) {
+                return FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Hero(tag: 'app_logo', child: GlobalImage(assetPath: ImageConstants.logo, width: 105.8.w)),
+                        SizedBox(height: 16.h),
+                        Hero(
+                          tag: 'app_name',
+                          child: Material(
+                            color: Colors.transparent,
+                            child: TranslatedText(
+                              AppStrings.appName,
+                              style: TextStyle(color: Colors.white, fontSize: 24.f, fontWeight: FontWeight.w700),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

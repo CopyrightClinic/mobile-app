@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../../../core/utils/storage/token_storage.dart';
+import '../../../../core/utils/storage/user_storage.dart';
 
 import '../datasources/auth_remote_data_source.dart';
 import '../models/auth_request_model.dart';
@@ -21,8 +22,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final request = LoginRequestModel(email: email, password: password);
       final response = await remoteDataSource.login(request);
 
-      // Save access token
       await TokenStorage.saveAccessToken(response.accessToken);
+      await UserStorage.saveUser(response.toEntity());
 
       return Right(AuthResult(user: response.toEntity(), message: response.message));
     } on CustomException catch (e) {
@@ -38,8 +39,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final request = SignupRequestModel(email: email, password: password, confirmPassword: confirmPassword);
       final response = await remoteDataSource.signup(request);
 
-      // Save access token
       await TokenStorage.saveAccessToken(response.accessToken);
+      await UserStorage.saveUser(response.toEntity());
 
       return Right(AuthResult(user: response.toEntity(), message: response.message));
     } on CustomException catch (e) {
@@ -66,6 +67,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> logout() async {
     await TokenStorage.clearAccessToken();
+    await UserStorage.clearUser();
   }
 
   @override
@@ -76,9 +78,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserEntity?> getCurrentUser() async {
-    // This would typically fetch user data from local storage or make an API call
-    // For now, we'll return null as we need to implement user storage
-    return null;
+    return await UserStorage.getUser();
   }
 
   @override
