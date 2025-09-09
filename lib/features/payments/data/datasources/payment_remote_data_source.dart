@@ -3,7 +3,6 @@ import '../../../../core/network/endpoints/api_endpoints.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../../../core/network/responce/responce_model.dart';
 import '../../../../core/utils/enumns/api/export.dart';
-import '../../../../core/utils/logger/logger.dart';
 import '../../../../core/utils/typedefs/type_defs.dart';
 
 import '../models/payment_request_model.dart';
@@ -20,7 +19,6 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
 
   @override
   Future<CreatePaymentMethodResponseModel> createPaymentMethod(CreatePaymentMethodRequestModel request) async {
-    Log.d('PaymentRemoteDataSource', 'API call: Creating payment method - ID: ${request.stripePaymentMethodId}');
     try {
       final response = await apiService.postData<CreatePaymentMethodResponseModel>(
         endpoint: ApiEndpoint.payment(PaymentEndpoint.PAYMENT_METHODS),
@@ -35,10 +33,8 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
           }
         },
       );
-      Log.d('PaymentRemoteDataSource', 'API response: Payment method created successfully - ID: ${response.paymentMethod.id}');
       return response;
     } catch (e) {
-      Log.e('PaymentRemoteDataSource', 'API error: Failed to create payment method ${request.stripePaymentMethodId} - $e');
       throw CustomException.fromDioException(e as Exception);
     }
   }

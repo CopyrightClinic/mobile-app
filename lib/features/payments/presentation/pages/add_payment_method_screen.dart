@@ -17,7 +17,6 @@ import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/utils/mixin/validator.dart';
-import '../../../../core/utils/logger/logger.dart';
 import '../bloc/payment_bloc.dart';
 import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
@@ -55,11 +54,9 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
       bloc: _paymentBloc,
       listener: (context, state) {
         if (state is PaymentMethodAdded) {
-          Log.d('AddPaymentMethodScreen', 'Payment method added successfully - ID: ${state.paymentMethod.id}');
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
           context.go(AppRoutes.homeRouteName);
         } else if (state is PaymentError) {
-          Log.e('AddPaymentMethodScreen', 'Payment method addition failed: ${state.message}');
           SnackBarUtils.showError(context, state.message);
         }
       },
@@ -144,7 +141,6 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                                 textColor: context.darkTextPrimary,
                               ),
                               onCardChanged: (details) {
-                                Log.d('AddPaymentMethodScreen', 'Card form changed: complete=${details?.complete}');
                                 final complete = details?.complete ?? false;
                                 if (complete != _cardCompleteNotifier.value) {
                                   _cardCompleteNotifier.value = complete;
@@ -194,8 +190,6 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
     final isCardValid = _cardCompleteNotifier.value;
     final newFormValid = isNameValid && isCardValid;
 
-    Log.d('AddPaymentMethodScreen', 'Validation: name=$isNameValid, card=$isCardValid, form=$newFormValid');
-
     if (_formValidNotifier.value != newFormValid) {
       _formValidNotifier.value = newFormValid;
     }
@@ -209,22 +203,13 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
   }
 
   void _onAddPaymentMethod() {
-    Log.d('AddPaymentMethodScreen', 'Add payment method button pressed');
     if (_formKey.currentState?.validate() == true && _formValidNotifier.value && _cardCompleteNotifier.value) {
-      Log.d('AddPaymentMethodScreen', 'Form validation passed - submitting payment method for ${_nameController.text}');
-
       _paymentBloc.add(AddPaymentMethodRequested(cardholderName: _nameController.text));
-    } else {
-      Log.w('AddPaymentMethodScreen', 'Form validation failed or card details incomplete - cannot submit payment method');
-      if (!_cardCompleteNotifier.value) {
-        Log.w('AddPaymentMethodScreen', 'Card form is not complete');
-      }
     }
   }
 
   @override
   void dispose() {
-    Log.d('AddPaymentMethodScreen', 'Screen disposed');
     _nameController.dispose();
     _cardFormController.dispose();
     _cardCompleteNotifier.dispose();

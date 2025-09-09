@@ -20,7 +20,7 @@ class DashboardBottomNavigation extends StatelessWidget {
       child: Container(
         color: Color(0xff191F2F),
         child: SafeArea(
-          child: Container(
+          child: SizedBox(
             height: 80.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -71,7 +71,6 @@ class DashboardBottomNavigation extends StatelessWidget {
               height: 3.h,
               decoration: BoxDecoration(color: isSelected ? context.darkSecondary : Colors.transparent, borderRadius: BorderRadius.circular(1.w)),
             ),
-            SizedBox(height: 4.h),
           ],
         ),
       ),
