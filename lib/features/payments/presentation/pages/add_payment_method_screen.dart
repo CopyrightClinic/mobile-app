@@ -130,12 +130,12 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                           ),
                           SizedBox(height: DimensionConstants.gap8Px.h),
                           SizedBox(
-                            height: 200.h,
+                            height: 300.h,
                             child: CardFormField(
                               key: const ValueKey('stripe_card_form'),
                               controller: _cardFormController,
                               style: CardFormStyle(
-                                backgroundColor: context.filledBgDark,
+                                backgroundColor: context.surfaceColor.withValues(alpha: 0.8),
                                 borderColor: context.primary,
                                 borderRadius: DimensionConstants.radius12Px.r.toInt(),
                                 cursorColor: context.primaryColor,

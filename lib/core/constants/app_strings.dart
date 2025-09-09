@@ -128,7 +128,7 @@ class AppStrings {
   static const phoneNumberIsRequired = 'phoneNumberIsRequired';
   static const phoneNumberMustBeAtLeast10Digits = 'phoneNumberMustBeAtLeast10Digits';
   static const addressIsRequired = 'addressIsRequired';
-  static const addressMustBeAtLeast5Characters = 'addressMustBeAtLeast5Characters';
+  static const addressMustBeAtLeast10Characters = 'addressMustBeAtLeast10Characters';
 
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';

@@ -39,7 +39,7 @@ class AppTheme {
       Color(0x0D1E6892), // #1E6892 with 5% opacity (0x0D = 5%)
       Color(0x0016181E), // #16181E with 0% opacity (0x00 = 0%)
     ],
-    stops: [0.0, 0.4, 1.0],
+    stops: [0.05, 0.25, 1.0],
   );
 
   static const double radiusSmall = 8.0;

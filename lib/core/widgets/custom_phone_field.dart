@@ -54,6 +54,9 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
     _controller = widget.controller ?? TextEditingController();
     _focusNode = widget.focusNode ?? FocusNode();
 
+    // Initialize the phone number with the initial country code
+    _phoneNumber = PhoneNumber(isoCode: widget.initialCountryCode);
+
     if (widget.initialValue != null) {
       _controller.text = widget.initialValue!;
     }
@@ -79,14 +82,15 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
         SizedBox(height: 8.h),
         InternationalPhoneNumberInput(
           onInputChanged: (PhoneNumber number) {
-            _phoneNumber = number;
+            setState(() {
+              _phoneNumber = number;
+            });
             widget.onChanged?.call(number);
           },
           onInputValidated: (bool value) {
-            _isPhoneValid = value;
-            if (mounted) {
-              setState(() {});
-            }
+            setState(() {
+              _isPhoneValid = value;
+            });
           },
           selectorConfig: SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
@@ -98,14 +102,16 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
           ignoreBlank: false,
           autoValidateMode: widget.autovalidateMode,
           selectorTextStyle: TextStyle(color: context.textColor, fontSize: 16.f, fontWeight: FontWeight.w400),
-          initialValue: PhoneNumber(isoCode: widget.initialCountryCode),
+          initialValue: _phoneNumber,
           textFieldController: _controller,
           focusNode: _focusNode,
           formatInput: true,
           keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
           inputBorder: InputBorder.none,
           onSaved: (PhoneNumber number) {
-            _phoneNumber = number;
+            setState(() {
+              _phoneNumber = number;
+            });
           },
           onFieldSubmitted: (value) {
             widget.onEditingComplete?.call();
