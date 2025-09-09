@@ -91,3 +91,21 @@ class CompleteProfileRequested extends AuthEvent {
 class LogoutRequested extends AuthEvent {}
 
 class CheckAuthStatus extends AuthEvent {}
+
+class ResendEmailVerificationRequested extends AuthEvent {
+  final String email;
+
+  const ResendEmailVerificationRequested({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}
+
+class ResendForgotPasswordRequested extends AuthEvent {
+  final String email;
+
+  const ResendForgotPasswordRequested({required this.email});
+
+  @override
+  List<Object?> get props => [email];
+}

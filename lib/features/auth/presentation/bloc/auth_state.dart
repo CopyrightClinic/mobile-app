@@ -193,3 +193,43 @@ class CompleteProfileError extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+class ResendEmailVerificationLoading extends AuthState {}
+
+class ResendEmailVerificationSuccess extends AuthState {
+  final String message;
+
+  const ResendEmailVerificationSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class ResendEmailVerificationError extends AuthState {
+  final String message;
+
+  const ResendEmailVerificationError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class ResendForgotPasswordLoading extends AuthState {}
+
+class ResendForgotPasswordSuccess extends AuthState {
+  final String message;
+
+  const ResendForgotPasswordSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class ResendForgotPasswordError extends AuthState {
+  final String message;
+
+  const ResendForgotPasswordError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
