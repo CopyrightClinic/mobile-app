@@ -14,6 +14,7 @@ class UserModel extends UserEntity {
     required super.role,
     required super.status,
     super.totalSessions,
+    super.stripeCustomerId,
     super.createdAt,
     super.updatedAt,
   });
