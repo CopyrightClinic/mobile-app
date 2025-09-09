@@ -237,7 +237,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   Widget _buildResendCode() {
     return BlocBuilder<ResendOtpCubit, ResendOtpState>(
       builder: (context, state) {
-        final cubit = sl<ResendOtpCubit>();
+        final cubit = context.read<ResendOtpCubit>();
         final canResend = cubit.canResend;
 
         return Column(
