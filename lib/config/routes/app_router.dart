@@ -1,3 +1,4 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../features/onboarding/presentation/pages/about_us_screen.dart';
 import '../../../features/onboarding/presentation/pages/splash_screen.dart';
@@ -16,7 +17,9 @@ import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart'
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
 import '../../features/dashboard/presentation/pages/profile_screen.dart';
+import '../../features/sessions/presentation/bloc/sessions_bloc.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
+import '../../di.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -90,7 +93,11 @@ class AppRouter {
           ),
           StatefulShellBranch(
             routes: [
-              GoRoute(path: AppRoutes.sessionsRouteName, name: AppRoutes.sessionsRouteName, builder: (context, state) => const SessionsScreen()),
+              GoRoute(
+                path: AppRoutes.sessionsRouteName,
+                name: AppRoutes.sessionsRouteName,
+                builder: (context, state) => BlocProvider<SessionsBloc>(create: (context) => sl<SessionsBloc>(), child: const SessionsScreen()),
+              ),
             ],
           ),
           StatefulShellBranch(

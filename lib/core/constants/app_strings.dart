@@ -194,4 +194,26 @@ class AppStrings {
   static const confirmLogout = 'confirmLogout';
   static const areYouSureLogout = 'areYouSureLogout';
   static const cancel = 'cancel';
+
+  // Sessions Screen
+  static const upcoming = 'upcoming';
+  static const completed = 'completed';
+  static const noCompletedSessions = 'noCompletedSessions';
+  static const completedSessionsDescription = 'completedSessionsDescription';
+  static const noSessionsYet = 'noSessionsYet';
+  static const somethingWentWrong = 'somethingWentWrong';
+  static const retry = 'retry';
+  static const cancelSession = 'cancelSession';
+  static const joinSession = 'joinSession';
+  static const charged = 'charged';
+  static const holdAmountChargedAfterSession = 'holdAmountChargedAfterSession';
+  static const youCanCancelTill = 'youCanCancelTill';
+  static const cancellationPeriodExpired = 'cancellationPeriodExpired';
+  static const youCouldHaveCanceled = 'youCouldHaveCanceled';
+  static const cancelSessionTitle = 'cancelSessionTitle';
+  static const cancelSessionMessage = 'cancelSessionMessage';
+  static const keepSession = 'keepSession';
+  static const joiningSession = 'joiningSession';
+  static const session = 'session';
+  static const today = 'today';
 }

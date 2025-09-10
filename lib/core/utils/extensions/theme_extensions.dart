@@ -29,7 +29,8 @@ extension ThemeColors on BuildContext {
   Color get darkSecondary => AppTheme.darkSecondary;
   Color get bgDark2 => AppTheme.bgDark2;
   Color get secondary2Alt => AppTheme.secondary2Alt;
-  Color get buttonDiabled => AppTheme.buttonDiabled;
+  Color get buttonDisabled => AppTheme.buttonDisabled;
+  Color get buttonSecondary => AppTheme.buttonSecondary;
   Color get white => AppTheme.white;
 }
 

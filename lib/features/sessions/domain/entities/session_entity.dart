@@ -1,0 +1,65 @@
+import 'package:equatable/equatable.dart';
+
+class SessionEntity extends Equatable {
+  final String id;
+  final String title;
+  final DateTime scheduledDate;
+  final Duration duration;
+  final double price;
+  final SessionStatus status;
+  final String? description;
+  final DateTime createdAt;
+  final DateTime? cancelledAt;
+  final String? cancellationReason;
+
+  const SessionEntity({
+    required this.id,
+    required this.title,
+    required this.scheduledDate,
+    required this.duration,
+    required this.price,
+    required this.status,
+    this.description,
+    required this.createdAt,
+    this.cancelledAt,
+    this.cancellationReason,
+  });
+
+  @override
+  List<Object?> get props => [id, title, scheduledDate, duration, price, status, description, createdAt, cancelledAt, cancellationReason];
+
+  bool get isUpcoming => status == SessionStatus.upcoming;
+  bool get isCompleted => status == SessionStatus.completed;
+  bool get isCancelled => status == SessionStatus.cancelled;
+  bool get canCancel => isUpcoming && scheduledDate.difference(DateTime.now()).inHours > 24;
+
+  String get formattedDuration {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+
+    if (hours > 0 && minutes > 0) {
+      return '${hours}h ${minutes}m';
+    } else if (hours > 0) {
+      return '${hours}h';
+    } else {
+      return '${minutes}m';
+    }
+  }
+
+  String get formattedPrice => '\$${price.toStringAsFixed(2)}';
+}
+
+enum SessionStatus { upcoming, completed, cancelled }
+
+extension SessionStatusExtension on SessionStatus {
+  String get displayName {
+    switch (this) {
+      case SessionStatus.upcoming:
+        return 'Upcoming';
+      case SessionStatus.completed:
+        return 'Completed';
+      case SessionStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+}
