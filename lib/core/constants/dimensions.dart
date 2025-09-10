@@ -26,6 +26,7 @@ class DimensionConstants {
   // Gap
   static const double gap0Px = 0.0;
   static const double gap2Px = 2.0;
+  static const double gap3Px = 3.0;
   static const double gap4Px = 4.0;
   static const double gap6Px = 6.0;
   static const double gap8Px = 8.0;

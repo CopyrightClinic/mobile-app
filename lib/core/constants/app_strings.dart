@@ -216,4 +216,28 @@ class AppStrings {
   static const joiningSession = 'joiningSession';
   static const session = 'session';
   static const today = 'today';
+
+  // Schedule Session Screen
+  static const bookSession = 'bookSession';
+  static const chooseTimeFor30MinSession = 'chooseTimeFor30MinSession';
+  static const availableTimeSlots = 'availableTimeSlots';
+  static const continueToPayment = 'continueToPayment';
+  static const sessionScheduledSuccessfully = 'sessionScheduledSuccessfully';
+  static const failedToScheduleSession = 'failedToScheduleSession';
+
+  // Days of the week
+  static const monday = 'monday';
+  static const tuesday = 'tuesday';
+  static const wednesday = 'wednesday';
+  static const thursday = 'thursday';
+  static const friday = 'friday';
+  static const saturday = 'saturday';
+  static const sunday = 'sunday';
+  static const mon = 'mon';
+  static const tue = 'tue';
+  static const wed = 'wed';
+  static const thu = 'thu';
+  static const fri = 'fri';
+  static const sat = 'sat';
+  static const sun = 'sun';
 }

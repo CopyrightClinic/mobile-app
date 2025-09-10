@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
+import '../../domain/entities/session_entity.dart';
 import 'sessions_event.dart';
 import 'sessions_state.dart';
 
@@ -15,6 +16,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<SwitchToUpcoming>(_onSwitchToUpcoming);
     on<SwitchToCompleted>(_onSwitchToCompleted);
     on<CancelSessionRequested>(_onCancelSessionRequested);
+    on<ScheduleSessionRequested>(_onScheduleSessionRequested);
   }
 
   Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
@@ -72,5 +74,32 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       // Refresh sessions after cancellation
       add(const RefreshSessions());
     });
+  }
+
+  Future<void> _onScheduleSessionRequested(ScheduleSessionRequested event, Emitter<SessionsState> emit) async {
+    emit(const SessionScheduleLoading());
+
+    try {
+      // Mock session creation - in real app this would call a use case
+      await Future.delayed(const Duration(seconds: 1));
+
+      final newSession = SessionEntity(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Copyright Consultation',
+        scheduledDate: event.selectedDate,
+        duration: const Duration(minutes: 30),
+        price: 50.0,
+        status: SessionStatus.upcoming,
+        description: 'Copyright consultation session',
+        createdAt: DateTime.now(),
+      );
+
+      emit(SessionScheduled(session: newSession));
+
+      // Refresh sessions after scheduling
+      add(const RefreshSessions());
+    } catch (e) {
+      emit(SessionScheduleError(message: 'Failed to schedule session: ${e.toString()}'));
+    }
   }
 }

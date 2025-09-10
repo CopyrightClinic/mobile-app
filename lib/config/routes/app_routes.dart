@@ -19,4 +19,5 @@ class AppRoutes {
   static const String homeRouteName = '/home';
   static const String sessionsRouteName = '/sessions';
   static const String profileRouteName = '/profile';
+  static const String scheduleSessionRouteName = '/schedule-session';
 }

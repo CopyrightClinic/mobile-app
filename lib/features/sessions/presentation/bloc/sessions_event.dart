@@ -41,3 +41,13 @@ class JoinSessionRequested extends SessionsEvent {
   @override
   List<Object> get props => [sessionId];
 }
+
+class ScheduleSessionRequested extends SessionsEvent {
+  final DateTime selectedDate;
+  final String selectedTimeSlot;
+
+  const ScheduleSessionRequested({required this.selectedDate, required this.selectedTimeSlot});
+
+  @override
+  List<Object> get props => [selectedDate, selectedTimeSlot];
+}

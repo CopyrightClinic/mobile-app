@@ -85,3 +85,25 @@ class SessionJoined extends SessionsState {
   @override
   List<Object> get props => [session];
 }
+
+class SessionScheduleLoading extends SessionsState {
+  const SessionScheduleLoading();
+}
+
+class SessionScheduled extends SessionsState {
+  final SessionEntity session;
+
+  const SessionScheduled({required this.session});
+
+  @override
+  List<Object> get props => [session];
+}
+
+class SessionScheduleError extends SessionsState {
+  final String message;
+
+  const SessionScheduleError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

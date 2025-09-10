@@ -124,6 +124,9 @@ class GlobalImage extends StatelessWidget {
   /// Callback when image starts loading
   final VoidCallback? onImageLoading;
 
+  /// Color to apply to SVG images (for tinting)
+  final Color? color;
+
   const GlobalImage({
     super.key,
     this.imageUrl,
@@ -164,6 +167,7 @@ class GlobalImage extends StatelessWidget {
     this.onImageLoaded,
     this.onImageError,
     this.onImageLoading,
+    this.color,
   }) : assert(imageUrl != null || assetPath != null || filePath != null || memoryBytes != null, 'At least one image source must be provided');
 
   @override
@@ -195,7 +199,14 @@ class GlobalImage extends StatelessWidget {
   Widget _buildNetworkImage() {
     // Check if it's an SVG file
     if (_isSvgFile(imageUrl!)) {
-      return SvgPicture.network(imageUrl!, width: width, height: height, fit: fit, placeholderBuilder: (context) => _buildPlaceholder());
+      return SvgPicture.network(
+        imageUrl!,
+        width: width,
+        height: height,
+        fit: fit,
+        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+        placeholderBuilder: (context) => _buildPlaceholder(),
+      );
     }
 
     if (!enableCaching) {
@@ -279,7 +290,7 @@ class GlobalImage extends StatelessWidget {
         width: width,
         height: height,
         fit: fit,
-        colorFilter: null, // Allow SVG to use its own colors
+        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
         placeholderBuilder: (context) => _buildPlaceholder(),
       );
     }
@@ -314,7 +325,14 @@ class GlobalImage extends StatelessWidget {
   Widget _buildFileImage() {
     // Check if it's an SVG file
     if (_isSvgFile(filePath!)) {
-      return SvgPicture.file(File(filePath!), width: width, height: height, fit: fit, placeholderBuilder: (context) => _buildPlaceholder());
+      return SvgPicture.file(
+        File(filePath!),
+        width: width,
+        height: height,
+        fit: fit,
+        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+        placeholderBuilder: (context) => _buildPlaceholder(),
+      );
     }
 
     return Image.file(

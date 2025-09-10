@@ -17,6 +17,7 @@ import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart'
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
 import '../../features/dashboard/presentation/pages/profile_screen.dart';
+import '../../features/sessions/presentation/pages/schedule_session_screen.dart';
 import '../../features/sessions/presentation/bloc/sessions_bloc.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import '../../di.dart';
@@ -104,6 +105,11 @@ class AppRouter {
             routes: [GoRoute(path: AppRoutes.profileRouteName, name: AppRoutes.profileRouteName, builder: (context, state) => const ProfileScreen())],
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.scheduleSessionRouteName,
+        name: AppRoutes.scheduleSessionRouteName,
+        builder: (context, state) => const ScheduleSessionScreen(),
       ),
     ],
   );
