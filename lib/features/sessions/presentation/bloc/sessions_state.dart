@@ -107,3 +107,29 @@ class SessionScheduleError extends SessionsState {
   @override
   List<Object> get props => [message];
 }
+
+class ScheduleSessionState extends SessionsState {
+  final DateTime selectedDate;
+  final String? selectedTimeSlot;
+  final List<Map<String, String>> availableTimeSlots;
+
+  const ScheduleSessionState({required this.selectedDate, this.selectedTimeSlot, required this.availableTimeSlots});
+
+  @override
+  List<Object?> get props => [selectedDate, selectedTimeSlot, availableTimeSlots];
+
+  ScheduleSessionState copyWith({
+    DateTime? selectedDate,
+    String? selectedTimeSlot,
+    List<Map<String, String>>? availableTimeSlots,
+    bool clearTimeSlot = false,
+  }) {
+    return ScheduleSessionState(
+      selectedDate: selectedDate ?? this.selectedDate,
+      selectedTimeSlot: clearTimeSlot ? null : (selectedTimeSlot ?? this.selectedTimeSlot),
+      availableTimeSlots: availableTimeSlots ?? this.availableTimeSlots,
+    );
+  }
+
+  bool get canContinueToPayment => selectedTimeSlot != null;
+}

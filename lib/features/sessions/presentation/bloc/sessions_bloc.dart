@@ -17,6 +17,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<SwitchToCompleted>(_onSwitchToCompleted);
     on<CancelSessionRequested>(_onCancelSessionRequested);
     on<ScheduleSessionRequested>(_onScheduleSessionRequested);
+    on<InitializeScheduleSession>(_onInitializeScheduleSession);
+    on<DateSelected>(_onDateSelected);
+    on<TimeSlotSelected>(_onTimeSlotSelected);
   }
 
   Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
@@ -100,6 +103,39 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       add(const RefreshSessions());
     } catch (e) {
       emit(SessionScheduleError(message: 'Failed to schedule session: ${e.toString()}'));
+    }
+  }
+
+  void _onInitializeScheduleSession(InitializeScheduleSession event, Emitter<SessionsState> emit) {
+    final now = DateTime.now();
+    final mondayOfWeek = now.add(Duration(days: (1 - now.weekday) % 7));
+
+    final availableTimeSlots = [
+      {'time': '9:00 AM – 9:30 AM', 'value': '09:00-09:30'},
+      {'time': '10:30 AM – 11:00 AM', 'value': '10:30-11:00'},
+      {'time': '2:00 PM – 2:30 PM', 'value': '14:00-14:30'},
+      {'time': '3:00 PM – 3:30 PM', 'value': '15:00-15:30'},
+    ];
+
+    emit(ScheduleSessionState(selectedDate: mondayOfWeek, availableTimeSlots: availableTimeSlots));
+  }
+
+  void _onDateSelected(DateSelected event, Emitter<SessionsState> emit) {
+    if (state is ScheduleSessionState) {
+      final currentState = state as ScheduleSessionState;
+      emit(
+        currentState.copyWith(
+          selectedDate: event.selectedDate,
+          clearTimeSlot: true, // Reset time slot when date changes
+        ),
+      );
+    }
+  }
+
+  void _onTimeSlotSelected(TimeSlotSelected event, Emitter<SessionsState> emit) {
+    if (state is ScheduleSessionState) {
+      final currentState = state as ScheduleSessionState;
+      emit(currentState.copyWith(selectedTimeSlot: event.selectedTimeSlot));
     }
   }
 }

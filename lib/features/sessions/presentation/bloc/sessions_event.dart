@@ -51,3 +51,25 @@ class ScheduleSessionRequested extends SessionsEvent {
   @override
   List<Object> get props => [selectedDate, selectedTimeSlot];
 }
+
+class DateSelected extends SessionsEvent {
+  final DateTime selectedDate;
+
+  const DateSelected({required this.selectedDate});
+
+  @override
+  List<Object> get props => [selectedDate];
+}
+
+class TimeSlotSelected extends SessionsEvent {
+  final String selectedTimeSlot;
+
+  const TimeSlotSelected({required this.selectedTimeSlot});
+
+  @override
+  List<Object> get props => [selectedTimeSlot];
+}
+
+class InitializeScheduleSession extends SessionsEvent {
+  const InitializeScheduleSession();
+}

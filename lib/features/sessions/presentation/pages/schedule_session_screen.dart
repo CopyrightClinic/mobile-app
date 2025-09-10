@@ -27,27 +27,13 @@ class ScheduleSessionScreen extends StatefulWidget {
 }
 
 class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
-  DateTime _selectedDate = DateTime.now();
-  String? _selectedTimeSlot;
   late SessionsBloc _sessionsBloc;
-
-  final List<Map<String, String>> _timeSlots = [
-    {'time': '9:00 AM – 9:30 AM', 'value': '09:00-09:30'},
-    {'time': '10:30 AM – 11:00 AM', 'value': '10:30-11:00'},
-    {'time': '2:00 PM – 2:30 PM', 'value': '14:00-14:30'},
-    {'time': '3:00 PM – 3:30 PM', 'value': '15:00-15:30'},
-  ];
 
   @override
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
-    _selectedDate = _getNextWeekday(DateTime.now(), 1);
-  }
-
-  DateTime _getNextWeekday(DateTime date, int weekday) {
-    final daysUntilWeekday = (weekday - date.weekday) % 7;
-    return date.add(Duration(days: daysUntilWeekday == 0 ? 0 : daysUntilWeekday));
+    _sessionsBloc.add(const InitializeScheduleSession());
   }
 
   @override
@@ -73,88 +59,93 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
           ),
         ),
         body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: DimensionConstants.gap15Px.h),
+          child: BlocBuilder<SessionsBloc, SessionsState>(
+            builder: (context, state) {
+              if (state is! ScheduleSessionState) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                TranslatedText(
-                  AppStrings.chooseTimeFor30MinSession,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
-                ),
+              final scheduleState = state;
 
-                SizedBox(height: DimensionConstants.gap20Px.h),
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: DimensionConstants.gap15Px.h),
 
-                DaySelectorWidget(
-                  selectedDate: _selectedDate,
-                  onDateSelected: (date) {
-                    setState(() {
-                      _selectedDate = date;
-                      _selectedTimeSlot = null;
-                    });
-                  },
-                ),
-
-                SizedBox(height: DimensionConstants.gap32Px.h),
-
-                TranslatedText(
-                  AppStrings.availableTimeSlots,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
-                ),
-
-                SizedBox(height: DimensionConstants.gap20Px.h),
-
-                Expanded(
-                  child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 3.2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
+                    TranslatedText(
+                      AppStrings.chooseTimeFor30MinSession,
+                      style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                     ),
-                    itemCount: _timeSlots.length,
-                    itemBuilder: (context, index) {
-                      final timeSlot = _timeSlots[index];
-                      final isSelected = _selectedTimeSlot == timeSlot['value'];
 
-                      return TimeSlotWidget(
-                        timeText: timeSlot['time']!,
-                        isSelected: isSelected,
-                        onTap: () {
-                          setState(() {
-                            _selectedTimeSlot = timeSlot['value'];
-                          });
+                    SizedBox(height: DimensionConstants.gap20Px.h),
+
+                    DaySelectorWidget(
+                      selectedDate: scheduleState.selectedDate,
+                      onDateSelected: (date) {
+                        _sessionsBloc.add(DateSelected(selectedDate: date));
+                      },
+                    ),
+
+                    SizedBox(height: DimensionConstants.gap32Px.h),
+
+                    TranslatedText(
+                      AppStrings.availableTimeSlots,
+                      style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+                    ),
+
+                    SizedBox(height: DimensionConstants.gap20Px.h),
+
+                    Expanded(
+                      child: GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 3.2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                        itemCount: scheduleState.availableTimeSlots.length,
+                        itemBuilder: (context, index) {
+                          final timeSlot = scheduleState.availableTimeSlots[index];
+                          final isSelected = scheduleState.selectedTimeSlot == timeSlot['value'];
+
+                          return TimeSlotWidget(
+                            timeText: timeSlot['time']!,
+                            isSelected: isSelected,
+                            onTap: () {
+                              _sessionsBloc.add(TimeSlotSelected(selectedTimeSlot: timeSlot['value']!));
+                            },
+                          );
                         },
-                      );
-                    },
-                  ),
-                ),
+                      ),
+                    ),
 
-                BlocBuilder<SessionsBloc, SessionsState>(
-                  builder: (context, state) {
-                    final isLoading = state is SessionScheduleLoading;
+                    BlocBuilder<SessionsBloc, SessionsState>(
+                      builder: (context, buttonState) {
+                        final isLoading = buttonState is SessionScheduleLoading;
 
-                    return AuthButton(
-                      text: AppStrings.continueToPayment,
-                      onPressed: _selectedTimeSlot != null ? _onContinueToPayment : null,
-                      isLoading: isLoading,
-                      isEnabled: _selectedTimeSlot != null,
-                    );
-                  },
+                        return AuthButton(
+                          text: AppStrings.continueToPayment,
+                          onPressed: scheduleState.canContinueToPayment ? () => _onContinueToPayment(scheduleState) : null,
+                          isLoading: isLoading,
+                          isEnabled: scheduleState.canContinueToPayment,
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  void _onContinueToPayment() {
-    if (_selectedTimeSlot != null) {
-      _sessionsBloc.add(ScheduleSessionRequested(selectedDate: _selectedDate, selectedTimeSlot: _selectedTimeSlot!));
+  void _onContinueToPayment(ScheduleSessionState scheduleState) {
+    if (scheduleState.selectedTimeSlot != null) {
+      _sessionsBloc.add(ScheduleSessionRequested(selectedDate: scheduleState.selectedDate, selectedTimeSlot: scheduleState.selectedTimeSlot!));
     }
   }
 }
