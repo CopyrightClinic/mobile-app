@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/translated_text.dart';
+import '../../../../core/widgets/global_image.dart';
 import '../../domain/entities/payment_method_entity.dart';
 
-/// Flexible payment method card that supports different action types
-/// Following Open/Closed Principle - open for extension, closed for modification
 class PaymentMethodCard extends StatelessWidget {
   final PaymentMethodEntity paymentMethod;
   final PaymentMethodCardAction action;
@@ -18,35 +18,29 @@ class PaymentMethodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: DimensionConstants.gap16Px.h),
-      padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-      decoration: BoxDecoration(
-        color: context.filledBgDark,
-        borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
-        border: isSelected ? Border.all(color: context.primary, width: 2) : null,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap12Px.h),
+      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
       child: Row(
         children: [
-          // Card Brand Icon
           _buildCardIcon(context),
 
           SizedBox(width: DimensionConstants.gap16Px.w),
 
-          // Card Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TranslatedText(
+                Text(
                   _getCardDisplayName(),
                   style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
                 ),
                 SizedBox(height: DimensionConstants.gap4Px.h),
-                TranslatedText(
+                Text(
                   'ending in ${paymentMethod.card.last4}',
                   style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                 ),
                 SizedBox(height: DimensionConstants.gap2Px.h),
-                TranslatedText(
+                Text(
                   'Expires ${paymentMethod.card.expMonth.toString().padLeft(2, '0')}/${paymentMethod.card.expYear.toString().substring(2)}',
                   style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                 ),
@@ -54,7 +48,6 @@ class PaymentMethodCard extends StatelessWidget {
             ),
           ),
 
-          // Action Widget (Delete button, Radio button, etc.)
           action.buildActionWidget(context, paymentMethod, isSelected),
         ],
       ),
@@ -62,34 +55,51 @@ class PaymentMethodCard extends StatelessWidget {
   }
 
   Widget _buildCardIcon(BuildContext context) {
-    final brandColor = _getCardBrandColor();
+    final cardImagePath = _getCardImagePath();
 
     return Container(
       width: 48.w,
-      height: 32.h,
-      decoration: BoxDecoration(color: brandColor, borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r)),
-      child: Center(
-        child: TranslatedText(
-          _getCardBrandText(),
-          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w700),
-        ),
+      height: 40.h,
+      decoration: BoxDecoration(
+        color: cardImagePath == null ? _getCardBrandColor() : Colors.transparent,
+        borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r),
       ),
+      child:
+          cardImagePath != null
+              ? ClipRRect(
+                borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r),
+                child: GlobalImage(
+                  assetPath: cardImagePath,
+                  width: 48.w,
+                  height: 40.h,
+                  fit: BoxFit.contain,
+                  showLoading: false,
+                  showError: false,
+                  fadeIn: false,
+                ),
+              )
+              : Center(
+                child: Text(
+                  _getCardBrandText(),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w700),
+                ),
+              ),
     );
   }
 
-  String _getCardDisplayName() {
+  String? _getCardImagePath() {
     switch (paymentMethod.card.brand.toLowerCase()) {
       case 'visa':
-        return 'Visa';
+        return ImageConstants.visa;
       case 'mastercard':
-        return 'Mastercard';
-      case 'amex':
-        return 'American Express';
-      case 'discover':
-        return 'Discover';
+        return ImageConstants.mastercard;
       default:
-        return paymentMethod.card.brand;
+        return null;
     }
+  }
+
+  String _getCardDisplayName() {
+    return paymentMethod.card.brand;
   }
 
   String _getCardBrandText() {
@@ -123,13 +133,10 @@ class PaymentMethodCard extends StatelessWidget {
   }
 }
 
-/// Abstract base class for payment method card actions
-/// This follows the Strategy Pattern for different action behaviors
 abstract class PaymentMethodCardAction {
   Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected);
 }
 
-/// Delete action for profile payment methods screen
 class DeletePaymentMethodAction extends PaymentMethodCardAction {
   final VoidCallback onDelete;
 
@@ -146,7 +153,6 @@ class DeletePaymentMethodAction extends PaymentMethodCardAction {
   }
 }
 
-/// Selection action for checkout payment methods screen
 class SelectPaymentMethodAction extends PaymentMethodCardAction {
   final VoidCallback onSelect;
 
@@ -161,19 +167,18 @@ class SelectPaymentMethodAction extends PaymentMethodCardAction {
         height: 24.h,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: isSelected ? context.primary : context.darkTextSecondary, width: 2),
-          color: isSelected ? context.primary : Colors.transparent,
+          border: Border.all(color: isSelected ? context.white : context.white, width: 2),
+          color: Colors.transparent,
         ),
         child:
             isSelected
-                ? Center(child: Container(width: 8.w, height: 8.h, decoration: BoxDecoration(shape: BoxShape.circle, color: context.white)))
+                ? Center(child: Container(width: 10.w, height: 10.h, decoration: BoxDecoration(shape: BoxShape.circle, color: context.white)))
                 : null,
       ),
     );
   }
 }
 
-/// Tap action for simple card selection (entire card is tappable)
 class TapPaymentMethodAction extends PaymentMethodCardAction {
   final VoidCallback onTap;
 

@@ -231,6 +231,15 @@ class AppStrings {
   static const continueToPayment = 'continueToPayment';
   static const sessionScheduledSuccessfully = 'sessionScheduledSuccessfully';
   static const failedToScheduleSession = 'failedToScheduleSession';
+  static const confirmYourBooking = 'confirmYourBooking';
+  static const pleaseReviewSessionDetails = 'pleaseReviewSessionDetails';
+  static const sessionDetails = 'sessionDetails';
+  static const confirmAndBookSession = 'confirmAndBookSession';
+  static const note = 'note';
+  static const paymentSecurityNote = 'paymentSecurityNote';
+  static const recordingConsented = 'recordingConsented';
+  static const holdAmountNote = 'holdAmountNote';
+  static const thirtyMinutesSession = 'thirtyMinutesSession';
 
   // Days of the week
   static const monday = 'monday';

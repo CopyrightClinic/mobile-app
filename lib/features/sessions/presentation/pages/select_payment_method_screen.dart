@@ -21,7 +21,10 @@ import '../../../payments/presentation/bloc/payment_state.dart';
 import '../../../payments/presentation/widgets/payment_methods_list.dart';
 
 class SelectPaymentMethodScreen extends StatefulWidget {
-  const SelectPaymentMethodScreen({super.key});
+  final DateTime sessionDate;
+  final String timeSlot;
+
+  const SelectPaymentMethodScreen({super.key, required this.sessionDate, required this.timeSlot});
 
   @override
   State<SelectPaymentMethodScreen> createState() => _SelectPaymentMethodScreenState();
@@ -30,6 +33,7 @@ class SelectPaymentMethodScreen extends StatefulWidget {
 class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
   late PaymentBloc _paymentBloc;
   String? _selectedPaymentMethodId;
+  PaymentMethodEntity? _selectedPaymentMethod;
 
   @override
   void initState() {
@@ -107,14 +111,24 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
   void _onSelectPaymentMethod(PaymentMethodEntity paymentMethod) {
     setState(() {
       _selectedPaymentMethodId = paymentMethod.id;
+      _selectedPaymentMethod = paymentMethod;
     });
   }
 
   void _onAddPaymentMethod() {
-    context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home});
+    context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home}).then((value) {
+      if (value != null) {
+        _paymentBloc.add(const LoadPaymentMethods());
+      }
+    });
   }
 
   void _onContinue() {
-    if (_selectedPaymentMethodId != null) {}
+    if (_selectedPaymentMethod != null) {
+      context.push(
+        AppRoutes.confirmBookingRouteName,
+        extra: {'sessionDate': widget.sessionDate, 'timeSlot': widget.timeSlot, 'paymentMethod': _selectedPaymentMethod!},
+      );
+    }
   }
 }

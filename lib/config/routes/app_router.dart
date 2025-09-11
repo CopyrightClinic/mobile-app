@@ -14,6 +14,7 @@ import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
+import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -120,7 +121,23 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.selectPaymentMethodRouteName,
         name: AppRoutes.selectPaymentMethodRouteName,
-        builder: (context, state) => const SelectPaymentMethodScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final sessionDate = extra['sessionDate'] as DateTime;
+          final timeSlot = extra['timeSlot'] as String;
+          return SelectPaymentMethodScreen(sessionDate: sessionDate, timeSlot: timeSlot);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.confirmBookingRouteName,
+        name: AppRoutes.confirmBookingRouteName,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final sessionDate = extra['sessionDate'] as DateTime;
+          final timeSlot = extra['timeSlot'] as String;
+          final paymentMethod = extra['paymentMethod'];
+          return ConfirmBookingScreen(sessionDate: sessionDate, timeSlot: timeSlot, paymentMethod: paymentMethod);
+        },
       ),
     ],
   );
