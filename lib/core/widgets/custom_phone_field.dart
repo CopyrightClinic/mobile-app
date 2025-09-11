@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import '../constants/app_strings.dart';
 import '../utils/extensions/responsive_extensions.dart';
 import '../utils/extensions/theme_extensions.dart';
 
@@ -61,6 +62,15 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
 
     if (widget.initialValue != null) {
       _controller.text = widget.initialValue!;
+      // If we have an initial value, trigger validation after the widget is built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && widget.initialValue!.isNotEmpty) {
+          // Create a phone number with the initial value to trigger validation
+          final initialPhoneNumber = PhoneNumber(isoCode: widget.initialCountryCode, phoneNumber: widget.initialValue);
+          _phoneNumberNotifier.value = initialPhoneNumber;
+          widget.onChanged?.call(initialPhoneNumber);
+        }
+      });
     }
   }
 
@@ -86,7 +96,8 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
         SizedBox(height: 8.h),
         InternationalPhoneNumberInput(
           onInputChanged: (PhoneNumber number) {
-            if (_previousCountryCode != null && _previousCountryCode != number.isoCode) {
+            if (_previousCountryCode != null && _previousCountryCode != number.isoCode && _controller.text.isNotEmpty) {
+              // Only clear if there's actual text and country changed
               _controller.clear();
               _isPhoneValidNotifier.value = false;
               final clearedPhoneNumber = PhoneNumber(isoCode: number.isoCode);
@@ -101,6 +112,12 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
           },
           onInputValidated: (bool value) {
             _isPhoneValidNotifier.value = value;
+            // Debug: Print validation result
+            if (value) {
+              debugPrint('✅ Phone number is valid: ${_phoneNumberNotifier.value?.phoneNumber}');
+            } else {
+              debugPrint('❌ Phone number is invalid: ${_phoneNumberNotifier.value?.phoneNumber}');
+            }
           },
           selectorConfig: SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
@@ -109,7 +126,7 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
             leadingPadding: 16,
             trailingSpace: false,
           ),
-          ignoreBlank: false,
+          ignoreBlank: true,
           autoValidateMode: widget.autovalidateMode,
           selectorTextStyle: TextStyle(color: context.textColor, fontSize: 16.f, fontWeight: FontWeight.w400),
           initialValue: _phoneNumberNotifier.value,
@@ -148,7 +165,7 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
             contentPadding: EdgeInsets.symmetric(horizontal: context.spacingMedium, vertical: context.spacingMedium),
           ),
           searchBoxDecoration: InputDecoration(
-            hintText: 'Search country',
+            hintText: AppStrings.searchCountry.tr(),
             hintStyle: TextStyle(color: context.darkTextSecondary, fontSize: 16.f, fontWeight: FontWeight.w400),
             filled: true,
             fillColor: context.surfaceColor.withValues(alpha: 0.8),
@@ -173,11 +190,21 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
   String? get parsedPhoneNumber => _phoneNumberNotifier.value?.parseNumber();
 
   bool isValid() {
-    return _isPhoneValidNotifier.value &&
-        _phoneNumberNotifier.value != null &&
-        _phoneNumberNotifier.value!.phoneNumber != null &&
-        _phoneNumberNotifier.value!.phoneNumber!.isNotEmpty;
+    final phoneNumber = _phoneNumberNotifier.value;
+    final hasPhoneNumber = phoneNumber != null && phoneNumber.phoneNumber != null && phoneNumber.phoneNumber!.isNotEmpty;
+
+    final isValidByPackage = _isPhoneValidNotifier.value;
+    final result = hasPhoneNumber && isValidByPackage;
+
+    // Debug: Print validation details
+    debugPrint(
+      '🔍 Phone validation - hasPhoneNumber: $hasPhoneNumber, isValidByPackage: $isValidByPackage, result: $result, phone: ${phoneNumber?.phoneNumber}',
+    );
+
+    // Trust the intl_phone_number_input package's validation
+    // It already handles international numbers correctly
+    return result;
   }
 
-  bool get isPhoneValid => _isPhoneValidNotifier.value;
+  bool get isPhoneValid => isValid();
 }

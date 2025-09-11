@@ -217,5 +217,6 @@
   "sat": "Sat",
   "sun": "Sun",
   "failedToProcessPaymentMethod": "Failed to process payment method",
-  "failedToCreatePaymentMethodGeneric": "Failed to create payment method"
+  "failedToCreatePaymentMethodGeneric": "Failed to create payment method",
+  "searchCountry": "Search country"
 }

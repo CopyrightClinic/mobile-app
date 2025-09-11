@@ -250,4 +250,7 @@ class AppStrings {
   // Payment Error Messages
   static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
   static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
+
+  // Phone Field
+  static const searchCountry = 'searchCountry';
 }
