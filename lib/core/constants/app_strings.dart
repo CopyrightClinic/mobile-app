@@ -194,4 +194,8 @@ class AppStrings {
   static const confirmLogout = 'confirmLogout';
   static const areYouSureLogout = 'areYouSureLogout';
   static const cancel = 'cancel';
+
+  // Payment Error Messages
+  static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
+  static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
 }

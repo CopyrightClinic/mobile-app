@@ -31,6 +31,7 @@ extension ThemeColors on BuildContext {
   Color get secondary2Alt => AppTheme.secondary2Alt;
   Color get buttonDiabled => AppTheme.buttonDiabled;
   Color get white => AppTheme.white;
+  Color get bottomNavBarBG => AppTheme.bottomNavBarBG;
 }
 
 extension ThemeSpacing on BuildContext {

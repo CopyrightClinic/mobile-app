@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import '../../domain/usecases/add_payment_method_usecase.dart';
+import '../../../../core/constants/app_strings.dart';
 
 import 'payment_event.dart';
 import 'payment_state.dart';
@@ -24,14 +25,14 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
       result.fold(
         (failure) {
-          emit(PaymentError(failure.message ?? 'Failed to add payment method'));
+          emit(PaymentError(failure.message ?? AppStrings.failedToAddPaymentMethod));
         },
         (createdPaymentMethod) {
           emit(PaymentMethodAdded(createdPaymentMethod));
         },
       );
     } catch (e) {
-      emit(PaymentError('Failed to process payment method: $e'));
+      emit(PaymentError(AppStrings.failedToProcessPaymentMethod));
     }
   }
 }

@@ -168,5 +168,7 @@
   "logout": "Logout",
   "confirmLogout": "Confirm Logout",
   "areYouSureLogout": "Are you sure you want to logout?",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "failedToProcessPaymentMethod": "Failed to process payment method",
+  "failedToCreatePaymentMethodGeneric": "Failed to create payment method"
 }
