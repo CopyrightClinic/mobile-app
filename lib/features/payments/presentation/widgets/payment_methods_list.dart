@@ -88,26 +88,21 @@ class PaymentMethodsList extends StatelessWidget {
   Widget _buildAddPaymentMethodButton(BuildContext context) {
     return GestureDetector(
       onTap: config.onAddPaymentMethod,
-      child: Container(
-        margin: EdgeInsets.only(bottom: DimensionConstants.gap16Px.h),
-        padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-        decoration: BoxDecoration(
-          color: context.filledBgDark,
-          borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
-          border: Border.all(color: context.primary, width: 1),
-        ),
+      child: SizedBox(
+        width: double.infinity,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 40.w,
-              height: 40.h,
+              width: 30.w,
+              height: 30.h,
               decoration: BoxDecoration(color: context.primary, shape: BoxShape.circle),
               child: Icon(Icons.add, color: context.white, size: DimensionConstants.icon24Px.f),
             ),
             SizedBox(width: DimensionConstants.gap16Px.w),
             TranslatedText(
               AppStrings.addAnotherPaymentMethod,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
             ),
           ],
         ),

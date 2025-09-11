@@ -1,5 +1,6 @@
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
+import 'package:copyright_clinic_flutter/core/utils/enumns/ui/payment_method.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
@@ -83,7 +84,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
   }
 
   void _handleSkip() {
-    context.go(AppRoutes.addPaymentMethodRouteName);
+    context.go(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.auth});
   }
 
   @override
@@ -94,7 +95,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
         listener: (context, state) {
           if (state is CompleteProfileSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
-            context.go(AppRoutes.addPaymentMethodRouteName);
+            context.go(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.auth});
           } else if (state is CompleteProfileError) {
             SnackBarUtils.showError(context, state.message);
           }

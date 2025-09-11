@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
@@ -110,7 +111,7 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
   }
 
   void _onAddPaymentMethod() {
-    context.push(AppRoutes.addPaymentMethodRouteName);
+    context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home});
   }
 
   void _onContinue() {

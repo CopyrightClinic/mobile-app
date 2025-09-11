@@ -20,9 +20,11 @@ import '../../../../core/utils/mixin/validator.dart';
 import '../bloc/payment_bloc.dart';
 import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
+import '../../../../core/utils/enumns/ui/payment_method.dart';
 
 class AddPaymentMethodScreen extends StatefulWidget {
-  const AddPaymentMethodScreen({super.key});
+  final PaymentMethodFrom from;
+  const AddPaymentMethodScreen({super.key, required this.from});
 
   @override
   State<AddPaymentMethodScreen> createState() => _AddPaymentMethodScreenState();
@@ -55,7 +57,11 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
       listener: (context, state) {
         if (state is PaymentMethodAdded) {
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
-          context.go(AppRoutes.homeRouteName);
+          if (widget.from == PaymentMethodFrom.auth) {
+            context.go(AppRoutes.homeRouteName);
+          } else {
+            context.pop(true);
+          }
         } else if (state is PaymentError) {
           SnackBarUtils.showError(context, state.message.tr());
         }
@@ -66,29 +72,37 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
           leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
           title: TranslatedText(
             AppStrings.addPaymentMethod,
-            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: context.darkTextPrimary,
+              fontSize: widget.from == PaymentMethodFrom.home ? DimensionConstants.font18Px.f : DimensionConstants.font24Px.f,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+          automaticallyImplyLeading: widget.from == PaymentMethodFrom.home,
+          centerTitle: widget.from == PaymentMethodFrom.home,
           actions: [
-            Padding(
-              padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
-              child: ElevatedButton(
-                onPressed: () {
-                  context.go(AppRoutes.homeRouteName);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.white,
-                  foregroundColor: context.darkTextPrimary,
-                  elevation: 0,
-                  padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap20Px.w, vertical: DimensionConstants.gap12Px.h),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                  minimumSize: Size.zero,
-                ),
-                child: TranslatedText(
-                  AppStrings.skip,
-                  style: TextStyle(color: context.textPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+            if (widget.from == PaymentMethodFrom.auth) ...[
+              Padding(
+                padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.go(AppRoutes.homeRouteName);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: context.white,
+                    foregroundColor: context.darkTextPrimary,
+                    elevation: 0,
+                    padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap20Px.w, vertical: DimensionConstants.gap12Px.h),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
+                    minimumSize: Size.zero,
+                  ),
+                  child: TranslatedText(
+                    AppStrings.skip,
+                    style: TextStyle(color: context.textPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
         body: SafeArea(

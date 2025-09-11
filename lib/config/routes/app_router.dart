@@ -21,6 +21,7 @@ import '../../features/dashboard/presentation/pages/profile_screen.dart';
 import '../../features/sessions/presentation/pages/schedule_session_screen.dart';
 import '../../features/sessions/presentation/bloc/sessions_bloc.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
+import '../../core/utils/enumns/ui/payment_method.dart';
 import '../../di.dart';
 import 'app_routes.dart';
 
@@ -82,7 +83,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.addPaymentMethodRouteName,
         name: AppRoutes.addPaymentMethodRouteName,
-        builder: (context, state) => const AddPaymentMethodScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          PaymentMethodFrom from = extra['from'] ?? PaymentMethodFrom.auth;
+          return AddPaymentMethodScreen(from: from);
+        },
       ),
 
       StatefulShellRoute.indexedStack(
