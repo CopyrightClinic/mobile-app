@@ -240,4 +240,7 @@ class AppStrings {
   static const fri = 'fri';
   static const sat = 'sat';
   static const sun = 'sun';
+  // Payment Error Messages
+  static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
+  static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
 }

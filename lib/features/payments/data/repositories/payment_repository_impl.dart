@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/payment_method_entity.dart';
 import '../../domain/repositories/payment_repository.dart';
 import '../datasources/payment_remote_data_source.dart';
@@ -20,7 +21,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to create payment method: $e'));
+      return Left(ServerFailure(AppStrings.failedToCreatePaymentMethodGeneric));
     }
   }
 }

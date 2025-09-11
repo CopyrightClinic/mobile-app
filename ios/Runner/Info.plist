@@ -44,7 +44,7 @@
 			<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		</array>
 		<key>NSCameraUsageDescription</key>
-		<string>This app may use the camera to capture documents or images for copyright
-			registration purposes.</string>
+		<string>Copyright Clinic uses the camera to capture documents or images for payment
+			purposes.</string>
 	</dict>
 </plist>

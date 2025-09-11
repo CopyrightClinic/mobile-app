@@ -25,6 +25,7 @@ class AppTheme {
   static const Color white = Color(0xFFFFFFFF);
   static const Color buttonDisabled = Color(0xFF3E414A);
   static const Color buttonSecondary = Color(0xFF2A4663);
+  static const Color bottomNavBarBG = Color(0xFF191F2F);
 
   // Custom Gradient Background Colors
   static const Color gradientBgDark1 = Color(0xFF6882F7); // #6882F7 with 36% opacity

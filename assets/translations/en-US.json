@@ -208,5 +208,7 @@
   "thu": "Thu",
   "fri": "Fri",
   "sat": "Sat",
-  "sun": "Sun"
+  "sun": "Sun",
+  "failedToProcessPaymentMethod": "Failed to process payment method",
+  "failedToCreatePaymentMethodGeneric": "Failed to create payment method"
 }

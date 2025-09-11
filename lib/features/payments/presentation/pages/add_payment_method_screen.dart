@@ -57,7 +57,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
           context.go(AppRoutes.homeRouteName);
         } else if (state is PaymentError) {
-          SnackBarUtils.showError(context, state.message);
+          SnackBarUtils.showError(context, state.message.tr());
         }
       },
       child: CustomScaffold(

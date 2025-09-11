@@ -18,7 +18,7 @@ class DashboardBottomNavigation extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.w),
       child: Container(
-        color: Color(0xff191F2F),
+        color: context.bottomNavBarBG,
         child: SafeArea(
           child: SizedBox(
             height: 80.h,
