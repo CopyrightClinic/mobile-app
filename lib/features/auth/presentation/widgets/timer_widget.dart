@@ -15,7 +15,6 @@ class _TimerStarterState extends State<TimerStarter> {
   @override
   void initState() {
     super.initState();
-    // Start the timer automatically when the widget is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<ResendOtpCubit>().startResendTimer();

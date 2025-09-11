@@ -19,6 +19,11 @@ import 'features/auth/domain/usecases/reset_password_usecase.dart';
 import 'features/auth/domain/usecases/complete_profile_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/cubit/resend_otp_cubit.dart';
+import 'features/payments/data/datasources/payment_remote_data_source.dart';
+import 'features/payments/data/repositories/payment_repository_impl.dart';
+import 'features/payments/domain/repositories/payment_repository.dart';
+import 'features/payments/domain/usecases/add_payment_method_usecase.dart';
+import 'features/payments/presentation/bloc/payment_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -51,9 +56,11 @@ Future<void> init() async {
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -63,6 +70,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => VerifyPasswordResetOtpUseCase(sl()));
   sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
   sl.registerLazySingleton(() => CompleteProfileUseCase(sl()));
+  sl.registerLazySingleton(() => AddPaymentMethodUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -77,6 +85,9 @@ Future<void> init() async {
       authRepository: sl(),
     ),
   );
+
+  // Payment Bloc
+  sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

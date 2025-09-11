@@ -32,7 +32,6 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _emailFocusNode = FocusNode();
-  bool _hasNavigatedAway = false;
 
   void Function(void Function())? _buttonSetState;
 
@@ -84,8 +83,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is SendEmailVerificationSuccess && !_hasNavigatedAway) {
-          _hasNavigatedAway = true;
+        if (state is SendEmailVerificationSuccess) {
           final message = _formatApiMessage(state.message);
           SnackBarUtils.showSuccess(context, message);
           context.push(

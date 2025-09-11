@@ -4,6 +4,8 @@ import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_scaffold.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_phone_field.dart';
+import 'package:copyright_clinic_flutter/core/widgets/custom_app_bar.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
@@ -13,6 +15,7 @@ import 'package:copyright_clinic_flutter/di.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../config/routes/app_routes.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -79,7 +82,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
     }
   }
 
-  void _handleSkip() {}
+  void _handleSkip() {
+    context.go(AppRoutes.addPaymentMethodRouteName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,17 +94,19 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
         listener: (context, state) {
           if (state is CompleteProfileSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
+            context.go(AppRoutes.addPaymentMethodRouteName);
           } else if (state is CompleteProfileError) {
             SnackBarUtils.showError(context, state.message);
           }
         },
         child: CustomScaffold(
           extendBodyBehindAppBar: true,
-          appBar: AppBar(
+          appBar: CustomAppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
             scrolledUnderElevation: 0,
             automaticallyImplyLeading: false,
+            showBackButton: false,
             title: TranslatedText(
               AppStrings.completeYourProfile,
               style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w600),

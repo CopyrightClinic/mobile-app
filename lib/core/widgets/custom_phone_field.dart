@@ -45,14 +45,19 @@ class CustomPhoneField extends StatefulWidget {
 class CustomPhoneFieldState extends State<CustomPhoneField> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
-  PhoneNumber? _phoneNumber;
-  bool _isPhoneValid = false;
+  late ValueNotifier<PhoneNumber?> _phoneNumberNotifier;
+  late ValueNotifier<bool> _isPhoneValidNotifier;
+  String? _previousCountryCode;
 
   @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
     _focusNode = widget.focusNode ?? FocusNode();
+
+    _phoneNumberNotifier = ValueNotifier<PhoneNumber?>(PhoneNumber(isoCode: widget.initialCountryCode));
+    _isPhoneValidNotifier = ValueNotifier<bool>(false);
+    _previousCountryCode = widget.initialCountryCode;
 
     if (widget.initialValue != null) {
       _controller.text = widget.initialValue!;
@@ -67,6 +72,8 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
+    _phoneNumberNotifier.dispose();
+    _isPhoneValidNotifier.dispose();
     super.dispose();
   }
 
@@ -79,14 +86,21 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
         SizedBox(height: 8.h),
         InternationalPhoneNumberInput(
           onInputChanged: (PhoneNumber number) {
-            _phoneNumber = number;
-            widget.onChanged?.call(number);
+            if (_previousCountryCode != null && _previousCountryCode != number.isoCode) {
+              _controller.clear();
+              _isPhoneValidNotifier.value = false;
+              final clearedPhoneNumber = PhoneNumber(isoCode: number.isoCode);
+              _phoneNumberNotifier.value = clearedPhoneNumber;
+              widget.onChanged?.call(clearedPhoneNumber);
+            } else {
+              _phoneNumberNotifier.value = number;
+              widget.onChanged?.call(number);
+            }
+
+            _previousCountryCode = number.isoCode;
           },
           onInputValidated: (bool value) {
-            _isPhoneValid = value;
-            if (mounted) {
-              setState(() {});
-            }
+            _isPhoneValidNotifier.value = value;
           },
           selectorConfig: SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
@@ -98,14 +112,14 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
           ignoreBlank: false,
           autoValidateMode: widget.autovalidateMode,
           selectorTextStyle: TextStyle(color: context.textColor, fontSize: 16.f, fontWeight: FontWeight.w400),
-          initialValue: PhoneNumber(isoCode: widget.initialCountryCode),
+          initialValue: _phoneNumberNotifier.value,
           textFieldController: _controller,
           focusNode: _focusNode,
           formatInput: true,
           keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
           inputBorder: InputBorder.none,
           onSaved: (PhoneNumber number) {
-            _phoneNumber = number;
+            _phoneNumberNotifier.value = number;
           },
           onFieldSubmitted: (value) {
             widget.onEditingComplete?.call();
@@ -152,15 +166,18 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
     );
   }
 
-  PhoneNumber? get phoneNumber => _phoneNumber;
+  PhoneNumber? get phoneNumber => _phoneNumberNotifier.value;
 
-  String? get formattedPhoneNumber => _phoneNumber?.phoneNumber;
+  String? get formattedPhoneNumber => _phoneNumberNotifier.value?.phoneNumber;
 
-  String? get parsedPhoneNumber => _phoneNumber?.parseNumber();
+  String? get parsedPhoneNumber => _phoneNumberNotifier.value?.parseNumber();
 
   bool isValid() {
-    return _isPhoneValid && _phoneNumber != null && _phoneNumber!.phoneNumber != null && _phoneNumber!.phoneNumber!.isNotEmpty;
+    return _isPhoneValidNotifier.value &&
+        _phoneNumberNotifier.value != null &&
+        _phoneNumberNotifier.value!.phoneNumber != null &&
+        _phoneNumberNotifier.value!.phoneNumber!.isNotEmpty;
   }
 
-  bool get isPhoneValid => _isPhoneValid;
+  bool get isPhoneValid => _isPhoneValidNotifier.value;
 }

@@ -79,6 +79,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
       listener: (context, state) {
         if (state is LoginSuccess) {
           SnackBarUtils.showSuccess(context, state.message);
+          context.go(AppRoutes.homeRouteName);
         } else if (state is LoginError) {
           SnackBarUtils.showError(context, state.message, duration: const Duration(seconds: 3), showDismissAction: false);
         }

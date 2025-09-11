@@ -11,6 +11,11 @@ import '../../features/auth/presentation/password_signup_screen.dart';
 import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
+import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
+import '../../features/dashboard/presentation/pages/home_screen.dart';
+import '../../features/dashboard/presentation/pages/sessions_screen.dart';
+import '../../features/dashboard/presentation/pages/profile_screen.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import 'app_routes.dart';
 
@@ -19,6 +24,7 @@ class AppRouter {
     initialLocation: AppRoutes.splashRouteName,
     debugLogDiagnostics: true,
     routes: [
+      // Onboarding and Auth Routes
       GoRoute(path: AppRoutes.splashRouteName, name: AppRoutes.splashRouteName, builder: (context, state) => const SplashScreen()),
       GoRoute(path: AppRoutes.welcomeRouteName, name: AppRoutes.welcomeRouteName, builder: (context, state) => const WelcomeScreen()),
       GoRoute(path: AppRoutes.aboutUsRouteName, name: AppRoutes.aboutUsRouteName, builder: (context, state) => const AboutUsScreen()),
@@ -38,7 +44,6 @@ class AppRouter {
           return PasswordSignupScreen(email: email);
         },
       ),
-
       GoRoute(
         path: AppRoutes.verifyCodeRouteName,
         name: AppRoutes.verifyCodeRouteName,
@@ -68,6 +73,30 @@ class AppRouter {
         path: AppRoutes.completeProfileRouteName,
         name: AppRoutes.completeProfileRouteName,
         builder: (context, state) => const CompleteProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.addPaymentMethodRouteName,
+        name: AppRoutes.addPaymentMethodRouteName,
+        builder: (context, state) => const AddPaymentMethodScreen(),
+      ),
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return DashboardShellScreen(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [GoRoute(path: AppRoutes.homeRouteName, name: AppRoutes.homeRouteName, builder: (context, state) => const HomeScreen())],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: AppRoutes.sessionsRouteName, name: AppRoutes.sessionsRouteName, builder: (context, state) => const SessionsScreen()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [GoRoute(path: AppRoutes.profileRouteName, name: AppRoutes.profileRouteName, builder: (context, state) => const ProfileScreen())],
+          ),
+        ],
       ),
     ],
   );

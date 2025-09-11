@@ -8,6 +8,7 @@ class DimensionConstants {
   static const double font8Px = 8.0;
   static const double font10Px = 10.0;
   static const double font12Px = 12.0;
+  static const double font13Px = 13.0;
   static const double font14Px = 14.0;
   static const double font16Px = 16.0;
   static const double font18Px = 18.0;

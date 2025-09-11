@@ -48,9 +48,9 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
             _handleSuccess(state);
           } else if (state is VerifyEmailError || state is VerifyPasswordResetError) {
             _handleError(state);
-          } else if (state is SendEmailVerificationSuccess || state is ForgotPasswordSuccess) {
+          } else if (state is ResendEmailVerificationSuccess || state is ResendForgotPasswordSuccess) {
             _handleResendSuccess(state);
-          } else if (state is SendEmailVerificationError || state is ForgotPasswordError) {
+          } else if (state is ResendEmailVerificationError || state is ResendForgotPasswordError) {
             _handleResendError(state);
           }
         },
@@ -104,9 +104,9 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
 
   void _resendCode(ResendOtpCubit cubit) {
     if (widget.verificationType == VerificationType.emailVerification) {
-      _authBloc.add(SendEmailVerificationRequested(email: widget.email));
+      _authBloc.add(ResendEmailVerificationRequested(email: widget.email));
     } else {
-      _authBloc.add(ForgotPasswordRequested(email: widget.email));
+      _authBloc.add(ResendForgotPasswordRequested(email: widget.email));
     }
 
     cubit.resetTimer();
@@ -160,9 +160,9 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   void _handleResendError(AuthState state) {
     String message = '';
 
-    if (state is SendEmailVerificationError) {
+    if (state is ResendEmailVerificationError) {
       message = state.message;
-    } else if (state is ForgotPasswordError) {
+    } else if (state is ResendForgotPasswordError) {
       message = state.message;
     }
 
@@ -237,7 +237,7 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   Widget _buildResendCode() {
     return BlocBuilder<ResendOtpCubit, ResendOtpState>(
       builder: (context, state) {
-        final cubit = sl<ResendOtpCubit>();
+        final cubit = context.read<ResendOtpCubit>();
         final canResend = cubit.canResend;
 
         return Column(

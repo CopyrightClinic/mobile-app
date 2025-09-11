@@ -37,4 +37,15 @@ class ApiEndpoint {
         return '$path/complete-profile';
     }
   }
+
+  /// Payment endpoints
+  ///
+  /// Provides payment operations:
+  static String payment(PaymentEndpoint endpoint) {
+    const path = '/payment-methods';
+    switch (endpoint) {
+      case PaymentEndpoint.PAYMENT_METHODS:
+        return path;
+    }
+  }
 }

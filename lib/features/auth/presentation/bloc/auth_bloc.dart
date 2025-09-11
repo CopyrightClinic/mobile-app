@@ -42,6 +42,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CompleteProfileRequested>(_onCompleteProfileRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthStatus>(_onCheckAuthStatus);
+    on<ResendEmailVerificationRequested>(_onResendEmailVerificationRequested);
+    on<ResendForgotPasswordRequested>(_onResendForgotPasswordRequested);
   }
 
   Future<void> _onLoginRequested(LoginRequested event, Emitter<AuthState> emit) async {
@@ -150,6 +152,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(CompleteProfileError(failure.message ?? tr(AppStrings.profileUpdateFailed))),
       (message) => emit(CompleteProfileSuccess(message)),
+    );
+  }
+
+  Future<void> _onResendEmailVerificationRequested(ResendEmailVerificationRequested event, Emitter<AuthState> emit) async {
+    emit(ResendEmailVerificationLoading());
+
+    final result = await sendEmailVerificationUseCase(SendEmailVerificationParams(email: event.email));
+
+    result.fold(
+      (failure) => emit(ResendEmailVerificationError(failure.message ?? tr(AppStrings.failedToSendVerificationEmail))),
+      (message) => emit(ResendEmailVerificationSuccess(message)),
+    );
+  }
+
+  Future<void> _onResendForgotPasswordRequested(ResendForgotPasswordRequested event, Emitter<AuthState> emit) async {
+    emit(ResendForgotPasswordLoading());
+
+    final result = await authRepository.forgotPassword(event.email);
+
+    result.fold(
+      (failure) => emit(ResendForgotPasswordError(failure.message ?? tr(AppStrings.passwordResetFailed))),
+      (message) => emit(ResendForgotPasswordSuccess(message)),
     );
   }
 }

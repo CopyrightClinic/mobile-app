@@ -91,8 +91,8 @@ mixin Validator {
   String? validateAddress(String? value, String Function(String) tr) {
     if (value == null || value.isEmpty) {
       return tr(AppStrings.addressIsRequired);
-    } else if (value.trim().length < 5) {
-      return tr(AppStrings.addressMustBeAtLeast5Characters);
+    } else if (value.trim().length < 10) {
+      return tr(AppStrings.addressMustBeAtLeast10Characters);
     }
     return null;
   }

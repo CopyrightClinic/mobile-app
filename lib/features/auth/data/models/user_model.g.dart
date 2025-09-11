@@ -15,6 +15,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   role: json['role'] as String,
   status: json['status'] as String,
   totalSessions: (json['totalSessions'] as num?)?.toInt(),
+  stripeCustomerId: json['stripeCustomerId'] as String?,
   createdAt:
       json['createdAt'] == null
           ? null
@@ -34,6 +35,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
   'role': instance.role,
   'status': instance.status,
   'totalSessions': instance.totalSessions,
+  'stripeCustomerId': instance.stripeCustomerId,
   'createdAt': instance.createdAt?.toIso8601String(),
   'updatedAt': instance.updatedAt?.toIso8601String(),
 };

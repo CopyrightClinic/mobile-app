@@ -54,6 +54,9 @@ dependencies:
   # UI Components
   pin_code_fields: ^8.0.1
   intl_phone_number_input: ^0.7.4
+  
+  # Payment Processing
+  flutter_stripe: ^11.5.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +72,7 @@ flutter:
     - assets/images/svg/
     - assets/images/png/
     - assets/images/png/clients/
+
     - assets/translations/
     
   fonts:
