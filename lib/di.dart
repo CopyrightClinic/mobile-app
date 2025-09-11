@@ -23,6 +23,8 @@ import 'features/payments/data/datasources/payment_remote_data_source.dart';
 import 'features/payments/data/repositories/payment_repository_impl.dart';
 import 'features/payments/domain/repositories/payment_repository.dart';
 import 'features/payments/domain/usecases/add_payment_method_usecase.dart';
+import 'features/payments/domain/usecases/get_payment_methods_usecase.dart';
+import 'features/payments/domain/usecases/delete_payment_method_usecase.dart';
 import 'features/payments/presentation/bloc/payment_bloc.dart';
 import 'features/sessions/data/datasources/sessions_remote_data_source.dart';
 import 'features/sessions/data/repositories/sessions_repository_impl.dart';
@@ -79,6 +81,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
   sl.registerLazySingleton(() => CompleteProfileUseCase(sl()));
   sl.registerLazySingleton(() => AddPaymentMethodUseCase(sl()));
+  sl.registerLazySingleton(() => GetPaymentMethodsUseCase(sl()));
+  sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
 
@@ -97,7 +101,7 @@ Future<void> init() async {
   );
 
   // Payment Bloc
-  sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl()));
+  sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl(), deletePaymentMethodUseCase: sl()));
 
   // Sessions Bloc
   sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl()));

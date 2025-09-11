@@ -20,4 +20,5 @@ class AppRoutes {
   static const String sessionsRouteName = '/sessions';
   static const String profileRouteName = '/profile';
   static const String scheduleSessionRouteName = '/schedule-session';
+  static const String selectPaymentMethodRouteName = '/select-payment-method';
 }

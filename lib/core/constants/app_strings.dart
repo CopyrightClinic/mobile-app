@@ -177,6 +177,13 @@ class AppStrings {
   static const expirationDateIsRequired = 'expirationDateIsRequired';
   static const cvvIsRequired = 'cvvIsRequired';
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
+  static const noPaymentMethods = 'noPaymentMethods';
+  static const noPaymentMethodsYet = 'noPaymentMethodsYet';
+  static const noPaymentMethodsAddOne = 'noPaymentMethodsAddOne';
+  static const addAnotherPaymentMethod = 'addAnotherPaymentMethod';
+  static const paymentMethod = 'paymentMethod';
+  static const selectPreferredPaymentCard = 'selectPreferredPaymentCard';
+  static const continueText = 'continueText';
 
   // Dashboard
   static const dashboard = 'dashboard';

@@ -10,6 +10,7 @@ import '../models/payment_response_model.dart';
 
 abstract class PaymentRemoteDataSource {
   Future<CreatePaymentMethodResponseModel> createPaymentMethod(CreatePaymentMethodRequestModel request);
+  Future<GetPaymentMethodsResponseModel> getPaymentMethods();
 }
 
 class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
@@ -28,6 +29,27 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
           try {
             final createPaymentMethodResponse = CreatePaymentMethodResponseModel.fromJson(response.data);
             return createPaymentMethodResponse;
+          } catch (e) {
+            throw CustomException.fromParsingException(e as Exception);
+          }
+        },
+      );
+      return response;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
+
+  @override
+  Future<GetPaymentMethodsResponseModel> getPaymentMethods() async {
+    try {
+      final response = await apiService.getData<GetPaymentMethodsResponseModel>(
+        endpoint: ApiEndpoint.payment(PaymentEndpoint.PAYMENT_METHODS),
+        requiresAuthToken: true,
+        converter: (JSON response) {
+          try {
+            final getPaymentMethodsResponse = GetPaymentMethodsResponseModel.fromJson(response);
+            return getPaymentMethodsResponse;
           } catch (e) {
             throw CustomException.fromParsingException(e as Exception);
           }

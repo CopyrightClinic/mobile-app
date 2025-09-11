@@ -42,7 +42,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
       listener: (context, state) {
         if (state is SessionScheduled) {
           SnackBarUtils.showSuccess(context, AppStrings.sessionScheduledSuccessfully);
-          context.go(AppRoutes.homeRouteName);
+          context.push(AppRoutes.selectPaymentMethodRouteName);
         } else if (state is SessionScheduleError) {
           SnackBarUtils.showError(context, state.message);
         }
