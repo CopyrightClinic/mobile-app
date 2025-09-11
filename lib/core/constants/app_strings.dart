@@ -42,14 +42,93 @@ class AppStrings {
 
   // Form Validation
   static const password = 'password';
+  static const email = 'email';
   static const emailIsRequired = 'emailIsRequired';
   static const pleaseEnterAValidEmail = 'pleaseEnterAValidEmail';
   static const passwordIsRequired = 'passwordIsRequired';
   static const passwordMustBeAtLeastXCharacters = 'passwordMustBeAtLeastXCharacters';
+  static const passwordNoSpaces = 'passwordNoSpaces';
+  static const passwordMustContainUppercase = 'passwordMustContainUppercase';
+  static const passwordMustContainLowercase = 'passwordMustContainLowercase';
+  static const passwordMustContainDigit = 'passwordMustContainDigit';
+  static const passwordMustContainSpecialChar = 'passwordMustContainSpecialChar';
+  static const confirmPasswordIsRequired = 'confirmPasswordIsRequired';
+  static const passwordsDoNotMatch = 'passwordsDoNotMatch';
   static const nameIsRequired = 'nameIsRequired';
   static const nameMustBeAtLeastXCharacters = 'nameMustBeAtLeastXCharacters';
   static const phoneIsRequired = 'phoneIsRequired';
   static const pleaseEnterAValidPhoneNumber = 'pleaseEnterAValidPhoneNumber';
+
+  // Login Screen
+  static const welcomeBackMessage = 'welcomeBackMessage';
+  static const enterYourEmail = 'enterYourEmail';
+  static const enterYourPassword = 'enterYourPassword';
+  static const forgotPassword = 'forgotPassword';
+
+  // Sign Up Screen
+  static const createAccount = 'createAccount';
+  static const enterEmailForVerification = 'enterEmailForVerification';
+  static const createYourAccount = 'createYourAccount';
+  static const confirmPassword = 'confirmPassword';
+  static const verifyEmail = 'verifyEmail';
+  static const congratulations = 'congratulations';
+  static const yourAccountHasBeenCreated = 'yourAccountHasBeenCreated';
+  static const setupProfile = 'setupProfile';
+
+  // Forgot Password Screen
+  static const resetPassword = 'resetPassword';
+  static const forgotPasswordTitle = 'forgotPasswordTitle';
+  static const forgotPasswordSubtitle = 'forgotPasswordSubtitle';
+  static const resetPasswordMessage = 'resetPasswordMessage';
+  static const sendResetLink = 'sendResetLink';
+  static const resetLinkSent = 'resetLinkSent';
+  static const checkYourEmail = 'checkYourEmail';
+  static const dismiss = 'dismiss';
+  static const loginFailed = 'loginFailed';
+  static const signupFailed = 'signupFailed';
+  static const emailVerificationFailed = 'emailVerificationFailed';
+  static const failedToSendVerificationEmail = 'failedToSendVerificationEmail';
+  static const resetCodeSentTo = 'resetCodeSentTo';
+  static const passwordResetCodeVerified = 'passwordResetCodeVerified';
+  static const codeSent = 'codeSent';
+
+  // Verification Screen
+  static const emailVerificationTitle = 'emailVerificationTitle';
+  static const passwordResetTitle = 'passwordResetTitle';
+  static const emailVerificationDescription = 'emailVerificationDescription';
+  static const passwordResetDescription = 'passwordResetDescription';
+  static const verifyEmailButton = 'verifyEmailButton';
+  static const verifyCodeButton = 'verifyCodeButton';
+  static const resendCodeButton = 'resendCodeButton';
+
+  // Reset Password Screen
+  static const resetPasswordTitle = 'resetPasswordTitle';
+  static const setNewPassword = 'setNewPassword';
+  static const newPassword = 'newPassword';
+  static const enterNewPassword = 'enterNewPassword';
+  static const updatePassword = 'updatePassword';
+  static const passwordResetSuccess = 'passwordResetSuccess';
+  static const passwordResetFailed = 'passwordResetFailed';
+
+  // Complete Profile Screen
+  static const completeYourProfile = 'completeYourProfile';
+  static const fullName = 'fullName';
+  static const phoneNumber = 'phoneNumber';
+  static const address = 'address';
+  static const enterYourFullName = 'enterYourFullName';
+  static const enterYourPhoneNumber = 'enterYourPhoneNumber';
+  static const enterYourAddress = 'enterYourAddress';
+  static const skip = 'skip';
+  static const save = 'save';
+
+  // Complete Profile Validation
+  static const fullNameIsRequired = 'fullNameIsRequired';
+  static const fullNameMustBeAtLeast2Characters = 'fullNameMustBeAtLeast2Characters';
+  static const fullNameCanOnlyContainLetters = 'fullNameCanOnlyContainLetters';
+  static const phoneNumberIsRequired = 'phoneNumberIsRequired';
+  static const phoneNumberMustBeAtLeast10Digits = 'phoneNumberMustBeAtLeast10Digits';
+  static const addressIsRequired = 'addressIsRequired';
+  static const addressMustBeAtLeast10Characters = 'addressMustBeAtLeast10Characters';
 
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
@@ -67,4 +146,56 @@ class AppStrings {
   static const artificialIntelligenceDescription = 'artificialIntelligenceDescription';
   static const writers = 'writers';
   static const writersDescription = 'writersDescription';
+
+  // Complete Profile
+  static const profileUpdateFailed = 'profileUpdateFailed';
+  static const invalidPhoneNumber = 'invalidPhoneNumber';
+  static const phoneNumberRequired = 'phoneNumberRequired';
+  // Payment Strings
+  static const addPaymentMethod = 'addPaymentMethod';
+  static const nameOnCard = 'nameOnCard';
+  static const enterFullNameAsShownOnCard = 'enterFullNameAsShownOnCard';
+  static const cardNumber = 'cardNumber';
+  static const cardDetails = 'cardDetails';
+  static const enterCardNumber = 'enterCardNumber';
+  static const expirationDate = 'expirationDate';
+  static const mmYy = 'mmYy';
+  static const cvv = 'cvv';
+  static const enterCvv = 'enterCvv';
+  static const paymentMethods = 'paymentMethods';
+  static const savedPaymentMethods = 'savedPaymentMethods';
+  static const deletePaymentMethod = 'deletePaymentMethod';
+  static const confirmDelete = 'confirmDelete';
+  static const paymentMethodAdded = 'paymentMethodAdded';
+  static const paymentMethodDeleted = 'paymentMethodDeleted';
+  static const failedToAddPaymentMethod = 'failedToAddPaymentMethod';
+  static const failedToDeletePaymentMethod = 'failedToDeletePaymentMethod';
+  static const invalidCardNumber = 'invalidCardNumber';
+  static const invalidExpirationDate = 'invalidExpirationDate';
+  static const invalidCvv = 'invalidCvv';
+  static const cardNumberIsRequired = 'cardNumberIsRequired';
+  static const expirationDateIsRequired = 'expirationDateIsRequired';
+  static const cvvIsRequired = 'cvvIsRequired';
+  static const cardholderNameIsRequired = 'cardholderNameIsRequired';
+
+  // Dashboard
+  static const dashboard = 'dashboard';
+  static const home = 'home';
+  static const mySessions = 'mySessions';
+  static const profile = 'profile';
+  static const welcomeBack = 'welcomeBack';
+  static const upcomingSessions = 'upcomingSessions';
+  static const noUpcomingSessions = 'noUpcomingSessions';
+  static const viewAllSessions = 'viewAllSessions';
+  static const bookNewSession = 'bookNewSession';
+  static const myProfile = 'myProfile';
+  static const editProfile = 'editProfile';
+  static const logout = 'logout';
+  static const confirmLogout = 'confirmLogout';
+  static const areYouSureLogout = 'areYouSureLogout';
+  static const cancel = 'cancel';
+
+  // Payment Error Messages
+  static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
+  static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
 }

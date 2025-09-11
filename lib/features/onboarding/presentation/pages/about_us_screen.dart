@@ -6,8 +6,9 @@ import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../widgets/onboarding_background.dart';
-import '../widgets/custom_back_button.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../widgets/gradient_border_painter.dart';
+import '../widgets/custom_back_button.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -16,29 +17,24 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: Padding(padding: EdgeInsets.only(left: 8.w), child: CustomBackButton()),
-      ),
+      appBar: CustomAppBar(leading: OnboardingCustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
       body: OnboardingBackground(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: DimensionConstants.gap10Px),
+                SizedBox(height: DimensionConstants.gap10Px.h),
                 TranslatedText(
                   AppStrings.aboutUs,
-                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px, fontWeight: FontWeight.w700),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
                 ),
                 TranslatedText(
                   AppStrings.learnAboutUsAndOurTeam,
-                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px, fontWeight: FontWeight.w400, height: 1.5),
+                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
                 ),
-                SizedBox(height: DimensionConstants.gap24Px),
+                SizedBox(height: DimensionConstants.gap24Px.h),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -79,10 +75,10 @@ class AboutUsScreen extends StatelessWidget {
                       image: const DecorationImage(image: AssetImage(ImageConstants.client1), fit: BoxFit.cover),
                     ),
                   ),
-                  SizedBox(height: DimensionConstants.gap10Px),
+                  SizedBox(height: DimensionConstants.gap10Px.h),
                   TranslatedText(
                     AppStrings.cassiusTitusDescription,
-                    style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px, fontWeight: FontWeight.w400, height: 1.5),
+                    style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
                   ),
                 ],
               ),
@@ -99,8 +95,8 @@ class AboutUsScreen extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: DimensionConstants.gap16Px,
-        mainAxisSpacing: DimensionConstants.gap24Px,
+        crossAxisSpacing: DimensionConstants.gap16Px.w,
+        mainAxisSpacing: DimensionConstants.gap24Px.h,
         childAspectRatio: 0.78,
       ),
       itemCount: 6,
@@ -132,16 +128,16 @@ class AboutUsScreen extends StatelessWidget {
             image: DecorationImage(image: AssetImage(member['image'] ?? ''), fit: BoxFit.cover),
           ),
         ),
-        SizedBox(height: DimensionConstants.gap8Px),
+        SizedBox(height: DimensionConstants.gap8Px.h),
         TranslatedText(
           member['name'] ?? '',
-          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px, fontWeight: FontWeight.w600),
+          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: DimensionConstants.gap2Px),
+        SizedBox(height: DimensionConstants.gap2Px.h),
         TranslatedText(
           member['title'] ?? '',
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: DimensionConstants.font12Px, fontWeight: FontWeight.w400),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w400),
           textAlign: TextAlign.center,
         ),
       ],

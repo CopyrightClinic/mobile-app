@@ -75,7 +75,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                   children: [
                     SizedBox(height: MediaQuery.sizeOf(context).height * 0.16),
                     Hero(tag: 'app_logo', child: GlobalImage(assetPath: ImageConstants.logo, width: 105.8.w)),
-                    SizedBox(height: DimensionConstants.gap16Px),
+                    SizedBox(height: DimensionConstants.gap16Px.h),
                     SlideTransition(
                       position: _slideAnimation,
                       child: FadeTransition(
@@ -84,12 +84,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                           children: [
                             TranslatedText(
                               AppStrings.welcomeTo,
-                              style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font32Px, fontWeight: FontWeight.w700),
+                              style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font32Px.f, fontWeight: FontWeight.w700),
                               textAlign: TextAlign.center,
                             ),
                             TranslatedText(
                               AppStrings.copyrightClinic,
-                              style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font32Px, fontWeight: FontWeight.w700),
+                              style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font32Px.f, fontWeight: FontWeight.w700),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -119,11 +119,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                       },
                     ),
 
-                    SizedBox(height: DimensionConstants.gap16Px),
+                    SizedBox(height: DimensionConstants.gap16Px.h),
 
                     _buildAnimatedInfoButton(animation: _staggerAnimations[3], icon: Icons.auto_awesome, title: AppStrings.askHaroldAI, onTap: () {}),
 
-                    SizedBox(height: DimensionConstants.gap40Px),
+                    SizedBox(height: DimensionConstants.gap40Px.h),
 
                     FadeTransition(
                       opacity: _staggerAnimations[4],
@@ -132,7 +132,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              context.push(AppRoutes.signupRouteName);
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Colors.black,
@@ -149,12 +151,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                       ),
                     ),
 
-                    SizedBox(height: DimensionConstants.gap20Px),
+                    SizedBox(height: DimensionConstants.gap20Px.h),
 
                     FadeTransition(
                       opacity: _staggerAnimations[5],
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          context.push(AppRoutes.loginRouteName);
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -177,7 +181,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                       ),
                     ),
 
-                    SizedBox(height: DimensionConstants.gap10Px),
+                    SizedBox(height: DimensionConstants.gap10Px.h),
                   ],
                 );
               },
@@ -210,15 +214,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                   painter: WelcomeScreenGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.5), borderRadius: 100.r),
                   child: ElevatedButton.icon(
                     onPressed: onTap,
-                    icon: Icon(icon, color: Colors.white, size: DimensionConstants.font20Px),
+                    icon: Icon(icon, color: Colors.white, size: DimensionConstants.font20Px.f),
                     label: TranslatedText(
                       title,
-                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px, fontWeight: FontWeight.w500),
+                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w500),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px, horizontal: DimensionConstants.gap20Px),
+                      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h, horizontal: DimensionConstants.gap20Px.w),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)),
                       elevation: 0,
                       side: BorderSide.none,

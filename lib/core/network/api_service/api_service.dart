@@ -31,14 +31,12 @@ class ApiService implements ApiInterface {
           policy: cachePolicy,
           maxStale: cacheAgeDays != null ? Duration(days: cacheAgeDays) : null,
         ),
-        options: Options(
-          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
-        ),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
         queryParams: queryParams,
         cancelToken: cancelToken,
       );
 
-      body = data.body;
+      body = data.data;
     } on Exception catch (ex) {
       throw CustomException.fromDioException(ex);
     }
@@ -69,13 +67,11 @@ class ApiService implements ApiInterface {
           policy: cachePolicy,
           maxStale: cacheAgeDays != null ? Duration(days: cacheAgeDays) : null,
         ),
-        options: Options(
-          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
-        ),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
         cancelToken: cancelToken,
       );
 
-      body = data.body;
+      body = data.data;
     } on Exception catch (ex) {
       throw CustomException.fromDioException(ex);
     }
@@ -101,9 +97,7 @@ class ApiService implements ApiInterface {
       response = await _dioService.post<JSON>(
         endpoint: endpoint,
         data: data,
-        options: Options(
-          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
-        ),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
         cancelToken: cancelToken,
       );
     } on Exception catch (ex) {
@@ -131,9 +125,7 @@ class ApiService implements ApiInterface {
       response = await _dioService.patch<JSON>(
         endpoint: endpoint,
         data: data,
-        options: Options(
-          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
-        ),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
         cancelToken: cancelToken,
       );
     } on Exception catch (ex) {
@@ -161,9 +153,7 @@ class ApiService implements ApiInterface {
       response = await _dioService.delete<JSON>(
         endpoint: endpoint,
         data: data,
-        options: Options(
-          extra: <String, Object?>{'requiresAuthToken': requiresAuthToken},
-        ),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
         cancelToken: cancelToken,
       );
     } on Exception catch (ex) {

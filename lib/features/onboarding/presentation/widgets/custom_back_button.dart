@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'gradient_border_painter.dart';
 
-class CustomBackButton extends StatelessWidget {
+class OnboardingCustomBackButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final double size;
   final Color backgroundColor;
@@ -11,7 +11,7 @@ class CustomBackButton extends StatelessWidget {
   final Color borderColor;
   final double borderWidth;
 
-  const CustomBackButton({
+  const OnboardingCustomBackButton({
     super.key,
     this.onPressed,
     this.size = 44,
@@ -33,7 +33,7 @@ class CustomBackButton extends StatelessWidget {
           child: InkWell(
             onTap: onPressed ?? () => context.pop(),
             borderRadius: BorderRadius.circular((size / 2).w),
-            child: Center(child: Icon(Icons.arrow_back_ios_new_rounded, color: iconColor, size: (size * 0.4).w)),
+            child: Center(child: Icon(Icons.arrow_back, color: iconColor, size: (size * 0.5).w)),
           ),
         ),
       ),
