@@ -63,88 +63,174 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           ),
         ),
         body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: DimensionConstants.gap15Px.h),
+                        _buildSubtitle(),
+                        SizedBox(height: DimensionConstants.gap24Px.h),
+                        _buildSessionDetailsSection(),
+                        _buildPaymentSummarySection(),
+                        _buildPaymentMethodSection(),
+
+                        _buildNoteSection(),
+                        SizedBox(height: DimensionConstants.gap24Px.h),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              _buildConfirmButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubtitle() {
+    return Align(
+      alignment: Alignment.center,
+      child: TranslatedText(
+        AppStrings.pleaseReviewSessionDetails,
+        style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+      ),
+    );
+  }
+
+  Widget _buildSessionDetailsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TranslatedText(
+          AppStrings.sessionDetails,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: DimensionConstants.gap16Px.h),
+        SessionDetailsCard(sessionDate: widget.sessionDate),
+      ],
+    );
+  }
+
+  Widget _buildPaymentMethodSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TranslatedText(
+          AppStrings.paymentMethod,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: DimensionConstants.gap16Px.h),
+        PaymentMethodCard(paymentMethod: widget.paymentMethod, action: NoPaymentMethodAction(), isSelected: false),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+      ],
+    );
+  }
+
+  Widget _buildPaymentSummarySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TranslatedText(
+          AppStrings.paymentSummary,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: DimensionConstants.gap16Px.h),
+        Container(
+          padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
+          decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
+          child: Column(
+            children: [
+              _buildPaymentSummaryItem(AppStrings.holdAmount, AppStrings.holdAmountDescription),
+              SizedBox(height: DimensionConstants.gap16Px.h),
+              _buildPaymentSummaryItem(AppStrings.processingFee, AppStrings.processingFeeNonRefundable),
+              SizedBox(height: DimensionConstants.gap16Px.h),
+              Container(height: 1.h, color: context.darkTextSecondary.withOpacity(0.2)),
+              SizedBox(height: DimensionConstants.gap16Px.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TranslatedText(
+                    AppStrings.totalAmountLabel,
+                    style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
+                  ),
+                  TranslatedText(
+                    AppStrings.totalAmount,
+                    style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+      ],
+    );
+  }
+
+  Widget _buildPaymentSummaryItem(String amountKey, String descriptionKey) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TranslatedText(
+              amountKey,
+              style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+            ),
+            SizedBox(height: DimensionConstants.gap2Px.h),
+            TranslatedText(descriptionKey, style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNoteSection() {
+    return Container(
+      padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
+      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, color: context.orange, size: DimensionConstants.gap20Px.w),
+          SizedBox(width: DimensionConstants.gap12Px.w),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: DimensionConstants.gap15Px.h),
-
-                Align(
-                  alignment: Alignment.center,
-                  child: TranslatedText(
-                    AppStrings.pleaseReviewSessionDetails,
-                    style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
-                  ),
-                ),
-
-                SizedBox(height: DimensionConstants.gap24Px.h),
-
                 TranslatedText(
-                  AppStrings.sessionDetails,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+                  AppStrings.note,
+                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
                 ),
-
-                SizedBox(height: DimensionConstants.gap16Px.h),
-
-                SessionDetailsCard(sessionDate: widget.sessionDate),
-
+                SizedBox(height: DimensionConstants.gap8Px.h),
                 TranslatedText(
-                  AppStrings.paymentMethod,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+                  AppStrings.paymentSecurityNote,
+                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                 ),
-
-                SizedBox(height: DimensionConstants.gap16Px.h),
-
-                PaymentMethodCard(paymentMethod: widget.paymentMethod, action: TapPaymentMethodAction(onTap: () {}), isSelected: false),
-
-                Container(
-                  padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-                  decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.info_outline, color: context.orange, size: DimensionConstants.gap20Px.w),
-                      SizedBox(width: DimensionConstants.gap12Px.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TranslatedText(
-                              AppStrings.note,
-                              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(height: DimensionConstants.gap8Px.h),
-                            TranslatedText(
-                              AppStrings.paymentSecurityNote,
-                              style: TextStyle(
-                                color: context.darkTextSecondary,
-                                fontSize: DimensionConstants.font14Px.f,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Spacer(),
-
-                BlocBuilder<SessionsBloc, SessionsState>(
-                  builder: (context, state) {
-                    final isLoading = state is SessionScheduleLoading;
-
-                    return AuthButton(text: AppStrings.confirmAndBookSession, onPressed: _onConfirmBooking, isLoading: isLoading, isEnabled: true);
-                  },
-                ),
-
-                SizedBox(height: DimensionConstants.gap16Px.h),
               ],
             ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfirmButton() {
+    return Container(
+      padding: EdgeInsets.only(left: DimensionConstants.gap16Px.w, right: DimensionConstants.gap16Px.w, top: DimensionConstants.gap10Px.h),
+      child: BlocBuilder<SessionsBloc, SessionsState>(
+        builder: (context, state) {
+          final isLoading = state is SessionScheduleLoading;
+          return AuthButton(text: AppStrings.confirmAndBookSession, onPressed: _onConfirmBooking, isLoading: isLoading, isEnabled: true);
+        },
       ),
     );
   }

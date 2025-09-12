@@ -240,6 +240,13 @@ class AppStrings {
   static const recordingConsented = 'recordingConsented';
   static const holdAmountNote = 'holdAmountNote';
   static const thirtyMinutesSession = 'thirtyMinutesSession';
+  static const paymentSummary = 'paymentSummary';
+  static const holdAmount = 'holdAmount';
+  static const holdAmountDescription = 'holdAmountDescription';
+  static const processingFee = 'processingFee';
+  static const processingFeeNonRefundable = 'processingFeeNonRefundable';
+  static const totalAmount = 'totalAmount';
+  static const totalAmountLabel = 'totalAmountLabel';
 
   // Days of the week
   static const monday = 'monday';

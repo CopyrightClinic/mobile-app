@@ -3,7 +3,6 @@ import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
-import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../domain/entities/payment_method_entity.dart';
 
@@ -199,5 +198,11 @@ class TapPaymentMethodAction extends PaymentMethodCardAction {
               ? Center(child: Container(width: 8.w, height: 8.h, decoration: BoxDecoration(shape: BoxShape.circle, color: context.white)))
               : null,
     );
+  }
+}
+
+  @override
+  Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected) {
+    return const SizedBox.shrink();
   }
 }
