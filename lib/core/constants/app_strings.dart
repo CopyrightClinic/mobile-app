@@ -247,6 +247,9 @@ class AppStrings {
   static const processingFeeNonRefundable = 'processingFeeNonRefundable';
   static const totalAmount = 'totalAmount';
   static const totalAmountLabel = 'totalAmountLabel';
+  static const sessionRequestSent = 'sessionRequestSent';
+  static const sessionRequestSentDescription = 'sessionRequestSentDescription';
+  static const okay = 'okay';
 
   // Days of the week
   static const monday = 'monday';

@@ -201,6 +201,7 @@ class TapPaymentMethodAction extends PaymentMethodCardAction {
   }
 }
 
+class NoPaymentMethodAction extends PaymentMethodCardAction {
   @override
   Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected) {
     return const SizedBox.shrink();
