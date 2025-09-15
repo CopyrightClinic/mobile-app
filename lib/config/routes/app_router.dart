@@ -16,6 +16,7 @@ import '../../features/payments/presentation/pages/add_payment_method_screen.dar
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
 import '../../features/sessions/presentation/pages/booking_request_sent_screen.dart';
+import '../../features/harold_ai/presentation/pages/ask_harold_ai_screen.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -145,6 +146,7 @@ class AppRouter {
         name: AppRoutes.bookingRequestSentRouteName,
         builder: (context, state) => const BookingRequestSentScreen(),
       ),
+      GoRoute(path: AppRoutes.askHaroldAiRouteName, name: AppRoutes.askHaroldAiRouteName, builder: (context, state) => const AskHaroldAiScreen()),
     ],
   );
 }

@@ -101,6 +101,13 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: DimensionConstants.gap24Px.h),
+            AuthButton(
+              text: AppStrings.askHaroldAI,
+              onPressed: () {
+                context.push(AppRoutes.askHaroldAiRouteName);
+              },
+            ),
           ],
         ),
       ),

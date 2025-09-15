@@ -251,6 +251,11 @@ class AppStrings {
   static const sessionRequestSentDescription = 'sessionRequestSentDescription';
   static const okay = 'okay';
 
+  // Harold AI Screen
+  static const describeYourCopyrightIssue = 'describeYourCopyrightIssue';
+  static const describe = 'describe';
+  static const submit = 'submit';
+
   // Days of the week
   static const monday = 'monday';
   static const tuesday = 'tuesday';
@@ -272,4 +277,9 @@ class AppStrings {
 
   // Phone Field
   static const searchCountry = 'searchCountry';
+
+  // Session Availability Empty States
+  static const noTimeSlotsAvailable = 'noTimeSlotsAvailable';
+  static const noTimeSlotsForSelectedDate = 'noTimeSlotsForSelectedDate';
+  static const trySelectingDifferentDate = 'trySelectingDifferentDate';
 }

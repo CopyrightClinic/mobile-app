@@ -221,6 +221,9 @@
   "sessionRequestSent": "Session Request Sent",
   "sessionRequestSentDescription": "Your session request has been sent to available attorneys. You will be notified once an attorney accepts. If no one is available during your selected time slot, your payment (currently on hold) will be refunded.",
   "okay": "Okay",
+  "describeYourCopyrightIssue": "Describe your copyright issue",
+  "describe": "Describe",
+  "submit": "Submit",
   "monday": "Monday",
   "tuesday": "Tuesday",
   "wednesday": "Wednesday",
@@ -237,5 +240,8 @@
   "sun": "Sun",
   "failedToProcessPaymentMethod": "Failed to process payment method",
   "failedToCreatePaymentMethodGeneric": "Failed to create payment method",
-  "searchCountry": "Search country"
+  "searchCountry": "Search country",
+  "noTimeSlotsAvailable": "No Time Slots Available",
+  "noTimeSlotsForSelectedDate": "No available time slots for the selected date",
+  "trySelectingDifferentDate": "Please try selecting a different date"
 }
