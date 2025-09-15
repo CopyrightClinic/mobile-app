@@ -31,6 +31,7 @@ import 'features/sessions/data/repositories/sessions_repository_impl.dart';
 import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
+import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
 
 final sl = GetIt.instance;
@@ -85,6 +86,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -104,7 +106,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl(), deletePaymentMethodUseCase: sl()));
 
   // Sessions Bloc
-  sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl()));
+  sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

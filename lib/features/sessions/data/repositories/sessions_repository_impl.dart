@@ -1,7 +1,9 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
 import '../datasources/sessions_remote_data_source.dart';
 
@@ -79,6 +81,20 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(ServerFailure('Failed to join session: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SessionAvailabilityEntity>> getSessionAvailability(String timezone) async {
+    try {
+      final availability = await remoteDataSource.getSessionAvailability(timezone);
+      return Right(availability.toEntity());
+    } on CustomException catch (e, stackTrace) {
+      Log.e(SessionsRepositoryImpl, e.message, stackTrace);
+      return Left(ServerFailure(e.message));
+    } catch (e, stackTrace) {
+      Log.e(SessionsRepositoryImpl, 'Failed to fetch session availability: $e', stackTrace);
+      return Left(ServerFailure('Failed to fetch session availability: $e'));
     }
   }
 }

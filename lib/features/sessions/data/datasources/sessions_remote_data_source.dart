@@ -1,5 +1,6 @@
 import '../../../../core/network/api_service/api_service.dart';
 import '../models/session_model.dart';
+import '../models/session_availability_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
@@ -9,6 +10,7 @@ abstract class SessionsRemoteDataSource {
   Future<SessionModel> getSessionById(String sessionId);
   Future<String> cancelSession(String sessionId, String reason);
   Future<SessionModel> joinSession(String sessionId);
+  Future<SessionAvailabilityModel> getSessionAvailability(String timezone);
 }
 
 class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
@@ -18,8 +20,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
 
   @override
   Future<List<SessionModel>> getUserSessions() async {
-    // For now, return mock data. Replace with actual API call later.
-    await Future.delayed(const Duration(milliseconds: 500)); // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 500));
     return SessionsMockDataSource.getMockSessions();
   }
 
@@ -57,5 +58,14 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
     final allSessions = SessionsMockDataSource.getMockSessions();
     final session = allSessions.firstWhere((session) => session.id == sessionId);
     return session;
+  }
+
+  @override
+  Future<SessionAvailabilityModel> getSessionAvailability(String timezone) async {
+    return await apiService.getData<SessionAvailabilityModel>(
+      endpoint: '/sessions-availability',
+      headers: {'Timezone': timezone},
+      converter: (json) => SessionAvailabilityModel.fromJson(json),
+    );
   }
 }

@@ -73,3 +73,12 @@ class TimeSlotSelected extends SessionsEvent {
 class InitializeScheduleSession extends SessionsEvent {
   const InitializeScheduleSession();
 }
+
+class LoadSessionAvailability extends SessionsEvent {
+  final String timezone;
+
+  const LoadSessionAvailability({required this.timezone});
+
+  @override
+  List<Object> get props => [timezone];
+}
