@@ -41,7 +41,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   }
 
   Future<void> _onRefreshSessions(RefreshSessions event, Emitter<SessionsState> emit) async {
-    // Keep current state while refreshing
     if (state is SessionsLoaded) {
       final currentState = state as SessionsLoaded;
 
@@ -54,7 +53,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         emit(currentState.copyWith(upcomingSessions: upcomingSessions, completedSessions: completedSessions));
       });
     } else {
-      add(const LoadUserSessions());
+      // Instead of adding an event, directly call the load method
+      await _onLoadUserSessions(const LoadUserSessions(), emit);
     }
   }
 
@@ -77,10 +77,10 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
     final result = await cancelSessionUseCase(CancelSessionParams(sessionId: event.sessionId, reason: event.reason));
 
-    result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to cancel session')), (message) {
+    result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to cancel session')), (message) async {
       emit(SessionCancelled(message: message));
-      // Refresh sessions after cancellation
-      add(const RefreshSessions());
+      // Refresh sessions after cancellation - directly call the method instead of adding event
+      await _onRefreshSessions(const RefreshSessions(), emit);
     });
   }
 
@@ -102,16 +102,16 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       );
 
       emit(SessionScheduled(session: newSession));
-      add(const RefreshSessions());
     } catch (e) {
       emit(SessionScheduleError(message: 'Failed to schedule session: ${e.toString()}'));
     }
   }
 
-  void _onInitializeScheduleSession(InitializeScheduleSession event, Emitter<SessionsState> emit) {
+  Future<void> _onInitializeScheduleSession(InitializeScheduleSession event, Emitter<SessionsState> emit) async {
     final now = DateTime.now();
     emit(ScheduleSessionState(selectedDate: now, isLoadingAvailability: true));
-    add(const LoadSessionAvailability(timezone: 'Asia/Karachi'));
+    // Directly call the method instead of adding event
+    await _onLoadSessionAvailability(const LoadSessionAvailability(timezone: 'Asia/Karachi'), emit);
   }
 
   void _onDateSelected(DateSelected event, Emitter<SessionsState> emit) {

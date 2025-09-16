@@ -102,11 +102,7 @@ class AppRouter {
           ),
           StatefulShellBranch(
             routes: [
-              GoRoute(
-                path: AppRoutes.sessionsRouteName,
-                name: AppRoutes.sessionsRouteName,
-                builder: (context, state) => BlocProvider<SessionsBloc>(create: (context) => sl<SessionsBloc>(), child: const SessionsScreen()),
-              ),
+              GoRoute(path: AppRoutes.sessionsRouteName, name: AppRoutes.sessionsRouteName, builder: (context, state) => const SessionsScreen()),
             ],
           ),
           StatefulShellBranch(

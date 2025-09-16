@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -34,7 +36,10 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
-    _sessionsBloc.add(const InitializeScheduleSession());
+    // Add safety check before adding event
+    if (!_sessionsBloc.isClosed) {
+      _sessionsBloc.add(const InitializeScheduleSession());
+    }
   }
 
   @override
@@ -77,7 +82,9 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                     selectedDate: scheduleState.selectedDate,
                     availableDays: scheduleState.availableDays,
                     onDateSelected: (date) {
-                      _sessionsBloc.add(DateSelected(selectedDate: date));
+                      if (!_sessionsBloc.isClosed) {
+                        _sessionsBloc.add(DateSelected(selectedDate: date));
+                      }
                     },
                   ),
 
@@ -110,7 +117,9 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   AuthButton(
                                     text: 'Retry',
                                     onPressed: () {
-                                      _sessionsBloc.add(const LoadSessionAvailability(timezone: 'Asia/Karachi'));
+                                      if (!_sessionsBloc.isClosed) {
+                                        _sessionsBloc.add(const LoadSessionAvailability(timezone: 'Asia/Karachi'));
+                                      }
                                     },
                                     isLoading: false,
                                     isEnabled: true,
@@ -158,7 +167,9 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   timeText: timeSlot.formattedTime,
                                   isSelected: isSelected,
                                   onTap: () {
-                                    _sessionsBloc.add(TimeSlotSelected(selectedTimeSlot: timeSlotKey));
+                                    if (!_sessionsBloc.isClosed) {
+                                      _sessionsBloc.add(TimeSlotSelected(selectedTimeSlot: timeSlotKey));
+                                    }
                                   },
                                 );
                               },
@@ -188,6 +199,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
 
   void _onContinueToPayment(ScheduleSessionState scheduleState) {
     if (scheduleState.selectedTimeSlot != null) {
+      log('Selected time slot: ${scheduleState.selectedTimeSlot}');
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
         extra: {'sessionDate': scheduleState.selectedDate, 'timeSlot': scheduleState.selectedTimeSlot!},
