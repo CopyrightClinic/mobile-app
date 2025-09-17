@@ -15,6 +15,7 @@ import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/ui/snackbar_utils.dart';
 import '../../../core/utils/mixin/validator.dart';
 import '../../../config/routes/app_routes.dart';
+import '../../harold_ai/domain/services/harold_navigation_service.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -79,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
       listener: (context, state) {
         if (state is LoginSuccess) {
           SnackBarUtils.showSuccess(context, state.message);
-          context.go(AppRoutes.homeRouteName);
+          HaroldNavigationService.handlePostAuthNavigation(context);
         } else if (state is LoginError) {
           SnackBarUtils.showError(context, state.message, duration: const Duration(seconds: 3), showDismissAction: false);
         }

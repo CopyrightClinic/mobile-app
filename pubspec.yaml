@@ -58,6 +58,9 @@ dependencies:
   
   # Payment Processing
   flutter_stripe: ^11.5.0
+  
+  # Speech Recognition
+  manual_speech_to_text: ^1.0.4
 
 dev_dependencies:
   flutter_test:

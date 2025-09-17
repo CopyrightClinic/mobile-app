@@ -255,6 +255,13 @@ class AppStrings {
   static const describeYourCopyrightIssue = 'describeYourCopyrightIssue';
   static const describe = 'describe';
   static const submit = 'submit';
+  static const haroldAiHasResponseForYou = 'haroldAiHasResponseForYou';
+  static const pleaseSignUpOrLogInToViewIt = 'pleaseSignUpOrLogInToViewIt';
+  static const haroldCanConnectYou = 'haroldCanConnectYou';
+  static const haroldConsultationDescription = 'haroldConsultationDescription';
+  static const scheduleAppointment = 'scheduleAppointment';
+  static const yourMatterFallsOutsideScope = 'yourMatterFallsOutsideScope';
+  static const goToHome = 'goToHome';
 
   // Days of the week
   static const monday = 'monday';
