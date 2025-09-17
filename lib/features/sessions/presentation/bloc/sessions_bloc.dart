@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/logger/logger.dart';
+import '../../../../core/utils/timezone_helper.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
@@ -53,7 +54,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         emit(currentState.copyWith(upcomingSessions: upcomingSessions, completedSessions: completedSessions));
       });
     } else {
-      // Instead of adding an event, directly call the load method
       await _onLoadUserSessions(const LoadUserSessions(), emit);
     }
   }
@@ -79,7 +79,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
     result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to cancel session')), (message) async {
       emit(SessionCancelled(message: message));
-      // Refresh sessions after cancellation - directly call the method instead of adding event
       await _onRefreshSessions(const RefreshSessions(), emit);
     });
   }
@@ -110,8 +109,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   Future<void> _onInitializeScheduleSession(InitializeScheduleSession event, Emitter<SessionsState> emit) async {
     final now = DateTime.now();
     emit(ScheduleSessionState(selectedDate: now, isLoadingAvailability: true));
-    // Directly call the method instead of adding event
-    await _onLoadSessionAvailability(const LoadSessionAvailability(timezone: 'Asia/Karachi'), emit);
+
+    final String currentTimeZone = await TimezoneHelper.getUserTimezone();
+    await _onLoadSessionAvailability(LoadSessionAvailability(timezone: currentTimeZone), emit);
   }
 
   void _onDateSelected(DateSelected event, Emitter<SessionsState> emit) {

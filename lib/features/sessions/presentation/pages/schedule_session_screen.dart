@@ -9,6 +9,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -36,7 +37,6 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
-    // Add safety check before adding event
     if (!_sessionsBloc.isClosed) {
       _sessionsBloc.add(const InitializeScheduleSession());
     }
@@ -116,9 +116,10 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   SizedBox(height: DimensionConstants.gap16Px.h),
                                   AuthButton(
                                     text: 'Retry',
-                                    onPressed: () {
+                                    onPressed: () async {
                                       if (!_sessionsBloc.isClosed) {
-                                        _sessionsBloc.add(const LoadSessionAvailability(timezone: 'Asia/Karachi'));
+                                        final String currentTimeZone = await TimezoneHelper.getUserTimezone();
+                                        _sessionsBloc.add(LoadSessionAvailability(timezone: currentTimeZone));
                                       }
                                     },
                                     isLoading: false,
@@ -129,8 +130,8 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                             )
                             : scheduleState.availableTimeSlotsForSelectedDate.isEmpty
                             ? EmptyStateWidget(
-                              title: AppStrings.noTimeSlotsAvailable,
-                              subtitle: AppStrings.noTimeSlotsForSelectedDate,
+                              title: 'AppStrings.noTimeSlotsAvailable',
+                              subtitle: 'AppStrings.noTimeSlotsForSelectedDate',
                               icon: Icons.access_time_outlined,
                               iconColor: context.darkTextSecondary,
                               action: Container(
@@ -141,7 +142,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   border: Border.all(color: context.darkTextSecondary.withOpacity(0.2)),
                                 ),
                                 child: TranslatedText(
-                                  AppStrings.trySelectingDifferentDate,
+                                  'AppStrings.trySelectingDifferentDate',
                                   style: TextStyle(
                                     color: context.darkTextSecondary,
                                     fontSize: DimensionConstants.font14Px.f,
