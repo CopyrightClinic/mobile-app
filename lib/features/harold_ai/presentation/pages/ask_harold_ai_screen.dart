@@ -118,9 +118,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
           _textController.text = state.finalText;
           _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
         } else if (state is SpeechToTextError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Speech recognition error: ${state.message}'), backgroundColor: Colors.red));
+          SnackBarUtils.showError(context, '${AppStrings.speechRecognitionError}: ${state.message}');
         }
       },
       child: Container(
@@ -241,13 +239,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
         context.read<SpeechToTextBloc>().add(StopSpeechRecognition());
       }
 
-      // Submit query to Harold AI BLoC
-      context.read<HaroldAiBloc>().add(
-        SubmitHaroldQuery(
-          query: _textController.text.trim(),
-          isUserAuthenticated: false, // This will be determined in the BLoC
-        ),
-      );
+      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim(), isUserAuthenticated: false));
     }
   }
 }

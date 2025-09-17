@@ -262,6 +262,11 @@ class AppStrings {
   static const scheduleAppointment = 'scheduleAppointment';
   static const yourMatterFallsOutsideScope = 'yourMatterFallsOutsideScope';
   static const goToHome = 'goToHome';
+  static const failedToEvaluateQuery = 'failedToEvaluateQuery';
+  static const haroldAiEvaluationNotSuccessful = 'haroldAiEvaluationNotSuccessful';
+  static const unexpectedErrorOccurred = 'unexpectedErrorOccurred';
+  static const unexpectedErrorOccurredWhileEvaluatingQuery = 'unexpectedErrorOccurredWhileEvaluatingQuery';
+  static const speechRecognitionError = 'speechRecognitionError';
 
   // Days of the week
   static const monday = 'monday';

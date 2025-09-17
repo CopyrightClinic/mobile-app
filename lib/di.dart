@@ -41,6 +41,10 @@ import 'features/speech_to_text/domain/usecases/stop_speech_recognition_usecase.
 import 'features/speech_to_text/domain/usecases/pause_speech_recognition_usecase.dart';
 import 'features/speech_to_text/domain/usecases/resume_speech_recognition_usecase.dart';
 import 'features/speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
+import 'features/harold_ai/data/datasources/harold_remote_data_source.dart';
+import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
+import 'features/harold_ai/domain/repositories/harold_repository.dart';
+import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
 
 final sl = GetIt.instance;
@@ -77,12 +81,14 @@ Future<void> init() async {
   sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
+  sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SessionsRepository>(() => SessionsRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SpeechToTextRepository>(() => SpeechToTextRepositoryImpl(localDataSource: sl()));
+  sl.registerLazySingleton<HaroldRepository>(() => HaroldRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -102,6 +108,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => PauseSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -129,7 +136,7 @@ Future<void> init() async {
   );
 
   // Harold AI Bloc
-  sl.registerLazySingleton(() => HaroldAiBloc());
+  sl.registerLazySingleton(() => HaroldAiBloc(evaluateQueryUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

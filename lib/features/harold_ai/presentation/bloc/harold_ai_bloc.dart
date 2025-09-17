@@ -1,10 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/services/harold_navigation_service.dart';
+import '../../domain/usecases/evaluate_query_usecase.dart';
 import 'harold_ai_event.dart';
 import 'harold_ai_state.dart';
 
 class HaroldAiBloc extends Bloc<HaroldAiEvent, HaroldAiState> {
-  HaroldAiBloc() : super(const HaroldAiInitial()) {
+  final EvaluateQueryUseCase evaluateQueryUseCase;
+
+  HaroldAiBloc({required this.evaluateQueryUseCase}) : super(const HaroldAiInitial()) {
     on<SubmitHaroldQuery>(_onSubmitHaroldQuery);
     on<ResetHaroldState>(_onResetHaroldState);
   }
@@ -13,19 +17,28 @@ class HaroldAiBloc extends Bloc<HaroldAiEvent, HaroldAiState> {
     try {
       emit(const HaroldAiLoading());
 
-      await Future.delayed(const Duration(seconds: 1));
-
-      final bool isQuerySuccessful = event.query.toLowerCase().contains('success');
-
       final bool isUserAuthenticated = await HaroldNavigationService.isUserAuthenticated();
 
-      if (isQuerySuccessful) {
-        emit(HaroldAiSuccess(isUserAuthenticated: isUserAuthenticated));
-      } else {
-        emit(HaroldAiFailure(isUserAuthenticated: isUserAuthenticated));
-      }
+      final result = await evaluateQueryUseCase(EvaluateQueryParams(query: event.query));
+
+      result.fold(
+        (failure) {
+          emit(HaroldAiError(message: failure.message ?? AppStrings.failedToEvaluateQuery));
+        },
+        (evaluationResult) {
+          if (evaluationResult.success) {
+            if (evaluationResult.isLegitimate) {
+              emit(HaroldAiSuccess(isUserAuthenticated: isUserAuthenticated));
+            } else {
+              emit(HaroldAiFailure(isUserAuthenticated: isUserAuthenticated));
+            }
+          } else {
+            emit(const HaroldAiError(message: AppStrings.haroldAiEvaluationNotSuccessful));
+          }
+        },
+      );
     } catch (e) {
-      emit(HaroldAiError(message: e.toString()));
+      emit(HaroldAiError(message: '${AppStrings.unexpectedErrorOccurred}: $e'));
     }
   }
 

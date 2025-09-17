@@ -21,12 +21,8 @@ class HaroldFailedScreen extends StatelessWidget {
 
   void _handleBackPress(BuildContext context) {
     if (fromAuthFlow) {
-      // User came from welcome -> harold -> signup/login -> result
-      // Navigate to home screen to prevent going back to welcome
       context.go(AppRoutes.homeRouteName);
     } else {
-      // User was already authenticated and came from home -> harold -> result
-      // Normal back navigation (pop to previous screen)
       context.pop();
     }
   }

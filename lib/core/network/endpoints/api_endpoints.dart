@@ -55,4 +55,12 @@ class ApiEndpoint {
   static String sessions(String path) {
     return '/sessions$path';
   }
+
+  static String harold(HaroldEndpoint endpoint) {
+    const path = '/copyright-evaluation';
+    switch (endpoint) {
+      case HaroldEndpoint.EVALUATE:
+        return '$path/evaluate';
+    }
+  }
 }
