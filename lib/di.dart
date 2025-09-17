@@ -131,7 +131,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl()));
 
   // Speech to Text Bloc
-  sl.registerLazySingleton(
+  sl.registerFactory(
     () => SpeechToTextBloc(initializeUseCase: sl(), startUseCase: sl(), stopUseCase: sl(), pauseUseCase: sl(), resumeUseCase: sl(), repository: sl()),
   );
 
