@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/session_availability_entity.dart';
 
 enum SessionsTab { upcoming, completed }
 
@@ -111,25 +112,51 @@ class SessionScheduleError extends SessionsState {
 class ScheduleSessionState extends SessionsState {
   final DateTime selectedDate;
   final String? selectedTimeSlot;
-  final List<Map<String, String>> availableTimeSlots;
+  final SessionAvailabilityEntity? availability;
+  final bool isLoadingAvailability;
+  final String? errorMessage;
 
-  const ScheduleSessionState({required this.selectedDate, this.selectedTimeSlot, required this.availableTimeSlots});
+  const ScheduleSessionState({
+    required this.selectedDate,
+    this.selectedTimeSlot,
+    this.availability,
+    this.isLoadingAvailability = false,
+    this.errorMessage,
+  });
 
   @override
-  List<Object?> get props => [selectedDate, selectedTimeSlot, availableTimeSlots];
+  List<Object?> get props => [selectedDate, selectedTimeSlot, availability, isLoadingAvailability, errorMessage];
 
   ScheduleSessionState copyWith({
     DateTime? selectedDate,
     String? selectedTimeSlot,
-    List<Map<String, String>>? availableTimeSlots,
+    SessionAvailabilityEntity? availability,
+    bool? isLoadingAvailability,
+    String? errorMessage,
     bool clearTimeSlot = false,
+    bool clearError = false,
   }) {
     return ScheduleSessionState(
       selectedDate: selectedDate ?? this.selectedDate,
       selectedTimeSlot: clearTimeSlot ? null : (selectedTimeSlot ?? this.selectedTimeSlot),
-      availableTimeSlots: availableTimeSlots ?? this.availableTimeSlots,
+      availability: availability ?? this.availability,
+      isLoadingAvailability: isLoadingAvailability ?? this.isLoadingAvailability,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   bool get canContinueToPayment => selectedTimeSlot != null;
+
+  List<AvailabilityDayEntity> get availableDays => availability?.days ?? [];
+
+  List<TimeSlotEntity> get availableTimeSlotsForSelectedDate {
+    if (availability == null) return [];
+
+    final selectedDay =
+        availability!.days
+            .where((day) => day.date.year == selectedDate.year && day.date.month == selectedDate.month && day.date.day == selectedDate.day)
+            .firstOrNull;
+
+    return selectedDay?.slots ?? [];
+  }
 }

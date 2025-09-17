@@ -5,7 +5,6 @@ class SessionsMockDataSource {
     final now = DateTime.now();
 
     return [
-      // Upcoming session 1
       SessionModel(
         id: '1',
         title: 'Legal Consultation',
@@ -17,7 +16,6 @@ class SessionsMockDataSource {
         createdAt: now.subtract(const Duration(days: 5)),
       ),
 
-      // Upcoming session 2 (can't be cancelled - less than 24h)
       SessionModel(
         id: '2',
         title: 'Legal Consultation',
@@ -29,7 +27,6 @@ class SessionsMockDataSource {
         createdAt: now.subtract(const Duration(days: 3)),
       ),
 
-      // Completed session 1
       SessionModel(
         id: '3',
         title: 'Legal Consultation',
@@ -41,7 +38,6 @@ class SessionsMockDataSource {
         createdAt: now.subtract(const Duration(days: 10)),
       ),
 
-      // Completed session 2
       SessionModel(
         id: '4',
         title: 'Legal Consultation',

@@ -31,6 +31,7 @@ import 'features/sessions/data/repositories/sessions_repository_impl.dart';
 import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
+import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
 import 'features/speech_to_text/data/datasources/speech_to_text_local_data_source.dart';
 import 'features/speech_to_text/data/repositories/speech_to_text_repository_impl.dart';
@@ -109,6 +110,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PauseSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -128,7 +130,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl(), deletePaymentMethodUseCase: sl()));
 
   // Sessions Bloc
-  sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl()));
+  sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl()));
 
   // Speech to Text Bloc
   sl.registerFactory(

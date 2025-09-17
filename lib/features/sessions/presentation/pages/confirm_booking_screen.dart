@@ -112,7 +112,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
-        SessionDetailsCard(sessionDate: widget.sessionDate),
+        SessionDetailsCard(sessionDate: widget.sessionDate, timeSlot: widget.timeSlot),
       ],
     );
   }

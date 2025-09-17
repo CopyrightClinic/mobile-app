@@ -1,7 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
+import '../../../../core/utils/logger/logger.dart';
+import '../../../../core/utils/timezone_helper.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
+import '../../domain/usecases/get_session_availability_usecase.dart';
 import '../../domain/entities/session_entity.dart';
 import 'sessions_event.dart';
 import 'sessions_state.dart';
@@ -9,8 +12,10 @@ import 'sessions_state.dart';
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   final GetUserSessionsUseCase getUserSessionsUseCase;
   final CancelSessionUseCase cancelSessionUseCase;
+  final GetSessionAvailabilityUseCase getSessionAvailabilityUseCase;
 
-  SessionsBloc({required this.getUserSessionsUseCase, required this.cancelSessionUseCase}) : super(const SessionsInitial()) {
+  SessionsBloc({required this.getUserSessionsUseCase, required this.cancelSessionUseCase, required this.getSessionAvailabilityUseCase})
+    : super(const SessionsInitial()) {
     on<LoadUserSessions>(_onLoadUserSessions);
     on<RefreshSessions>(_onRefreshSessions);
     on<SwitchToUpcoming>(_onSwitchToUpcoming);
@@ -20,6 +25,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<InitializeScheduleSession>(_onInitializeScheduleSession);
     on<DateSelected>(_onDateSelected);
     on<TimeSlotSelected>(_onTimeSlotSelected);
+    on<LoadSessionAvailability>(_onLoadSessionAvailability);
   }
 
   Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
@@ -36,7 +42,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   }
 
   Future<void> _onRefreshSessions(RefreshSessions event, Emitter<SessionsState> emit) async {
-    // Keep current state while refreshing
     if (state is SessionsLoaded) {
       final currentState = state as SessionsLoaded;
 
@@ -49,7 +54,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         emit(currentState.copyWith(upcomingSessions: upcomingSessions, completedSessions: completedSessions));
       });
     } else {
-      add(const LoadUserSessions());
+      await _onLoadUserSessions(const LoadUserSessions(), emit);
     }
   }
 
@@ -72,10 +77,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
     final result = await cancelSessionUseCase(CancelSessionParams(sessionId: event.sessionId, reason: event.reason));
 
-    result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to cancel session')), (message) {
+    result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to cancel session')), (message) async {
       emit(SessionCancelled(message: message));
-      // Refresh sessions after cancellation
-      add(const RefreshSessions());
+      await _onRefreshSessions(const RefreshSessions(), emit);
     });
   }
 
@@ -83,7 +87,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     emit(const SessionScheduleLoading());
 
     try {
-      // Mock session creation - in real app this would call a use case
       await Future.delayed(const Duration(seconds: 1));
 
       final newSession = SessionEntity(
@@ -98,37 +101,23 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       );
 
       emit(SessionScheduled(session: newSession));
-
-      // Refresh sessions after scheduling
-      add(const RefreshSessions());
     } catch (e) {
       emit(SessionScheduleError(message: 'Failed to schedule session: ${e.toString()}'));
     }
   }
 
-  void _onInitializeScheduleSession(InitializeScheduleSession event, Emitter<SessionsState> emit) {
+  Future<void> _onInitializeScheduleSession(InitializeScheduleSession event, Emitter<SessionsState> emit) async {
     final now = DateTime.now();
-    final mondayOfWeek = now.add(Duration(days: (1 - now.weekday) % 7));
+    emit(ScheduleSessionState(selectedDate: now, isLoadingAvailability: true));
 
-    final availableTimeSlots = [
-      {'time': '9:00 AM – 9:30 AM', 'value': '09:00-09:30'},
-      {'time': '10:30 AM – 11:00 AM', 'value': '10:30-11:00'},
-      {'time': '2:00 PM – 2:30 PM', 'value': '14:00-14:30'},
-      {'time': '3:00 PM – 3:30 PM', 'value': '15:00-15:30'},
-    ];
-
-    emit(ScheduleSessionState(selectedDate: mondayOfWeek, availableTimeSlots: availableTimeSlots));
+    final String currentTimeZone = await TimezoneHelper.getUserTimezone();
+    await _onLoadSessionAvailability(LoadSessionAvailability(timezone: currentTimeZone), emit);
   }
 
   void _onDateSelected(DateSelected event, Emitter<SessionsState> emit) {
     if (state is ScheduleSessionState) {
       final currentState = state as ScheduleSessionState;
-      emit(
-        currentState.copyWith(
-          selectedDate: event.selectedDate,
-          clearTimeSlot: true, // Reset time slot when date changes
-        ),
-      );
+      emit(currentState.copyWith(selectedDate: event.selectedDate, clearTimeSlot: true));
     }
   }
 
@@ -136,6 +125,40 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     if (state is ScheduleSessionState) {
       final currentState = state as ScheduleSessionState;
       emit(currentState.copyWith(selectedTimeSlot: event.selectedTimeSlot));
+    }
+  }
+
+  Future<void> _onLoadSessionAvailability(LoadSessionAvailability event, Emitter<SessionsState> emit) async {
+    if (state is ScheduleSessionState) {
+      final currentState = state as ScheduleSessionState;
+      emit(currentState.copyWith(isLoadingAvailability: true));
+
+      final result = await getSessionAvailabilityUseCase(event.timezone);
+
+      Log.i(SessionsBloc, 'Session availability: ${result.fold((failure) => failure.message, (availability) => availability.days.first.date)}');
+
+      result.fold(
+        (failure) {
+          emit(currentState.copyWith(isLoadingAvailability: false, errorMessage: failure.message ?? 'Failed to load session availability'));
+        },
+        (availability) {
+          DateTime selectedDate = currentState.selectedDate;
+          if (availability.days.isNotEmpty) {
+            final availableDate = availability.days.firstWhere((day) => day.slots.isNotEmpty, orElse: () => availability.days.first);
+            selectedDate = availableDate.date;
+          }
+
+          emit(
+            currentState.copyWith(
+              availability: availability,
+              selectedDate: selectedDate,
+              isLoadingAvailability: false,
+              clearTimeSlot: true,
+              clearError: true,
+            ),
+          );
+        },
+      );
     }
   }
 }

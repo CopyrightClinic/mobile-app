@@ -52,6 +52,7 @@ class ApiService implements ApiInterface {
   Future<T> getData<T>({
     required String endpoint,
     JSON? queryParams,
+    JSON? headers,
     CancelToken? cancelToken,
     CachePolicy? cachePolicy,
     int? cacheAgeDays,
@@ -60,6 +61,8 @@ class ApiService implements ApiInterface {
   }) async {
     JSON body;
     try {
+      final options = Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}, headers: headers);
+
       final data = await _dioService.get<JSON>(
         endpoint: endpoint,
         queryParams: queryParams,
@@ -67,7 +70,7 @@ class ApiService implements ApiInterface {
           policy: cachePolicy,
           maxStale: cacheAgeDays != null ? Duration(days: cacheAgeDays) : null,
         ),
-        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
+        options: options,
         cancelToken: cancelToken,
       );
 
