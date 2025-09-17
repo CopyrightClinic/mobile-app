@@ -21,6 +21,7 @@ import '../bloc/payment_bloc.dart';
 import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
 import '../../../../core/utils/enumns/ui/payment_method.dart';
+import '../../../harold_ai/domain/services/harold_navigation_service.dart';
 
 class AddPaymentMethodScreen extends StatefulWidget {
   final PaymentMethodFrom from;
@@ -50,6 +51,24 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
     _paymentBloc = sl<PaymentBloc>();
   }
 
+  void _handleAuthFlowCompletion(BuildContext context) async {
+    // Check if there's a pending Harold result to navigate to
+    final pendingResult = await HaroldNavigationService.getPendingResult();
+    if (!mounted) return;
+
+    if (pendingResult != null) {
+      // Navigate to Harold result screen after completing auth flow
+      if (pendingResult == 'success') {
+        context.go(AppRoutes.haroldSuccessRouteName, extra: {'fromAuthFlow': true});
+      } else {
+        context.go(AppRoutes.haroldFailedRouteName, extra: {'fromAuthFlow': true});
+      }
+    } else {
+      // Normal auth flow completion - go to home
+      context.go(AppRoutes.homeRouteName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<PaymentBloc, PaymentState>(
@@ -58,7 +77,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
         if (state is PaymentMethodAdded) {
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
           if (widget.from == PaymentMethodFrom.auth) {
-            context.go(AppRoutes.homeRouteName);
+            _handleAuthFlowCompletion(context);
           } else {
             context.pop(true);
           }
@@ -86,7 +105,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                 padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
                 child: ElevatedButton(
                   onPressed: () {
-                    context.go(AppRoutes.homeRouteName);
+                    _handleAuthFlowCompletion(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.white,

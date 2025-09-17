@@ -17,7 +17,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../config/routes/app_routes.dart';
 import '../../../di.dart';
-import '../../harold_ai/domain/services/harold_navigation_service.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -138,21 +137,9 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
         listener: (context, state) {
           if (state is SignupSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
-            // Check if there's a pending Harold result to navigate to
-            HaroldNavigationService.getPendingResult().then((pendingResult) {
-              if (pendingResult != null) {
-                // Navigate directly to Harold result after signup using go() to replace navigation stack
-                // This prevents going back to welcome screen after authentication
-                if (pendingResult == 'success') {
-                  context.go(AppRoutes.haroldSuccessRouteName);
-                } else {
-                  context.go(AppRoutes.haroldFailedRouteName);
-                }
-              } else {
-                // Normal signup flow
-                context.go(AppRoutes.signupSuccessRouteName);
-              }
-            });
+            // Always go to normal signup success screen
+            // Harold navigation will be handled after payment method setup
+            context.go(AppRoutes.signupSuccessRouteName);
           } else if (state is SignupError) {
             SnackBarUtils.showError(context, state.message);
           }
