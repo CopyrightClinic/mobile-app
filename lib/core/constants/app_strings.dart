@@ -170,6 +170,7 @@ class AppStrings {
   static const paymentMethodDeleted = 'paymentMethodDeleted';
   static const failedToAddPaymentMethod = 'failedToAddPaymentMethod';
   static const failedToDeletePaymentMethod = 'failedToDeletePaymentMethod';
+  static const failedToLoadPaymentMethods = 'failedToLoadPaymentMethods';
   static const invalidCardNumber = 'invalidCardNumber';
   static const invalidExpirationDate = 'invalidExpirationDate';
   static const invalidCvv = 'invalidCvv';
@@ -272,4 +273,29 @@ class AppStrings {
 
   // Phone Field
   static const searchCountry = 'searchCountry';
+
+  // Error Messages
+  static const failedToLoadSessions = 'failedToLoadSessions';
+  static const failedToRefreshSessions = 'failedToRefreshSessions';
+  static const failedToCancelSession = 'failedToCancelSession';
+  static const failedToLoadSessionAvailability = 'failedToLoadSessionAvailability';
+  static const sessionCancelledSuccessfully = 'sessionCancelledSuccessfully';
+  static const copyrightConsultation = 'copyrightConsultation';
+  static const copyrightConsultationSession = 'copyrightConsultationSession';
+  static const legalConsultation = 'legalConsultation';
+  static const noTimeSlotsAvailable = 'noTimeSlotsAvailable';
+  static const noTimeSlotsForSelectedDate = 'noTimeSlotsForSelectedDate';
+  static const trySelectingDifferentDate = 'trySelectingDifferentDate';
+
+  // Session Status
+  static const upcomingStatus = 'upcomingStatus';
+  static const completedStatus = 'completedStatus';
+  static const cancelledStatus = 'cancelledStatus';
+
+  // Payment Method Brands
+  static const visa = 'visa';
+  static const mastercard = 'mastercard';
+  static const amex = 'amex';
+  static const discover = 'discover';
+  static const paymentMethodDeletedSuccessfully = 'paymentMethodDeletedSuccessfully';
 }

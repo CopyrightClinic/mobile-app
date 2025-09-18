@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/image_constants.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/global_image.dart';
@@ -104,13 +105,13 @@ class PaymentMethodCard extends StatelessWidget {
   String _getCardBrandText() {
     switch (paymentMethod.card.brand.toLowerCase()) {
       case 'visa':
-        return 'VISA';
+        return AppStrings.visa;
       case 'mastercard':
-        return 'MC';
+        return AppStrings.mastercard;
       case 'amex':
-        return 'AMEX';
+        return AppStrings.amex;
       case 'discover':
-        return 'DISC';
+        return AppStrings.discover;
       default:
         return paymentMethod.card.brand.substring(0, 4).toUpperCase();
     }

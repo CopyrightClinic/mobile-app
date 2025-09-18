@@ -43,7 +43,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
       // TODO: Implement delete payment method API call
       // For now, return a mock success response
       await Future.delayed(const Duration(seconds: 1));
-      return const Right('Payment method deleted successfully');
+      return const Right(AppStrings.paymentMethodDeletedSuccessfully);
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -115,7 +113,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   ),
                                   SizedBox(height: DimensionConstants.gap16Px.h),
                                   AuthButton(
-                                    text: 'Retry',
+                                    text: AppStrings.retry,
                                     onPressed: () async {
                                       if (!_sessionsBloc.isClosed) {
                                         final String currentTimeZone = await TimezoneHelper.getUserTimezone();
@@ -130,8 +128,8 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                             )
                             : scheduleState.availableTimeSlotsForSelectedDate.isEmpty
                             ? EmptyStateWidget(
-                              title: 'AppStrings.noTimeSlotsAvailable',
-                              subtitle: 'AppStrings.noTimeSlotsForSelectedDate',
+                              title: AppStrings.noTimeSlotsAvailable,
+                              subtitle: AppStrings.noTimeSlotsForSelectedDate,
                               icon: Icons.access_time_outlined,
                               iconColor: context.darkTextSecondary,
                               action: Container(
@@ -142,7 +140,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   border: Border.all(color: context.darkTextSecondary.withOpacity(0.2)),
                                 ),
                                 child: TranslatedText(
-                                  'AppStrings.trySelectingDifferentDate',
+                                  AppStrings.trySelectingDifferentDate,
                                   style: TextStyle(
                                     color: context.darkTextSecondary,
                                     fontSize: DimensionConstants.font14Px.f,
@@ -200,7 +198,6 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
 
   void _onContinueToPayment(ScheduleSessionState scheduleState) {
     if (scheduleState.selectedTimeSlot != null) {
-      log('Selected time slot: ${scheduleState.selectedTimeSlot}');
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
         extra: {'sessionDate': scheduleState.selectedDate, 'timeSlot': scheduleState.selectedTimeSlot!},

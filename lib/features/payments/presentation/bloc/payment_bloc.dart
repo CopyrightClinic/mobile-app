@@ -50,7 +50,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     final result = await getPaymentMethodsUseCase(NoParams());
 
     result.fold(
-      (failure) => emit(PaymentError(failure.message ?? 'Failed to load payment methods')),
+      (failure) => emit(PaymentError(failure.message ?? AppStrings.failedToLoadPaymentMethods)),
       (paymentMethods) => emit(PaymentMethodsLoaded(paymentMethods)),
     );
   }
@@ -61,7 +61,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     final result = await deletePaymentMethodUseCase(DeletePaymentMethodParams(paymentMethodId: event.paymentMethodId));
 
     result.fold(
-      (failure) => emit(PaymentError(failure.message ?? 'Failed to delete payment method')),
+      (failure) => emit(PaymentError(failure.message ?? AppStrings.failedToDeletePaymentMethod)),
       (message) => emit(PaymentMethodDeleted(message)),
     );
   }

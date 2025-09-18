@@ -1,4 +1,5 @@
 import '../../../../core/network/api_service/api_service.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../models/session_model.dart';
 import '../models/session_availability_model.dart';
 import 'sessions_mock_data_source.dart';
@@ -49,7 +50,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   @override
   Future<String> cancelSession(String sessionId, String reason) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    return 'Session cancelled successfully';
+    return AppStrings.sessionCancelledSuccessfully;
   }
 
   @override
