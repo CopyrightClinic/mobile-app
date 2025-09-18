@@ -62,10 +62,8 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
 
     if (widget.initialValue != null) {
       _controller.text = widget.initialValue!;
-      // If we have an initial value, trigger validation after the widget is built
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && widget.initialValue!.isNotEmpty) {
-          // Create a phone number with the initial value to trigger validation
           final initialPhoneNumber = PhoneNumber(isoCode: widget.initialCountryCode, phoneNumber: widget.initialValue);
           _phoneNumberNotifier.value = initialPhoneNumber;
           widget.onChanged?.call(initialPhoneNumber);
@@ -97,7 +95,6 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
         InternationalPhoneNumberInput(
           onInputChanged: (PhoneNumber number) {
             if (_previousCountryCode != null && _previousCountryCode != number.isoCode && _controller.text.isNotEmpty) {
-              // Only clear if there's actual text and country changed
               _controller.clear();
               _isPhoneValidNotifier.value = false;
               final clearedPhoneNumber = PhoneNumber(isoCode: number.isoCode);
@@ -112,12 +109,6 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
           },
           onInputValidated: (bool value) {
             _isPhoneValidNotifier.value = value;
-            // Debug: Print validation result
-            if (value) {
-              debugPrint('✅ Phone number is valid: ${_phoneNumberNotifier.value?.phoneNumber}');
-            } else {
-              debugPrint('❌ Phone number is invalid: ${_phoneNumberNotifier.value?.phoneNumber}');
-            }
           },
           selectorConfig: SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
@@ -196,13 +187,6 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
     final isValidByPackage = _isPhoneValidNotifier.value;
     final result = hasPhoneNumber && isValidByPackage;
 
-    // Debug: Print validation details
-    debugPrint(
-      '🔍 Phone validation - hasPhoneNumber: $hasPhoneNumber, isValidByPackage: $isValidByPackage, result: $result, phone: ${phoneNumber?.phoneNumber}',
-    );
-
-    // Trust the intl_phone_number_input package's validation
-    // It already handles international numbers correctly
     return result;
   }
 
