@@ -36,6 +36,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   void initState() {
     super.initState();
     _setupAnimations();
+    context.read<SpeechToTextBloc>().add(ClearRecognizedText());
     context.read<SpeechToTextBloc>().add(InitializeSpeechRecognition(context: context));
   }
 
@@ -250,6 +251,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
       }
 
       context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim(), isUserAuthenticated: false));
+      context.read<SpeechToTextBloc>().add(ClearRecognizedText());
     }
   }
 }

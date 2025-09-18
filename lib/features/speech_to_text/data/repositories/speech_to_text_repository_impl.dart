@@ -89,10 +89,15 @@ class SpeechToTextRepositoryImpl implements SpeechToTextRepository {
     await localDataSource.dispose();
   }
 
-  // Method to initialize with context (pass through to data source)
   void initializeWithContext(dynamic context) {
     if (localDataSource is SpeechToTextLocalDataSourceImpl) {
       (localDataSource as SpeechToTextLocalDataSourceImpl).initializeWithContext(context);
+    }
+  }
+
+  void clearControllerText() {
+    if (localDataSource is SpeechToTextLocalDataSourceImpl) {
+      (localDataSource as SpeechToTextLocalDataSourceImpl).clearControllerText();
     }
   }
 }

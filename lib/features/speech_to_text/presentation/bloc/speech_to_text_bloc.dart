@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/speech_recognition_result.dart';
@@ -59,7 +58,6 @@ class SpeechToTextBloc extends Bloc<SpeechToTextEvent, SpeechToTextState> {
         add(SpeechRecognitionResultReceived(recognizedText: result.recognizedText, isFinal: result.isFinal, confidence: result.confidence));
       },
       onError: (error) {
-        log('Speech recognition result stream error: $error');
         add(SpeechRecognitionStateChanged(state: 'error'));
       },
     );
@@ -69,7 +67,7 @@ class SpeechToTextBloc extends Bloc<SpeechToTextEvent, SpeechToTextState> {
         add(SpeechRecognitionStateChanged(state: state.name));
       },
       onError: (error) {
-        log('Speech recognition state stream error: $error');
+        // Handle error silently
       },
     );
 
@@ -78,7 +76,7 @@ class SpeechToTextBloc extends Bloc<SpeechToTextEvent, SpeechToTextState> {
         add(SpeechRecognitionSoundLevelChanged(soundLevel: level));
       },
       onError: (error) {
-        log('Sound level stream error: $error');
+        // Handle error silently
       },
     );
   }
@@ -86,7 +84,6 @@ class SpeechToTextBloc extends Bloc<SpeechToTextEvent, SpeechToTextState> {
   Future<void> _onInitializeSpeechRecognition(InitializeSpeechRecognition event, Emitter<SpeechToTextState> emit) async {
     emit(SpeechToTextInitializing());
 
-    // Initialize with context if repository supports it
     if (repository is SpeechToTextRepositoryImpl) {
       (repository as SpeechToTextRepositoryImpl).initializeWithContext(event.context);
     }
@@ -148,7 +145,6 @@ class SpeechToTextBloc extends Bloc<SpeechToTextEvent, SpeechToTextState> {
         break;
       case SpeechRecognitionState.processing:
       case SpeechRecognitionState.error:
-        // Do nothing in these states
         break;
     }
   }
@@ -156,6 +152,10 @@ class SpeechToTextBloc extends Bloc<SpeechToTextEvent, SpeechToTextState> {
   void _onClearRecognizedText(ClearRecognizedText event, Emitter<SpeechToTextState> emit) {
     _currentText = '';
     _results.clear();
+
+    if (repository is SpeechToTextRepositoryImpl) {
+      (repository as SpeechToTextRepositoryImpl).clearControllerText();
+    }
 
     if (_currentRecognitionState.isListening) {
       emit(SpeechToTextListening(currentText: _currentText, soundLevel: _soundLevel, recognitionState: _currentRecognitionState, results: _results));
