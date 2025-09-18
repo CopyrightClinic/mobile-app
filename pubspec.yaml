@@ -62,6 +62,7 @@ dependencies:
   
   # Speech Recognition
   manual_speech_to_text: ^1.0.4
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../di.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -57,8 +58,46 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     return _textController.text.trim().length > 1;
   }
 
-  void _toggleVoiceInput() {
-    context.read<SpeechToTextBloc>().add(const ToggleSpeechRecognition(localeId: 'en-US', enableHapticFeedback: true));
+  void _toggleVoiceInput() async {
+    try {
+      final micStatus = await Permission.microphone.status;
+
+      if (!micStatus.isGranted) {
+        final result = await Permission.microphone.request();
+
+        if (!result.isGranted) {
+          if (result.isPermanentlyDenied) {
+            _showPermissionDialog(
+              'Microphone access was permanently denied. Please enable it manually in Settings > Privacy & Security > Microphone.',
+            );
+          } else {
+            _showPermissionDialog('Microphone permission is required for speech recognition. Please allow access when prompted.');
+          }
+          return;
+        }
+      }
+
+      final speechStatus = await Permission.speech.status;
+
+      if (!speechStatus.isGranted) {
+        final result = await Permission.speech.request();
+
+        if (!result.isGranted) {
+          if (result.isPermanentlyDenied) {
+            _showPermissionDialog(
+              'Speech recognition was permanently denied. Please enable it manually in Settings > Privacy & Security > Speech Recognition.',
+            );
+          } else {
+            _showPermissionDialog('Speech recognition permission is required. Please allow access when prompted.');
+          }
+          return;
+        }
+      }
+
+      context.read<SpeechToTextBloc>().add(const ToggleSpeechRecognition(localeId: 'en-US', enableHapticFeedback: true));
+    } catch (e) {
+      _showPermissionDialog('Permission error: ${e.toString()}');
+    }
   }
 
   @override
@@ -129,7 +168,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
           _textController.text = state.finalText;
           _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
         } else if (state is SpeechToTextError) {
-          SnackBarUtils.showError(context, '${AppStrings.speechRecognitionError}: ${state.message}');
+          _handleSpeechToTextError(state.message);
         }
       },
       child: Container(
@@ -241,6 +280,49 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     } else {
       return Icons.mic;
     }
+  }
+
+  void _handleSpeechToTextError(String message) {
+    if (message.contains('permission') || message.contains('Permission')) {
+      _showPermissionDialog(message);
+    } else {
+      SnackBarUtils.showError(context, '${AppStrings.speechRecognitionError}: $message');
+    }
+  }
+
+  void _showPermissionDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Permission Required'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(message, style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f)),
+              SizedBox(height: DimensionConstants.gap16Px.h),
+              const Text('To use speech-to-text, please:', style: TextStyle(fontWeight: FontWeight.w600)),
+              SizedBox(height: DimensionConstants.gap8Px.h),
+              const Text('1. Go to Settings'),
+              const Text('2. Find this app'),
+              const Text('3. Enable Microphone access'),
+              const Text('4. Enable Speech Recognition'),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                openAppSettings();
+              },
+              child: const Text('Open Settings'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _onSubmit() {
