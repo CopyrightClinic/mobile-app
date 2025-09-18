@@ -137,8 +137,6 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
         listener: (context, state) {
           if (state is SignupSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
-            // Always go to normal signup success screen
-            // Harold navigation will be handled after payment method setup
             context.go(AppRoutes.signupSuccessRouteName);
           } else if (state is SignupError) {
             SnackBarUtils.showError(context, state.message);
