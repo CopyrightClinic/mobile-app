@@ -229,42 +229,54 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   }
 
   Widget _buildVoiceButton() {
-    return BlocBuilder<SpeechToTextBloc, SpeechToTextState>(
-      builder: (context, state) {
-        final isListening = state is SpeechToTextListening;
-        final isInitialized = state is! SpeechToTextInitial && state is! SpeechToTextInitializing;
+    return BlocBuilder<HaroldAiBloc, HaroldAiState>(
+      builder: (context, haroldState) {
+        final isHaroldLoading = haroldState is HaroldAiLoading;
 
-        return GestureDetector(
-          onTap: isInitialized ? _toggleVoiceInput : null,
-          child: AnimatedBuilder(
-            animation: _scaleAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: isListening ? _scaleAnimation.value : 1.0,
-                child: Container(
-                  width: 48.w,
-                  height: 48.h,
-                  decoration: BoxDecoration(
-                    color: isListening ? context.primary : context.filledBgDark,
-                    shape: BoxShape.circle,
-                    boxShadow: isListening ? [BoxShadow(color: context.primary.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 5)] : null,
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (isListening)
-                        Container(
-                          width: 24.w,
-                          height: 24.h,
-                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
-                        ),
-                      Icon(_getIconForState(state), color: isListening ? Colors.white : context.darkTextPrimary, size: 24.w),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+        return BlocBuilder<SpeechToTextBloc, SpeechToTextState>(
+          builder: (context, speechState) {
+            final isListening = speechState is SpeechToTextListening;
+            final isInitialized = speechState is! SpeechToTextInitial && speechState is! SpeechToTextInitializing;
+            final isEnabled = isInitialized && !isHaroldLoading;
+
+            return GestureDetector(
+              onTap: isEnabled ? _toggleVoiceInput : null,
+              child: AnimatedBuilder(
+                animation: _scaleAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: isListening ? _scaleAnimation.value : 1.0,
+                    child: Container(
+                      width: 48.w,
+                      height: 48.h,
+                      decoration: BoxDecoration(
+                        color: isListening ? context.primary : (isEnabled ? context.filledBgDark : context.filledBgDark.withValues(alpha: 0.5)),
+                        shape: BoxShape.circle,
+                        boxShadow: isListening ? [BoxShadow(color: context.primary.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 5)] : null,
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          if (isListening)
+                            Container(
+                              width: 24.w,
+                              height: 24.h,
+                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
+                            ),
+                          Icon(
+                            _getIconForState(speechState),
+                            color:
+                                isListening ? Colors.white : (isEnabled ? context.darkTextPrimary : context.darkTextPrimary.withValues(alpha: 0.5)),
+                            size: 24.w,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         );
       },
     );
@@ -327,6 +339,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
 
   void _onSubmit() {
     if (_isValidInput()) {
+      FocusScope.of(context).unfocus();
+
       final currentState = context.read<SpeechToTextBloc>().state;
       if (currentState is SpeechToTextListening) {
         context.read<SpeechToTextBloc>().add(StopSpeechRecognition());

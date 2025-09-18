@@ -27,6 +27,11 @@ class CustomException implements Exception {
       name = exceptionType.name;
 
   factory CustomException.fromDioException(Exception error) {
+    // If it's already a CustomException, return it as-is
+    if (error is CustomException) {
+      return error;
+    }
+
     try {
       if (error is DioException) {
         switch (error.type) {
@@ -68,7 +73,14 @@ class CustomException implements Exception {
                   message: apiError.message,
                 );
               } catch (e) {
-                debugPrint('Failed to parse API error: $e');
+                // Try to extract message directly if parsing fails
+                if (responseData is Map<String, dynamic> && responseData['message'] != null) {
+                  return CustomException(
+                    exceptionType: _ExceptionType.ApiException,
+                    statusCode: error.response?.statusCode,
+                    message: responseData['message'].toString(),
+                  );
+                }
               }
             }
 
@@ -102,7 +114,14 @@ class CustomException implements Exception {
                   message: apiError.message,
                 );
               } catch (e) {
-                debugPrint('Failed to parse API error: $e');
+                // Try to extract message directly if parsing fails
+                if (responseData is Map<String, dynamic> && responseData['message'] != null) {
+                  return CustomException(
+                    exceptionType: _ExceptionType.ApiException,
+                    statusCode: error.response?.statusCode,
+                    message: responseData['message'].toString(),
+                  );
+                }
               }
             }
 

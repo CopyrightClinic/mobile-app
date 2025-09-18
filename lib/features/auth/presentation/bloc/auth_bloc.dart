@@ -62,10 +62,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await signupUseCase(SignupParams(email: event.email, password: event.password, confirmPassword: event.confirmPassword));
 
-    result.fold(
-      (failure) => emit(SignupError(failure.message ?? tr(AppStrings.signupFailed))),
-      (authResult) => emit(SignupSuccess(authResult.user, authResult.message)),
-    );
+    result.fold((failure) {
+      print('🚨 Signup failure message: "${failure.message}"');
+      final errorMessage = failure.message ?? tr(AppStrings.signupFailed);
+      print('🚨 Final signup error message: "$errorMessage"');
+      emit(SignupError(errorMessage));
+    }, (authResult) => emit(SignupSuccess(authResult.user, authResult.message)));
   }
 
   Future<void> _onVerifyEmailRequested(VerifyEmailRequested event, Emitter<AuthState> emit) async {
@@ -89,10 +91,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await sendEmailVerificationUseCase(SendEmailVerificationParams(email: event.email));
 
-    result.fold(
-      (failure) => emit(SendEmailVerificationError(failure.message ?? tr(AppStrings.failedToSendVerificationEmail))),
-      (message) => emit(SendEmailVerificationSuccess(message)),
-    );
+    result.fold((failure) {
+      final errorMessage = failure.message ?? tr(AppStrings.failedToSendVerificationEmail);
+      emit(SendEmailVerificationError(errorMessage));
+    }, (message) => emit(SendEmailVerificationSuccess(message)));
   }
 
   Future<void> _onForgotPasswordRequested(ForgotPasswordRequested event, Emitter<AuthState> emit) async {

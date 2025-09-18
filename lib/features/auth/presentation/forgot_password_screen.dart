@@ -66,7 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Valida
       listener: (context, state) {
         if (state is ForgotPasswordSuccess) {
           SnackBarUtils.showSuccess(context, state.message, duration: const Duration(seconds: 2));
-          context.pushReplacement(
+          context.push(
             AppRoutes.verifyCodeRouteName,
             extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.passwordReset},
           );
