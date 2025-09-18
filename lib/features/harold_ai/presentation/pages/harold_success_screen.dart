@@ -16,8 +16,9 @@ import '../../../../config/routes/app_routes.dart';
 
 class HaroldSuccessScreen extends StatelessWidget {
   final bool fromAuthFlow;
+  final String? query;
 
-  const HaroldSuccessScreen({super.key, this.fromAuthFlow = false});
+  const HaroldSuccessScreen({super.key, this.fromAuthFlow = false, this.query});
 
   void _handleBackPress(BuildContext context) {
     if (fromAuthFlow) {

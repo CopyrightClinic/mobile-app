@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'config/routes/app_router.dart';
 import 'config/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
+import 'core/widgets/keyboard_dismiss_wrapper.dart';
 import 'shared_features/theme/data/models/theme_model.dart';
 import 'shared_features/theme/view_models/bloc/theme_cubit.dart';
 import 'shared_features/localization/view_models/bloc/localization_cubit.dart';
@@ -38,16 +39,18 @@ class MyApp extends StatelessWidget {
           }
           return BlocBuilder<ThemeCubit, ThemeModel>(
             builder: (context, theme) {
-              return MaterialApp.router(
-                themeMode: theme.themeMode,
-                debugShowCheckedModeBanner: false,
-                title: tr(AppStrings.appName),
-                theme: AppTheme().light,
-                darkTheme: AppTheme().dark,
-                routerConfig: AppRouter.router,
-                locale: context.locale,
-                supportedLocales: context.supportedLocales,
-                localizationsDelegates: context.localizationDelegates,
+              return KeyboardDismissWrapper(
+                child: MaterialApp.router(
+                  themeMode: theme.themeMode,
+                  debugShowCheckedModeBanner: false,
+                  title: tr(AppStrings.appName),
+                  theme: AppTheme().light,
+                  darkTheme: AppTheme().dark,
+                  routerConfig: AppRouter.router,
+                  locale: context.locale,
+                  supportedLocales: context.supportedLocales,
+                  localizationsDelegates: context.localizationDelegates,
+                ),
               );
             },
           );

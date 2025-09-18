@@ -90,8 +90,6 @@ class SessionDetailsCard extends StatelessWidget {
 
     if (timeSlot != null && timeSlot.isNotEmpty) {
       try {
-        // TimeSlot format: "2025-09-17T09:15:00Z-2025-09-17T09:45:00Z"
-        // We need to find the split between the two ISO8601 timestamps
         final regex = RegExp(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)');
         final match = regex.firstMatch(timeSlot);
 

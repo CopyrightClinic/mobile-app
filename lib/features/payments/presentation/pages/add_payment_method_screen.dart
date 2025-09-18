@@ -52,19 +52,19 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
   }
 
   void _handleAuthFlowCompletion(BuildContext context) async {
-    // Check if there's a pending Harold result to navigate to
-    final pendingResult = await HaroldNavigationService.getPendingResult();
+    final data = await HaroldNavigationService.getPendingResultAndQuery();
     if (!mounted) return;
 
+    final pendingResult = data['result'];
+    final pendingQuery = data['query'];
+
     if (pendingResult != null) {
-      // Navigate to Harold result screen after completing auth flow
       if (pendingResult == 'success') {
-        context.go(AppRoutes.haroldSuccessRouteName, extra: {'fromAuthFlow': true});
+        context.go(AppRoutes.haroldSuccessRouteName, extra: {'fromAuthFlow': true, 'query': pendingQuery});
       } else {
-        context.go(AppRoutes.haroldFailedRouteName, extra: {'fromAuthFlow': true});
+        context.go(AppRoutes.haroldFailedRouteName, extra: {'fromAuthFlow': true, 'query': pendingQuery});
       }
     } else {
-      // Normal auth flow completion - go to home
       context.go(AppRoutes.homeRouteName);
     }
   }

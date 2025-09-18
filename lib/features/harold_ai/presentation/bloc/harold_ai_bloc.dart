@@ -28,9 +28,9 @@ class HaroldAiBloc extends Bloc<HaroldAiEvent, HaroldAiState> {
         (evaluationResult) {
           if (evaluationResult.success) {
             if (evaluationResult.isLegitimate) {
-              emit(HaroldAiSuccess(isUserAuthenticated: isUserAuthenticated));
+              emit(HaroldAiSuccess(isUserAuthenticated: isUserAuthenticated, query: event.query));
             } else {
-              emit(HaroldAiFailure(isUserAuthenticated: isUserAuthenticated));
+              emit(HaroldAiFailure(isUserAuthenticated: isUserAuthenticated, query: event.query));
             }
           } else {
             emit(const HaroldAiError(message: AppStrings.haroldAiEvaluationNotSuccessful));

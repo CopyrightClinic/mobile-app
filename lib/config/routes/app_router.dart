@@ -153,7 +153,8 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final fromAuthFlow = extra?['fromAuthFlow'] ?? false;
-          return HaroldSuccessScreen(fromAuthFlow: fromAuthFlow);
+          final query = extra?['query'] as String?;
+          return HaroldSuccessScreen(fromAuthFlow: fromAuthFlow, query: query);
         },
       ),
       GoRoute(
@@ -162,7 +163,8 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final fromAuthFlow = extra?['fromAuthFlow'] ?? false;
-          return HaroldFailedScreen(fromAuthFlow: fromAuthFlow);
+          final query = extra?['query'] as String?;
+          return HaroldFailedScreen(fromAuthFlow: fromAuthFlow, query: query);
         },
       ),
     ],

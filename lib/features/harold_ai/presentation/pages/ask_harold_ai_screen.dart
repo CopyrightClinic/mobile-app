@@ -66,9 +66,19 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
       bloc: sl<HaroldAiBloc>(),
       listener: (context, state) {
         if (state is HaroldAiSuccess) {
-          HaroldNavigationService.handleHaroldResult(context: context, isSuccess: true, isUserAuthenticated: state.isUserAuthenticated);
+          HaroldNavigationService.handleHaroldResult(
+            context: context,
+            isSuccess: true,
+            isUserAuthenticated: state.isUserAuthenticated,
+            query: state.query,
+          );
         } else if (state is HaroldAiFailure) {
-          HaroldNavigationService.handleHaroldResult(context: context, isSuccess: false, isUserAuthenticated: state.isUserAuthenticated);
+          HaroldNavigationService.handleHaroldResult(
+            context: context,
+            isSuccess: false,
+            isUserAuthenticated: state.isUserAuthenticated,
+            query: state.query,
+          );
         } else if (state is HaroldAiError) {
           SnackBarUtils.showError(context, state.message);
         }

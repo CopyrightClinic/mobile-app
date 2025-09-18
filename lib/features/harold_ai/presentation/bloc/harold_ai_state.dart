@@ -17,20 +17,22 @@ class HaroldAiLoading extends HaroldAiState {
 
 class HaroldAiSuccess extends HaroldAiState {
   final bool isUserAuthenticated;
+  final String query;
 
-  const HaroldAiSuccess({required this.isUserAuthenticated});
+  const HaroldAiSuccess({required this.isUserAuthenticated, required this.query});
 
   @override
-  List<Object> get props => [isUserAuthenticated];
+  List<Object> get props => [isUserAuthenticated, query];
 }
 
 class HaroldAiFailure extends HaroldAiState {
   final bool isUserAuthenticated;
+  final String query;
 
-  const HaroldAiFailure({required this.isUserAuthenticated});
+  const HaroldAiFailure({required this.isUserAuthenticated, required this.query});
 
   @override
-  List<Object> get props => [isUserAuthenticated];
+  List<Object> get props => [isUserAuthenticated, query];
 }
 
 class HaroldAiError extends HaroldAiState {
