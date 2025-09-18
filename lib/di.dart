@@ -32,6 +32,7 @@ import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
+import 'features/sessions/domain/usecases/book_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
 import 'features/speech_to_text/data/datasources/speech_to_text_local_data_source.dart';
 import 'features/speech_to_text/data/repositories/speech_to_text_repository_impl.dart';
@@ -80,7 +81,7 @@ Future<void> init() async {
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>(), dioService: sl<DioService>()));
   sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
   sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
@@ -104,6 +105,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => BookSessionUseCase(sl()));
   sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
@@ -130,7 +132,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl(), deletePaymentMethodUseCase: sl()));
 
   // Sessions Bloc
-  sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl()));
+  sl.registerLazySingleton(
+    () => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl(), bookSessionUseCase: sl()),
+  );
 
   // Speech to Text Bloc
   sl.registerFactory(

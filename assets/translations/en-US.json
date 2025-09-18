@@ -255,5 +255,6 @@
   "searchCountry": "Search country",
   "noTimeSlotsAvailable": "No Time Slots Available",
   "noTimeSlotsForSelectedDate": "No available time slots for the selected date",
-  "trySelectingDifferentDate": "Please try selecting a different date"
+  "trySelectingDifferentDate": "Please try selecting a different date",
+  "failedToBookSession": "Failed to book session"
 }

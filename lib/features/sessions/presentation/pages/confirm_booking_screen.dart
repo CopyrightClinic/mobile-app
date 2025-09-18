@@ -7,6 +7,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -24,8 +25,9 @@ class ConfirmBookingScreen extends StatefulWidget {
   final DateTime sessionDate;
   final String timeSlot;
   final PaymentMethodEntity paymentMethod;
+  final String? query;
 
-  const ConfirmBookingScreen({super.key, required this.sessionDate, required this.timeSlot, required this.paymentMethod});
+  const ConfirmBookingScreen({super.key, required this.sessionDate, required this.timeSlot, required this.paymentMethod, this.query});
 
   @override
   State<ConfirmBookingScreen> createState() => _ConfirmBookingScreenState();
@@ -47,6 +49,11 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         if (state is SessionScheduled) {
           context.go(AppRoutes.bookingRequestSentRouteName);
         } else if (state is SessionScheduleError) {
+          SnackBarUtils.showError(context, state.message);
+        } else if (state is SessionBooked) {
+          SnackBarUtils.showSuccess(context, 'Session booked successfully!');
+          context.go(AppRoutes.bookingRequestSentRouteName);
+        } else if (state is SessionBookError) {
           SnackBarUtils.showError(context, state.message);
         }
       },
@@ -227,14 +234,53 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       padding: EdgeInsets.only(left: DimensionConstants.gap16Px.w, right: DimensionConstants.gap16Px.w, top: DimensionConstants.gap10Px.h),
       child: BlocBuilder<SessionsBloc, SessionsState>(
         builder: (context, state) {
-          final isLoading = state is SessionScheduleLoading;
+          final isLoading = state is SessionScheduleLoading || state is SessionBookLoading;
           return AuthButton(text: AppStrings.confirmAndBookSession, onPressed: _onConfirmBooking, isLoading: isLoading, isEnabled: true);
         },
       ),
     );
   }
 
-  void _onConfirmBooking() {
-    _sessionsBloc.add(ScheduleSessionRequested(selectedDate: widget.sessionDate, selectedTimeSlot: widget.timeSlot));
+  void _onConfirmBooking() async {
+    final timeSlotParts = widget.timeSlot.split('-');
+    if (timeSlotParts.length < 2) {
+      return;
+    }
+
+    String startTimeIso;
+    String endTimeIso;
+
+    final regex = RegExp(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)');
+    final match = regex.firstMatch(widget.timeSlot);
+
+    if (match != null && match.groupCount == 2) {
+      startTimeIso = match.group(1)!;
+      endTimeIso = match.group(2)!;
+    } else {
+      final fallbackRegex = RegExp(r'^(.+)-(\d{4}-.+)$');
+      final fallbackMatch = fallbackRegex.firstMatch(widget.timeSlot);
+
+      if (fallbackMatch != null && fallbackMatch.groupCount == 2) {
+        startTimeIso = fallbackMatch.group(1)!;
+        endTimeIso = fallbackMatch.group(2)!;
+      } else {
+        return;
+      }
+    }
+
+    final formattedDate = widget.sessionDate.toIso8601String().split('T')[0];
+    final summary = widget.query ?? 'Copyright consultation session';
+    final String timezone = await TimezoneHelper.getUserTimezone();
+
+    _sessionsBloc.add(
+      BookSessionRequested(
+        stripePaymentMethodId: widget.paymentMethod.id,
+        date: formattedDate,
+        startTime: startTimeIso,
+        endTime: endTimeIso,
+        summary: summary,
+        timezone: timezone,
+      ),
+    );
   }
 }

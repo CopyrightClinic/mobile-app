@@ -1,4 +1,3 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../features/onboarding/presentation/pages/about_us_screen.dart';
 import '../../../features/onboarding/presentation/pages/splash_screen.dart';
@@ -25,10 +24,8 @@ import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
 import '../../features/dashboard/presentation/pages/profile_screen.dart';
 import '../../features/sessions/presentation/pages/schedule_session_screen.dart';
-import '../../features/sessions/presentation/bloc/sessions_bloc.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import '../../core/utils/enumns/ui/payment_method.dart';
-import '../../di.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -117,7 +114,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.scheduleSessionRouteName,
         name: AppRoutes.scheduleSessionRouteName,
-        builder: (context, state) => const ScheduleSessionScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final query = extra?['query'] as String?;
+          return ScheduleSessionScreen(query: query);
+        },
       ),
       GoRoute(
         path: AppRoutes.selectPaymentMethodRouteName,
@@ -126,7 +127,8 @@ class AppRouter {
           final extra = state.extra as Map<String, dynamic>;
           final sessionDate = extra['sessionDate'] as DateTime;
           final timeSlot = extra['timeSlot'] as String;
-          return SelectPaymentMethodScreen(sessionDate: sessionDate, timeSlot: timeSlot);
+          final query = extra['query'] as String?;
+          return SelectPaymentMethodScreen(sessionDate: sessionDate, timeSlot: timeSlot, query: query);
         },
       ),
       GoRoute(
@@ -137,7 +139,8 @@ class AppRouter {
           final sessionDate = extra['sessionDate'] as DateTime;
           final timeSlot = extra['timeSlot'] as String;
           final paymentMethod = extra['paymentMethod'];
-          return ConfirmBookingScreen(sessionDate: sessionDate, timeSlot: timeSlot, paymentMethod: paymentMethod);
+          final query = extra['query'] as String?;
+          return ConfirmBookingScreen(sessionDate: sessionDate, timeSlot: timeSlot, paymentMethod: paymentMethod, query: query);
         },
       ),
       GoRoute(

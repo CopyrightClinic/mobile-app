@@ -28,6 +28,10 @@ class HaroldSuccessScreen extends StatelessWidget {
     }
   }
 
+  void _handleScheduleAppointment(BuildContext context) {
+    context.push(AppRoutes.scheduleSessionRouteName, extra: {'query': query});
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -63,7 +67,7 @@ class HaroldSuccessScreen extends StatelessWidget {
 
               AuthButton(
                 text: AppStrings.scheduleAppointment,
-                onPressed: () => context.push(AppRoutes.scheduleSessionRouteName),
+                onPressed: () => _handleScheduleAppointment(context),
                 isLoading: false,
                 isEnabled: true,
               ),

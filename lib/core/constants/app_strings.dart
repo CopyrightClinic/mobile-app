@@ -297,6 +297,7 @@ class AppStrings {
   static const failedToCancelSession = 'failedToCancelSession';
   static const failedToLoadSessionAvailability = 'failedToLoadSessionAvailability';
   static const sessionCancelledSuccessfully = 'sessionCancelledSuccessfully';
+  static const failedToBookSession = 'failedToBookSession';
   static const copyrightConsultation = 'copyrightConsultation';
   static const copyrightConsultationSession = 'copyrightConsultationSession';
   static const legalConsultation = 'legalConsultation';

@@ -1,8 +1,11 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
+import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
 import '../datasources/sessions_remote_data_source.dart';
 
@@ -92,6 +95,43 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(ServerFailure('Failed to fetch session availability: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, BookSessionResponseEntity>> bookSession({
+    required String stripePaymentMethodId,
+    required String date,
+    required String startTime,
+    required String endTime,
+    required String summary,
+    required String timezone,
+  }) async {
+    try {
+      final response = await remoteDataSource.bookSession(
+        stripePaymentMethodId: stripePaymentMethodId,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
+        summary: summary,
+        timezone: timezone,
+      );
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      Log.e(runtimeType, 'Sessions Repository: Custom exception: ${e.message}');
+      return Left(ServerFailure(e.message));
+    } on DioException catch (e) {
+      Log.e(runtimeType, 'Sessions Repository: DioException: ${e.message}');
+      String errorMessage = 'Failed to book session';
+      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
+        final responseData = e.response!.data as Map<String, dynamic>;
+        errorMessage = responseData['message'] ?? errorMessage;
+      }
+
+      return Left(ServerFailure(errorMessage));
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, 'Sessions Repository: Unexpected error: $e', stackTrace);
+      return Left(ServerFailure('Failed to book session'));
     }
   }
 }

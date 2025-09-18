@@ -5,6 +5,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
+import '../../domain/usecases/book_session_usecase.dart';
 import '../../domain/entities/session_entity.dart';
 import 'sessions_event.dart';
 import 'sessions_state.dart';
@@ -13,9 +14,14 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   final GetUserSessionsUseCase getUserSessionsUseCase;
   final CancelSessionUseCase cancelSessionUseCase;
   final GetSessionAvailabilityUseCase getSessionAvailabilityUseCase;
+  final BookSessionUseCase bookSessionUseCase;
 
-  SessionsBloc({required this.getUserSessionsUseCase, required this.cancelSessionUseCase, required this.getSessionAvailabilityUseCase})
-    : super(const SessionsInitial()) {
+  SessionsBloc({
+    required this.getUserSessionsUseCase,
+    required this.cancelSessionUseCase,
+    required this.getSessionAvailabilityUseCase,
+    required this.bookSessionUseCase,
+  }) : super(const SessionsInitial()) {
     on<LoadUserSessions>(_onLoadUserSessions);
     on<RefreshSessions>(_onRefreshSessions);
     on<SwitchToUpcoming>(_onSwitchToUpcoming);
@@ -26,6 +32,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<DateSelected>(_onDateSelected);
     on<TimeSlotSelected>(_onTimeSlotSelected);
     on<LoadSessionAvailability>(_onLoadSessionAvailability);
+    on<BookSessionRequested>(_onBookSessionRequested);
   }
 
   Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
@@ -158,5 +165,29 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         },
       );
     }
+  }
+
+  Future<void> _onBookSessionRequested(BookSessionRequested event, Emitter<SessionsState> emit) async {
+    emit(const SessionBookLoading());
+
+    final result = await bookSessionUseCase(
+      BookSessionParams(
+        stripePaymentMethodId: event.stripePaymentMethodId,
+        date: event.date,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        summary: event.summary,
+        timezone: event.timezone,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        emit(SessionBookError(message: failure.message ?? AppStrings.failedToBookSession));
+      },
+      (response) {
+        emit(SessionBooked(response: response));
+      },
+    );
   }
 }

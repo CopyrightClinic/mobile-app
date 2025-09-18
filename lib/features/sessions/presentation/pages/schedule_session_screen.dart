@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +24,9 @@ import '../widgets/time_slot_widget.dart';
 import '../widgets/day_selector_widget.dart';
 
 class ScheduleSessionScreen extends StatefulWidget {
-  const ScheduleSessionScreen({super.key});
+  final String? query;
+
+  const ScheduleSessionScreen({super.key, this.query});
 
   @override
   State<ScheduleSessionScreen> createState() => _ScheduleSessionScreenState();
@@ -166,6 +170,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   timeText: timeSlot.formattedTime,
                                   isSelected: isSelected,
                                   onTap: () {
+                                    log('Selected time slot: $timeSlotKey');
                                     if (!_sessionsBloc.isClosed) {
                                       _sessionsBloc.add(TimeSlotSelected(selectedTimeSlot: timeSlotKey));
                                     }
@@ -200,7 +205,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
     if (scheduleState.selectedTimeSlot != null) {
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
-        extra: {'sessionDate': scheduleState.selectedDate, 'timeSlot': scheduleState.selectedTimeSlot!},
+        extra: {'sessionDate': scheduleState.selectedDate, 'timeSlot': scheduleState.selectedTimeSlot!, 'query': widget.query},
       );
     }
   }

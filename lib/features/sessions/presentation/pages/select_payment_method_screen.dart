@@ -23,8 +23,9 @@ import '../../../payments/presentation/widgets/payment_methods_list.dart';
 class SelectPaymentMethodScreen extends StatefulWidget {
   final DateTime sessionDate;
   final String timeSlot;
+  final String? query;
 
-  const SelectPaymentMethodScreen({super.key, required this.sessionDate, required this.timeSlot});
+  const SelectPaymentMethodScreen({super.key, required this.sessionDate, required this.timeSlot, this.query});
 
   @override
   State<SelectPaymentMethodScreen> createState() => _SelectPaymentMethodScreenState();
@@ -127,7 +128,7 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
     if (_selectedPaymentMethod != null) {
       context.push(
         AppRoutes.confirmBookingRouteName,
-        extra: {'sessionDate': widget.sessionDate, 'timeSlot': widget.timeSlot, 'paymentMethod': _selectedPaymentMethod!},
+        extra: {'sessionDate': widget.sessionDate, 'timeSlot': widget.timeSlot, 'paymentMethod': _selectedPaymentMethod!, 'query': widget.query},
       );
     }
   }
