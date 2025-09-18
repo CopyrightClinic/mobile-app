@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../../../core/utils/logger/logger.dart';
 import '../../../../core/utils/timezone_helper.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
@@ -33,7 +33,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
     final result = await getUserSessionsUseCase(NoParams());
 
-    result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to load sessions')), (sessions) {
+    result.fold((failure) => emit(SessionsError(message: failure.message ?? AppStrings.failedToLoadSessions)), (sessions) {
       final upcomingSessions = sessions.where((session) => session.isUpcoming).toList();
       final completedSessions = sessions.where((session) => session.isCompleted).toList();
 
@@ -47,7 +47,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
       final result = await getUserSessionsUseCase(NoParams());
 
-      result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to refresh sessions')), (sessions) {
+      result.fold((failure) => emit(SessionsError(message: failure.message ?? AppStrings.failedToRefreshSessions)), (sessions) {
         final upcomingSessions = sessions.where((session) => session.isUpcoming).toList();
         final completedSessions = sessions.where((session) => session.isCompleted).toList();
 
@@ -77,7 +77,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
     final result = await cancelSessionUseCase(CancelSessionParams(sessionId: event.sessionId, reason: event.reason));
 
-    result.fold((failure) => emit(SessionsError(message: failure.message ?? 'Failed to cancel session')), (message) async {
+    result.fold((failure) => emit(SessionsError(message: failure.message ?? AppStrings.failedToCancelSession)), (message) async {
       emit(SessionCancelled(message: message));
       await _onRefreshSessions(const RefreshSessions(), emit);
     });
@@ -91,12 +91,12 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
       final newSession = SessionEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: 'Copyright Consultation',
+        title: AppStrings.copyrightConsultation,
         scheduledDate: event.selectedDate,
         duration: const Duration(minutes: 30),
         price: 50.0,
         status: SessionStatus.upcoming,
-        description: 'Copyright consultation session',
+        description: AppStrings.copyrightConsultationSession,
         createdAt: DateTime.now(),
       );
 
@@ -135,11 +135,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
       final result = await getSessionAvailabilityUseCase(event.timezone);
 
-      Log.i(SessionsBloc, 'Session availability: ${result.fold((failure) => failure.message, (availability) => availability.days.first.date)}');
-
       result.fold(
         (failure) {
-          emit(currentState.copyWith(isLoadingAvailability: false, errorMessage: failure.message ?? 'Failed to load session availability'));
+          emit(currentState.copyWith(isLoadingAvailability: false, errorMessage: failure.message ?? AppStrings.failedToLoadSessionAvailability));
         },
         (availability) {
           DateTime selectedDate = currentState.selectedDate;

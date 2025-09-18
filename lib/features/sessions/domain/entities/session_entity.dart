@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class SessionEntity extends Equatable {
   final String id;
@@ -55,11 +56,11 @@ extension SessionStatusExtension on SessionStatus {
   String get displayName {
     switch (this) {
       case SessionStatus.upcoming:
-        return 'Upcoming';
+        return AppStrings.upcomingStatus;
       case SessionStatus.completed:
-        return 'Completed';
+        return AppStrings.completedStatus;
       case SessionStatus.cancelled:
-        return 'Cancelled';
+        return AppStrings.cancelledStatus;
     }
   }
 }
