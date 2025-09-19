@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../di.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -17,9 +16,7 @@ import '../../domain/services/harold_navigation_service.dart';
 import '../bloc/harold_ai_bloc.dart';
 import '../bloc/harold_ai_event.dart';
 import '../bloc/harold_ai_state.dart';
-import '../../../speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
-import '../../../speech_to_text/presentation/bloc/speech_to_text_event.dart';
-import '../../../speech_to_text/presentation/bloc/speech_to_text_state.dart';
+import '../../../../system_speech.dart';
 
 class AskHaroldAiScreen extends StatefulWidget {
   const AskHaroldAiScreen({super.key});
@@ -32,13 +29,12 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   final TextEditingController _textController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  final ValueNotifier<bool> _isListeningNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
     _setupAnimations();
-    context.read<SpeechToTextBloc>().add(ClearRecognizedText());
-    context.read<SpeechToTextBloc>().add(InitializeSpeechRecognition(context: context));
   }
 
   void _setupAnimations() {
@@ -51,6 +47,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   void dispose() {
     _textController.dispose();
     _animationController.dispose();
+    _isListeningNotifier.dispose();
     super.dispose();
   }
 
@@ -59,44 +56,26 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   }
 
   void _toggleVoiceInput() async {
+    if (_isListeningNotifier.value) {
+      return;
+    }
+
+    _isListeningNotifier.value = true;
+
     try {
-      final micStatus = await Permission.microphone.status;
+      final existingText = _textController.text;
+      final result = await SystemSpeech.startSpeech(prompt: 'Describe your copyright issue', locale: 'en-US', maxSeconds: 120);
 
-      if (!micStatus.isGranted) {
-        final result = await Permission.microphone.request();
-
-        if (!result.isGranted) {
-          if (result.isPermanentlyDenied) {
-            _showPermissionDialog(
-              'Microphone access was permanently denied. Please enable it manually in Settings > Privacy & Security > Microphone.',
-            );
-          } else {
-            _showPermissionDialog('Microphone permission is required for speech recognition. Please allow access when prompted.');
-          }
-          return;
-        }
+      if (result != null && result.isNotEmpty) {
+        final separator = existingText.isNotEmpty ? ' ' : '';
+        final combinedText = existingText + separator + result;
+        _textController.text = combinedText;
+        _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
       }
-
-      final speechStatus = await Permission.speech.status;
-
-      if (!speechStatus.isGranted) {
-        final result = await Permission.speech.request();
-
-        if (!result.isGranted) {
-          if (result.isPermanentlyDenied) {
-            _showPermissionDialog(
-              'Speech recognition was permanently denied. Please enable it manually in Settings > Privacy & Security > Speech Recognition.',
-            );
-          } else {
-            _showPermissionDialog('Speech recognition permission is required. Please allow access when prompted.');
-          }
-          return;
-        }
-      }
-
-      context.read<SpeechToTextBloc>().add(const ToggleSpeechRecognition(localeId: 'en-US', enableHapticFeedback: true));
     } catch (e) {
-      _showPermissionDialog('Permission error: ${e.toString()}');
+      SnackBarUtils.showError(context, 'Speech recognition error: ${e.toString()}');
+    } finally {
+      _isListeningNotifier.value = false;
     }
   }
 
@@ -159,43 +138,48 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   }
 
   Widget _buildTextInputField() {
-    return BlocListener<SpeechToTextBloc, SpeechToTextState>(
-      listener: (context, state) {
-        if (state is SpeechToTextListening && state.currentText.isNotEmpty) {
-          _textController.text = state.currentText;
-          _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
-        } else if (state is SpeechToTextStopped && state.finalText.isNotEmpty) {
-          _textController.text = state.finalText;
-          _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
-        } else if (state is SpeechToTextError) {
-          _handleSpeechToTextError(state.message);
-        }
-      },
-      child: Container(
-        padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-        decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
-        child: Column(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _textController,
-                maxLines: null,
-                expands: true,
-                textAlignVertical: TextAlignVertical.top,
-                style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
-                decoration: InputDecoration(
-                  hintText: AppStrings.describe,
-                  hintStyle: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
+    return BlocBuilder<HaroldAiBloc, HaroldAiState>(
+      builder: (context, haroldState) {
+        final isLoading = haroldState is HaroldAiLoading;
+
+        return Container(
+          padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
+          decoration: BoxDecoration(
+            color: isLoading ? context.filledBgDark.withValues(alpha: 0.5) : context.filledBgDark,
+            borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _textController,
+                  enabled: !isLoading,
+                  maxLines: null,
+                  expands: true,
+                  textAlignVertical: TextAlignVertical.top,
+                  style: TextStyle(
+                    color: isLoading ? context.darkTextPrimary.withValues(alpha: 0.5) : context.darkTextPrimary,
+                    fontSize: DimensionConstants.font16Px.f,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: AppStrings.describe,
+                    hintStyle: TextStyle(
+                      color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
+                      fontSize: DimensionConstants.font16Px.f,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -232,13 +216,11 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     return BlocBuilder<HaroldAiBloc, HaroldAiState>(
       builder: (context, haroldState) {
         final isHaroldLoading = haroldState is HaroldAiLoading;
+        final isEnabled = !isHaroldLoading;
 
-        return BlocBuilder<SpeechToTextBloc, SpeechToTextState>(
-          builder: (context, speechState) {
-            final isListening = speechState is SpeechToTextListening;
-            final isInitialized = speechState is! SpeechToTextInitial && speechState is! SpeechToTextInitializing;
-            final isEnabled = isInitialized && !isHaroldLoading;
-
+        return ValueListenableBuilder<bool>(
+          valueListenable: _isListeningNotifier,
+          builder: (context, isListening, child) {
             return GestureDetector(
               onTap: isEnabled ? _toggleVoiceInput : null,
               child: AnimatedBuilder(
@@ -264,7 +246,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                               decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
                             ),
                           Icon(
-                            _getIconForState(speechState),
+                            isListening ? Icons.mic : Icons.mic,
                             color:
                                 isListening ? Colors.white : (isEnabled ? context.darkTextPrimary : context.darkTextPrimary.withValues(alpha: 0.5)),
                             size: 24.w,
@@ -282,72 +264,10 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     );
   }
 
-  IconData _getIconForState(SpeechToTextState state) {
-    if (state is SpeechToTextListening) {
-      return Icons.stop;
-    } else if (state is SpeechToTextPaused) {
-      return Icons.play_arrow;
-    } else if (state is SpeechToTextInitializing) {
-      return Icons.hourglass_empty;
-    } else {
-      return Icons.mic;
-    }
-  }
-
-  void _handleSpeechToTextError(String message) {
-    if (message.contains('permission') || message.contains('Permission')) {
-      _showPermissionDialog(message);
-    } else {
-      SnackBarUtils.showError(context, '${AppStrings.speechRecognitionError}: $message');
-    }
-  }
-
-  void _showPermissionDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Permission Required'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(message, style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f)),
-              SizedBox(height: DimensionConstants.gap16Px.h),
-              const Text('To use speech-to-text, please:', style: TextStyle(fontWeight: FontWeight.w600)),
-              SizedBox(height: DimensionConstants.gap8Px.h),
-              const Text('1. Go to Settings'),
-              const Text('2. Find this app'),
-              const Text('3. Enable Microphone access'),
-              const Text('4. Enable Speech Recognition'),
-            ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                openAppSettings();
-              },
-              child: const Text('Open Settings'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _onSubmit() {
     if (_isValidInput()) {
       FocusScope.of(context).unfocus();
-
-      final currentState = context.read<SpeechToTextBloc>().state;
-      if (currentState is SpeechToTextListening) {
-        context.read<SpeechToTextBloc>().add(StopSpeechRecognition());
-      }
-
       context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim(), isUserAuthenticated: false));
-      context.read<SpeechToTextBloc>().add(ClearRecognizedText());
     }
   }
 }
