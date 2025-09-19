@@ -113,12 +113,12 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                         children: [
                           SizedBox(height: DimensionConstants.gap20Px.h),
                           TranslatedText(
-                            AppStrings.createAccount,
+                            AppStrings.letsGetStarted,
                             style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
                           ),
                           SizedBox(height: DimensionConstants.gap4Px.h),
                           TranslatedText(
-                            AppStrings.enterEmailForVerification,
+                            AppStrings.verifyEmailFirstToContinue,
                             style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                           ),
                           SizedBox(height: DimensionConstants.gap20Px.h),

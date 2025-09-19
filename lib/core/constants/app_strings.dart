@@ -68,6 +68,8 @@ class AppStrings {
   // Sign Up Screen
   static const createAccount = 'createAccount';
   static const enterEmailForVerification = 'enterEmailForVerification';
+  static const letsGetStarted = 'letsGetStarted';
+  static const verifyEmailFirstToContinue = 'verifyEmailFirstToContinue';
   static const createYourAccount = 'createYourAccount';
   static const confirmPassword = 'confirmPassword';
   static const verifyEmail = 'verifyEmail';
@@ -96,7 +98,8 @@ class AppStrings {
   static const emailVerificationTitle = 'emailVerificationTitle';
   static const passwordResetTitle = 'passwordResetTitle';
   static const emailVerificationDescription = 'emailVerificationDescription';
-  static const passwordResetDescription = 'passwordResetDescription';
+  static const passwordResetDescription1 = 'passwordResetDescription1';
+  static const passwordResetDescription2 = 'passwordResetDescription2';
   static const verifyEmailButton = 'verifyEmailButton';
   static const verifyCodeButton = 'verifyCodeButton';
   static const resendCodeButton = 'resendCodeButton';

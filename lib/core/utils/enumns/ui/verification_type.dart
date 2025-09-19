@@ -20,7 +20,7 @@ enum VerificationType {
       case emailVerification:
         return tr(AppStrings.emailVerificationDescription);
       case passwordReset:
-        return tr(AppStrings.passwordResetDescription);
+        return tr(AppStrings.passwordResetDescription1);
     }
   }
 

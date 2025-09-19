@@ -119,8 +119,9 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
     }
   }
 
-  void _navigateToWelcome() {
-    context.go(AppRoutes.welcomeRouteName);
+  void _navigateToSignUp() {
+    context.pop();
+    context.pop();
   }
 
   @override
@@ -129,7 +130,7 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
-          _navigateToWelcome();
+          _navigateToSignUp();
         }
       },
       child: BlocListener<AuthBloc, AuthState>(
@@ -145,7 +146,7 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
         child: CustomScaffold(
           extendBodyBehindAppBar: true,
           appBar: CustomAppBar(
-            leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap4Px.w), child: CustomBackButton(onPressed: _navigateToWelcome)),
+            leading: Padding(padding: EdgeInsets.only(left: DimensionConstants.gap4Px.w), child: CustomBackButton(onPressed: _navigateToSignUp)),
           ),
           body: SafeArea(
             child: Padding(

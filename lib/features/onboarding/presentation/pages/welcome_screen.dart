@@ -101,7 +101,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 
                     _buildAnimatedInfoButton(
                       animation: _staggerAnimations[1],
-                      icon: Icons.info,
+                      imagePath: ImageConstants.aboutUs,
                       title: AppStrings.aboutUs,
                       onTap: () {
                         context.push(AppRoutes.aboutUsRouteName);
@@ -112,7 +112,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 
                     _buildAnimatedInfoButton(
                       animation: _staggerAnimations[2],
-                      icon: Icons.lightbulb,
+                      imagePath: ImageConstants.whatWeDo,
                       title: AppStrings.whatWeDo,
                       onTap: () {
                         context.push(AppRoutes.whatWeDoRouteName);
@@ -123,7 +123,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 
                     _buildAnimatedInfoButton(
                       animation: _staggerAnimations[3],
-                      icon: Icons.auto_awesome,
+                      imagePath: ImageConstants.askHaroldAi,
                       title: AppStrings.askHaroldAI,
                       onTap: () {
                         context.push(AppRoutes.askHaroldAiRouteName);
@@ -201,7 +201,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 
   Widget _buildAnimatedInfoButton({
     required Animation<double> animation,
-    required IconData icon,
+    required String imagePath,
     required String title,
     required VoidCallback onTap,
   }) {
@@ -221,10 +221,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                   painter: WelcomeScreenGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.5), borderRadius: 100.r),
                   child: ElevatedButton.icon(
                     onPressed: onTap,
-                    icon: Icon(icon, color: Colors.white, size: DimensionConstants.font20Px.f),
+                    icon: GlobalImage(assetPath: imagePath, width: DimensionConstants.font24Px.f, height: DimensionConstants.font24Px.f),
                     label: TranslatedText(
                       title,
-                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w500),
+                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
