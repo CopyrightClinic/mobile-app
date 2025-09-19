@@ -129,7 +129,7 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) => validateEmail(value, tr),
-                            onEditingComplete: _handleVerifyEmail,
+                            onEditingComplete: () => _emailFocusNode.unfocus(),
                             onChanged: (value) {
                               _onFieldChanged();
                             },

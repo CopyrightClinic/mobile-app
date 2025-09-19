@@ -181,7 +181,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                               keyboardType: TextInputType.streetAddress,
                               maxLines: 3,
                               validator: (value) => validateAddress(value, tr),
-                              onEditingComplete: _handleSave,
+                              onEditingComplete: () => _addressFocusNode.unfocus(),
                               onChanged: (value) => _onFieldChanged(),
                             ),
                           ],

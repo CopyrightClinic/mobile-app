@@ -139,7 +139,6 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
             SnackBarUtils.showSuccess(context, state.message);
             context.go(AppRoutes.signupSuccessRouteName);
           } else if (state is SignupError) {
-            print('🚨 SignupError message: "${state.message}"');
             SnackBarUtils.showError(context, state.message);
           }
         },
@@ -220,7 +219,7 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
                                   focusNode: _confirmPasswordFocusNode,
                                   isPassword: true,
                                   validator: (value) => _validateConfirmPassword(_passwordController.text.trim(), value, tr),
-                                  onEditingComplete: _handleSignUp,
+                                  onEditingComplete: () => _confirmPasswordFocusNode.unfocus(),
                                   onChanged: (value) {
                                     _onFieldChanged();
                                     _handleConfirmPasswordChange(value);

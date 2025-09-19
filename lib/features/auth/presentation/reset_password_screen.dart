@@ -128,6 +128,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
         if (state is ResetPasswordSuccess) {
           SnackBarUtils.showSuccess(context, state.message);
           context.pop();
+          context.pop();
         } else if (state is ResetPasswordError) {
           SnackBarUtils.showError(context, state.message);
         }
@@ -200,7 +201,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
                                 focusNode: _confirmPasswordFocusNode,
                                 isPassword: true,
                                 validator: (value) => _validateConfirmPassword(_newPasswordController.text.trim(), value, tr),
-                                onEditingComplete: _handleResetPassword,
+                                onEditingComplete: () => _confirmPasswordFocusNode.unfocus(),
                                 onChanged: (value) {
                                   _onFieldChanged();
                                   _handleConfirmPasswordChange(value);
