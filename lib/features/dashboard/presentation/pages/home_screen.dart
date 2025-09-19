@@ -85,26 +85,6 @@ class HomeScreen extends StatelessWidget {
                 context.push(AppRoutes.askHaroldAiRouteName);
               },
             ),
-            AuthButton(
-              text: AppStrings.paymentMethods,
-              onPressed: () {
-                context.push(
-                  AppRoutes.confirmBookingRouteName,
-                  extra: {
-                    'sessionDate': DateTime.now(),
-                    'timeSlot': '10:00 AM',
-                    'query': 'home',
-                    'paymentMethod': PaymentMethodEntity(
-                      id: '1',
-                      customerId: '1',
-                      type: 'card',
-                      card: CardEntity(brand: 'Visa', last4: '1234', expMonth: 1, expYear: 2025),
-                      createdAt: DateTime.now(),
-                    ),
-                  },
-                );
-              },
-            ),
           ],
         ),
       ),
