@@ -159,43 +159,61 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   }
 
   Widget _buildTextInputField() {
-    return BlocListener<SpeechToTextBloc, SpeechToTextState>(
-      listener: (context, state) {
-        if (state is SpeechToTextListening && state.currentText.isNotEmpty) {
-          _textController.text = state.currentText;
-          _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
-        } else if (state is SpeechToTextStopped && state.finalText.isNotEmpty) {
-          _textController.text = state.finalText;
-          _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
-        } else if (state is SpeechToTextError) {
-          _handleSpeechToTextError(state.message);
-        }
-      },
-      child: Container(
-        padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-        decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
-        child: Column(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _textController,
-                maxLines: null,
-                expands: true,
-                textAlignVertical: TextAlignVertical.top,
-                style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
-                decoration: InputDecoration(
-                  hintText: AppStrings.describe,
-                  hintStyle: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
+    return BlocBuilder<HaroldAiBloc, HaroldAiState>(
+      builder: (context, haroldState) {
+        final isLoading = haroldState is HaroldAiLoading;
+
+        return BlocListener<SpeechToTextBloc, SpeechToTextState>(
+          listener: (context, state) {
+            if (state is SpeechToTextListening && state.currentText.isNotEmpty) {
+              _textController.text = state.currentText;
+              _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
+            } else if (state is SpeechToTextStopped && state.finalText.isNotEmpty) {
+              _textController.text = state.finalText;
+              _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
+            } else if (state is SpeechToTextError) {
+              _handleSpeechToTextError(state.message);
+            }
+          },
+          child: Container(
+            padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
+            decoration: BoxDecoration(
+              color: isLoading ? context.filledBgDark.withValues(alpha: 0.5) : context.filledBgDark,
+              borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
             ),
-          ],
-        ),
-      ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textController,
+                    enabled: !isLoading,
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    style: TextStyle(
+                      color: isLoading ? context.darkTextPrimary.withValues(alpha: 0.5) : context.darkTextPrimary,
+                      fontSize: DimensionConstants.font16Px.f,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: AppStrings.describe,
+                      hintStyle: TextStyle(
+                        color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
+                        fontSize: DimensionConstants.font16Px.f,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
