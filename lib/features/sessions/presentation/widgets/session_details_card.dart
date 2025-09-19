@@ -97,19 +97,19 @@ class SessionDetailsCard extends StatelessWidget {
           final startDateTime = DateTime.parse(match.group(1)!);
           final endDateTime = DateTime.parse(match.group(2)!);
 
-          startTime = DateFormat('h:mm a').format(startDateTime);
-          endTime = DateFormat('h:mm a').format(endDateTime);
+          startTime = DateFormat('h:mm A').format(startDateTime);
+          endTime = DateFormat('h:mm A').format(endDateTime);
         } else {
-          startTime = DateFormat('h:mm a').format(date);
-          endTime = DateFormat('h:mm a').format(date.add(const Duration(minutes: 30)));
+          startTime = DateFormat('h:mm A').format(date);
+          endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: 30)));
         }
       } catch (e) {
-        startTime = DateFormat('h:mm a').format(date);
-        endTime = DateFormat('h:mm a').format(date.add(const Duration(minutes: 30)));
+        startTime = DateFormat('h:mm A').format(date);
+        endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: 30)));
       }
     } else {
-      startTime = DateFormat('h:mm a').format(date);
-      endTime = DateFormat('h:mm a').format(date.add(const Duration(minutes: 30)));
+      startTime = DateFormat('h:mm A').format(date);
+      endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: 30)));
     }
 
     return '$dayName, $monthDay – $startTime to $endTime';

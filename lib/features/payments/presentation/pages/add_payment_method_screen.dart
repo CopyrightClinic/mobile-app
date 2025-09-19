@@ -51,8 +51,8 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
     _paymentBloc = sl<PaymentBloc>();
   }
 
-  void _handleAuthFlowCompletion(BuildContext context) async {
-    final data = await HaroldNavigationService.getPendingResultAndQuery();
+  void _handleAuthFlowCompletion(BuildContext context) {
+    final data = HaroldNavigationService().getPendingResultAndQuery();
     if (!mounted) return;
 
     final pendingResult = data['result'];
@@ -166,7 +166,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                               controller: _cardFormController,
                               style: CardFormStyle(
                                 backgroundColor: context.surfaceColor.withValues(alpha: 0.8),
-                                borderColor: context.primary,
+                                borderColor: Colors.transparent,
                                 borderRadius: DimensionConstants.radius12Px.r.toInt(),
                                 cursorColor: context.primaryColor,
                                 fontSize: DimensionConstants.font16Px.f.toInt(),

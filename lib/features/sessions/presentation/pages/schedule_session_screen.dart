@@ -133,25 +133,9 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                             : scheduleState.availableTimeSlotsForSelectedDate.isEmpty
                             ? EmptyStateWidget(
                               title: AppStrings.noTimeSlotsAvailable,
-                              subtitle: AppStrings.noTimeSlotsForSelectedDate,
+                              subtitle: AppStrings.trySelectingDifferentDate,
                               icon: Icons.access_time_outlined,
                               iconColor: context.darkTextSecondary,
-                              action: Container(
-                                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap8Px.h),
-                                decoration: BoxDecoration(
-                                  color: context.filledBgDark,
-                                  borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r),
-                                  border: Border.all(color: context.darkTextSecondary.withOpacity(0.2)),
-                                ),
-                                child: TranslatedText(
-                                  AppStrings.trySelectingDifferentDate,
-                                  style: TextStyle(
-                                    color: context.darkTextSecondary,
-                                    fontSize: DimensionConstants.font14Px.f,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
                             )
                             : GridView.builder(
                               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

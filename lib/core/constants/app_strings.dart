@@ -185,6 +185,7 @@ class AppStrings {
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
   static const cardholderNameCannotExceed100Characters = 'cardholderNameCannotExceed100Characters';
   static const noPaymentMethods = 'noPaymentMethods';
+  static const tapToAdd = 'tapToAdd';
   static const noPaymentMethodsYet = 'noPaymentMethodsYet';
   static const noPaymentMethodsAddOne = 'noPaymentMethodsAddOne';
   static const addAnotherPaymentMethod = 'addAnotherPaymentMethod';

@@ -13,6 +13,7 @@ import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../payments/domain/entities/payment_method_entity.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -82,6 +83,26 @@ class HomeScreen extends StatelessWidget {
               text: AppStrings.askHaroldAI,
               onPressed: () {
                 context.push(AppRoutes.askHaroldAiRouteName);
+              },
+            ),
+            AuthButton(
+              text: AppStrings.paymentMethods,
+              onPressed: () {
+                context.push(
+                  AppRoutes.confirmBookingRouteName,
+                  extra: {
+                    'sessionDate': DateTime.now(),
+                    'timeSlot': '10:00 AM',
+                    'query': 'home',
+                    'paymentMethod': PaymentMethodEntity(
+                      id: '1',
+                      customerId: '1',
+                      type: 'card',
+                      card: CardEntity(brand: 'Visa', last4: '1234', expMonth: 1, expYear: 2025),
+                      createdAt: DateTime.now(),
+                    ),
+                  },
+                );
               },
             ),
           ],

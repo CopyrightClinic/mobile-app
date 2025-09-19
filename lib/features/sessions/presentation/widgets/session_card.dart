@@ -159,14 +159,14 @@ class SessionCard extends StatelessWidget {
     final sessionDate = DateTime(date.year, date.month, date.day);
 
     if (sessionDate == today) {
-      return '${AppStrings.today.tr()}, ${DateFormat('MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} to ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
+      return '${AppStrings.today.tr()}, ${DateFormat('MMM d').format(date)} – ${DateFormat('h:mm A').format(date)} to ${DateFormat('h:mm A').format(date.add(Duration(minutes: 30)))}';
     } else {
-      return '${DateFormat('EEEE, MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} to ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
+      return '${DateFormat('EEEE, MMM d').format(date)} – ${DateFormat('h:mm A').format(date)} to ${DateFormat('h:mm A').format(date.add(Duration(minutes: 30)))}';
     }
   }
 
   String _formatCancellationDeadline(DateTime sessionDate) {
     final deadline = sessionDate.subtract(const Duration(hours: 24));
-    return '${DateFormat('dd/MM/yy').format(deadline)}, ${DateFormat('h:mm a').format(deadline)}';
+    return '${DateFormat('dd/MM/yy').format(deadline)}, ${DateFormat('h:mm A').format(deadline)}';
   }
 }
