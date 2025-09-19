@@ -231,6 +231,8 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return AppStrings.cardholderNameIsRequired.tr();
+    } else if (value.trim().length > 100) {
+      return AppStrings.cardholderNameCannotExceed100Characters.tr();
     }
     return null;
   }

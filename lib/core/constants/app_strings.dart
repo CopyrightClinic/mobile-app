@@ -125,10 +125,12 @@ class AppStrings {
   static const fullNameIsRequired = 'fullNameIsRequired';
   static const fullNameMustBeAtLeast2Characters = 'fullNameMustBeAtLeast2Characters';
   static const fullNameCanOnlyContainLetters = 'fullNameCanOnlyContainLetters';
+  static const fullNameCannotExceed100Characters = 'fullNameCannotExceed100Characters';
   static const phoneNumberIsRequired = 'phoneNumberIsRequired';
   static const phoneNumberMustBeAtLeast10Digits = 'phoneNumberMustBeAtLeast10Digits';
   static const addressIsRequired = 'addressIsRequired';
   static const addressMustBeAtLeast10Characters = 'addressMustBeAtLeast10Characters';
+  static const addressCannotExceed500Characters = 'addressCannotExceed500Characters';
 
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
@@ -178,6 +180,7 @@ class AppStrings {
   static const expirationDateIsRequired = 'expirationDateIsRequired';
   static const cvvIsRequired = 'cvvIsRequired';
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
+  static const cardholderNameCannotExceed100Characters = 'cardholderNameCannotExceed100Characters';
   static const noPaymentMethods = 'noPaymentMethods';
   static const noPaymentMethodsYet = 'noPaymentMethodsYet';
   static const noPaymentMethodsAddOne = 'noPaymentMethodsAddOne';
