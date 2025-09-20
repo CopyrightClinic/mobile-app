@@ -166,12 +166,12 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                               controller: _cardFormController,
                               style: CardFormStyle(
                                 backgroundColor: context.surfaceColor.withValues(alpha: 0.8),
-                                borderColor: Colors.transparent,
+                                borderColor: Colors.white,
                                 borderRadius: DimensionConstants.radius12Px.r.toInt(),
                                 cursorColor: context.primaryColor,
                                 fontSize: DimensionConstants.font16Px.f.toInt(),
-                                placeholderColor: context.darkTextSecondary,
-                                textColor: context.darkTextPrimary,
+                                placeholderColor: context.white,
+                                textColor: context.white,
                               ),
                               onCardChanged: (details) {
                                 final complete = details?.complete ?? false;

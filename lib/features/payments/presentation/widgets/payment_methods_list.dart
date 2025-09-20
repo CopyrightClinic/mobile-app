@@ -41,7 +41,7 @@ class PaymentMethodsList extends StatelessWidget {
               itemCount: paymentMethods.length + (config.showAddButton ? 1 : 0),
               itemBuilder: (context, index) {
                 if (config.showAddButton && index == paymentMethods.length) {
-                  return _buildAddPaymentMethodButton(context);
+                  return _buildAddPaymentMethodButton2(context);
                 }
 
                 final paymentMethod = paymentMethods[index];
@@ -74,7 +74,7 @@ class PaymentMethodsList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GlobalImage(assetPath: ImageConstants.noPaymentMethods, width: 80.w, height: 80.h),
+            GlobalImage(assetPath: ImageConstants.noPaymentMethods, width: 80.w, height: 80.h, fit: BoxFit.contain),
             SizedBox(height: DimensionConstants.gap16Px.h),
             TranslatedText(
               config.emptyStateMessage ?? AppStrings.noPaymentMethods,
@@ -85,6 +85,31 @@ class PaymentMethodsList extends StatelessWidget {
               style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w500),
             ),
             if (config.showAddButton) ...[SizedBox(height: DimensionConstants.gap18Px.h), _buildAddPaymentMethodButton(context)],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddPaymentMethodButton2(BuildContext context) {
+    return GestureDetector(
+      onTap: config.onAddPaymentMethod,
+      child: SizedBox(
+        width: double.infinity,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 30.w,
+              height: 30.h,
+              decoration: BoxDecoration(color: context.primary, shape: BoxShape.circle),
+              child: Icon(Icons.add, color: context.white, size: DimensionConstants.icon24Px.f),
+            ),
+            SizedBox(width: DimensionConstants.gap16Px.w),
+            TranslatedText(
+              AppStrings.addAnotherPaymentMethod,
+              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
       ),
