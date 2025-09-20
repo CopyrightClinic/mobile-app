@@ -19,4 +19,15 @@ class SystemSpeech {
       return null;
     }
   }
+
+  static Future<String?> stopSpeech() async {
+    try {
+      final result = await _channel.invokeMethod('stopSpeech');
+      return result as String?;
+    } on PlatformException catch (e) {
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 }

@@ -30,12 +30,22 @@ import UIKit
       switch call.method {
       case "startSpeech":
         self?.startSpeech(call: call, result: result)
+      case "stopSpeech":
+        self?.stopSpeech(result: result)
       default:
         result(FlutterMethodNotImplemented)
       }
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  private func stopSpeech(result: @escaping FlutterResult) {
+    let transcription = lastRecognitionResult
+    result(transcription.isEmpty ? nil : transcription)
+
+    // Reset the recognition result for next session but keep everything running
+    lastRecognitionResult = ""
   }
 
   private func startSpeech(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -51,6 +61,15 @@ import UIKit
       speechRecognizer = SFSpeechRecognizer()
     }
 
+    // Check if on-device recognition is supported
+    if #available(iOS 13.0, *) {
+      if let recognizer = speechRecognizer, !recognizer.supportsOnDeviceRecognition {
+        print(
+          "Warning: On-device speech recognition not supported for this locale. Internet connection required."
+        )
+      }
+    }
+
     guard let speechRecognizer = speechRecognizer else {
       result(
         FlutterError(
@@ -61,7 +80,10 @@ import UIKit
     guard speechRecognizer.isAvailable else {
       result(
         FlutterError(
-          code: "speech_not_available", message: "Speech recognition not available", details: nil))
+          code: "speech_not_available",
+          message:
+            "Speech recognition not available. On iOS 16 and earlier, internet connection is required.",
+          details: nil))
       return
     }
 
@@ -139,6 +161,11 @@ import UIKit
 
     recognitionRequest.shouldReportPartialResults = true
 
+    // Enable on-device recognition if available (iOS 13+)
+    if #available(iOS 13.0, *) {
+      recognitionRequest.requiresOnDeviceRecognition = true
+    }
+
     audioEngine = AVAudioEngine()
     guard let audioEngine = audioEngine else {
       methodResult?(
@@ -170,9 +197,22 @@ import UIKit
       [weak self] result, error in
       if let error = error {
         self?.stopRecording()
+
+        // Check if error is related to network connectivity
+        let errorMessage = error.localizedDescription
+        let isNetworkError =
+          errorMessage.contains("network") || errorMessage.contains("internet")
+          || errorMessage.contains("connection")
+
+        let finalMessage =
+          isNetworkError
+          ? "Speech recognition requires internet connection on iOS 16 and earlier. Please check your connection."
+          : "Speech recognition error: \(errorMessage)"
+
         self?.methodResult?(
           FlutterError(
-            code: "recognition_error", message: "Speech recognition error",
+            code: "recognition_error",
+            message: finalMessage,
             details: error.localizedDescription))
         self?.methodResult = nil
         return

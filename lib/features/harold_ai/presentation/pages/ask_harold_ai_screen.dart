@@ -57,23 +57,55 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
 
   void _toggleVoiceInput() async {
     if (_isListeningNotifier.value) {
-      return;
+      _stopVoiceInput();
+    } else {
+      _startVoiceInput();
     }
+  }
 
+  void _startVoiceInput() async {
     _isListeningNotifier.value = true;
 
     try {
-      final existingText = _textController.text;
       final result = await SystemSpeech.startSpeech(prompt: 'Describe your copyright issue', locale: 'en-US', maxSeconds: 120);
 
       if (result != null && result.isNotEmpty) {
+        final existingText = _textController.text;
         final separator = existingText.isNotEmpty ? ' ' : '';
         final combinedText = existingText + separator + result;
         _textController.text = combinedText;
         _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
       }
     } catch (e) {
-      SnackBarUtils.showError(context, 'Speech recognition error: ${e.toString()}');
+      String errorMessage = 'Speech recognition error: ${e.toString()}';
+
+      if (e.toString().contains('network') ||
+          e.toString().contains('internet') ||
+          e.toString().contains('connection') ||
+          e.toString().contains('speech_not_available')) {
+        errorMessage = 'Speech recognition requires internet connection on iOS 16 and earlier. Please check your connection and try again.';
+      }
+
+      SnackBarUtils.showError(context, errorMessage);
+    } finally {
+      _isListeningNotifier.value = false;
+    }
+  }
+
+  void _stopVoiceInput() async {
+    try {
+      final result = await SystemSpeech.stopSpeech();
+
+      if (result != null && result.isNotEmpty) {
+        final existingText = _textController.text;
+        final separator = existingText.isNotEmpty ? ' ' : '';
+        final combinedText = existingText + separator + result;
+        _textController.text = combinedText;
+        _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
+      }
+    } catch (e) {
+      // Handle stop error silently or show a brief message
+      print('Error stopping speech recognition: $e');
     } finally {
       _isListeningNotifier.value = false;
     }
@@ -246,7 +278,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                               decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
                             ),
                           Icon(
-                            isListening ? Icons.mic : Icons.mic,
+                            isListening ? Icons.stop : Icons.mic,
                             color:
                                 isListening ? Colors.white : (isEnabled ? context.darkTextPrimary : context.darkTextPrimary.withValues(alpha: 0.5)),
                             size: 24.w,

@@ -63,6 +63,11 @@ class MainActivity : FlutterFragmentActivity() {
                         permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                     }
                 }
+                "stopSpeech" -> {
+                    // For Android, we'll return null since the speech recognition dialog handles
+                    // its own lifecycle
+                    result.success(null)
+                }
                 else -> result.notImplemented()
             }
         }
