@@ -48,4 +48,11 @@ class ApiEndpoint {
         return path;
     }
   }
+
+  /// Sessions endpoints
+  ///
+  /// Provides session operations:
+  static String sessions(String path) {
+    return '/sessions$path';
+  }
 }

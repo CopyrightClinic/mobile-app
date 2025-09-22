@@ -19,4 +19,8 @@ class AppRoutes {
   static const String homeRouteName = '/home';
   static const String sessionsRouteName = '/sessions';
   static const String profileRouteName = '/profile';
+  static const String scheduleSessionRouteName = '/schedule-session';
+  static const String selectPaymentMethodRouteName = '/select-payment-method';
+  static const String confirmBookingRouteName = '/confirm-booking';
+  static const String bookingRequestSentRouteName = '/booking-request-sent';
 }

@@ -17,6 +17,7 @@ abstract interface class ApiInterface {
   Future<T> getData<T>({
     required String endpoint,
     JSON? queryParams,
+    JSON? headers,
     CancelToken? cancelToken,
     bool requiresAuthToken = true,
     required T Function(JSON responseBody) converter,

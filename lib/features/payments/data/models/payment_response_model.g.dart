@@ -21,3 +21,20 @@ Map<String, dynamic> _$CreatePaymentMethodResponseModelToJson(
   'message': instance.message,
   'paymentMethod': instance.paymentMethod,
 };
+
+GetPaymentMethodsResponseModel _$GetPaymentMethodsResponseModelFromJson(
+  Map<String, dynamic> json,
+) => GetPaymentMethodsResponseModel(
+  message: json['message'] as String,
+  paymentMethods:
+      (json['paymentMethods'] as List<dynamic>)
+          .map((e) => PaymentMethodModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+);
+
+Map<String, dynamic> _$GetPaymentMethodsResponseModelToJson(
+  GetPaymentMethodsResponseModel instance,
+) => <String, dynamic>{
+  'message': instance.message,
+  'paymentMethods': instance.paymentMethods,
+};

@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../config/theme/app_theme.dart';
+import '../constants/app_strings.dart';
 import '../utils/extensions/extensions.dart';
+import 'translated_text.dart';
 
 /// A comprehensive global image widget that handles all types of images
 /// with full customization, error handling, and loading states.
@@ -124,6 +126,9 @@ class GlobalImage extends StatelessWidget {
   /// Callback when image starts loading
   final VoidCallback? onImageLoading;
 
+  /// Color to apply to SVG images (for tinting)
+  final Color? color;
+
   const GlobalImage({
     super.key,
     this.imageUrl,
@@ -164,6 +169,7 @@ class GlobalImage extends StatelessWidget {
     this.onImageLoaded,
     this.onImageError,
     this.onImageLoading,
+    this.color,
   }) : assert(imageUrl != null || assetPath != null || filePath != null || memoryBytes != null, 'At least one image source must be provided');
 
   @override
@@ -195,7 +201,14 @@ class GlobalImage extends StatelessWidget {
   Widget _buildNetworkImage() {
     // Check if it's an SVG file
     if (_isSvgFile(imageUrl!)) {
-      return SvgPicture.network(imageUrl!, width: width, height: height, fit: fit, placeholderBuilder: (context) => _buildPlaceholder());
+      return SvgPicture.network(
+        imageUrl!,
+        width: width,
+        height: height,
+        fit: fit,
+        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+        placeholderBuilder: (context) => _buildPlaceholder(),
+      );
     }
 
     if (!enableCaching) {
@@ -279,7 +292,7 @@ class GlobalImage extends StatelessWidget {
         width: width,
         height: height,
         fit: fit,
-        colorFilter: null, // Allow SVG to use its own colors
+        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
         placeholderBuilder: (context) => _buildPlaceholder(),
       );
     }
@@ -314,7 +327,14 @@ class GlobalImage extends StatelessWidget {
   Widget _buildFileImage() {
     // Check if it's an SVG file
     if (_isSvgFile(filePath!)) {
-      return SvgPicture.file(File(filePath!), width: width, height: height, fit: fit, placeholderBuilder: (context) => _buildPlaceholder());
+      return SvgPicture.file(
+        File(filePath!),
+        width: width,
+        height: height,
+        fit: fit,
+        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+        placeholderBuilder: (context) => _buildPlaceholder(),
+      );
     }
 
     return Image.file(
@@ -452,7 +472,7 @@ class GlobalImage extends StatelessWidget {
         children: [
           Icon(Icons.broken_image, color: AppTheme.textBodyLight, size: (loadingSize ?? 24.0).f),
           SizedBox(height: 8.0.h),
-          Text('Failed to load image', style: TextStyle(fontSize: 12.0.f, color: AppTheme.textBodyLight), textAlign: TextAlign.center),
+          TranslatedText(AppStrings.failedToLoadImage, style: TextStyle(fontSize: 12.0.f, color: AppTheme.textBodyLight)),
           if (enableRetry) ...[
             SizedBox(height: 8.0.h),
             TextButton(
@@ -460,7 +480,7 @@ class GlobalImage extends StatelessWidget {
                 // Trigger rebuild to retry
                 // This is a simple retry mechanism
               },
-              child: Text('Retry', style: TextStyle(fontSize: 12.0.f, color: AppTheme.primary)),
+              child: TranslatedText(AppStrings.retryText, style: TextStyle(fontSize: 12.0.f, color: AppTheme.primary)),
             ),
           ],
         ],

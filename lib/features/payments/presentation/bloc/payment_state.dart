@@ -33,3 +33,35 @@ class PaymentError extends PaymentState {
   @override
   List<Object> get props => [message];
 }
+
+class PaymentMethodsLoaded extends PaymentState {
+  final List<PaymentMethodEntity> paymentMethods;
+
+  const PaymentMethodsLoaded(this.paymentMethods);
+
+  @override
+  List<Object> get props => [paymentMethods];
+}
+
+class PaymentMethodDeleted extends PaymentState {
+  final String message;
+
+  const PaymentMethodDeleted(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class PaymentProcessing extends PaymentState {
+  const PaymentProcessing();
+}
+
+class PaymentProcessed extends PaymentState {
+  final String transactionId;
+  final String message;
+
+  const PaymentProcessed({required this.transactionId, required this.message});
+
+  @override
+  List<Object> get props => [transactionId, message];
+}

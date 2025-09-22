@@ -26,6 +26,7 @@ class DimensionConstants {
   // Gap
   static const double gap0Px = 0.0;
   static const double gap2Px = 2.0;
+  static const double gap3Px = 3.0;
   static const double gap4Px = 4.0;
   static const double gap6Px = 6.0;
   static const double gap8Px = 8.0;
@@ -46,6 +47,8 @@ class DimensionConstants {
   static const double gap36Px = 36.0;
   static const double gap38Px = 38.0;
   static const double gap40Px = 40.0;
+  static const double gap42Px = 42.0;
+  static const double gap44Px = 44.0;
   static const double gap48Px = 48.0;
   static const double gap56Px = 56.0;
   static const double gap64Px = 64.0;
@@ -66,6 +69,21 @@ class DimensionConstants {
   static const double radius20Px = 20.0;
   static const double radius24Px = 24.0;
   static const double radius28Px = 28.0;
+  static const double radius32Px = 32.0;
+  static const double radius36Px = 36.0;
+  static const double radius40Px = 40.0;
+  static const double radius44Px = 44.0;
+  static const double radius48Px = 48.0;
+  static const double radius52Px = 52.0;
+  static const double radius56Px = 56.0;
+  static const double radius60Px = 60.0;
+  static const double radius64Px = 64.0;
+  static const double radius68Px = 68.0;
+  static const double radius72Px = 72.0;
+  static const double radius76Px = 76.0;
+  static const double radius80Px = 80.0;
+  static const double radius84Px = 84.0;
+  static const double radius88Px = 88.0;
 
   static const double icon16Px = 16.0;
   static const double icon24Px = 24.0;

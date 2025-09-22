@@ -29,6 +29,8 @@ class ImageConstants {
   static const String writers = '$png/writers.png';
   static const String snackbarSuccess = '$png/snackbar_success.png';
   static const String snackbarError = '$png/snackbar_error.png';
+  static const String visa = '$png/visacard.png';
+  static const String mastercard = '$png/mastercard.png';
 
   // ===================
   // SVG ICONS
@@ -44,4 +46,8 @@ class ImageConstants {
   static const String home = '$svg/home.svg';
   static const String sessions = '$svg/session.svg';
   static const String profile = '$svg/profile.svg';
+  static const String sessionTime = '$svg/session_time.svg';
+  static const String sessionPrice = '$svg/session_amount.svg';
+  static const String clock = '$svg/clock.svg';
+  static const String mic = '$svg/mike.svg';
 }

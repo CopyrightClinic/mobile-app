@@ -17,3 +17,17 @@ class CreatePaymentMethodResponseModel {
 
   PaymentMethodEntity toEntity() => paymentMethod.toEntity();
 }
+
+@JsonSerializable()
+class GetPaymentMethodsResponseModel {
+  final String message;
+  final List<PaymentMethodModel> paymentMethods;
+
+  const GetPaymentMethodsResponseModel({required this.message, required this.paymentMethods});
+
+  factory GetPaymentMethodsResponseModel.fromJson(Map<String, dynamic> json) => _$GetPaymentMethodsResponseModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GetPaymentMethodsResponseModelToJson(this);
+
+  List<PaymentMethodEntity> toEntities() => paymentMethods.map((model) => model.toEntity()).toList();
+}

@@ -24,4 +24,30 @@ class PaymentRepositoryImpl implements PaymentRepository {
       return Left(ServerFailure(AppStrings.failedToCreatePaymentMethodGeneric));
     }
   }
+
+  @override
+  Future<Either<Failure, List<PaymentMethodEntity>>> getPaymentMethods() async {
+    try {
+      final result = await remoteDataSource.getPaymentMethods();
+      return Right(result.toEntities());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.failedToLoadPaymentMethodsGeneric}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> deletePaymentMethod(String paymentMethodId) async {
+    try {
+      // TODO: Implement delete payment method API call
+      // For now, return a mock success response
+      await Future.delayed(const Duration(seconds: 1));
+      return const Right(AppStrings.paymentMethodDeletedSuccessfully);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.failedToDeletePaymentMethodGeneric}: $e'));
+    }
+  }
 }

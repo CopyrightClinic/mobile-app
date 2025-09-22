@@ -12,11 +12,18 @@ import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
+import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
+import '../../features/sessions/presentation/pages/booking_request_sent_screen.dart';
+import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
+import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
 import '../../features/dashboard/presentation/pages/profile_screen.dart';
+import '../../features/sessions/presentation/pages/schedule_session_screen.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
+import '../../core/utils/enumns/ui/payment_method.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -77,7 +84,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.addPaymentMethodRouteName,
         name: AppRoutes.addPaymentMethodRouteName,
-        builder: (context, state) => const AddPaymentMethodScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          PaymentMethodFrom from = extra['from'] ?? PaymentMethodFrom.auth;
+          return AddPaymentMethodScreen(from: from);
+        },
       ),
 
       StatefulShellRoute.indexedStack(
@@ -97,6 +108,32 @@ class AppRouter {
             routes: [GoRoute(path: AppRoutes.profileRouteName, name: AppRoutes.profileRouteName, builder: (context, state) => const ProfileScreen())],
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.scheduleSessionRouteName,
+        name: AppRoutes.scheduleSessionRouteName,
+        builder: (context, state) => const ScheduleSessionScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.selectPaymentMethodRouteName,
+        name: AppRoutes.selectPaymentMethodRouteName,
+        builder: (context, state) {
+          final params = state.extra as SelectPaymentMethodScreenParams;
+          return SelectPaymentMethodScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.confirmBookingRouteName,
+        name: AppRoutes.confirmBookingRouteName,
+        builder: (context, state) {
+          final params = state.extra as ConfirmBookingScreenParams;
+          return ConfirmBookingScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.bookingRequestSentRouteName,
+        name: AppRoutes.bookingRequestSentRouteName,
+        builder: (context, state) => const BookingRequestSentScreen(),
       ),
     ],
   );
