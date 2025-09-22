@@ -170,5 +170,10 @@
   "areYouSureLogout": "Are you sure you want to logout?",
   "cancel": "Cancel",
   "failedToProcessPaymentMethod": "Failed to process payment method",
-  "failedToCreatePaymentMethodGeneric": "Failed to create payment method"
+  "failedToCreatePaymentMethodGeneric": "Failed to create payment method",
+  "other": "Other",
+  "privacyPolicy": "Privacy Policy",
+  "termsAndConditions": "Terms & Conditions",
+  "deleteAccount": "Delete Account",
+  "changePassword": "Change Password"
 }

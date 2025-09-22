@@ -44,4 +44,13 @@ class ImageConstants {
   static const String home = '$svg/home.svg';
   static const String sessions = '$svg/session.svg';
   static const String profile = '$svg/profile.svg';
+  static const String address = '$svg/address.svg';
+  static const String phone = '$svg/phone.svg';
+  static const String email = '$svg/email.svg';
+  static const String edit = '$svg/edit.svg';
+  static const String name = '$svg/name.svg';
+  static const String privacyPolicy = '$svg/privacy_policy.svg';
+  static const String termsAndConditions = '$svg/terms_and_conditions.svg';
+  static const String changePassword = '$svg/change_password.svg';
+  static const String paymentMethods = '$svg/payment_methods.svg';
 }

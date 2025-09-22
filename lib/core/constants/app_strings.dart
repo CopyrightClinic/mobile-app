@@ -198,4 +198,11 @@ class AppStrings {
   // Payment Error Messages
   static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
   static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
+
+  // Profile Screen Additional Strings
+  static const other = 'other';
+  static const privacyPolicy = 'privacyPolicy';
+  static const termsAndConditions = 'termsAndConditions';
+  static const deleteAccount = 'deleteAccount';
+  static const changePassword = 'changePassword';
 }
