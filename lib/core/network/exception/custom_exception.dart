@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names, library_private_types_in_public_api
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import '../../constants/app_strings.dart';
 import '../models/api_error_model.dart';
 
 enum _ExceptionType {
@@ -46,13 +47,13 @@ class CustomException implements Exception {
             return CustomException(
               exceptionType: _ExceptionType.SendTimeoutException,
               statusCode: error.response?.statusCode,
-              message: 'Failed to send',
+              message: AppStrings.failedToSend,
             );
           case DioExceptionType.receiveTimeout:
             return CustomException(
               exceptionType: _ExceptionType.ReceiveTimeoutException,
               statusCode: error.response?.statusCode,
-              message: 'Failed to receive',
+              message: AppStrings.failedToReceive,
             );
           case DioExceptionType.badCertificate:
             return CustomException(exceptionType: _ExceptionType.ApiException, statusCode: error.response?.statusCode, message: 'Bad certificate');
@@ -113,17 +114,17 @@ class CustomException implements Exception {
             );
         }
       } else {
-        return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: 'Error unrecognized');
+        return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: AppStrings.errorUnrecognized);
       }
     } on FormatException catch (e) {
       return CustomException(exceptionType: _ExceptionType.FormatException, message: e.message);
     } on Exception catch (_) {
-      return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: 'Error unrecognized');
+      return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: AppStrings.errorUnrecognized);
     }
   }
 
   factory CustomException.fromParsingException(Exception error) {
     debugPrint('$error');
-    return CustomException(exceptionType: _ExceptionType.SerializationException, message: 'Failed to parse network response to model or vice versa');
+    return CustomException(exceptionType: _ExceptionType.SerializationException, message: AppStrings.failedToParseNetworkResponse);
   }
 }

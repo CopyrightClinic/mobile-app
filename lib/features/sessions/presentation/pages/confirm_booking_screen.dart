@@ -13,19 +13,18 @@ import '../../../../core/widgets/custom_back_button.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
-import '../../../payments/domain/entities/payment_method_entity.dart';
 import '../../../payments/presentation/widgets/payment_method_card.dart';
+import '../../../payments/presentation/widgets/payment_method_card_action.dart';
 import '../bloc/sessions_bloc.dart';
 import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
 import '../widgets/session_details_card.dart';
+import 'params/confirm_booking_screen_params.dart';
 
 class ConfirmBookingScreen extends StatefulWidget {
-  final DateTime sessionDate;
-  final String timeSlot;
-  final PaymentMethodEntity paymentMethod;
+  final ConfirmBookingScreenParams params;
 
-  const ConfirmBookingScreen({super.key, required this.sessionDate, required this.timeSlot, required this.paymentMethod});
+  const ConfirmBookingScreen({super.key, required this.params});
 
   @override
   State<ConfirmBookingScreen> createState() => _ConfirmBookingScreenState();
@@ -112,7 +111,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
-        SessionDetailsCard(sessionDate: widget.sessionDate, timeSlot: widget.timeSlot),
+        SessionDetailsCard(sessionDate: widget.params.sessionDate, timeSlot: widget.params.timeSlot),
       ],
     );
   }
@@ -126,7 +125,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
-        PaymentMethodCard(paymentMethod: widget.paymentMethod, action: NoPaymentMethodAction(), isSelected: false),
+        PaymentMethodCard(paymentMethod: widget.params.paymentMethod, action: NoPaymentMethodAction(), isSelected: false),
         SizedBox(height: DimensionConstants.gap24Px.h),
       ],
     );
@@ -235,6 +234,6 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   }
 
   void _onConfirmBooking() {
-    _sessionsBloc.add(ScheduleSessionRequested(selectedDate: widget.sessionDate, selectedTimeSlot: widget.timeSlot));
+    _sessionsBloc.add(ScheduleSessionRequested(selectedDate: widget.params.sessionDate, selectedTimeSlot: widget.params.timeSlot));
   }
 }

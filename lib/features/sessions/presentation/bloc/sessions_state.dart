@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/utils/enumns/ui/sessions_tab.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
-
-enum SessionsTab { upcoming, completed }
 
 abstract class SessionsState extends Equatable {
   const SessionsState();

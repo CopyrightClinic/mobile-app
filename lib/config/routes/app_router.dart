@@ -1,4 +1,3 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../features/onboarding/presentation/pages/about_us_screen.dart';
 import '../../../features/onboarding/presentation/pages/splash_screen.dart';
@@ -16,15 +15,15 @@ import '../../features/payments/presentation/pages/add_payment_method_screen.dar
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
 import '../../features/sessions/presentation/pages/booking_request_sent_screen.dart';
+import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
+import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
 import '../../features/dashboard/presentation/pages/profile_screen.dart';
 import '../../features/sessions/presentation/pages/schedule_session_screen.dart';
-import '../../features/sessions/presentation/bloc/sessions_bloc.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import '../../core/utils/enumns/ui/payment_method.dart';
-import '../../di.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -119,21 +118,16 @@ class AppRouter {
         path: AppRoutes.selectPaymentMethodRouteName,
         name: AppRoutes.selectPaymentMethodRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final sessionDate = extra['sessionDate'] as DateTime;
-          final timeSlot = extra['timeSlot'] as String;
-          return SelectPaymentMethodScreen(sessionDate: sessionDate, timeSlot: timeSlot);
+          final params = state.extra as SelectPaymentMethodScreenParams;
+          return SelectPaymentMethodScreen(params: params);
         },
       ),
       GoRoute(
         path: AppRoutes.confirmBookingRouteName,
         name: AppRoutes.confirmBookingRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final sessionDate = extra['sessionDate'] as DateTime;
-          final timeSlot = extra['timeSlot'] as String;
-          final paymentMethod = extra['paymentMethod'];
-          return ConfirmBookingScreen(sessionDate: sessionDate, timeSlot: timeSlot, paymentMethod: paymentMethod);
+          final params = state.extra as ConfirmBookingScreenParams;
+          return ConfirmBookingScreen(params: params);
         },
       ),
       GoRoute(

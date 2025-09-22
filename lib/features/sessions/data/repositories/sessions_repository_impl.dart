@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../domain/entities/session_entity.dart';
@@ -19,7 +20,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch user sessions: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchUserSessions}: $e'));
     }
   }
 
@@ -31,7 +32,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch upcoming sessions: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchUpcomingSessions}: $e'));
     }
   }
 
@@ -43,7 +44,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch completed sessions: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchCompletedSessions}: $e'));
     }
   }
 
@@ -55,7 +56,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch session: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchSession}: $e'));
     }
   }
 
@@ -67,7 +68,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to cancel session: $e'));
+      return Left(ServerFailure('${AppStrings.failedToCancelSessionGeneric}: $e'));
     }
   }
 
@@ -79,7 +80,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to join session: $e'));
+      return Left(ServerFailure('${AppStrings.failedToJoinSession}: $e'));
     }
   }
 
@@ -91,7 +92,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch session availability: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchSessionAvailability}: $e'));
     }
   }
 }

@@ -20,6 +20,7 @@ import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
 import '../widgets/time_slot_widget.dart';
 import '../widgets/day_selector_widget.dart';
+import 'params/select_payment_method_screen_params.dart';
 
 class ScheduleSessionScreen extends StatefulWidget {
   const ScheduleSessionScreen({super.key});
@@ -200,7 +201,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
     if (scheduleState.selectedTimeSlot != null) {
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
-        extra: {'sessionDate': scheduleState.selectedDate, 'timeSlot': scheduleState.selectedTimeSlot!},
+        extra: SelectPaymentMethodScreenParams(sessionDate: scheduleState.selectedDate, timeSlot: scheduleState.selectedTimeSlot!),
       );
     }
   }
