@@ -237,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Row(
           children: [
             GlobalImage(assetPath: iconPath, width: DimensionConstants.gap20Px.w, height: DimensionConstants.gap20Px.w),
-            SizedBox(width: DimensionConstants.gap16Px.w),
+            SizedBox(width: DimensionConstants.gap10Px.w),
             Expanded(
               child: TranslatedText(
                 title,
