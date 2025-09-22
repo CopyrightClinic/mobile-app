@@ -19,6 +19,8 @@ import '../../features/harold_ai/presentation/pages/ask_harold_ai_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_signup.dart';
 import '../../features/harold_ai/presentation/pages/harold_success_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_failed_screen.dart';
+import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
+import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -124,23 +126,16 @@ class AppRouter {
         path: AppRoutes.selectPaymentMethodRouteName,
         name: AppRoutes.selectPaymentMethodRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final sessionDate = extra['sessionDate'] as DateTime;
-          final timeSlot = extra['timeSlot'] as String;
-          final query = extra['query'] as String?;
-          return SelectPaymentMethodScreen(sessionDate: sessionDate, timeSlot: timeSlot, query: query);
+          final params = state.extra as SelectPaymentMethodScreenParams;
+          return SelectPaymentMethodScreen(params: params);
         },
       ),
       GoRoute(
         path: AppRoutes.confirmBookingRouteName,
         name: AppRoutes.confirmBookingRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final sessionDate = extra['sessionDate'] as DateTime;
-          final timeSlot = extra['timeSlot'] as String;
-          final paymentMethod = extra['paymentMethod'];
-          final query = extra['query'] as String?;
-          return ConfirmBookingScreen(sessionDate: sessionDate, timeSlot: timeSlot, paymentMethod: paymentMethod, query: query);
+          final params = state.extra as ConfirmBookingScreenParams;
+          return ConfirmBookingScreen(params: params);
         },
       ),
       GoRoute(

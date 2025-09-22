@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/enumns/ui/session_status.dart';
 
 class SessionEntity extends Equatable {
   final String id;
@@ -29,9 +29,9 @@ class SessionEntity extends Equatable {
   @override
   List<Object?> get props => [id, title, scheduledDate, duration, price, status, description, createdAt, cancelledAt, cancellationReason];
 
-  bool get isUpcoming => status == SessionStatus.upcoming;
-  bool get isCompleted => status == SessionStatus.completed;
-  bool get isCancelled => status == SessionStatus.cancelled;
+  bool get isUpcoming => status.isUpcoming;
+  bool get isCompleted => status.isCompleted;
+  bool get isCancelled => status.isCancelled;
   bool get canCancel => isUpcoming && scheduledDate.difference(DateTime.now()).inHours > 24;
 
   String get formattedDuration {
@@ -48,19 +48,4 @@ class SessionEntity extends Equatable {
   }
 
   String get formattedPrice => '\$${price.toStringAsFixed(2)}';
-}
-
-enum SessionStatus { upcoming, completed, cancelled }
-
-extension SessionStatusExtension on SessionStatus {
-  String get displayName {
-    switch (this) {
-      case SessionStatus.upcoming:
-        return AppStrings.upcomingStatus;
-      case SessionStatus.completed:
-        return AppStrings.completedStatus;
-      case SessionStatus.cancelled:
-        return AppStrings.cancelledStatus;
-    }
-  }
 }

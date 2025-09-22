@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../config/theme/app_theme.dart';
+import '../constants/app_strings.dart';
 import '../utils/extensions/extensions.dart';
+import 'translated_text.dart';
 
 /// A comprehensive global image widget that handles all types of images
 /// with full customization, error handling, and loading states.
@@ -470,7 +472,7 @@ class GlobalImage extends StatelessWidget {
         children: [
           Icon(Icons.broken_image, color: AppTheme.textBodyLight, size: (loadingSize ?? 24.0).f),
           SizedBox(height: 8.0.h),
-          Text('Failed to load image', style: TextStyle(fontSize: 12.0.f, color: AppTheme.textBodyLight), textAlign: TextAlign.center),
+          TranslatedText(AppStrings.failedToLoadImage, style: TextStyle(fontSize: 12.0.f, color: AppTheme.textBodyLight)),
           if (enableRetry) ...[
             SizedBox(height: 8.0.h),
             TextButton(
@@ -478,7 +480,7 @@ class GlobalImage extends StatelessWidget {
                 // Trigger rebuild to retry
                 // This is a simple retry mechanism
               },
-              child: Text('Retry', style: TextStyle(fontSize: 12.0.f, color: AppTheme.primary)),
+              child: TranslatedText(AppStrings.retryText, style: TextStyle(fontSize: 12.0.f, color: AppTheme.primary)),
             ),
           ],
         ],

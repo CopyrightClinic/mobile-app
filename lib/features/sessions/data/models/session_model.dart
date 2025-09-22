@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../../../../core/utils/enumns/ui/session_status.dart';
 import '../../domain/entities/session_entity.dart';
 
 part 'session_model.g.dart';
@@ -45,25 +46,12 @@ class SessionModel {
       scheduledDate: scheduledDate,
       duration: Duration(minutes: durationMinutes),
       price: price,
-      status: _parseStatus(status),
+      status: SessionStatus.fromString(status),
       description: description,
       createdAt: createdAt,
       cancelledAt: cancelledAt,
       cancellationReason: cancellationReason,
     );
-  }
-
-  static SessionStatus _parseStatus(String status) {
-    switch (status.toLowerCase()) {
-      case 'upcoming':
-        return SessionStatus.upcoming;
-      case 'completed':
-        return SessionStatus.completed;
-      case 'cancelled':
-        return SessionStatus.cancelled;
-      default:
-        return SessionStatus.upcoming;
-    }
   }
 
   factory SessionModel.fromEntity(SessionEntity entity) {
@@ -73,7 +61,7 @@ class SessionModel {
       scheduledDate: entity.scheduledDate,
       durationMinutes: entity.duration.inMinutes,
       price: entity.price,
-      status: entity.status.name,
+      status: entity.status.apiValue,
       description: entity.description,
       createdAt: entity.createdAt,
       cancelledAt: entity.cancelledAt,

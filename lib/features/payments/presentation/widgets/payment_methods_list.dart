@@ -6,6 +6,7 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../domain/entities/payment_method_entity.dart';
 import 'payment_method_card.dart';
+import 'payment_methods_list_config.dart';
 
 class PaymentMethodsList extends StatelessWidget {
   final List<PaymentMethodEntity> paymentMethods;
@@ -108,70 +109,5 @@ class PaymentMethodsList extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class PaymentMethodsListConfig {
-  final String? title;
-  final String? subtitle;
-  final String? emptyStateMessage;
-  final bool showAddButton;
-  final bool wrapWithGestureDetector;
-  final VoidCallback? onAddPaymentMethod;
-  final Function(PaymentMethodEntity)? onPaymentMethodTap;
-  final Function(PaymentMethodEntity)? onPaymentMethodDelete;
-  final Function(PaymentMethodEntity)? onPaymentMethodSelect;
-
-  const PaymentMethodsListConfig({
-    this.title,
-    this.subtitle,
-    this.emptyStateMessage,
-    this.showAddButton = false,
-    this.wrapWithGestureDetector = false,
-    this.onAddPaymentMethod,
-    this.onPaymentMethodTap,
-    this.onPaymentMethodDelete,
-    this.onPaymentMethodSelect,
-  });
-
-  factory PaymentMethodsListConfig.forProfile({required Function(PaymentMethodEntity) onDelete, required VoidCallback onAddPaymentMethod}) {
-    return PaymentMethodsListConfig(
-      title: AppStrings.paymentMethods,
-      subtitle: AppStrings.savedPaymentMethods,
-      emptyStateMessage: AppStrings.noPaymentMethodsYet,
-      showAddButton: true,
-      wrapWithGestureDetector: false,
-      onAddPaymentMethod: onAddPaymentMethod,
-      onPaymentMethodDelete: onDelete,
-    );
-  }
-
-  factory PaymentMethodsListConfig.forCheckout({required Function(PaymentMethodEntity) onSelect, required VoidCallback onAddPaymentMethod}) {
-    return PaymentMethodsListConfig(
-      title: AppStrings.paymentMethod,
-      subtitle: AppStrings.selectPreferredPaymentCard,
-      emptyStateMessage: AppStrings.noPaymentMethodsAddOne,
-      showAddButton: true,
-      wrapWithGestureDetector: true,
-      onAddPaymentMethod: onAddPaymentMethod,
-      onPaymentMethodTap: onSelect,
-      onPaymentMethodSelect: onSelect,
-    );
-  }
-
-  PaymentMethodCardAction getActionForPaymentMethod(PaymentMethodEntity paymentMethod) {
-    if (onPaymentMethodDelete != null) {
-      return DeletePaymentMethodAction(onDelete: () => onPaymentMethodDelete!(paymentMethod));
-    }
-
-    if (onPaymentMethodSelect != null) {
-      return SelectPaymentMethodAction(onSelect: () => onPaymentMethodSelect!(paymentMethod));
-    }
-
-    if (onPaymentMethodTap != null) {
-      return TapPaymentMethodAction(onTap: () => onPaymentMethodTap!(paymentMethod));
-    }
-
-    return TapPaymentMethodAction(onTap: () {});
   }
 }

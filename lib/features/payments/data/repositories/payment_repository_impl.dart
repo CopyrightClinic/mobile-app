@@ -33,7 +33,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to load payment methods: $e'));
+      return Left(ServerFailure('${AppStrings.failedToLoadPaymentMethodsGeneric}: $e'));
     }
   }
 
@@ -47,7 +47,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to delete payment method: $e'));
+      return Left(ServerFailure('${AppStrings.failedToDeletePaymentMethodGeneric}: $e'));
     }
   }
 }
