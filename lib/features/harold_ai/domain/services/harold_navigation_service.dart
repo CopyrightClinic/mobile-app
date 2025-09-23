@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/utils/storage/token_storage.dart';
 import '../../../../core/utils/storage/shared_pref_service.dart';
+import '../../presentation/pages/params/harold_success_screen_params.dart';
+import '../../presentation/pages/params/harold_failed_screen_params.dart';
 
 class HaroldNavigationService {
   static const String _haroldResultKey = 'harold_pending_result';
@@ -55,9 +57,9 @@ class HaroldNavigationService {
   static void handleHaroldResult({required BuildContext context, required bool isSuccess, required bool isUserAuthenticated, required String query}) {
     if (isUserAuthenticated) {
       if (isSuccess) {
-        context.push(AppRoutes.haroldSuccessRouteName, extra: {'fromAuthFlow': false, 'query': query});
+        context.push(AppRoutes.haroldSuccessRouteName, extra: HaroldSuccessScreenParams(fromAuthFlow: false, query: query));
       } else {
-        context.push(AppRoutes.haroldFailedRouteName, extra: {'fromAuthFlow': false, 'query': query});
+        context.push(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: false, query: query));
       }
     } else {
       storePendingResult(isSuccess, query).then((_) {
@@ -73,9 +75,9 @@ class HaroldNavigationService {
 
       if (pendingResult != null) {
         if (pendingResult == 'success') {
-          context.go(AppRoutes.haroldSuccessRouteName, extra: {'fromAuthFlow': true, 'query': pendingQuery});
+          context.go(AppRoutes.haroldSuccessRouteName, extra: HaroldSuccessScreenParams(fromAuthFlow: true, query: pendingQuery));
         } else {
-          context.go(AppRoutes.haroldFailedRouteName, extra: {'fromAuthFlow': true, 'query': pendingQuery});
+          context.go(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: true, query: pendingQuery));
         }
       } else {
         context.go(AppRoutes.homeRouteName);
