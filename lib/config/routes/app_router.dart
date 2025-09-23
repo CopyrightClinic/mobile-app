@@ -12,6 +12,7 @@ import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/sessions/presentation/pages/params/schedule_session_screen_params.dart';
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
 import '../../features/sessions/presentation/pages/booking_request_sent_screen.dart';
@@ -117,9 +118,8 @@ class AppRouter {
         path: AppRoutes.scheduleSessionRouteName,
         name: AppRoutes.scheduleSessionRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final query = extra?['query'] as String?;
-          return ScheduleSessionScreen(query: query);
+          final extra = state.extra as ScheduleSessionScreenParams;
+          return ScheduleSessionScreen(params: extra);
         },
       ),
       GoRoute(

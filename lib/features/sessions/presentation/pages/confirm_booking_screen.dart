@@ -240,7 +240,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   }
 
   void _onConfirmBooking() async {
-    final timeSlotParts = widget.timeSlot.split('-');
+    final timeSlotParts = widget.params.timeSlot.split('-');
     if (timeSlotParts.length < 2) {
       return;
     }
@@ -249,14 +249,14 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
     String endTimeIso;
 
     final regex = RegExp(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)');
-    final match = regex.firstMatch(widget.timeSlot);
+    final match = regex.firstMatch(widget.params.timeSlot);
 
     if (match != null && match.groupCount == 2) {
       startTimeIso = match.group(1)!;
       endTimeIso = match.group(2)!;
     } else {
       final fallbackRegex = RegExp(r'^(.+)-(\d{4}-.+)$');
-      final fallbackMatch = fallbackRegex.firstMatch(widget.timeSlot);
+      final fallbackMatch = fallbackRegex.firstMatch(widget.params.timeSlot);
 
       if (fallbackMatch != null && fallbackMatch.groupCount == 2) {
         startTimeIso = fallbackMatch.group(1)!;
@@ -266,13 +266,13 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       }
     }
 
-    final formattedDate = widget.sessionDate.toIso8601String().split('T')[0];
-    final summary = widget.query ?? 'Copyright consultation session';
+    final formattedDate = widget.params.sessionDate.toIso8601String().split('T')[0];
+    final summary = widget.params.query;
     final String timezone = await TimezoneHelper.getUserTimezone();
 
     _sessionsBloc.add(
       BookSessionRequested(
-        stripePaymentMethodId: widget.paymentMethod.id,
+        stripePaymentMethodId: widget.params.paymentMethod.id,
         date: formattedDate,
         startTime: startTimeIso,
         endTime: endTimeIso,

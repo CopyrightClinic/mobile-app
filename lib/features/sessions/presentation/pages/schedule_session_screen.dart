@@ -22,12 +22,13 @@ import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
 import '../widgets/time_slot_widget.dart';
 import '../widgets/day_selector_widget.dart';
+import 'params/schedule_session_screen_params.dart';
 import 'params/select_payment_method_screen_params.dart';
 
 class ScheduleSessionScreen extends StatefulWidget {
-  final String? query;
+  final ScheduleSessionScreenParams params;
 
-  const ScheduleSessionScreen({super.key, this.query});
+  const ScheduleSessionScreen({super.key, required this.params});
 
   @override
   State<ScheduleSessionScreen> createState() => _ScheduleSessionScreenState();
@@ -142,7 +143,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                 decoration: BoxDecoration(
                                   color: context.filledBgDark,
                                   borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r),
-                                  border: Border.all(color: context.darkTextSecondary.withOpacity(0.2)),
+                                  border: Border.all(color: context.darkTextSecondary.withAlpha(20)),
                                 ),
                                 child: TranslatedText(
                                   AppStrings.trySelectingDifferentDate,
@@ -206,7 +207,11 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
     if (scheduleState.selectedTimeSlot != null) {
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
-        extra: SelectPaymentMethodScreenParams(sessionDate: scheduleState.selectedDate, timeSlot: scheduleState.selectedTimeSlot!),
+        extra: SelectPaymentMethodScreenParams(
+          sessionDate: scheduleState.selectedDate,
+          timeSlot: scheduleState.selectedTimeSlot!,
+          query: widget.params.query,
+        ),
       );
     }
   }
