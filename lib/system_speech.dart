@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class SystemSpeech {
@@ -14,9 +15,9 @@ class SystemSpeech {
       final result = await _channel.invokeMethod('startSpeech', arguments.isEmpty ? null : arguments);
       return result as String?;
     } on PlatformException catch (e) {
-      return null;
+      rethrow;
     } catch (e) {
-      return null;
+      rethrow;
     }
   }
 

@@ -13,7 +13,7 @@ import UIKit
   private var maxSeconds: Int = 10
   private var recognitionTimer: Timer?
   private var lastRecognitionResult: String = ""
-  private var silenceTimer: Timer?
+  private var accumulatedRecognitionResult: String = ""
 
   override func application(
     _ application: UIApplication,
@@ -40,15 +40,37 @@ import UIKit
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-  private func stopSpeech(result: @escaping FlutterResult) {
-    let transcription = lastRecognitionResult
-    result(transcription.isEmpty ? nil : transcription)
+  private func combineTranscriptions(_ accumulated: String, _ current: String) -> String {
+    if accumulated.isEmpty {
+      return current
+    }
+    if current.isEmpty {
+      return accumulated
+    }
 
-    // Reset the recognition result for next session but keep everything running
-    lastRecognitionResult = ""
+    if current.hasPrefix(accumulated) {
+      return current
+    }
+
+    return accumulated + " " + current
+  }
+
+  private func stopSpeech(result: @escaping FlutterResult) {
+    let finalTranscription = combineTranscriptions(
+      accumulatedRecognitionResult, lastRecognitionResult)
+
+    methodResult = nil
+
+    stopRecording()
+
+    result(finalTranscription.isEmpty ? nil : finalTranscription)
   }
 
   private func startSpeech(call: FlutterMethodCall, result: @escaping FlutterResult) {
+    if recognitionTask != nil {
+      stopRecording()
+    }
+
     methodResult = result
 
     let arguments = call.arguments as? [String: Any]
@@ -59,15 +81,6 @@ import UIKit
       speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: locale))
     } else {
       speechRecognizer = SFSpeechRecognizer()
-    }
-
-    // Check if on-device recognition is supported
-    if #available(iOS 13.0, *) {
-      if let recognizer = speechRecognizer, !recognizer.supportsOnDeviceRecognition {
-        print(
-          "Warning: On-device speech recognition not supported for this locale. Internet connection required."
-        )
-      }
     }
 
     guard let speechRecognizer = speechRecognizer else {
@@ -136,6 +149,9 @@ import UIKit
     recognitionTask?.cancel()
     recognitionTask = nil
 
+    accumulatedRecognitionResult = ""
+    lastRecognitionResult = ""
+
     let audioSession = AVAudioSession.sharedInstance()
     do {
       try audioSession.setCategory(.record, mode: .measurement, options: [])
@@ -161,7 +177,6 @@ import UIKit
 
     recognitionRequest.shouldReportPartialResults = true
 
-    // Enable on-device recognition if available (iOS 13+)
     if #available(iOS 13.0, *) {
       recognitionRequest.requiresOnDeviceRecognition = true
     }
@@ -198,18 +213,27 @@ import UIKit
       if let error = error {
         self?.stopRecording()
 
-        // Check if error is related to network connectivity
+        guard let methodResult = self?.methodResult else {
+          return
+        }
+
         let errorMessage = error.localizedDescription
         let isNetworkError =
           errorMessage.contains("network") || errorMessage.contains("internet")
           || errorMessage.contains("connection")
 
-        let finalMessage =
-          isNetworkError
-          ? "Speech recognition requires internet connection on iOS 16 and earlier. Please check your connection."
-          : "Speech recognition error: \(errorMessage)"
+        let finalMessage: String
+        if isNetworkError {
+          finalMessage =
+            "Speech recognition requires internet connection on iOS 16 and earlier. Please check your connection."
+        } else if errorMessage.contains("Siri and Dictation are disabled") {
+          finalMessage =
+            "Speech recognition is disabled. Please enable Dictation in Settings → General → Keyboard → Enable Dictation."
+        } else {
+          finalMessage = "Speech recognition error: \(errorMessage)"
+        }
 
-        self?.methodResult?(
+        methodResult(
           FlutterError(
             code: "recognition_error",
             message: finalMessage,
@@ -220,19 +244,38 @@ import UIKit
 
       if let result = result {
         let transcription = result.bestTranscription.formattedString
+
+        let previousResult = self?.lastRecognitionResult ?? ""
+        let lengthCondition = Double(transcription.count) < Double(previousResult.count) * 0.7
+        let prefixCondition = !transcription.hasPrefix(
+          String(previousResult.prefix(min(10, previousResult.count))))
+        let isNewUtterance =
+          !transcription.isEmpty && !previousResult.isEmpty
+          && lengthCondition
+          && prefixCondition
+
+        if isNewUtterance {
+          if let currentAccumulated = self?.accumulatedRecognitionResult {
+            let combined =
+              self?.combineTranscriptions(currentAccumulated, previousResult) ?? previousResult
+            self?.accumulatedRecognitionResult = combined
+          }
+        }
+
         self?.lastRecognitionResult = transcription
 
         if result.isFinal {
-          self?.stopRecording()
-          self?.methodResult?(transcription.isEmpty ? nil : transcription)
-          self?.methodResult = nil
-        } else {
-          self?.resetSilenceTimer()
+          if let currentAccumulated = self?.accumulatedRecognitionResult,
+            let currentResult = self?.lastRecognitionResult
+          {
+            let combined =
+              self?.combineTranscriptions(currentAccumulated, currentResult) ?? currentResult
+            self?.accumulatedRecognitionResult = combined
+          }
+          self?.lastRecognitionResult = ""
         }
       }
     }
-
-    resetSilenceTimer()
 
     recognitionTimer = Timer.scheduledTimer(
       withTimeInterval: TimeInterval(maxSeconds), repeats: false
@@ -245,26 +288,9 @@ import UIKit
     }
   }
 
-  private func resetSilenceTimer() {
-    silenceTimer?.invalidate()
-    silenceTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { [weak self] _ in
-      self?.finishRecordingWithResult()
-    }
-  }
-
-  private func finishRecordingWithResult() {
-    let transcription = lastRecognitionResult
-    stopRecording()
-    methodResult?(transcription.isEmpty ? nil : transcription)
-    methodResult = nil
-  }
-
   private func stopRecording() {
     recognitionTimer?.invalidate()
     recognitionTimer = nil
-
-    silenceTimer?.invalidate()
-    silenceTimer = nil
 
     audioEngine?.stop()
     audioEngine?.inputNode.removeTap(onBus: 0)
@@ -277,7 +303,11 @@ import UIKit
 
     audioEngine = nil
     lastRecognitionResult = ""
+    accumulatedRecognitionResult = ""
 
-    try? AVAudioSession.sharedInstance().setActive(false)
+    do {
+      try AVAudioSession.sharedInstance().setActive(false)
+    } catch {
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -79,11 +80,14 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     } catch (e) {
       String errorMessage = 'Speech recognition error: ${e.toString()}';
 
-      if (e.toString().contains('network') ||
-          e.toString().contains('internet') ||
-          e.toString().contains('connection') ||
-          e.toString().contains('speech_not_available')) {
+      final errorString = e.toString();
+      if (errorString.contains('network') ||
+          errorString.contains('internet') ||
+          errorString.contains('connection') ||
+          errorString.contains('speech_not_available')) {
         errorMessage = 'Speech recognition requires internet connection on iOS 16 and earlier. Please check your connection and try again.';
+      } else if (errorString.contains('Siri and Dictation are disabled') || errorString.contains('enable Dictation in Settings')) {
+        errorMessage = 'Speech recognition is disabled. Please enable Dictation in Settings → General → Keyboard → Enable Dictation.';
       }
 
       SnackBarUtils.showError(context, errorMessage);
@@ -104,8 +108,6 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
         _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
       }
     } catch (e) {
-      // Handle stop error silently or show a brief message
-      print('Error stopping speech recognition: $e');
     } finally {
       _isListeningNotifier.value = false;
     }
