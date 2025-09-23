@@ -275,6 +275,19 @@ class AppStrings {
   static const unexpectedErrorOccurred = 'unexpectedErrorOccurred';
   static const unexpectedErrorOccurredWhileEvaluatingQuery = 'unexpectedErrorOccurredWhileEvaluatingQuery';
   static const speechRecognitionError = 'speechRecognitionError';
+  static const speechRecognitionNetworkError = 'speechRecognitionNetworkError';
+  static const speechRecognitionDisabledError = 'speechRecognitionDisabledError';
+  static const speechRecognitionGenericError = 'speechRecognitionGenericError';
+  static const speechRecognitionNotAvailable = 'speechRecognitionNotAvailable';
+  static const speechRecognitionPermissionDenied = 'speechRecognitionPermissionDenied';
+  static const speechRecognitionPermissionRestricted = 'speechRecognitionPermissionRestricted';
+  static const speechRecognitionPermissionNotDetermined = 'speechRecognitionPermissionNotDetermined';
+  static const speechRecognitionPermissionUnknown = 'speechRecognitionPermissionUnknown';
+  static const microphonePermissionDenied = 'microphonePermissionDenied';
+  static const audioSessionError = 'audioSessionError';
+  static const recognitionRequestError = 'recognitionRequestError';
+  static const audioEngineError = 'audioEngineError';
+  static const audioEngineStartError = 'audioEngineStartError';
 
   // Days of the week
   static const monday = 'monday';

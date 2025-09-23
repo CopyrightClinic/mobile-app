@@ -86,7 +86,9 @@ import UIKit
     guard let speechRecognizer = speechRecognizer else {
       result(
         FlutterError(
-          code: "speech_not_available", message: "Speech recognition not available", details: nil))
+          code: "speech_not_available",
+          message: NSLocalizedString("speech_recognition_not_available", comment: ""),
+          details: nil))
       return
     }
 
@@ -94,8 +96,7 @@ import UIKit
       result(
         FlutterError(
           code: "speech_not_available",
-          message:
-            "Speech recognition not available. On iOS 16 and earlier, internet connection is required.",
+          message: NSLocalizedString("speech_recognition_network_error", comment: ""),
           details: nil))
       return
     }
@@ -108,23 +109,28 @@ import UIKit
         case .denied:
           result(
             FlutterError(
-              code: "speech_permission_denied", message: "Speech recognition permission denied",
+              code: "speech_permission_denied",
+              message: NSLocalizedString("speech_recognition_permission_denied", comment: ""),
               details: nil))
         case .restricted:
           result(
             FlutterError(
               code: "speech_permission_restricted",
-              message: "Speech recognition permission restricted", details: nil))
+              message: NSLocalizedString("speech_recognition_permission_restricted", comment: ""),
+              details: nil))
         case .notDetermined:
           result(
             FlutterError(
               code: "speech_permission_not_determined",
-              message: "Speech recognition permission not determined", details: nil))
+              message: NSLocalizedString(
+                "speech_recognition_permission_not_determined", comment: ""),
+              details: nil))
         @unknown default:
           result(
             FlutterError(
               code: "speech_permission_unknown",
-              message: "Unknown speech recognition permission status", details: nil))
+              message: NSLocalizedString("speech_recognition_permission_unknown", comment: ""),
+              details: nil))
         }
       }
     }
@@ -138,7 +144,9 @@ import UIKit
         } else {
           self?.methodResult?(
             FlutterError(
-              code: "mic_permission_denied", message: "Microphone permission denied", details: nil))
+              code: "mic_permission_denied",
+              message: NSLocalizedString("microphone_permission_denied", comment: ""),
+              details: nil))
           self?.methodResult = nil
         }
       }
@@ -159,7 +167,8 @@ import UIKit
     } catch {
       methodResult?(
         FlutterError(
-          code: "audio_session_error", message: "Failed to configure audio session",
+          code: "audio_session_error",
+          message: NSLocalizedString("audio_session_error", comment: ""),
           details: error.localizedDescription))
       methodResult = nil
       return
@@ -169,7 +178,8 @@ import UIKit
     guard let recognitionRequest = recognitionRequest else {
       methodResult?(
         FlutterError(
-          code: "recognition_request_error", message: "Failed to create recognition request",
+          code: "recognition_request_error",
+          message: NSLocalizedString("recognition_request_error", comment: ""),
           details: nil))
       methodResult = nil
       return
@@ -185,7 +195,9 @@ import UIKit
     guard let audioEngine = audioEngine else {
       methodResult?(
         FlutterError(
-          code: "audio_engine_error", message: "Failed to create audio engine", details: nil))
+          code: "audio_engine_error",
+          message: NSLocalizedString("audio_engine_error", comment: ""),
+          details: nil))
       methodResult = nil
       return
     }
@@ -202,7 +214,8 @@ import UIKit
     } catch {
       methodResult?(
         FlutterError(
-          code: "audio_engine_start_error", message: "Failed to start audio engine",
+          code: "audio_engine_start_error",
+          message: NSLocalizedString("audio_engine_start_error", comment: ""),
           details: error.localizedDescription))
       methodResult = nil
       return
@@ -224,13 +237,13 @@ import UIKit
 
         let finalMessage: String
         if isNetworkError {
-          finalMessage =
-            "Speech recognition requires internet connection on iOS 16 and earlier. Please check your connection."
+          finalMessage = NSLocalizedString("speech_recognition_network_error", comment: "")
         } else if errorMessage.contains("Siri and Dictation are disabled") {
-          finalMessage =
-            "Speech recognition is disabled. Please enable Dictation in Settings → General → Keyboard → Enable Dictation."
+          finalMessage = NSLocalizedString("speech_recognition_disabled_error", comment: "")
         } else {
-          finalMessage = "Speech recognition error: \(errorMessage)"
+          finalMessage = String(
+            format: NSLocalizedString("speech_recognition_generic_error", comment: ""), errorMessage
+          )
         }
 
         methodResult(
