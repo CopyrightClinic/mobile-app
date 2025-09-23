@@ -63,9 +63,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await signupUseCase(SignupParams(email: event.email, password: event.password, confirmPassword: event.confirmPassword));
 
     result.fold((failure) {
-      print('🚨 Signup failure message: "${failure.message}"');
       final errorMessage = failure.message ?? tr(AppStrings.signupFailed);
-      print('🚨 Final signup error message: "$errorMessage"');
       emit(SignupError(errorMessage));
     }, (authResult) => emit(SignupSuccess(authResult.user, authResult.message)));
   }
