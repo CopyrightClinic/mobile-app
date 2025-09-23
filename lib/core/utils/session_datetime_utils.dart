@@ -16,8 +16,8 @@ class SessionDateTimeUtils {
     final today = DateTime(now.year, now.month, now.day);
     final sessionDate = DateTime(date.year, date.month, date.day);
 
-    final startTime = DateFormat('h:mm a').format(date);
-    final endTime = DateFormat('h:mm a').format(date.add(const Duration(minutes: sessionDurationMinutes)));
+    final startTime = DateFormat('h:mm A').format(date);
+    final endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: sessionDurationMinutes)));
     final timeRange = '$startTime ${AppStrings.to.tr()} $endTime';
 
     if (sessionDate == today) {
@@ -40,7 +40,7 @@ class SessionDateTimeUtils {
   static String formatCancellationDeadline(DateTime sessionDate) {
     final deadline = sessionDate.subtract(const Duration(hours: 24));
     final dateStr = DateFormat('dd/MM/yy').format(deadline);
-    final timeStr = DateFormat('h:mm a').format(deadline);
+    final timeStr = DateFormat('h:mm A').format(deadline);
     return '$dateStr, $timeStr';
   }
 
@@ -77,8 +77,8 @@ class SessionDateTimeUtils {
         final startDateTime = DateTime.parse(isoMatch.group(1)!);
         final endDateTime = DateTime.parse(isoMatch.group(2)!);
 
-        final startTime = DateFormat('h:mm a').format(startDateTime);
-        final endTime = DateFormat('h:mm a').format(endDateTime);
+        final startTime = DateFormat('h:mm A').format(startDateTime);
+        final endTime = DateFormat('h:mm A').format(endDateTime);
         return '$startTime ${AppStrings.to.tr()} $endTime';
       }
     } catch (e) {}
@@ -98,8 +98,8 @@ class SessionDateTimeUtils {
           final startDateTime = DateTime.parse(isoMatch.group(1)!);
           final endDateTime = DateTime.parse(isoMatch.group(2)!);
 
-          final startTime = DateFormat('h:mm a').format(startDateTime);
-          final endTime = DateFormat('h:mm a').format(endDateTime);
+          final startTime = DateFormat('h:mm A').format(startDateTime);
+          final endTime = DateFormat('h:mm A').format(endDateTime);
           return '$startTime ${AppStrings.to.tr()} $endTime';
         }
       } catch (e) {}
@@ -109,8 +109,8 @@ class SessionDateTimeUtils {
   }
 
   static String _formatDefaultTimeRange(DateTime date) {
-    final startTime = DateFormat('h:mm a').format(date);
-    final endTime = DateFormat('h:mm a').format(date.add(const Duration(minutes: sessionDurationMinutes)));
+    final startTime = DateFormat('h:mm A').format(date);
+    final endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: sessionDurationMinutes)));
     return '$startTime ${AppStrings.to.tr()} $endTime';
   }
 }
