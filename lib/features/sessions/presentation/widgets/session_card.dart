@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/session_datetime_utils.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
@@ -42,7 +43,7 @@ class SessionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _formatSessionDate(session.scheduledDate),
+                      SessionDateTimeUtils.formatSessionDate(session.scheduledDate),
                       style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     SizedBox(height: 2.h),
@@ -130,7 +131,7 @@ class SessionCard extends StatelessWidget {
           if (session.isUpcoming && session.canCancel) ...[
             SizedBox(height: DimensionConstants.gap12Px.h),
             Text(
-              '${AppStrings.youCanCancelTill.tr()} ${_formatCancellationDeadline(session.scheduledDate)}.',
+              '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDate)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
             ),
           ],
@@ -143,7 +144,7 @@ class SessionCard extends StatelessWidget {
             ),
             SizedBox(height: 4.h),
             Text(
-              '${AppStrings.youCouldHaveCanceled.tr()} ${_formatCancellationDeadline(session.scheduledDate)}.',
+              '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDate)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               textAlign: TextAlign.center,
             ),
@@ -151,22 +152,5 @@ class SessionCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _formatSessionDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final sessionDate = DateTime(date.year, date.month, date.day);
-
-    if (sessionDate == today) {
-      return '${AppStrings.today.tr()}, ${DateFormat('MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} ${AppStrings.to.tr()} ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
-    } else {
-      return '${DateFormat('EEEE, MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} ${AppStrings.to.tr()} ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
-    }
-  }
-
-  String _formatCancellationDeadline(DateTime sessionDate) {
-    final deadline = sessionDate.subtract(const Duration(hours: 24));
-    return '${DateFormat('dd/MM/yy').format(deadline)}, ${DateFormat('h:mm a').format(deadline)}';
   }
 }

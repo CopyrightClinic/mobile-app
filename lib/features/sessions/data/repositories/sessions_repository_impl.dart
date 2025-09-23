@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/utils/logger/logger.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
@@ -119,10 +118,8 @@ class SessionsRepositoryImpl implements SessionsRepository {
       );
       return Right(response.toEntity());
     } on CustomException catch (e) {
-      Log.e(runtimeType, 'Sessions Repository: Custom exception: ${e.message}');
       return Left(ServerFailure(e.message));
     } on DioException catch (e) {
-      Log.e(runtimeType, 'Sessions Repository: DioException: ${e.message}');
       String errorMessage = AppStrings.failedToBookSession;
       if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
@@ -130,8 +127,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
       }
 
       return Left(ServerFailure(errorMessage));
-    } catch (e, stackTrace) {
-      Log.e(runtimeType, 'Sessions Repository: Unexpected error: $e', stackTrace);
+    } catch (e) {
       return Left(ServerFailure(AppStrings.failedToBookSession));
     }
   }

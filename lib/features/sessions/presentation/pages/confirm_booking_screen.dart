@@ -9,6 +9,7 @@ import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/utils/timezone_helper.dart';
+import '../../../../core/utils/session_datetime_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -241,33 +242,12 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   }
 
   void _onConfirmBooking() async {
-    final timeSlotParts = widget.params.timeSlot.split('-');
-    if (timeSlotParts.length < 2) {
+    final parsedTimeSlot = SessionDateTimeUtils.parseTimeSlot(widget.params.timeSlot);
+    if (parsedTimeSlot == null) {
       return;
     }
 
-    String startTimeIso;
-    String endTimeIso;
-
-    final regex = RegExp(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)');
-    final match = regex.firstMatch(widget.params.timeSlot);
-
-    if (match != null && match.groupCount == 2) {
-      startTimeIso = match.group(1)!;
-      endTimeIso = match.group(2)!;
-    } else {
-      final fallbackRegex = RegExp(r'^(.+)-(\d{4}-.+)$');
-      final fallbackMatch = fallbackRegex.firstMatch(widget.params.timeSlot);
-
-      if (fallbackMatch != null && fallbackMatch.groupCount == 2) {
-        startTimeIso = fallbackMatch.group(1)!;
-        endTimeIso = fallbackMatch.group(2)!;
-      } else {
-        return;
-      }
-    }
-
-    final formattedDate = widget.params.sessionDate.toIso8601String().split('T')[0];
+    final formattedDate = SessionDateTimeUtils.formatDateToIso(widget.params.sessionDate);
     final summary = widget.params.query;
     final String timezone = await TimezoneHelper.getUserTimezone();
 
@@ -275,8 +255,8 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       BookSessionRequested(
         stripePaymentMethodId: widget.params.paymentMethod.id,
         date: formattedDate,
-        startTime: startTimeIso,
-        endTime: endTimeIso,
+        startTime: parsedTimeSlot.startTimeIso,
+        endTime: parsedTimeSlot.endTimeIso,
         summary: summary,
         timezone: timezone,
       ),

@@ -111,7 +111,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       );
 
       return BookSessionResponseModel.fromJson(response.data);
-    } catch (e, stackTrace) {
+    } catch (e) {
       rethrow;
     }
   }
