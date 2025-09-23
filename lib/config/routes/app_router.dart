@@ -20,6 +20,8 @@ import '../../features/harold_ai/presentation/pages/ask_harold_ai_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_signup.dart';
 import '../../features/harold_ai/presentation/pages/harold_success_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_failed_screen.dart';
+import '../../features/harold_ai/presentation/pages/params/harold_success_screen_params.dart';
+import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
@@ -149,20 +151,16 @@ class AppRouter {
         path: AppRoutes.haroldSuccessRouteName,
         name: AppRoutes.haroldSuccessRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final fromAuthFlow = extra?['fromAuthFlow'] ?? false;
-          final query = extra?['query'] as String?;
-          return HaroldSuccessScreen(fromAuthFlow: fromAuthFlow, query: query);
+          final params = state.extra as HaroldSuccessScreenParams;
+          return HaroldSuccessScreen(params: params);
         },
       ),
       GoRoute(
         path: AppRoutes.haroldFailedRouteName,
         name: AppRoutes.haroldFailedRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final fromAuthFlow = extra?['fromAuthFlow'] ?? false;
-          final query = extra?['query'] as String?;
-          return HaroldFailedScreen(fromAuthFlow: fromAuthFlow, query: query);
+          final params = state.extra as HaroldFailedScreenParams;
+          return HaroldFailedScreen(params: params);
         },
       ),
     ],
