@@ -260,6 +260,8 @@
   "noTimeSlotsForSelectedDate": "No available time slots for the selected date",
   "trySelectingDifferentDate": "Please try selecting a different date",
   "failedToBookSession": "Failed to book session",
+  "sessionBookedSuccessfully": "Session booked successfully!",
+  "to": "to",
   "paymentSuccessful": "Payment successful!",
   "userRequestedCancellation": "User requested cancellation",
   "failedToLoadImage": "Failed to load image",

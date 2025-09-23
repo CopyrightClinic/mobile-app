@@ -301,6 +301,8 @@ class AppStrings {
   static const failedToLoadSessionAvailability = 'failedToLoadSessionAvailability';
   static const sessionCancelledSuccessfully = 'sessionCancelledSuccessfully';
   static const failedToBookSession = 'failedToBookSession';
+  static const sessionBookedSuccessfully = 'sessionBookedSuccessfully';
+  static const to = 'to';
   static const copyrightConsultation = 'copyrightConsultation';
   static const copyrightConsultationSession = 'copyrightConsultationSession';
   static const legalConsultation = 'legalConsultation';

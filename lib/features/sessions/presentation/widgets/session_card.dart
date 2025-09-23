@@ -159,9 +159,9 @@ class SessionCard extends StatelessWidget {
     final sessionDate = DateTime(date.year, date.month, date.day);
 
     if (sessionDate == today) {
-      return '${AppStrings.today.tr()}, ${DateFormat('MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} to ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
+      return '${AppStrings.today.tr()}, ${DateFormat('MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} ${AppStrings.to.tr()} ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
     } else {
-      return '${DateFormat('EEEE, MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} to ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
+      return '${DateFormat('EEEE, MMM d').format(date)} – ${DateFormat('h:mm a').format(date)} ${AppStrings.to.tr()} ${DateFormat('h:mm a').format(date.add(Duration(minutes: 30)))}';
     }
   }
 

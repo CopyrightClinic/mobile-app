@@ -112,6 +112,6 @@ class SessionDetailsCard extends StatelessWidget {
       endTime = DateFormat('h:mm a').format(date.add(const Duration(minutes: 30)));
     }
 
-    return '$dayName, $monthDay – $startTime to $endTime';
+    return '$dayName, $monthDay – $startTime ${AppStrings.to.tr()} $endTime';
   }
 }

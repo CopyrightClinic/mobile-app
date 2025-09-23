@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -49,7 +50,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         } else if (state is SessionScheduleError) {
           SnackBarUtils.showError(context, state.message);
         } else if (state is SessionBooked) {
-          SnackBarUtils.showSuccess(context, 'Session booked successfully!');
+          SnackBarUtils.showSuccess(context, AppStrings.sessionBookedSuccessfully.tr());
           context.go(AppRoutes.bookingRequestSentRouteName);
         } else if (state is SessionBookError) {
           SnackBarUtils.showError(context, state.message);

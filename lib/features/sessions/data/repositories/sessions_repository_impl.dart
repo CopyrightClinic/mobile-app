@@ -123,7 +123,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(e.message));
     } on DioException catch (e) {
       Log.e(runtimeType, 'Sessions Repository: DioException: ${e.message}');
-      String errorMessage = 'Failed to book session';
+      String errorMessage = AppStrings.failedToBookSession;
       if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
         errorMessage = responseData['message'] ?? errorMessage;
@@ -132,7 +132,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(errorMessage));
     } catch (e, stackTrace) {
       Log.e(runtimeType, 'Sessions Repository: Unexpected error: $e', stackTrace);
-      return Left(ServerFailure('Failed to book session'));
+      return Left(ServerFailure(AppStrings.failedToBookSession));
     }
   }
 }
