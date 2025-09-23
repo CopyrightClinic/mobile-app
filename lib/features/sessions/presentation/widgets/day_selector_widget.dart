@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/session_datetime_utils.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
@@ -31,7 +32,7 @@ class DaySelectorWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           final dayEntity = availableDays[index];
           final date = dayEntity.date;
-          final isSelected = _isSameDay(date, selectedDate);
+          final isSelected = SessionDateTimeUtils.isSameDay(date, selectedDate);
           final dayName = dayNames[date.weekday - 1];
           final hasSlots = dayEntity.slots.isNotEmpty;
 
@@ -72,9 +73,5 @@ class DaySelectorWidget extends StatelessWidget {
         },
       ),
     );
-  }
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }
 }

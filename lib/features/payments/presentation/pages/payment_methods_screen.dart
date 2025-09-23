@@ -18,6 +18,7 @@ import '../bloc/payment_bloc.dart';
 import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
 import '../widgets/payment_methods_list.dart';
+import '../widgets/payment_methods_list_config.dart';
 
 /// Payment Methods Screen for Profile Section
 /// Allows users to view, add, and delete their saved payment methods
@@ -98,7 +99,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => context.pop(),
                 child: TranslatedText(
                   AppStrings.cancel,
                   style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
@@ -106,7 +107,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  context.pop();
                   _paymentBloc.add(DeletePaymentMethodRequested(paymentMethodId: paymentMethod.id));
                 },
                 child: TranslatedText(

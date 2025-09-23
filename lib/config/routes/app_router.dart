@@ -12,6 +12,7 @@ import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/sessions/presentation/pages/params/schedule_session_screen_params.dart';
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
 import '../../features/sessions/presentation/pages/booking_request_sent_screen.dart';
@@ -19,6 +20,10 @@ import '../../features/harold_ai/presentation/pages/ask_harold_ai_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_signup.dart';
 import '../../features/harold_ai/presentation/pages/harold_success_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_failed_screen.dart';
+import '../../features/harold_ai/presentation/pages/params/harold_success_screen_params.dart';
+import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
+import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
+import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -115,32 +120,24 @@ class AppRouter {
         path: AppRoutes.scheduleSessionRouteName,
         name: AppRoutes.scheduleSessionRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final query = extra?['query'] as String?;
-          return ScheduleSessionScreen(query: query);
+          final extra = state.extra as ScheduleSessionScreenParams;
+          return ScheduleSessionScreen(params: extra);
         },
       ),
       GoRoute(
         path: AppRoutes.selectPaymentMethodRouteName,
         name: AppRoutes.selectPaymentMethodRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final sessionDate = extra['sessionDate'] as DateTime;
-          final timeSlot = extra['timeSlot'] as String;
-          final query = extra['query'] as String?;
-          return SelectPaymentMethodScreen(sessionDate: sessionDate, timeSlot: timeSlot, query: query);
+          final params = state.extra as SelectPaymentMethodScreenParams;
+          return SelectPaymentMethodScreen(params: params);
         },
       ),
       GoRoute(
         path: AppRoutes.confirmBookingRouteName,
         name: AppRoutes.confirmBookingRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final sessionDate = extra['sessionDate'] as DateTime;
-          final timeSlot = extra['timeSlot'] as String;
-          final paymentMethod = extra['paymentMethod'];
-          final query = extra['query'] as String?;
-          return ConfirmBookingScreen(sessionDate: sessionDate, timeSlot: timeSlot, paymentMethod: paymentMethod, query: query);
+          final params = state.extra as ConfirmBookingScreenParams;
+          return ConfirmBookingScreen(params: params);
         },
       ),
       GoRoute(
@@ -154,20 +151,16 @@ class AppRouter {
         path: AppRoutes.haroldSuccessRouteName,
         name: AppRoutes.haroldSuccessRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final fromAuthFlow = extra?['fromAuthFlow'] ?? false;
-          final query = extra?['query'] as String?;
-          return HaroldSuccessScreen(fromAuthFlow: fromAuthFlow, query: query);
+          final params = state.extra as HaroldSuccessScreenParams;
+          return HaroldSuccessScreen(params: params);
         },
       ),
       GoRoute(
         path: AppRoutes.haroldFailedRouteName,
         name: AppRoutes.haroldFailedRouteName,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final fromAuthFlow = extra?['fromAuthFlow'] ?? false;
-          final query = extra?['query'] as String?;
-          return HaroldFailedScreen(fromAuthFlow: fromAuthFlow, query: query);
+          final params = state.extra as HaroldFailedScreenParams;
+          return HaroldFailedScreen(params: params);
         },
       ),
     ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -19,13 +20,14 @@ import '../../../payments/presentation/bloc/payment_bloc.dart';
 import '../../../payments/presentation/bloc/payment_event.dart';
 import '../../../payments/presentation/bloc/payment_state.dart';
 import '../../../payments/presentation/widgets/payment_methods_list.dart';
+import '../../../payments/presentation/widgets/payment_methods_list_config.dart';
+import 'params/select_payment_method_screen_params.dart';
+import 'params/confirm_booking_screen_params.dart';
 
 class SelectPaymentMethodScreen extends StatefulWidget {
-  final DateTime sessionDate;
-  final String timeSlot;
-  final String? query;
+  final SelectPaymentMethodScreenParams params;
 
-  const SelectPaymentMethodScreen({super.key, required this.sessionDate, required this.timeSlot, this.query});
+  const SelectPaymentMethodScreen({super.key, required this.params});
 
   @override
   State<SelectPaymentMethodScreen> createState() => _SelectPaymentMethodScreenState();
@@ -48,7 +50,7 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
         if (state is PaymentProcessed) {
-          SnackBarUtils.showSuccess(context, 'Payment successful!');
+          SnackBarUtils.showSuccess(context, AppStrings.paymentSuccessful.tr());
           context.go(AppRoutes.homeRouteName);
         } else if (state is PaymentError) {
           SnackBarUtils.showError(context, state.message);
@@ -128,7 +130,12 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
     if (_selectedPaymentMethod != null) {
       context.push(
         AppRoutes.confirmBookingRouteName,
-        extra: {'sessionDate': widget.sessionDate, 'timeSlot': widget.timeSlot, 'paymentMethod': _selectedPaymentMethod!, 'query': widget.query},
+        extra: ConfirmBookingScreenParams(
+          sessionDate: widget.params.sessionDate,
+          timeSlot: widget.params.timeSlot,
+          paymentMethod: _selectedPaymentMethod!,
+          query: widget.params.query,
+        ),
       );
     }
   }

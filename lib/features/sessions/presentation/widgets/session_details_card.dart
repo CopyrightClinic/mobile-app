@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/session_datetime_utils.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
@@ -40,7 +40,7 @@ class SessionDetailsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _formatSessionDateTime(sessionDate, timeSlot),
+                      SessionDateTimeUtils.formatSessionDateTime(sessionDate, timeSlot),
                       style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     SizedBox(height: DimensionConstants.gap2Px.h),
@@ -79,39 +79,5 @@ class SessionDetailsCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _formatSessionDateTime(DateTime date, String? timeSlot) {
-    final dayName = DateFormat('EEEE').format(date);
-    final monthDay = DateFormat('MMM d').format(date);
-
-    String startTime;
-    String endTime;
-
-    if (timeSlot != null && timeSlot.isNotEmpty) {
-      try {
-        final regex = RegExp(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)');
-        final match = regex.firstMatch(timeSlot);
-
-        if (match != null && match.groupCount == 2) {
-          final startDateTime = DateTime.parse(match.group(1)!);
-          final endDateTime = DateTime.parse(match.group(2)!);
-
-          startTime = DateFormat('h:mm A').format(startDateTime);
-          endTime = DateFormat('h:mm A').format(endDateTime);
-        } else {
-          startTime = DateFormat('h:mm A').format(date);
-          endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: 30)));
-        }
-      } catch (e) {
-        startTime = DateFormat('h:mm A').format(date);
-        endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: 30)));
-      }
-    } else {
-      startTime = DateFormat('h:mm A').format(date);
-      endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: 30)));
-    }
-
-    return '$dayName, $monthDay – $startTime to $endTime';
   }
 }

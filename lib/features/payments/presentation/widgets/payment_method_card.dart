@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/dimensions.dart';
-import '../../../../core/constants/image_constants.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/enumns/ui/card_brand.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../domain/entities/payment_method_entity.dart';
+import 'payment_method_card_action.dart';
 
 class PaymentMethodCard extends StatelessWidget {
   final PaymentMethodEntity paymentMethod;
@@ -55,13 +55,14 @@ class PaymentMethodCard extends StatelessWidget {
   }
 
   Widget _buildCardIcon(BuildContext context) {
-    final cardImagePath = _getCardImagePath();
+    final cardBrand = CardBrand.fromString(paymentMethod.card.brand);
+    final cardImagePath = cardBrand.imagePath;
 
     return Container(
       width: 48.w,
       height: 40.h,
       decoration: BoxDecoration(
-        color: cardImagePath == null ? _getCardBrandColor() : Colors.transparent,
+        color: cardImagePath == null ? cardBrand.brandColor : Colors.transparent,
         borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r),
       ),
       child:
@@ -80,131 +81,15 @@ class PaymentMethodCard extends StatelessWidget {
               )
               : Center(
                 child: Text(
-                  _getCardBrandText(),
+                  cardBrand.abbreviatedText,
                   style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w700),
                 ),
               ),
     );
   }
 
-  String? _getCardImagePath() {
-    switch (paymentMethod.card.brand.toLowerCase()) {
-      case 'visa':
-        return ImageConstants.visa;
-      case 'mastercard':
-        return ImageConstants.mastercard;
-      default:
-        return null;
-    }
-  }
-
   String _getCardDisplayName() {
-    return paymentMethod.card.brand;
-  }
-
-  String _getCardBrandText() {
-    switch (paymentMethod.card.brand.toLowerCase()) {
-      case 'visa':
-        return AppStrings.visa;
-      case 'mastercard':
-        return AppStrings.mastercard;
-      case 'amex':
-        return AppStrings.amex;
-      case 'discover':
-        return AppStrings.discover;
-      default:
-        return paymentMethod.card.brand.substring(0, 4).toUpperCase();
-    }
-  }
-
-  Color _getCardBrandColor() {
-    switch (paymentMethod.card.brand.toLowerCase()) {
-      case 'visa':
-        return const Color(0xFF1A1F71);
-      case 'mastercard':
-        return const Color(0xFFEB001B);
-      case 'amex':
-        return const Color(0xFF006FCF);
-      case 'discover':
-        return const Color(0xFFFF6000);
-      default:
-        return const Color(0xFF666666);
-    }
-  }
-}
-
-abstract class PaymentMethodCardAction {
-  Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected);
-}
-
-class DeletePaymentMethodAction extends PaymentMethodCardAction {
-  final VoidCallback onDelete;
-
-  DeletePaymentMethodAction({required this.onDelete});
-
-  @override
-  Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected) {
-    return IconButton(
-      onPressed: onDelete,
-      icon: Icon(Icons.delete_outline, color: context.red, size: DimensionConstants.icon24Px.f),
-      padding: EdgeInsets.all(DimensionConstants.gap8Px.w),
-      constraints: const BoxConstraints(),
-    );
-  }
-}
-
-class SelectPaymentMethodAction extends PaymentMethodCardAction {
-  final VoidCallback onSelect;
-
-  SelectPaymentMethodAction({required this.onSelect});
-
-  @override
-  Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected) {
-    return GestureDetector(
-      onTap: onSelect,
-      child: Container(
-        width: 24.w,
-        height: 24.h,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: isSelected ? context.white : context.white, width: 2),
-          color: Colors.transparent,
-        ),
-        child:
-            isSelected
-                ? Center(child: Container(width: 10.w, height: 10.h, decoration: BoxDecoration(shape: BoxShape.circle, color: context.white)))
-                : null,
-      ),
-    );
-  }
-}
-
-class TapPaymentMethodAction extends PaymentMethodCardAction {
-  final VoidCallback onTap;
-
-  TapPaymentMethodAction({required this.onTap});
-
-  @override
-  Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected) {
-    return Container(
-      width: 24.w,
-      height: 24.h,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: isSelected ? context.primary : context.darkTextSecondary, width: 2),
-        color: isSelected ? context.primary : Colors.transparent,
-      ),
-      child:
-          isSelected
-              ? Center(child: Container(width: 8.w, height: 8.h, decoration: BoxDecoration(shape: BoxShape.circle, color: context.white)))
-              : null,
-    );
-  }
-}
-
-class NoPaymentMethodAction extends PaymentMethodCardAction {
-  @override
-  Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected) {
-    return const SizedBox.shrink();
+    final cardBrand = CardBrand.fromString(paymentMethod.card.brand);
+    return cardBrand.displayName;
   }
 }

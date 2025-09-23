@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -8,26 +9,25 @@ import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/utils/timezone_helper.dart';
+import '../../../../core/utils/session_datetime_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
-import '../../../payments/domain/entities/payment_method_entity.dart';
 import '../../../payments/presentation/widgets/payment_method_card.dart';
+import '../../../payments/presentation/widgets/payment_method_card_action.dart';
 import '../bloc/sessions_bloc.dart';
 import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
 import '../widgets/session_details_card.dart';
+import 'params/confirm_booking_screen_params.dart';
 
 class ConfirmBookingScreen extends StatefulWidget {
-  final DateTime sessionDate;
-  final String timeSlot;
-  final PaymentMethodEntity paymentMethod;
-  final String? query;
+  final ConfirmBookingScreenParams params;
 
-  const ConfirmBookingScreen({super.key, required this.sessionDate, required this.timeSlot, required this.paymentMethod, this.query});
+  const ConfirmBookingScreen({super.key, required this.params});
 
   @override
   State<ConfirmBookingScreen> createState() => _ConfirmBookingScreenState();
@@ -51,7 +51,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         } else if (state is SessionScheduleError) {
           SnackBarUtils.showError(context, state.message);
         } else if (state is SessionBooked) {
-          SnackBarUtils.showSuccess(context, 'Session booked successfully!');
+          SnackBarUtils.showSuccess(context, AppStrings.sessionBookedSuccessfully.tr());
           context.go(AppRoutes.bookingRequestSentRouteName);
         } else if (state is SessionBookError) {
           SnackBarUtils.showError(context, state.message);
@@ -119,7 +119,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
-        SessionDetailsCard(sessionDate: widget.sessionDate, timeSlot: widget.timeSlot),
+        SessionDetailsCard(sessionDate: widget.params.sessionDate, timeSlot: widget.params.timeSlot),
       ],
     );
   }
@@ -133,7 +133,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
-        PaymentMethodCard(paymentMethod: widget.paymentMethod, action: NoPaymentMethodAction(), isSelected: false),
+        PaymentMethodCard(paymentMethod: widget.params.paymentMethod, action: NoPaymentMethodAction(), isSelected: false),
         SizedBox(height: DimensionConstants.gap24Px.h),
       ],
     );
@@ -242,42 +242,21 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   }
 
   void _onConfirmBooking() async {
-    final timeSlotParts = widget.timeSlot.split('-');
-    if (timeSlotParts.length < 2) {
+    final parsedTimeSlot = SessionDateTimeUtils.parseTimeSlot(widget.params.timeSlot);
+    if (parsedTimeSlot == null) {
       return;
     }
 
-    String startTimeIso;
-    String endTimeIso;
-
-    final regex = RegExp(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)');
-    final match = regex.firstMatch(widget.timeSlot);
-
-    if (match != null && match.groupCount == 2) {
-      startTimeIso = match.group(1)!;
-      endTimeIso = match.group(2)!;
-    } else {
-      final fallbackRegex = RegExp(r'^(.+)-(\d{4}-.+)$');
-      final fallbackMatch = fallbackRegex.firstMatch(widget.timeSlot);
-
-      if (fallbackMatch != null && fallbackMatch.groupCount == 2) {
-        startTimeIso = fallbackMatch.group(1)!;
-        endTimeIso = fallbackMatch.group(2)!;
-      } else {
-        return;
-      }
-    }
-
-    final formattedDate = widget.sessionDate.toIso8601String().split('T')[0];
-    final summary = widget.query ?? 'Copyright consultation session';
+    final formattedDate = SessionDateTimeUtils.formatDateToIso(widget.params.sessionDate);
+    final summary = widget.params.query;
     final String timezone = await TimezoneHelper.getUserTimezone();
 
     _sessionsBloc.add(
       BookSessionRequested(
-        stripePaymentMethodId: widget.paymentMethod.id,
+        stripePaymentMethodId: widget.params.paymentMethod.id,
         date: formattedDate,
-        startTime: startTimeIso,
-        endTime: endTimeIso,
+        startTime: parsedTimeSlot.startTimeIso,
+        endTime: parsedTimeSlot.endTimeIso,
         summary: summary,
         timezone: timezone,
       ),

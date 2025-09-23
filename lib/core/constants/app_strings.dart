@@ -305,6 +305,8 @@ class AppStrings {
   static const failedToLoadSessionAvailability = 'failedToLoadSessionAvailability';
   static const sessionCancelledSuccessfully = 'sessionCancelledSuccessfully';
   static const failedToBookSession = 'failedToBookSession';
+  static const sessionBookedSuccessfully = 'sessionBookedSuccessfully';
+  static const to = 'to';
   static const copyrightConsultation = 'copyrightConsultation';
   static const copyrightConsultationSession = 'copyrightConsultationSession';
   static const legalConsultation = 'legalConsultation';
@@ -323,4 +325,25 @@ class AppStrings {
   static const amex = 'amex';
   static const discover = 'discover';
   static const paymentMethodDeletedSuccessfully = 'paymentMethodDeletedSuccessfully';
+
+  // Additional localization strings
+  static const paymentSuccessful = 'paymentSuccessful';
+  static const userRequestedCancellation = 'userRequestedCancellation';
+  static const failedToLoadImage = 'failedToLoadImage';
+  static const retryText = 'retryText';
+  static const failedToScheduleSessionGeneric = 'failedToScheduleSessionGeneric';
+  static const failedToFetchUserSessions = 'failedToFetchUserSessions';
+  static const failedToFetchUpcomingSessions = 'failedToFetchUpcomingSessions';
+  static const failedToFetchCompletedSessions = 'failedToFetchCompletedSessions';
+  static const failedToFetchSession = 'failedToFetchSession';
+  static const failedToCancelSessionGeneric = 'failedToCancelSessionGeneric';
+  static const failedToJoinSession = 'failedToJoinSession';
+  static const failedToFetchSessionAvailability = 'failedToFetchSessionAvailability';
+  static const failedToLoadPaymentMethodsGeneric = 'failedToLoadPaymentMethodsGeneric';
+  static const failedToDeletePaymentMethodGeneric = 'failedToDeletePaymentMethodGeneric';
+  static const failedToGetTimezone = 'failedToGetTimezone';
+  static const failedToSend = 'failedToSend';
+  static const failedToReceive = 'failedToReceive';
+  static const errorUnrecognized = 'errorUnrecognized';
+  static const failedToParseNetworkResponse = 'failedToParseNetworkResponse';
 }

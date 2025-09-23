@@ -13,15 +13,16 @@ import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../config/routes/app_routes.dart';
+import '../../../sessions/presentation/pages/params/schedule_session_screen_params.dart';
+import 'params/harold_success_screen_params.dart';
 
 class HaroldSuccessScreen extends StatelessWidget {
-  final bool fromAuthFlow;
-  final String? query;
+  final HaroldSuccessScreenParams params;
 
-  const HaroldSuccessScreen({super.key, this.fromAuthFlow = false, this.query});
+  const HaroldSuccessScreen({super.key, required this.params});
 
   void _handleBackPress(BuildContext context) {
-    if (fromAuthFlow) {
+    if (params.fromAuthFlow) {
       context.go(AppRoutes.homeRouteName);
     } else {
       context.pop();
@@ -29,7 +30,7 @@ class HaroldSuccessScreen extends StatelessWidget {
   }
 
   void _handleScheduleAppointment(BuildContext context) {
-    context.push(AppRoutes.scheduleSessionRouteName, extra: {'query': query});
+    context.push(AppRoutes.scheduleSessionRouteName, extra: ScheduleSessionScreenParams(query: params.query ?? ''));
   }
 
   @override

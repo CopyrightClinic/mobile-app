@@ -13,15 +13,15 @@ import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../config/routes/app_routes.dart';
+import 'params/harold_failed_screen_params.dart';
 
 class HaroldFailedScreen extends StatelessWidget {
-  final bool fromAuthFlow;
-  final String? query;
+  final HaroldFailedScreenParams params;
 
-  const HaroldFailedScreen({super.key, this.fromAuthFlow = false, this.query});
+  const HaroldFailedScreen({super.key, required this.params});
 
   void _handleBackPress(BuildContext context) {
-    if (fromAuthFlow) {
+    if (params.fromAuthFlow) {
       context.go(AppRoutes.homeRouteName);
     } else {
       context.pop();

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/utils/logger/logger.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../domain/entities/session_entity.dart';
@@ -22,7 +22,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch user sessions: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchUserSessions}: $e'));
     }
   }
 
@@ -34,7 +34,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch upcoming sessions: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchUpcomingSessions}: $e'));
     }
   }
 
@@ -46,7 +46,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch completed sessions: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchCompletedSessions}: $e'));
     }
   }
 
@@ -58,7 +58,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch session: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchSession}: $e'));
     }
   }
 
@@ -70,7 +70,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to cancel session: $e'));
+      return Left(ServerFailure('${AppStrings.failedToCancelSessionGeneric}: $e'));
     }
   }
 
@@ -82,7 +82,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to join session: $e'));
+      return Left(ServerFailure('${AppStrings.failedToJoinSession}: $e'));
     }
   }
 
@@ -94,7 +94,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch session availability: $e'));
+      return Left(ServerFailure('${AppStrings.failedToFetchSessionAvailability}: $e'));
     }
   }
 
@@ -118,20 +118,17 @@ class SessionsRepositoryImpl implements SessionsRepository {
       );
       return Right(response.toEntity());
     } on CustomException catch (e) {
-      Log.e(runtimeType, 'Sessions Repository: Custom exception: ${e.message}');
       return Left(ServerFailure(e.message));
     } on DioException catch (e) {
-      Log.e(runtimeType, 'Sessions Repository: DioException: ${e.message}');
-      String errorMessage = 'Failed to book session';
+      String errorMessage = AppStrings.failedToBookSession;
       if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
         errorMessage = responseData['message'] ?? errorMessage;
       }
 
       return Left(ServerFailure(errorMessage));
-    } catch (e, stackTrace) {
-      Log.e(runtimeType, 'Sessions Repository: Unexpected error: $e', stackTrace);
-      return Left(ServerFailure('Failed to book session'));
+    } catch (e) {
+      return Left(ServerFailure(AppStrings.failedToBookSession));
     }
   }
 }

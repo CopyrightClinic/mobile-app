@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/utils/enumns/ui/sessions_tab.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/translated_text.dart';
@@ -23,10 +26,13 @@ class SessionsScreen extends StatefulWidget {
 }
 
 class _SessionsScreenState extends State<SessionsScreen> {
+  late SessionsBloc _sessionsBloc;
+
   @override
   void initState() {
     super.initState();
-    context.read<SessionsBloc>().add(const LoadUserSessions());
+    _sessionsBloc = context.read<SessionsBloc>();
+    _sessionsBloc.add(const LoadUserSessions());
   }
 
   @override
@@ -52,9 +58,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
       body: BlocConsumer<SessionsBloc, SessionsState>(
         listener: (context, state) {
           if (state is SessionsError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.red));
+            SnackBarUtils.showError(context, state.message);
           } else if (state is SessionCancelled) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.green));
+            SnackBarUtils.showSuccess(context, state.message);
           }
         },
         builder: (context, state) {
@@ -66,10 +72,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
                   SessionsTabSelector(
                     isUpcomingSelected: state.currentTab == SessionsTab.upcoming,
                     onUpcomingTap: () {
-                      context.read<SessionsBloc>().add(const SwitchToUpcoming());
+                      _sessionsBloc.add(const SwitchToUpcoming());
                     },
                     onCompletedTap: () {
-                      context.read<SessionsBloc>().add(const SwitchToCompleted());
+                      _sessionsBloc.add(const SwitchToCompleted());
                     },
                   ),
                 ],
@@ -101,7 +107,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
       return RefreshIndicator(
         onRefresh: () async {
-          context.read<SessionsBloc>().add(const RefreshSessions());
+          _sessionsBloc.add(const RefreshSessions());
         },
         child: ListView.builder(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -159,7 +165,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
           SizedBox(height: DimensionConstants.gap24Px.h),
           ElevatedButton(
             onPressed: () {
-              context.read<SessionsBloc>().add(const LoadUserSessions());
+              _sessionsBloc.add(const LoadUserSessions());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: context.darkSecondary,
@@ -190,7 +196,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
+                onPressed: () => context.pop(),
                 child: TranslatedText(
                   AppStrings.keepSession,
                   style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
@@ -198,8 +204,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  context.read<SessionsBloc>().add(CancelSessionRequested(sessionId: session.id, reason: 'User requested cancellation'));
+                  context.pop();
+                  _sessionsBloc.add(CancelSessionRequested(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()));
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: context.red, foregroundColor: Colors.white),
                 child: TranslatedText(
@@ -213,6 +219,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   void _joinSession(BuildContext context, String sessionId) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: TranslatedText(AppStrings.joiningSession), backgroundColor: context.darkSecondary));
+    SnackBarUtils.showSuccess(context, AppStrings.joiningSession.tr());
   }
 }

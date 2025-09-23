@@ -1,3 +1,4 @@
+import '../constants/app_strings.dart';
 import '../utils/logger/logger.dart';
 
 /// Helper class for timezone operations using Flutter's native functionality
@@ -13,7 +14,7 @@ class TimezoneHelper {
       Log.i(TimezoneHelper, 'User timezone detected: $timezone');
       return timezone;
     } catch (e) {
-      Log.e(TimezoneHelper, 'Failed to get timezone, using fallback: $e');
+      Log.e(TimezoneHelper, '${AppStrings.failedToGetTimezone}: $e');
       return _fallbackTimezone;
     }
   }

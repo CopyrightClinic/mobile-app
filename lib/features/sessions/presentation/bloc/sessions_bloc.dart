@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/enumns/ui/session_status.dart';
+import '../../../../core/utils/enumns/ui/sessions_tab.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
@@ -84,7 +86,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
     final result = await cancelSessionUseCase(CancelSessionParams(sessionId: event.sessionId, reason: event.reason));
 
-    result.fold((failure) => emit(SessionsError(message: failure.message ?? AppStrings.failedToCancelSession)), (message) async {
+    await result.fold((failure) async => emit(SessionsError(message: failure.message ?? AppStrings.failedToCancelSession)), (message) async {
       emit(SessionCancelled(message: message));
       await _onRefreshSessions(const RefreshSessions(), emit);
     });
@@ -109,7 +111,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
       emit(SessionScheduled(session: newSession));
     } catch (e) {
-      emit(SessionScheduleError(message: 'Failed to schedule session: ${e.toString()}'));
+      emit(SessionScheduleError(message: '${AppStrings.failedToScheduleSessionGeneric}: ${e.toString()}'));
     }
   }
 
