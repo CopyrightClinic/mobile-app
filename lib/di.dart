@@ -33,6 +33,11 @@ import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/profile/data/datasources/profile_remote_data_source.dart';
+import 'features/profile/data/repositories/profile_repository_impl.dart';
+import 'features/profile/domain/repositories/profile_repository.dart';
+import 'features/profile/domain/usecases/update_profile_usecase.dart';
+import 'features/profile/presentation/bloc/profile_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -67,11 +72,13 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SessionsRepository>(() => SessionsRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -87,6 +94,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
   sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -107,6 +115,9 @@ Future<void> init() async {
 
   // Sessions Bloc
   sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl()));
+
+  // Profile Bloc
+  sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

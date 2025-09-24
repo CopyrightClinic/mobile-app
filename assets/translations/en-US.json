@@ -261,5 +261,15 @@
   "failedToSend": "Failed to send",
   "failedToReceive": "Failed to receive",
   "errorUnrecognized": "Error unrecognized",
-  "failedToParseNetworkResponse": "Failed to parse network response to model or vice versa"
+  "failedToParseNetworkResponse": "Failed to parse network response to model or vice versa",
+  "personalInformation": "Personal Information",
+  "fullName": "Full Name",
+  "email": "Email",
+  "phoneNumber": "Phone Number",
+  "address": "Address",
+  "editPersonalInformation": "Edit Personal Information",
+  "saveChanges": "Save Changes",
+  "updateProfileFailed": "Failed to update profile",
+  "profileUpdatedSuccessfully": "Profile updated successfully",
+  "failedToLoadProfile": "Failed to load profile"
 }

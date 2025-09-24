@@ -63,11 +63,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Row(
                   children: [
                     TranslatedText(
-                      'Personal Information',
+                      AppStrings.personalInformation,
                       style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     Spacer(),
-                    GlobalImage(assetPath: ImageConstants.edit, width: DimensionConstants.gap20Px.w, height: DimensionConstants.gap20Px.w),
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        return InkWell(
+                          onTap: () {
+                            if (state is AuthAuthenticated) {
+                              context.push(AppRoutes.editProfileRouteName, extra: state.user);
+                            }
+                          },
+                          child: GlobalImage(
+                            assetPath: ImageConstants.edit,
+                            width: DimensionConstants.gap20Px.w,
+                            height: DimensionConstants.gap20Px.w,
+                            loadingSize: DimensionConstants.gap20Px.w,
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 SizedBox(height: DimensionConstants.gap16Px.h),
@@ -156,16 +172,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           String userAddress = '-';
 
           if (state is AuthAuthenticated) {
-            userName = state.user.name ?? state.user.email.split('@').first;
+            userName = state.user.name ?? '-';
             userEmail = state.user.email;
+            userPhone = state.user.phoneNumber ?? '-';
+            userAddress = state.user.address ?? '-';
           }
 
           return Column(
             children: [
-              _buildInfoRow(context, iconPath: ImageConstants.name, label: 'Full Name', value: userName),
-              _buildInfoRow(context, iconPath: ImageConstants.email, label: 'Email', value: userEmail),
-              _buildInfoRow(context, iconPath: ImageConstants.phone, label: 'Phone Number', value: userPhone),
-              _buildInfoRow(context, iconPath: ImageConstants.address, label: 'Address', value: userAddress, isLast: true),
+              _buildInfoRow(context, iconPath: ImageConstants.name, label: AppStrings.fullName, value: userName),
+              _buildInfoRow(context, iconPath: ImageConstants.email, label: AppStrings.email, value: userEmail),
+              _buildInfoRow(context, iconPath: ImageConstants.phone, label: AppStrings.phoneNumber, value: userPhone),
+              _buildInfoRow(context, iconPath: ImageConstants.address, label: AppStrings.address, value: userAddress, isLast: true),
             ],
           );
         },
@@ -202,7 +220,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap20Px.w, vertical: DimensionConstants.gap16Px.h),
       child: Row(
         children: [
-          GlobalImage(assetPath: iconPath, width: DimensionConstants.gap20Px.w, height: DimensionConstants.gap20Px.w),
+          GlobalImage(
+            assetPath: iconPath,
+            width: DimensionConstants.gap20Px.w,
+            height: DimensionConstants.gap20Px.w,
+            loadingSize: DimensionConstants.gap20Px.w,
+          ),
           SizedBox(width: DimensionConstants.gap8Px.w),
           Expanded(
             flex: 1,
@@ -236,7 +259,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap20Px.w, vertical: DimensionConstants.gap16Px.h),
         child: Row(
           children: [
-            GlobalImage(assetPath: iconPath, width: DimensionConstants.gap20Px.w, height: DimensionConstants.gap20Px.w),
+            GlobalImage(
+              assetPath: iconPath,
+              width: DimensionConstants.gap20Px.w,
+              height: DimensionConstants.gap20Px.w,
+              loadingSize: DimensionConstants.gap20Px.w,
+            ),
             SizedBox(width: DimensionConstants.gap10Px.w),
             Expanded(
               child: TranslatedText(

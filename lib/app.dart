@@ -12,6 +12,7 @@ import 'shared_features/localization/data/models/localization_model.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/payments/presentation/bloc/payment_bloc.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/profile/presentation/bloc/profile_bloc.dart';
 import 'di.dart';
 
 class MyApp extends StatelessWidget {
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
         BlocProvider<PaymentBloc>(create: (context) => sl<PaymentBloc>()),
         BlocProvider<SessionsBloc>(create: (context) => sl<SessionsBloc>()),
+        BlocProvider<ProfileBloc>(create: (context) => sl<ProfileBloc>()),
       ],
       child: BlocBuilder<LocalizationCubit, LocalizationModel>(
         builder: (context, localization) {

@@ -325,4 +325,12 @@ class AppStrings {
   static const failedToReceive = 'failedToReceive';
   static const errorUnrecognized = 'errorUnrecognized';
   static const failedToParseNetworkResponse = 'failedToParseNetworkResponse';
+  static const personalInformation = 'personalInformation';
+
+  // Edit Profile Screen
+  static const editPersonalInformation = 'editPersonalInformation';
+  static const saveChanges = 'saveChanges';
+  static const updateProfileFailed = 'updateProfileFailed';
+  static const profileUpdatedSuccessfully = 'profileUpdatedSuccessfully';
+  static const failedToLoadProfile = 'failedToLoadProfile';
 }

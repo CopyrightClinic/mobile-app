@@ -55,4 +55,19 @@ class ApiEndpoint {
   static String sessions(String path) {
     return '/sessions$path';
   }
+
+  /// Profile endpoints
+  ///
+  /// Provides profile operations:
+  static String profile(ProfileEndpoint endpoint) {
+    const path = '/user';
+    switch (endpoint) {
+      case ProfileEndpoint.CHANGE_PASSWORD:
+        return '$path/password';
+      case ProfileEndpoint.UPDATE_PROFILE:
+        return '$path/profile';
+      case ProfileEndpoint.DELETE_PROFILE:
+        return path;
+    }
+  }
 }

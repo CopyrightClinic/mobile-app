@@ -23,4 +23,5 @@ class AppRoutes {
   static const String selectPaymentMethodRouteName = '/select-payment-method';
   static const String confirmBookingRouteName = '/confirm-booking';
   static const String bookingRequestSentRouteName = '/booking-request-sent';
+  static const String editProfileRouteName = '/edit-profile';
 }
