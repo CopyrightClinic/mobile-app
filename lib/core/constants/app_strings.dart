@@ -170,6 +170,7 @@ class AppStrings {
   static const paymentMethodDeleted = 'paymentMethodDeleted';
   static const failedToAddPaymentMethod = 'failedToAddPaymentMethod';
   static const failedToDeletePaymentMethod = 'failedToDeletePaymentMethod';
+  static const failedToLoadPaymentMethods = 'failedToLoadPaymentMethods';
   static const invalidCardNumber = 'invalidCardNumber';
   static const invalidExpirationDate = 'invalidExpirationDate';
   static const invalidCvv = 'invalidCvv';
@@ -177,6 +178,13 @@ class AppStrings {
   static const expirationDateIsRequired = 'expirationDateIsRequired';
   static const cvvIsRequired = 'cvvIsRequired';
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
+  static const noPaymentMethods = 'noPaymentMethods';
+  static const noPaymentMethodsYet = 'noPaymentMethodsYet';
+  static const noPaymentMethodsAddOne = 'noPaymentMethodsAddOne';
+  static const addAnotherPaymentMethod = 'addAnotherPaymentMethod';
+  static const paymentMethod = 'paymentMethod';
+  static const selectPreferredPaymentCard = 'selectPreferredPaymentCard';
+  static const continueText = 'continueText';
 
   // Dashboard
   static const dashboard = 'dashboard';
@@ -195,6 +203,70 @@ class AppStrings {
   static const areYouSureLogout = 'areYouSureLogout';
   static const cancel = 'cancel';
 
+  // Sessions Screen
+  static const upcoming = 'upcoming';
+  static const completed = 'completed';
+  static const noCompletedSessions = 'noCompletedSessions';
+  static const completedSessionsDescription = 'completedSessionsDescription';
+  static const noSessionsYet = 'noSessionsYet';
+  static const somethingWentWrong = 'somethingWentWrong';
+  static const retry = 'retry';
+  static const cancelSession = 'cancelSession';
+  static const joinSession = 'joinSession';
+  static const charged = 'charged';
+  static const holdAmountChargedAfterSession = 'holdAmountChargedAfterSession';
+  static const youCanCancelTill = 'youCanCancelTill';
+  static const cancellationPeriodExpired = 'cancellationPeriodExpired';
+  static const youCouldHaveCanceled = 'youCouldHaveCanceled';
+  static const cancelSessionTitle = 'cancelSessionTitle';
+  static const cancelSessionMessage = 'cancelSessionMessage';
+  static const keepSession = 'keepSession';
+  static const joiningSession = 'joiningSession';
+  static const session = 'session';
+  static const today = 'today';
+
+  // Schedule Session Screen
+  static const bookSession = 'bookSession';
+  static const chooseTimeFor30MinSession = 'chooseTimeFor30MinSession';
+  static const availableTimeSlots = 'availableTimeSlots';
+  static const continueToPayment = 'continueToPayment';
+  static const sessionScheduledSuccessfully = 'sessionScheduledSuccessfully';
+  static const failedToScheduleSession = 'failedToScheduleSession';
+  static const confirmYourBooking = 'confirmYourBooking';
+  static const pleaseReviewSessionDetails = 'pleaseReviewSessionDetails';
+  static const sessionDetails = 'sessionDetails';
+  static const confirmAndBookSession = 'confirmAndBookSession';
+  static const note = 'note';
+  static const paymentSecurityNote = 'paymentSecurityNote';
+  static const recordingConsented = 'recordingConsented';
+  static const holdAmountNote = 'holdAmountNote';
+  static const thirtyMinutesSession = 'thirtyMinutesSession';
+  static const paymentSummary = 'paymentSummary';
+  static const holdAmount = 'holdAmount';
+  static const holdAmountDescription = 'holdAmountDescription';
+  static const processingFee = 'processingFee';
+  static const processingFeeNonRefundable = 'processingFeeNonRefundable';
+  static const totalAmount = 'totalAmount';
+  static const totalAmountLabel = 'totalAmountLabel';
+  static const sessionRequestSent = 'sessionRequestSent';
+  static const sessionRequestSentDescription = 'sessionRequestSentDescription';
+  static const okay = 'okay';
+
+  // Days of the week
+  static const monday = 'monday';
+  static const tuesday = 'tuesday';
+  static const wednesday = 'wednesday';
+  static const thursday = 'thursday';
+  static const friday = 'friday';
+  static const saturday = 'saturday';
+  static const sunday = 'sunday';
+  static const mon = 'mon';
+  static const tue = 'tue';
+  static const wed = 'wed';
+  static const thu = 'thu';
+  static const fri = 'fri';
+  static const sat = 'sat';
+  static const sun = 'sun';
   // Payment Error Messages
   static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
   static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
@@ -205,4 +277,52 @@ class AppStrings {
   static const termsAndConditions = 'termsAndConditions';
   static const deleteAccount = 'deleteAccount';
   static const changePassword = 'changePassword';
+  // Phone Field
+  static const searchCountry = 'searchCountry';
+
+  // Error Messages
+  static const failedToLoadSessions = 'failedToLoadSessions';
+  static const failedToRefreshSessions = 'failedToRefreshSessions';
+  static const failedToCancelSession = 'failedToCancelSession';
+  static const failedToLoadSessionAvailability = 'failedToLoadSessionAvailability';
+  static const sessionCancelledSuccessfully = 'sessionCancelledSuccessfully';
+  static const copyrightConsultation = 'copyrightConsultation';
+  static const copyrightConsultationSession = 'copyrightConsultationSession';
+  static const legalConsultation = 'legalConsultation';
+  static const noTimeSlotsAvailable = 'noTimeSlotsAvailable';
+  static const noTimeSlotsForSelectedDate = 'noTimeSlotsForSelectedDate';
+  static const trySelectingDifferentDate = 'trySelectingDifferentDate';
+
+  // Session Status
+  static const upcomingStatus = 'upcomingStatus';
+  static const completedStatus = 'completedStatus';
+  static const cancelledStatus = 'cancelledStatus';
+
+  // Payment Method Brands
+  static const visa = 'visa';
+  static const mastercard = 'mastercard';
+  static const amex = 'amex';
+  static const discover = 'discover';
+  static const paymentMethodDeletedSuccessfully = 'paymentMethodDeletedSuccessfully';
+
+  // Additional localization strings
+  static const paymentSuccessful = 'paymentSuccessful';
+  static const userRequestedCancellation = 'userRequestedCancellation';
+  static const failedToLoadImage = 'failedToLoadImage';
+  static const retryText = 'retryText';
+  static const failedToScheduleSessionGeneric = 'failedToScheduleSessionGeneric';
+  static const failedToFetchUserSessions = 'failedToFetchUserSessions';
+  static const failedToFetchUpcomingSessions = 'failedToFetchUpcomingSessions';
+  static const failedToFetchCompletedSessions = 'failedToFetchCompletedSessions';
+  static const failedToFetchSession = 'failedToFetchSession';
+  static const failedToCancelSessionGeneric = 'failedToCancelSessionGeneric';
+  static const failedToJoinSession = 'failedToJoinSession';
+  static const failedToFetchSessionAvailability = 'failedToFetchSessionAvailability';
+  static const failedToLoadPaymentMethodsGeneric = 'failedToLoadPaymentMethodsGeneric';
+  static const failedToDeletePaymentMethodGeneric = 'failedToDeletePaymentMethodGeneric';
+  static const failedToGetTimezone = 'failedToGetTimezone';
+  static const failedToSend = 'failedToSend';
+  static const failedToReceive = 'failedToReceive';
+  static const errorUnrecognized = 'errorUnrecognized';
+  static const failedToParseNetworkResponse = 'failedToParseNetworkResponse';
 }

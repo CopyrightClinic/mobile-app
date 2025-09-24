@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -76,7 +78,12 @@ class HomeScreen extends StatelessWidget {
             ),
             SizedBox(height: DimensionConstants.gap24Px.h),
 
-            AuthButton(text: AppStrings.bookNewSession, onPressed: () {}),
+            AuthButton(
+              text: AppStrings.bookNewSession,
+              onPressed: () {
+                context.push(AppRoutes.scheduleSessionRouteName);
+              },
+            ),
             SizedBox(height: DimensionConstants.gap16Px.h),
             SizedBox(
               width: double.infinity,
