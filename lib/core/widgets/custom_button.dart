@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
@@ -9,6 +11,7 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     required this.child,
     this.backgroundColor,
+    this.disabledBackgroundColor,
     this.textColor,
     this.borderColor,
     this.borderWidth,
@@ -25,6 +28,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget child;
   final Color? backgroundColor;
+  final Color? disabledBackgroundColor;
   final Color? textColor;
   final Color? borderColor;
   final double? borderWidth;
@@ -44,6 +48,7 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: textColor,
+        disabledBackgroundColor: disabledBackgroundColor,
         padding: EdgeInsets.symmetric(vertical: padding.h),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 0)),
       ),
@@ -52,7 +57,6 @@ class CustomButton extends StatelessWidget {
   }
 }
 
-/// Standardized button widget for authentication screens
 class AuthButton extends StatelessWidget {
   const AuthButton({super.key, required this.text, required this.onPressed, this.isLoading = false, this.isEnabled = true});
 
@@ -71,7 +75,7 @@ class AuthButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: context.primary,
           foregroundColor: context.white,
-          disabledBackgroundColor: context.buttonDiabled,
+          disabledBackgroundColor: context.buttonDisabled,
           disabledForegroundColor: context.white,
           padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
