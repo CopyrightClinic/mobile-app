@@ -263,13 +263,13 @@
   "errorUnrecognized": "Error unrecognized",
   "failedToParseNetworkResponse": "Failed to parse network response to model or vice versa",
   "personalInformation": "Personal Information",
-  "fullName": "Full Name",
-  "email": "Email",
-  "phoneNumber": "Phone Number",
-  "address": "Address",
   "editPersonalInformation": "Edit Personal Information",
   "saveChanges": "Save Changes",
   "updateProfileFailed": "Failed to update profile",
   "profileUpdatedSuccessfully": "Profile updated successfully",
-  "failedToLoadProfile": "Failed to load profile"
+  "failedToLoadProfile": "Failed to load profile",
+  "currentPassword": "Current Password",
+  "enterYourCurrentPassword": "Enter your current password",
+  "newPasswordMustBeDifferent": "New password must be different from current password",
+  "changePasswordFailed": "Failed to change password"
 }

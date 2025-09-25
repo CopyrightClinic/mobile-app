@@ -4,4 +4,5 @@ import '../entities/profile_entity.dart';
 
 abstract class ProfileRepository {
   Future<Either<Failure, ProfileEntity>> updateProfile({required String name, required String phoneNumber, required String address});
+  Future<Either<Failure, String>> changePassword({required String currentPassword, required String newPassword});
 }

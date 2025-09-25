@@ -21,4 +21,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ServerFailure('Failed to update profile'));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> changePassword({required String currentPassword, required String newPassword}) async {
+    try {
+      final message = await remoteDataSource.changePassword(currentPassword: currentPassword, newPassword: newPassword);
+      return Right(message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('Failed to change password'));
+    }
+  }
 }

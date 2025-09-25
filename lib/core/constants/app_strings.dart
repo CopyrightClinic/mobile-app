@@ -333,4 +333,10 @@ class AppStrings {
   static const updateProfileFailed = 'updateProfileFailed';
   static const profileUpdatedSuccessfully = 'profileUpdatedSuccessfully';
   static const failedToLoadProfile = 'failedToLoadProfile';
+
+  // Change Password Screen
+  static const currentPassword = 'currentPassword';
+  static const enterYourCurrentPassword = 'enterYourCurrentPassword';
+  static const newPasswordMustBeDifferent = 'newPasswordMustBeDifferent';
+  static const changePasswordFailed = 'changePasswordFailed';
 }

@@ -21,3 +21,13 @@ class UpdateProfileRequested extends ProfileEvent {
 class GetProfileRequested extends ProfileEvent {
   const GetProfileRequested();
 }
+
+class ChangePasswordRequested extends ProfileEvent {
+  final String currentPassword;
+  final String newPassword;
+
+  const ChangePasswordRequested({required this.currentPassword, required this.newPassword});
+
+  @override
+  List<Object?> get props => [currentPassword, newPassword];
+}

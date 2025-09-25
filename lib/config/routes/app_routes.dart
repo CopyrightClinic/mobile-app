@@ -24,4 +24,5 @@ class AppRoutes {
   static const String confirmBookingRouteName = '/confirm-booking';
   static const String bookingRequestSentRouteName = '/booking-request-sent';
   static const String editProfileRouteName = '/edit-profile';
+  static const String changePasswordRouteName = '/change-password';
 }

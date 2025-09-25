@@ -198,7 +198,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           SizedBox(height: DimensionConstants.gap8Px.h),
-          _buildOptionRow(context, iconPath: ImageConstants.changePassword, title: AppStrings.changePassword, onTap: () {}),
+          _buildOptionRow(
+            context,
+            iconPath: ImageConstants.changePassword,
+            title: AppStrings.changePassword,
+            onTap: () {
+              context.push(AppRoutes.changePasswordRouteName);
+            },
+          ),
           _buildOptionRow(
             context,
             iconPath: ImageConstants.paymentMethods,
