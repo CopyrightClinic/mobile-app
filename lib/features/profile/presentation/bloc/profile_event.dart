@@ -31,3 +31,7 @@ class ChangePasswordRequested extends ProfileEvent {
   @override
   List<Object?> get props => [currentPassword, newPassword];
 }
+
+class DeleteAccountRequested extends ProfileEvent {
+  const DeleteAccountRequested();
+}

@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../domain/entities/profile_entity.dart';
@@ -18,7 +19,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to update profile'));
+      return Left(ServerFailure(AppStrings.failedToUpdateProfileGeneric));
     }
   }
 
@@ -30,7 +31,19 @@ class ProfileRepositoryImpl implements ProfileRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Failed to change password'));
+      return Left(ServerFailure(AppStrings.failedToChangePasswordGeneric));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> deleteAccount() async {
+    try {
+      final message = await remoteDataSource.deleteAccount();
+      return Right(message);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(AppStrings.failedToDeleteAccountGeneric));
     }
   }
 }

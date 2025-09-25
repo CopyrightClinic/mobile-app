@@ -38,6 +38,7 @@ import 'features/profile/data/repositories/profile_repository_impl.dart';
 import 'features/profile/domain/repositories/profile_repository.dart';
 import 'features/profile/domain/usecases/update_profile_usecase.dart';
 import 'features/profile/domain/usecases/change_password_usecase.dart';
+import 'features/profile/domain/usecases/delete_account_usecase.dart';
 import 'features/profile/presentation/bloc/profile_bloc.dart';
 
 final sl = GetIt.instance;
@@ -97,6 +98,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
   sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
   sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -119,7 +121,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl()));
 
   // Profile Bloc
-  sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl()));
+  sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

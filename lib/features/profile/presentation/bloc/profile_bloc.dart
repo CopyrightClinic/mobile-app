@@ -3,16 +3,21 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../domain/usecases/update_profile_usecase.dart';
 import '../../domain/usecases/change_password_usecase.dart';
+import '../../domain/usecases/delete_account_usecase.dart';
+import '../../../../core/usecases/usecase.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UpdateProfileUseCase updateProfileUseCase;
   final ChangePasswordUseCase changePasswordUseCase;
+  final DeleteAccountUseCase deleteAccountUseCase;
 
-  ProfileBloc({required this.updateProfileUseCase, required this.changePasswordUseCase}) : super(ProfileInitial()) {
+  ProfileBloc({required this.updateProfileUseCase, required this.changePasswordUseCase, required this.deleteAccountUseCase})
+    : super(ProfileInitial()) {
     on<UpdateProfileRequested>(_onUpdateProfileRequested);
     on<ChangePasswordRequested>(_onChangePasswordRequested);
+    on<DeleteAccountRequested>(_onDeleteAccountRequested);
   }
 
   Future<void> _onUpdateProfileRequested(UpdateProfileRequested event, Emitter<ProfileState> emit) async {
@@ -34,6 +39,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     result.fold(
       (failure) => emit(ChangePasswordError(failure.message ?? tr(AppStrings.changePasswordFailed))),
       (message) => emit(ChangePasswordSuccess(message)),
+    );
+  }
+
+  Future<void> _onDeleteAccountRequested(DeleteAccountRequested event, Emitter<ProfileState> emit) async {
+    emit(DeleteAccountLoading());
+
+    final result = await deleteAccountUseCase(NoParams());
+
+    result.fold(
+      (failure) => emit(DeleteAccountError(failure.message ?? tr(AppStrings.deleteAccountFailed))),
+      (message) => emit(DeleteAccountSuccess(message)),
     );
   }
 }

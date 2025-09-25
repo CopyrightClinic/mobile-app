@@ -339,4 +339,15 @@ class AppStrings {
   static const enterYourCurrentPassword = 'enterYourCurrentPassword';
   static const newPasswordMustBeDifferent = 'newPasswordMustBeDifferent';
   static const changePasswordFailed = 'changePasswordFailed';
+
+  // Delete Account Bottom Sheet
+  static const deleteAccountTitle = 'deleteAccountTitle';
+  static const deleteAccountSubtitle = 'deleteAccountSubtitle';
+  static const deleteAccountConfirm = 'deleteAccountConfirm';
+  static const deleteAccountFailed = 'deleteAccountFailed';
+
+  // Profile Repository Error Messages
+  static const failedToUpdateProfileGeneric = 'failedToUpdateProfileGeneric';
+  static const failedToChangePasswordGeneric = 'failedToChangePasswordGeneric';
+  static const failedToDeleteAccountGeneric = 'failedToDeleteAccountGeneric';
 }

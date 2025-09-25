@@ -60,4 +60,6 @@ class ImageConstants {
   static const String clock = '$svg/clock.svg';
   static const String mic = '$svg/mike.svg';
   static const String delete = '$svg/delete.svg';
+  static const String warning = '$svg/warning.svg';
+  static const String logout = '$svg/logout.svg';
 }

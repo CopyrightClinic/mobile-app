@@ -271,5 +271,12 @@
   "currentPassword": "Current Password",
   "enterYourCurrentPassword": "Enter your current password",
   "newPasswordMustBeDifferent": "New password must be different from current password",
-  "changePasswordFailed": "Failed to change password"
+  "changePasswordFailed": "Failed to change password",
+  "deleteAccountTitle": "Are you sure you want to Delete your account?",
+  "deleteAccountSubtitle": "Deleting your account is permanent and cannot be undone. All your data, sessions, and payment methods will be removed.",
+  "deleteAccountConfirm": "Delete",
+  "deleteAccountFailed": "Failed to delete account",
+  "failedToUpdateProfileGeneric": "Failed to update profile",
+  "failedToChangePasswordGeneric": "Failed to change password",
+  "failedToDeleteAccountGeneric": "Failed to delete account"
 }

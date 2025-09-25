@@ -6,6 +6,7 @@ import '../models/profile_model.dart';
 abstract class ProfileRemoteDataSource {
   Future<ProfileModel> updateProfile({required String name, required String phoneNumber, required String address});
   Future<String> changePassword({required String currentPassword, required String newPassword});
+  Future<String> deleteAccount();
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -27,6 +28,14 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     return await apiService.patchData<String>(
       endpoint: ApiEndpoint.profile(ProfileEndpoint.CHANGE_PASSWORD),
       data: {'currentPassword': currentPassword, 'newPassword': newPassword},
+      converter: (response) => response.data['message'] as String,
+    );
+  }
+
+  @override
+  Future<String> deleteAccount() async {
+    return await apiService.deleteData<String>(
+      endpoint: ApiEndpoint.profile(ProfileEndpoint.DELETE_PROFILE),
       converter: (response) => response.data['message'] as String,
     );
   }

@@ -70,3 +70,23 @@ class ChangePasswordError extends ProfileState {
   @override
   List<Object?> get props => [message];
 }
+
+class DeleteAccountLoading extends ProfileState {}
+
+class DeleteAccountSuccess extends ProfileState {
+  final String message;
+
+  const DeleteAccountSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class DeleteAccountError extends ProfileState {
+  final String message;
+
+  const DeleteAccountError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

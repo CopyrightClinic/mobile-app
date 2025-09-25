@@ -4,9 +4,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
-import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/translated_text.dart';
@@ -17,6 +17,10 @@ import '../../../../config/routes/app_routes.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
+import '../../../profile/presentation/bloc/profile_bloc.dart';
+import '../../../profile/presentation/bloc/profile_event.dart';
+import '../../../profile/presentation/bloc/profile_state.dart';
+import '../../../../di.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -27,23 +31,41 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late AuthBloc _authBloc;
+  late ProfileBloc _profileBloc;
 
   @override
   void initState() {
     super.initState();
     _authBloc = context.read<AuthBloc>();
+    _profileBloc = sl<ProfileBloc>();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthUnauthenticated) {
-          context.go(AppRoutes.welcomeRouteName);
-        } else if (state is AuthError) {
-          SnackBarUtils.showError(context, state.message);
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthUnauthenticated) {
+              context.go(AppRoutes.welcomeRouteName);
+            } else if (state is AuthError) {
+              SnackBarUtils.showError(context, state.message);
+            }
+          },
+        ),
+        BlocListener<ProfileBloc, ProfileState>(
+          bloc: _profileBloc,
+          listener: (context, state) {
+            if (state is DeleteAccountSuccess) {
+              SnackBarUtils.showSuccess(context, state.message);
+              // Navigate to welcome screen after successful account deletion
+              context.go(AppRoutes.welcomeRouteName);
+            } else if (state is DeleteAccountError) {
+              SnackBarUtils.showError(context, state.message);
+            }
+          },
+        ),
+      ],
       child: CustomScaffold(
         appBar: CustomAppBar(
           titleText: AppStrings.profile.tr(),
@@ -108,52 +130,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  void _handleLogout() {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: context.filledBgDark,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r)),
-          title: TranslatedText(
-            AppStrings.confirmLogout,
-            style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
-          ),
-          content: TranslatedText(
-            AppStrings.areYouSureLogout,
-            style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => context.pop(),
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap8Px.h),
-              ),
-              child: TranslatedText(
-                AppStrings.cancel,
-                style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w500),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                context.pop();
-                _authBloc.add(LogoutRequested());
-              },
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap8Px.h),
-              ),
-              child: TranslatedText(
-                AppStrings.logout,
-                style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.red, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -312,7 +288,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildDeleteAccountButton(BuildContext context) {
     return Center(
       child: TextButton(
-        onPressed: () {},
+        onPressed: () {
+          CustomBottomSheet.show(
+            context: context,
+            iconPath: ImageConstants.warning,
+            title: AppStrings.deleteAccountTitle,
+            subtitle: AppStrings.deleteAccountSubtitle,
+            primaryButtonText: AppStrings.deleteAccountConfirm,
+            secondaryButtonText: AppStrings.cancel,
+            onPrimaryPressed: () {
+              context.pop();
+              _profileBloc.add(const DeleteAccountRequested());
+            },
+            onSecondaryPressed: () {
+              context.pop();
+            },
+          );
+        },
         style: TextButton.styleFrom(
           foregroundColor: context.red,
           padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap8Px.h),
@@ -322,6 +314,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w500, color: context.red),
         ),
       ),
+    );
+  }
+
+  void _handleLogout() {
+    CustomBottomSheet.show(
+      context: context,
+      iconPath: ImageConstants.logout,
+      title: AppStrings.confirmLogout,
+      subtitle: AppStrings.areYouSureLogout,
+      primaryButtonText: AppStrings.logout,
+      secondaryButtonText: AppStrings.cancel,
+      onPrimaryPressed: () {
+        context.pop();
+        _authBloc.add(LogoutRequested());
+      },
+      onSecondaryPressed: () {
+        context.pop();
+      },
     );
   }
 }
