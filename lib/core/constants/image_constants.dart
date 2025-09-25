@@ -59,4 +59,5 @@ class ImageConstants {
   static const String sessionPrice = '$svg/session_amount.svg';
   static const String clock = '$svg/clock.svg';
   static const String mic = '$svg/mike.svg';
+  static const String delete = '$svg/delete.svg';
 }

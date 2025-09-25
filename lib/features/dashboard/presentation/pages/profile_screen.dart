@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
@@ -211,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             iconPath: ImageConstants.paymentMethods,
             title: AppStrings.paymentMethods,
             onTap: () {
-              context.push(AppRoutes.addPaymentMethodRouteName);
+              context.push(AppRoutes.paymentMethodsRouteName);
             },
           ),
           _buildOptionRow(context, iconPath: ImageConstants.privacyPolicy, title: AppStrings.privacyPolicy, onTap: () {}),

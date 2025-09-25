@@ -12,6 +12,7 @@ import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/payments/presentation/pages/payment_methods_screen.dart';
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
 import '../../features/sessions/presentation/pages/booking_request_sent_screen.dart';
@@ -150,6 +151,11 @@ class AppRouter {
         path: AppRoutes.changePasswordRouteName,
         name: AppRoutes.changePasswordRouteName,
         builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.paymentMethodsRouteName,
+        name: AppRoutes.paymentMethodsRouteName,
+        builder: (context, state) => const PaymentMethodsScreen(),
       ),
     ],
   );

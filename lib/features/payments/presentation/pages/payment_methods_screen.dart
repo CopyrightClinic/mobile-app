@@ -44,8 +44,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
         if (state is PaymentMethodDeleted) {
-          SnackBarUtils.showSuccess(context, AppStrings.paymentMethodDeleted);
-          _paymentBloc.add(const LoadPaymentMethods()); // Refresh list
+          SnackBarUtils.showSuccess(context, state.message);
+          _paymentBloc.add(const LoadPaymentMethods());
         } else if (state is PaymentError) {
           SnackBarUtils.showError(context, state.message);
         }
@@ -83,7 +83,6 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   void _onDeletePaymentMethod(PaymentMethodEntity paymentMethod) {
-    // Show confirmation dialog
     showDialog(
       context: context,
       builder:
@@ -108,7 +107,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               TextButton(
                 onPressed: () {
                   context.pop();
-                  _paymentBloc.add(DeletePaymentMethodRequested(paymentMethodId: paymentMethod.id));
+                  _paymentBloc.add(DeletePaymentMethodRequested(paymentMethodId: paymentMethod.stripePaymentMethodId));
                 },
                 child: TranslatedText(
                   AppStrings.deletePaymentMethod,
@@ -121,6 +120,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   void _onAddPaymentMethod() {
-    context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home});
+    context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home}).then((value) {
+      if (value != null) {
+        _paymentBloc.add(const LoadPaymentMethods());
+      }
+    });
   }
 }
