@@ -29,21 +29,22 @@ class CustomScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: AppTheme.customBackgroundGradient,
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: appBar,
-        body: body,
-        floatingActionButton: floatingActionButton,
-        bottomNavigationBar: bottomNavigationBar,
-        drawer: drawer,
-        endDrawer: endDrawer,
-        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-        extendBody: extendBody,
-        extendBodyBehindAppBar: extendBodyBehindAppBar,
+    return Material(
+      color: Color(0xff16181E),
+      child: Container(
+        decoration: BoxDecoration(gradient: AppTheme.customBackgroundGradient),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: appBar,
+          body: body,
+          floatingActionButton: floatingActionButton,
+          bottomNavigationBar: bottomNavigationBar,
+          drawer: drawer,
+          endDrawer: endDrawer,
+          resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+          extendBody: extendBody,
+          extendBodyBehindAppBar: extendBodyBehindAppBar,
+        ),
       ),
     );
   }

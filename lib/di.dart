@@ -7,12 +7,47 @@ import 'core/network/dio_service.dart';
 import 'core/network/endpoints/api_endpoints.dart';
 import 'core/network/interceptors/api_interceptor.dart';
 import 'core/network/interceptors/logging_interceptor.dart';
-import 'core/network/interceptors/refresh_token_interceptor.dart';
-import 'features/example_feature/data/datasources/item_remote_data_source.dart';
-import 'features/example_feature/data/repositories/item_repository_impl.dart';
-import 'features/example_feature/domain/repositories/item_repository.dart';
-import 'features/example_feature/domain/usecases/get_items_usecase.dart';
-import 'features/example_feature/presentation/bloc/item_bloc.dart';
+import 'features/auth/data/datasources/auth_remote_data_source.dart';
+import 'features/auth/data/repositories/auth_repository_impl.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/domain/usecases/login_usecase.dart';
+import 'features/auth/domain/usecases/signup_usecase.dart';
+import 'features/auth/domain/usecases/verify_email_usecase.dart';
+import 'features/auth/domain/usecases/send_email_verification_usecase.dart';
+import 'features/auth/domain/usecases/verify_password_reset_otp_usecase.dart';
+import 'features/auth/domain/usecases/reset_password_usecase.dart';
+import 'features/auth/domain/usecases/complete_profile_usecase.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/cubit/resend_otp_cubit.dart';
+import 'features/payments/data/datasources/payment_remote_data_source.dart';
+import 'features/payments/data/repositories/payment_repository_impl.dart';
+import 'features/payments/domain/repositories/payment_repository.dart';
+import 'features/payments/domain/usecases/add_payment_method_usecase.dart';
+import 'features/payments/domain/usecases/get_payment_methods_usecase.dart';
+import 'features/payments/domain/usecases/delete_payment_method_usecase.dart';
+import 'features/payments/presentation/bloc/payment_bloc.dart';
+import 'features/sessions/data/datasources/sessions_remote_data_source.dart';
+import 'features/sessions/data/repositories/sessions_repository_impl.dart';
+import 'features/sessions/domain/repositories/sessions_repository.dart';
+import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
+import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
+import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
+import 'features/sessions/domain/usecases/book_session_usecase.dart';
+import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/speech_to_text/data/datasources/speech_to_text_local_data_source.dart';
+import 'features/speech_to_text/data/repositories/speech_to_text_repository_impl.dart';
+import 'features/speech_to_text/domain/repositories/speech_to_text_repository.dart';
+import 'features/speech_to_text/domain/usecases/initialize_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/start_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/stop_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/pause_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/resume_speech_recognition_usecase.dart';
+import 'features/speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
+import 'features/harold_ai/data/datasources/harold_remote_data_source.dart';
+import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
+import 'features/harold_ai/domain/repositories/harold_repository.dart';
+import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
+import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -31,7 +66,12 @@ Future<void> init() async {
     return DioService(
       dioClient: sl<Dio>(),
       globalCacheOptions: cacheOptions,
-      interceptors: [ApiInterceptor(), DioCacheInterceptor(options: cacheOptions), if (kDebugMode) LoggingInterceptor(), RefreshTokenInterceptor(dioClient: sl<Dio>())],
+      interceptors: [
+        ApiInterceptor(),
+        DioCacheInterceptor(options: cacheOptions),
+        if (kDebugMode) LoggingInterceptor(),
+        // RefreshTokenInterceptor(dioClient: sl<Dio>()),
+      ],
     );
   });
 
@@ -39,14 +79,71 @@ Future<void> init() async {
   sl.registerLazySingleton<ApiService>(() => ApiService(sl<DioService>()));
 
   // Data sources
-  sl.registerLazySingleton<ItemRemoteDataSource>(() => ItemRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>(), dioService: sl<DioService>()));
+  sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
+  sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
-  sl.registerLazySingleton<ItemRepository>(() => ItemRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<SessionsRepository>(() => SessionsRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<SpeechToTextRepository>(() => SpeechToTextRepositoryImpl(localDataSource: sl()));
+  sl.registerLazySingleton<HaroldRepository>(() => HaroldRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
-  sl.registerLazySingleton(() => GetItemsUseCase(sl()));
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => SignupUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyEmailUseCase(sl()));
+  sl.registerLazySingleton(() => SendEmailVerificationUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyPasswordResetOtpUseCase(sl()));
+  sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
+  sl.registerLazySingleton(() => CompleteProfileUseCase(sl()));
+  sl.registerLazySingleton(() => AddPaymentMethodUseCase(sl()));
+  sl.registerLazySingleton(() => GetPaymentMethodsUseCase(sl()));
+  sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
+  sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
+  sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => BookSessionUseCase(sl()));
+  sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => PauseSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
 
   // Bloc
-  sl.registerFactory(() => ItemBloc(getItemsUseCase: sl()));
+  sl.registerLazySingleton(
+    () => AuthBloc(
+      loginUseCase: sl(),
+      signupUseCase: sl(),
+      verifyEmailUseCase: sl(),
+      sendEmailVerificationUseCase: sl(),
+      verifyPasswordResetOtpUseCase: sl(),
+      resetPasswordUseCase: sl(),
+      completeProfileUseCase: sl(),
+      authRepository: sl(),
+    ),
+  );
+
+  // Payment Bloc
+  sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl(), deletePaymentMethodUseCase: sl()));
+
+  // Sessions Bloc
+  sl.registerLazySingleton(
+    () => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl(), bookSessionUseCase: sl()),
+  );
+
+  // Speech to Text Bloc
+  sl.registerFactory(
+    () => SpeechToTextBloc(initializeUseCase: sl(), startUseCase: sl(), stopUseCase: sl(), pauseUseCase: sl(), resumeUseCase: sl(), repository: sl()),
+  );
+
+  // Harold AI Bloc
+  sl.registerLazySingleton(() => HaroldAiBloc(evaluateQueryUseCase: sl()));
+
+  // Cubit
+  sl.registerFactory(() => ResendOtpCubit());
 }

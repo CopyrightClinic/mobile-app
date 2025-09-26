@@ -1,9 +1,10 @@
 // ignore_for_file: constant_identifier_names, library_private_types_in_public_api
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import '../../constants/app_strings.dart';
+import '../models/api_error_model.dart';
 
 enum _ExceptionType {
-  TokenExpiredException,
   CancelException,
   ConnectTimeoutException,
   SendTimeoutException,
@@ -22,15 +23,14 @@ class CustomException implements Exception {
   final int? statusCode;
   final _ExceptionType exceptionType;
 
-  CustomException({
-    this.code,
-    int? statusCode,
-    required this.message,
-    this.exceptionType = _ExceptionType.ApiException,
-  }) : statusCode = statusCode ?? 500,
-       name = exceptionType.name;
+  CustomException({this.code, int? statusCode, required this.message, this.exceptionType = _ExceptionType.ApiException})
+    : statusCode = statusCode ?? 500,
+      name = exceptionType.name;
 
   factory CustomException.fromDioException(Exception error) {
+    if (error is CustomException) {
+      return error;
+    }
     try {
       if (error is DioException) {
         switch (error.type) {
@@ -50,36 +50,42 @@ class CustomException implements Exception {
             return CustomException(
               exceptionType: _ExceptionType.SendTimeoutException,
               statusCode: error.response?.statusCode,
-              message: 'Failed to send',
+              message: AppStrings.failedToSend,
             );
           case DioExceptionType.receiveTimeout:
             return CustomException(
               exceptionType: _ExceptionType.ReceiveTimeoutException,
               statusCode: error.response?.statusCode,
-              message: 'Failed to receive',
+              message: AppStrings.failedToReceive,
             );
           case DioExceptionType.badCertificate:
-            return CustomException(
-              exceptionType: _ExceptionType.ApiException,
-              statusCode: error.response?.statusCode,
-              message: 'Bad certificate',
-            );
+            return CustomException(exceptionType: _ExceptionType.ApiException, statusCode: error.response?.statusCode, message: 'Bad certificate');
           case DioExceptionType.badResponse:
-            final name = error.response?.data['headers']['code'] as String?;
-            final message =
-                error.response?.data['headers']['message'] as String?;
-            if (name == null || message == null) {
-              return CustomException(
-                exceptionType: _ExceptionType.UnrecognizedException,
-                statusCode: error.response?.statusCode,
-                message: 'Unknown error',
-              );
+            final responseData = error.response?.data;
+            if (responseData != null) {
+              try {
+                final apiError = ApiErrorModel.fromResponse(responseData);
+                return CustomException(
+                  exceptionType: _ExceptionType.ApiException,
+                  code: apiError.error,
+                  statusCode: apiError.statusCode,
+                  message: apiError.message,
+                );
+              } catch (e) {
+                if (responseData is Map<String, dynamic> && responseData['message'] != null) {
+                  return CustomException(
+                    exceptionType: _ExceptionType.ApiException,
+                    statusCode: error.response?.statusCode,
+                    message: responseData['message'].toString(),
+                  );
+                }
+              }
             }
+
             return CustomException(
-              exceptionType: _ExceptionType.ApiException,
-              code: name,
+              exceptionType: _ExceptionType.UnrecognizedException,
               statusCode: error.response?.statusCode,
-              message: message,
+              message: error.response?.statusMessage ?? 'Unknown error',
             );
           case DioExceptionType.connectionError:
             return CustomException(
@@ -88,62 +94,52 @@ class CustomException implements Exception {
               message: 'Connection error',
             );
           case DioExceptionType.unknown:
-            if (error.message != null &&
-                error.message!.contains(_ExceptionType.SocketException.name)) {
+            if (error.message != null && error.message!.contains(_ExceptionType.SocketException.name)) {
               return CustomException(
                 exceptionType: _ExceptionType.FetchDataException,
                 statusCode: error.response?.statusCode,
                 message: 'No internet connectivity',
               );
             }
-            if (error.response?.data['headers']['code'] == null) {
-              return CustomException(
-                exceptionType: _ExceptionType.UnrecognizedException,
-                statusCode: error.response?.statusCode,
-                message: error.response?.statusMessage ?? 'Unknown',
-              );
+            final responseData = error.response?.data;
+            if (responseData != null) {
+              try {
+                final apiError = ApiErrorModel.fromResponse(responseData);
+                return CustomException(
+                  exceptionType: _ExceptionType.ApiException,
+                  code: apiError.error,
+                  statusCode: apiError.statusCode,
+                  message: apiError.message,
+                );
+              } catch (e) {
+                if (responseData is Map<String, dynamic> && responseData['message'] != null) {
+                  return CustomException(
+                    exceptionType: _ExceptionType.ApiException,
+                    statusCode: error.response?.statusCode,
+                    message: responseData['message'].toString(),
+                  );
+                }
+              }
             }
-            final name = error.response?.data['headers']['code'] as String;
-            final message =
-                error.response?.data['headers']['message'] as String;
-            if (name == _ExceptionType.TokenExpiredException.name) {
-              return CustomException(
-                exceptionType: _ExceptionType.TokenExpiredException,
-                code: name,
-                statusCode: error.response?.statusCode,
-                message: message,
-              );
-            }
+
             return CustomException(
-              message: message,
-              code: name,
+              exceptionType: _ExceptionType.UnrecognizedException,
               statusCode: error.response?.statusCode,
+              message: error.response?.statusMessage ?? 'Unknown error',
             );
         }
       } else {
-        return CustomException(
-          exceptionType: _ExceptionType.UnrecognizedException,
-          message: 'Error unrecognized',
-        );
+        return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: AppStrings.errorUnrecognized);
       }
     } on FormatException catch (e) {
-      return CustomException(
-        exceptionType: _ExceptionType.FormatException,
-        message: e.message,
-      );
+      return CustomException(exceptionType: _ExceptionType.FormatException, message: e.message);
     } on Exception catch (_) {
-      return CustomException(
-        exceptionType: _ExceptionType.UnrecognizedException,
-        message: 'Error unrecognized',
-      );
+      return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: AppStrings.errorUnrecognized);
     }
   }
 
   factory CustomException.fromParsingException(Exception error) {
     debugPrint('$error');
-    return CustomException(
-      exceptionType: _ExceptionType.SerializationException,
-      message: 'Failed to parse network response to model or vice versa',
-    );
+    return CustomException(exceptionType: _ExceptionType.SerializationException, message: AppStrings.failedToParseNetworkResponse);
   }
 }

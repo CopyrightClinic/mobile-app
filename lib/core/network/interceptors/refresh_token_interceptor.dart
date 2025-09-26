@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
 
-import '../../utils/typedefs/type_defs.dart';
-
 class RefreshTokenInterceptor extends Interceptor {
   final Dio _dio;
 
@@ -10,17 +8,21 @@ class RefreshTokenInterceptor extends Interceptor {
   String get tokenExpiredException => 'TokenExpiredException';
 
   @override
-  Future<void> onError(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) async {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response != null) {
       if (err.response!.data != null) {
-        final headers = err.response!.data['headers'] as JSON;
+        final responseData = err.response!.data;
 
-        final code = headers['code'] as String;
-        if (code == tokenExpiredException) {
-          _dio.close();
+        // Check if it's a token expired error based on your API structure
+        if (responseData is Map<String, dynamic>) {
+          final errorType = responseData['error'];
+          final statusCode = responseData['statusCode'];
+
+          // You can customize this logic based on how your API indicates token expiration
+          if (errorType == 'Unauthorized' || statusCode == 401) {
+            // Handle token expiration
+            _dio.close();
+          }
         }
       }
     }
