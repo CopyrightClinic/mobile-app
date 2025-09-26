@@ -90,6 +90,7 @@ class ApiService implements ApiInterface {
   Future<T> postData<T>({
     required String endpoint,
     required JSON data,
+    JSON? headers,
     CancelToken? cancelToken,
     bool requiresAuthToken = true,
     required T Function(ResponseModel<JSON> response) converter,
@@ -100,7 +101,7 @@ class ApiService implements ApiInterface {
       response = await _dioService.post<JSON>(
         endpoint: endpoint,
         data: data,
-        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}, headers: headers),
         cancelToken: cancelToken,
       );
     } on Exception catch (ex) {
