@@ -190,7 +190,8 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
         ),
         children: [
           TextSpan(text: widget.verificationType.description),
-          TextSpan(text: ' (${widget.email})', style: const TextStyle(color: AppTheme.white, fontWeight: FontWeight.w500)),
+          TextSpan(text: " ${widget.email}.", style: const TextStyle(color: AppTheme.white, fontWeight: FontWeight.w500)),
+          if (widget.verificationType == VerificationType.passwordReset) TextSpan(text: " ${tr(AppStrings.passwordResetDescription2)}"),
         ],
       ),
     );

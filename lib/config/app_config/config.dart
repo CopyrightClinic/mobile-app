@@ -7,6 +7,8 @@ class Config {
   static const String merchantIdentifier = "merchant.com.copyrightclinic";
   static const String baseUrl = "https://copy-right-clinic-backend.brainxdemo.com/api/v1";
 
+  static const String haroldApiKey = "5f2c9c47-3c92-41a8-9c68-b7f8b2a512df";
+
   static const String stripePublishableKey =
       "pk_test_51S3bqSGzkX8hKWt481JGZQ7T3ssDo9j8N36Y11F9CdvorpjIKBYLbtUEptxPmluRHURLyEecUxGGgFkokYuNtu4X00Q3osYq3B";
   static const String stripeSecretKey = "sk_test_51S3bqSGzkX8hKWt4AHeHlc3dFiIi1Scv2VtXR0i12lb5g4nmqQZjFRyoePdI1hLMhBvkWPKvMwVvsNKqlylwYUBf00mNKA6uMJ";

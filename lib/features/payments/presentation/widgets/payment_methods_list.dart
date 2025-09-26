@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/constants/image_constants.dart';
+import '../../../../core/widgets/global_image.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/translated_text.dart';
@@ -40,7 +42,7 @@ class PaymentMethodsList extends StatelessWidget {
               itemCount: paymentMethods.length + (config.showAddButton ? 1 : 0),
               itemBuilder: (context, index) {
                 if (config.showAddButton && index == paymentMethods.length) {
-                  return _buildAddPaymentMethodButton(context);
+                  return _buildAddPaymentMethodButton2(context);
                 }
 
                 final paymentMethod = paymentMethods[index];
@@ -73,20 +75,24 @@ class PaymentMethodsList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.credit_card_off, size: 64.w, color: context.darkTextSecondary),
+            GlobalImage(assetPath: ImageConstants.noPaymentMethods, width: 80.w, height: 80.h, fit: BoxFit.contain),
             SizedBox(height: DimensionConstants.gap16Px.h),
             TranslatedText(
               config.emptyStateMessage ?? AppStrings.noPaymentMethods,
+              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w700),
+            ),
+            TranslatedText(
+              AppStrings.tapToAdd,
               style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w500),
             ),
-            if (config.showAddButton) ...[SizedBox(height: DimensionConstants.gap24Px.h), _buildAddPaymentMethodButton(context)],
+            if (config.showAddButton) ...[SizedBox(height: DimensionConstants.gap18Px.h), _buildAddPaymentMethodButton(context)],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAddPaymentMethodButton(BuildContext context) {
+  Widget _buildAddPaymentMethodButton2(BuildContext context) {
     return GestureDetector(
       onTap: config.onAddPaymentMethod,
       child: SizedBox(
@@ -107,6 +113,18 @@ class PaymentMethodsList extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAddPaymentMethodButton(BuildContext context) {
+    return GestureDetector(
+      onTap: config.onAddPaymentMethod,
+      child: Container(
+        width: 30.w,
+        height: 30.h,
+        decoration: BoxDecoration(color: context.primary, shape: BoxShape.circle),
+        child: Icon(Icons.add, color: context.white, size: DimensionConstants.icon24Px.f),
       ),
     );
   }

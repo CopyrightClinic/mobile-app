@@ -13,6 +13,7 @@ import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../payments/domain/entities/payment_method_entity.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -79,27 +80,10 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: DimensionConstants.gap24Px.h),
 
             AuthButton(
-              text: AppStrings.bookNewSession,
+              text: AppStrings.askHaroldAI,
               onPressed: () {
-                context.push(AppRoutes.scheduleSessionRouteName);
+                context.push(AppRoutes.askHaroldAiRouteName);
               },
-            ),
-            SizedBox(height: DimensionConstants.gap16Px.h),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: context.primary,
-                  side: BorderSide(color: context.primary),
-                  padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                ),
-                child: TranslatedText(
-                  AppStrings.viewAllSessions,
-                  style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.primary),
-                ),
-              ),
             ),
           ],
         ),

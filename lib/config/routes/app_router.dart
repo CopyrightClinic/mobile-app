@@ -13,9 +13,16 @@ import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
 import '../../features/payments/presentation/pages/payment_methods_screen.dart';
+import '../../features/sessions/presentation/pages/params/schedule_session_screen_params.dart';
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
 import '../../features/sessions/presentation/pages/booking_request_sent_screen.dart';
+import '../../features/harold_ai/presentation/pages/ask_harold_ai_screen.dart';
+import '../../features/harold_ai/presentation/pages/harold_signup.dart';
+import '../../features/harold_ai/presentation/pages/harold_success_screen.dart';
+import '../../features/harold_ai/presentation/pages/harold_failed_screen.dart';
+import '../../features/harold_ai/presentation/pages/params/harold_success_screen_params.dart';
+import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
@@ -116,7 +123,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.scheduleSessionRouteName,
         name: AppRoutes.scheduleSessionRouteName,
-        builder: (context, state) => const ScheduleSessionScreen(),
+        builder: (context, state) {
+          final extra = state.extra as ScheduleSessionScreenParams;
+          return ScheduleSessionScreen(params: extra);
+        },
       ),
       GoRoute(
         path: AppRoutes.selectPaymentMethodRouteName,
@@ -156,6 +166,24 @@ class AppRouter {
         path: AppRoutes.paymentMethodsRouteName,
         name: AppRoutes.paymentMethodsRouteName,
         builder: (context, state) => const PaymentMethodsScreen(),
+      ),
+      GoRoute(path: AppRoutes.askHaroldAiRouteName, name: AppRoutes.askHaroldAiRouteName, builder: (context, state) => const AskHaroldAiScreen()),
+      GoRoute(path: AppRoutes.haroldSignupRouteName, name: AppRoutes.haroldSignupRouteName, builder: (context, state) => const HaroldSignupScreen()),
+      GoRoute(
+        path: AppRoutes.haroldSuccessRouteName,
+        name: AppRoutes.haroldSuccessRouteName,
+        builder: (context, state) {
+          final params = state.extra as HaroldSuccessScreenParams;
+          return HaroldSuccessScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.haroldFailedRouteName,
+        name: AppRoutes.haroldFailedRouteName,
+        builder: (context, state) {
+          final params = state.extra as HaroldFailedScreenParams;
+          return HaroldFailedScreen(params: params);
+        },
       ),
     ],
   );

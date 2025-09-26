@@ -26,4 +26,8 @@ class AppRoutes {
   static const String editProfileRouteName = '/edit-profile';
   static const String changePasswordRouteName = '/change-password';
   static const String paymentMethodsRouteName = '/payment-methods';
+  static const String askHaroldAiRouteName = '/ask-harold-ai';
+  static const String haroldSignupRouteName = '/harold-signup';
+  static const String haroldSuccessRouteName = '/harold-success';
+  static const String haroldFailedRouteName = '/harold-failed';
 }
