@@ -22,6 +22,8 @@ import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
 import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../harold_ai/domain/services/harold_navigation_service.dart';
+import '../../../harold_ai/presentation/pages/params/harold_success_screen_params.dart';
+import '../../../harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
 
 class AddPaymentMethodScreen extends StatefulWidget {
   final PaymentMethodFrom from;
@@ -60,9 +62,9 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
 
     if (pendingResult != null) {
       if (pendingResult == 'success') {
-        context.go(AppRoutes.haroldSuccessRouteName, extra: {'fromAuthFlow': true, 'query': pendingQuery});
+        context.go(AppRoutes.haroldSuccessRouteName, extra: HaroldSuccessScreenParams(fromAuthFlow: true, query: pendingQuery));
       } else {
-        context.go(AppRoutes.haroldFailedRouteName, extra: {'fromAuthFlow': true, 'query': pendingQuery});
+        context.go(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: true, query: pendingQuery));
       }
     } else {
       context.go(AppRoutes.homeRouteName);
