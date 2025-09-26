@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_service/api_service.dart';
 import '../../../../core/network/dio_service.dart';
@@ -101,8 +99,6 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       slot: BookSessionSlotModel(start: startTime, end: endTime),
       summary: summary,
     );
-    log('startTime: ${request.slot.start}');
-    log('endTime: ${request.slot.end}');
     try {
       final response = await dioService.post<JSON>(
         endpoint: '/session-requests/book-session',

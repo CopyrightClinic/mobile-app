@@ -4,6 +4,12 @@ import '../constants/app_strings.dart';
 class SessionDateTimeUtils {
   SessionDateTimeUtils._();
 
+  static const String timeFormat = 'h:mm A';
+  static const String monthDay = 'MMM d';
+  static const String dayName = 'EEEE';
+  static const String dayMonthDay = 'EEEE, MMM d';
+  static const String dayMonthYear = 'dd/MM/yy';
+
   static final RegExp _isoTimeSlotRegex = RegExp(
     r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)',
   );
@@ -16,31 +22,31 @@ class SessionDateTimeUtils {
     final today = DateTime(now.year, now.month, now.day);
     final sessionDate = DateTime(date.year, date.month, date.day);
 
-    final startTime = DateFormat('h:mm A').format(date);
-    final endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: sessionDurationMinutes)));
+    final startTime = DateFormat(timeFormat).format(date);
+    final endTime = DateFormat(timeFormat).format(date.add(const Duration(minutes: sessionDurationMinutes)));
     final timeRange = '$startTime ${AppStrings.to.tr()} $endTime';
 
     if (sessionDate == today) {
-      final dateStr = DateFormat('MMM d').format(date);
+      final dateStr = DateFormat(monthDay).format(date);
       return '${AppStrings.today.tr()}, $dateStr – $timeRange';
     } else {
-      final dateStr = DateFormat('EEEE, MMM d').format(date);
+      final dateStr = DateFormat(dayMonthDay).format(date);
       return '$dateStr – $timeRange';
     }
   }
 
   static String formatSessionDateTime(DateTime date, String? timeSlot) {
-    final dayName = DateFormat('EEEE').format(date);
-    final monthDay = DateFormat('MMM d').format(date);
+    final dayNameStr = DateFormat(dayName).format(date);
+    final monthDayStr = DateFormat(monthDay).format(date);
 
     final timeRange = _formatTimeRange(date, timeSlot);
-    return '$dayName, $monthDay – $timeRange';
+    return '$dayNameStr, $monthDayStr – $timeRange';
   }
 
   static String formatCancellationDeadline(DateTime sessionDate) {
     final deadline = sessionDate.subtract(const Duration(hours: 24));
-    final dateStr = DateFormat('dd/MM/yy').format(deadline);
-    final timeStr = DateFormat('h:mm A').format(deadline);
+    final dateStr = DateFormat(dayMonthYear).format(deadline);
+    final timeStr = DateFormat(timeFormat).format(deadline);
     return '$dateStr, $timeStr';
   }
 
@@ -77,8 +83,8 @@ class SessionDateTimeUtils {
         final startDateTime = DateTime.parse(isoMatch.group(1)!);
         final endDateTime = DateTime.parse(isoMatch.group(2)!);
 
-        final startTime = DateFormat('h:mm A').format(startDateTime);
-        final endTime = DateFormat('h:mm A').format(endDateTime);
+        final startTime = DateFormat(timeFormat).format(startDateTime);
+        final endTime = DateFormat(timeFormat).format(endDateTime);
         return '$startTime ${AppStrings.to.tr()} $endTime';
       }
     } catch (e) {}
@@ -98,8 +104,8 @@ class SessionDateTimeUtils {
           final startDateTime = DateTime.parse(isoMatch.group(1)!);
           final endDateTime = DateTime.parse(isoMatch.group(2)!);
 
-          final startTime = DateFormat('h:mm A').format(startDateTime);
-          final endTime = DateFormat('h:mm A').format(endDateTime);
+          final startTime = DateFormat(timeFormat).format(startDateTime);
+          final endTime = DateFormat(timeFormat).format(endDateTime);
           return '$startTime ${AppStrings.to.tr()} $endTime';
         }
       } catch (e) {}
@@ -109,8 +115,8 @@ class SessionDateTimeUtils {
   }
 
   static String _formatDefaultTimeRange(DateTime date) {
-    final startTime = DateFormat('h:mm A').format(date);
-    final endTime = DateFormat('h:mm A').format(date.add(const Duration(minutes: sessionDurationMinutes)));
+    final startTime = DateFormat(timeFormat).format(date);
+    final endTime = DateFormat(timeFormat).format(date.add(const Duration(minutes: sessionDurationMinutes)));
     return '$startTime ${AppStrings.to.tr()} $endTime';
   }
 }
