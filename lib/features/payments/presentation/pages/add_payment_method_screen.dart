@@ -21,6 +21,9 @@ import '../bloc/payment_bloc.dart';
 import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
 import '../../../../core/utils/enumns/ui/payment_method.dart';
+import '../../../harold_ai/domain/services/harold_navigation_service.dart';
+import '../../../harold_ai/presentation/pages/params/harold_success_screen_params.dart';
+import '../../../harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
 
 class AddPaymentMethodScreen extends StatefulWidget {
   final PaymentMethodFrom from;
@@ -50,6 +53,24 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
     _paymentBloc = sl<PaymentBloc>();
   }
 
+  void _handleAuthFlowCompletion(BuildContext context) async {
+    final data = await HaroldNavigationService.getPendingResultAndQuery();
+    if (!mounted) return;
+
+    final pendingResult = data['result'];
+    final pendingQuery = data['query'];
+
+    if (pendingResult != null) {
+      if (pendingResult == 'success') {
+        context.go(AppRoutes.haroldSuccessRouteName, extra: HaroldSuccessScreenParams(fromAuthFlow: true, query: pendingQuery));
+      } else {
+        context.go(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: true, query: pendingQuery));
+      }
+    } else {
+      context.go(AppRoutes.homeRouteName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<PaymentBloc, PaymentState>(
@@ -58,7 +79,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
         if (state is PaymentMethodAdded) {
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
           if (widget.from == PaymentMethodFrom.auth) {
-            context.go(AppRoutes.homeRouteName);
+            _handleAuthFlowCompletion(context);
           } else {
             context.pop(true);
           }
@@ -86,7 +107,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                 padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
                 child: ElevatedButton(
                   onPressed: () {
-                    context.go(AppRoutes.homeRouteName);
+                    _handleAuthFlowCompletion(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.white,
@@ -212,6 +233,8 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return AppStrings.cardholderNameIsRequired.tr();
+    } else if (value.trim().length > 100) {
+      return AppStrings.cardholderNameCannotExceed100Characters.tr();
     }
     return null;
   }

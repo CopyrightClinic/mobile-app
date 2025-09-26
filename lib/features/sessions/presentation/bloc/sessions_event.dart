@@ -82,3 +82,24 @@ class LoadSessionAvailability extends SessionsEvent {
   @override
   List<Object> get props => [timezone];
 }
+
+class BookSessionRequested extends SessionsEvent {
+  final String stripePaymentMethodId;
+  final String date;
+  final String startTime;
+  final String endTime;
+  final String summary;
+  final String timezone;
+
+  const BookSessionRequested({
+    required this.stripePaymentMethodId,
+    required this.date,
+    required this.startTime,
+    required this.endTime,
+    required this.summary,
+    required this.timezone,
+  });
+
+  @override
+  List<Object> get props => [stripePaymentMethodId, date, startTime, endTime, summary, timezone];
+}

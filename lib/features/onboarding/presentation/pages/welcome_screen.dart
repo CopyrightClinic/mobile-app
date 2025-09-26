@@ -121,7 +121,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 
                     SizedBox(height: DimensionConstants.gap16Px.h),
 
-                    _buildAnimatedInfoButton(animation: _staggerAnimations[3], icon: Icons.auto_awesome, title: AppStrings.askHaroldAI, onTap: () {}),
+                    _buildAnimatedInfoButton(
+                      animation: _staggerAnimations[3],
+                      icon: Icons.auto_awesome,
+                      title: AppStrings.askHaroldAI,
+                      onTap: () {
+                        context.push(AppRoutes.askHaroldAiRouteName);
+                      },
+                    ),
 
                     SizedBox(height: DimensionConstants.gap40Px.h),
 

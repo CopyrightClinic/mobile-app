@@ -1,7 +1,12 @@
+import 'package:dio/dio.dart';
 import '../../../../core/network/api_service/api_service.dart';
+import '../../../../core/network/dio_service.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/typedefs/type_defs.dart';
 import '../models/session_model.dart';
 import '../models/session_availability_model.dart';
+import '../models/book_session_request_model.dart';
+import '../models/book_session_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
@@ -12,12 +17,21 @@ abstract class SessionsRemoteDataSource {
   Future<String> cancelSession(String sessionId, String reason);
   Future<SessionModel> joinSession(String sessionId);
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone);
+  Future<BookSessionResponseModel> bookSession({
+    required String stripePaymentMethodId,
+    required String date,
+    required String startTime,
+    required String endTime,
+    required String summary,
+    required String timezone,
+  });
 }
 
 class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   final ApiService apiService;
+  final DioService dioService;
 
-  SessionsRemoteDataSourceImpl({required this.apiService});
+  SessionsRemoteDataSourceImpl({required this.apiService, required this.dioService});
 
   @override
   Future<List<SessionModel>> getUserSessions() async {
@@ -68,5 +82,33 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       headers: {'Timezone': timezone},
       converter: (json) => SessionAvailabilityModel.fromJson(json),
     );
+  }
+
+  @override
+  Future<BookSessionResponseModel> bookSession({
+    required String stripePaymentMethodId,
+    required String date,
+    required String startTime,
+    required String endTime,
+    required String summary,
+    required String timezone,
+  }) async {
+    final request = BookSessionRequestModel(
+      stripePaymentMethodId: stripePaymentMethodId,
+      date: date,
+      slot: BookSessionSlotModel(start: startTime, end: endTime),
+      summary: summary,
+    );
+    try {
+      final response = await dioService.post<JSON>(
+        endpoint: '/session-requests/book-session',
+        data: request.toJson(),
+        options: Options(headers: {'timezone': timezone}, extra: {'requiresAuthToken': true}),
+      );
+
+      return BookSessionResponseModel.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

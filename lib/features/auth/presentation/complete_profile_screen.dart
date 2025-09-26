@@ -64,15 +64,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
   }
 
   void _handleSave() {
-    if (_formKey.currentState!.validate() && _phoneNumber != null) {
-      final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
-      if (!isPhoneValid) {
-        SnackBarUtils.showError(context, tr(AppStrings.invalidPhoneNumber));
-        return;
-      }
-
+    if (_formKey.currentState!.validate() && _isFormValid) {
       final name = _fullNameController.text.trim();
-      final phoneNumber = _phoneNumber!.phoneNumber ?? '';
+      final phoneNumber = _phoneNumber?.phoneNumber ?? '';
       final address = _addressController.text.trim();
 
       context.read<AuthBloc>().add(CompleteProfileRequested(name: name, phoneNumber: phoneNumber, address: address));
@@ -167,18 +161,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                               placeholder: AppStrings.enterYourPhoneNumber,
                               controller: _phoneController,
                               focusNode: _phoneFocusNode,
-                              validator: (value) {
-                                if (_phoneNumber == null || _phoneNumber!.phoneNumber == null || _phoneNumber!.phoneNumber!.isEmpty) {
-                                  return tr(AppStrings.phoneNumberRequired);
-                                }
-                                if (!(_phoneFieldKey.currentState?.isPhoneValid ?? false)) {
-                                  return tr(AppStrings.invalidPhoneNumber);
-                                }
-                                return null;
-                              },
                               onEditingComplete: () => _addressFocusNode.requestFocus(),
                               onChanged: (PhoneNumber phoneNumber) {
                                 _phoneNumber = phoneNumber;
+                                _onFieldChanged();
+                              },
+                              onValidationChanged: (bool isValid) {
                                 _onFieldChanged();
                               },
                               initialCountryCode: 'US',

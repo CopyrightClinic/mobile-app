@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -11,6 +12,10 @@ import 'config/app_config/config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock the app to portrait mode only
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   await EasyLocalization.ensureInitialized();
   await di.init();
 

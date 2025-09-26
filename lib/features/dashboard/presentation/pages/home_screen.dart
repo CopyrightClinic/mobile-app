@@ -79,27 +79,10 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: DimensionConstants.gap24Px.h),
 
             AuthButton(
-              text: AppStrings.bookNewSession,
+              text: AppStrings.askHaroldAI,
               onPressed: () {
-                context.push(AppRoutes.scheduleSessionRouteName);
+                context.push(AppRoutes.askHaroldAiRouteName);
               },
-            ),
-            SizedBox(height: DimensionConstants.gap16Px.h),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: context.primary,
-                  side: BorderSide(color: context.primary),
-                  padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
-                ),
-                child: TranslatedText(
-                  AppStrings.viewAllSessions,
-                  style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.primary),
-                ),
-              ),
             ),
           ],
         ),

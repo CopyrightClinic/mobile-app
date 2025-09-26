@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
+import '../../domain/entities/book_session_response_entity.dart';
 
 abstract class SessionsState extends Equatable {
   const SessionsState();
@@ -158,4 +159,26 @@ class ScheduleSessionState extends SessionsState {
 
     return selectedDay?.slots ?? [];
   }
+}
+
+class SessionBookLoading extends SessionsState {
+  const SessionBookLoading();
+}
+
+class SessionBooked extends SessionsState {
+  final BookSessionResponseEntity response;
+
+  const SessionBooked({required this.response});
+
+  @override
+  List<Object> get props => [response];
+}
+
+class SessionBookError extends SessionsState {
+  final String message;
+
+  const SessionBookError({required this.message});
+
+  @override
+  List<Object> get props => [message];
 }

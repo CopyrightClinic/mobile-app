@@ -116,13 +116,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: DimensionConstants.gap32Px.h),
 
-              _buildProfileOption(context, icon: Icons.person_outline, title: AppStrings.editProfile, onTap: () {}),
-              SizedBox(height: DimensionConstants.gap16Px.h),
-              _buildProfileOption(context, icon: Icons.payment_outlined, title: 'Payment Methods', onTap: () {}),
-              SizedBox(height: DimensionConstants.gap16Px.h),
-              _buildProfileOption(context, icon: Icons.settings_outlined, title: AppStrings.settings, onTap: () {}),
-              SizedBox(height: DimensionConstants.gap32Px.h),
-
+              // _buildProfileOption(context, icon: Icons.person_outline, title: AppStrings.editProfile, onTap: () {}),
+              // SizedBox(height: DimensionConstants.gap16Px.h),
+              // _buildProfileOption(context, icon: Icons.payment_outlined, title: 'Payment Methods', onTap: () {}),
+              // SizedBox(height: DimensionConstants.gap16Px.h),
+              // _buildProfileOption(context, icon: Icons.settings_outlined, title: AppStrings.settings, onTap: () {}),
+              // SizedBox(height: DimensionConstants.gap32Px.h),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(

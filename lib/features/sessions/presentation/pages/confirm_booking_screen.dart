@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/utils/timezone_helper.dart';
+import '../../../../core/utils/session_datetime_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -46,6 +49,11 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         if (state is SessionScheduled) {
           context.go(AppRoutes.bookingRequestSentRouteName);
         } else if (state is SessionScheduleError) {
+          SnackBarUtils.showError(context, state.message);
+        } else if (state is SessionBooked) {
+          SnackBarUtils.showSuccess(context, AppStrings.sessionBookedSuccessfully.tr());
+          context.go(AppRoutes.bookingRequestSentRouteName);
+        } else if (state is SessionBookError) {
           SnackBarUtils.showError(context, state.message);
         }
       },
@@ -226,14 +234,32 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       padding: EdgeInsets.only(left: DimensionConstants.gap16Px.w, right: DimensionConstants.gap16Px.w, top: DimensionConstants.gap10Px.h),
       child: BlocBuilder<SessionsBloc, SessionsState>(
         builder: (context, state) {
-          final isLoading = state is SessionScheduleLoading;
+          final isLoading = state is SessionScheduleLoading || state is SessionBookLoading;
           return AuthButton(text: AppStrings.confirmAndBookSession, onPressed: _onConfirmBooking, isLoading: isLoading, isEnabled: true);
         },
       ),
     );
   }
 
-  void _onConfirmBooking() {
-    _sessionsBloc.add(ScheduleSessionRequested(selectedDate: widget.params.sessionDate, selectedTimeSlot: widget.params.timeSlot));
+  void _onConfirmBooking() async {
+    final parsedTimeSlot = SessionDateTimeUtils.parseTimeSlot(widget.params.timeSlot);
+    if (parsedTimeSlot == null) {
+      return;
+    }
+
+    final formattedDate = SessionDateTimeUtils.formatDateToIso(widget.params.sessionDate);
+    final summary = widget.params.query;
+    final String timezone = await TimezoneHelper.getUserTimezone();
+
+    _sessionsBloc.add(
+      BookSessionRequested(
+        stripePaymentMethodId: widget.params.paymentMethod.id,
+        date: formattedDate,
+        startTime: parsedTimeSlot.startTimeIso,
+        endTime: parsedTimeSlot.endTimeIso,
+        summary: summary,
+        timezone: timezone,
+      ),
+    );
   }
 }

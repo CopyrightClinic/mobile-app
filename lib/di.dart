@@ -32,7 +32,22 @@ import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
+import 'features/sessions/domain/usecases/book_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/speech_to_text/data/datasources/speech_to_text_local_data_source.dart';
+import 'features/speech_to_text/data/repositories/speech_to_text_repository_impl.dart';
+import 'features/speech_to_text/domain/repositories/speech_to_text_repository.dart';
+import 'features/speech_to_text/domain/usecases/initialize_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/start_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/stop_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/pause_speech_recognition_usecase.dart';
+import 'features/speech_to_text/domain/usecases/resume_speech_recognition_usecase.dart';
+import 'features/speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
+import 'features/harold_ai/data/datasources/harold_remote_data_source.dart';
+import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
+import 'features/harold_ai/domain/repositories/harold_repository.dart';
+import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
+import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -66,12 +81,16 @@ Future<void> init() async {
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>(), dioService: sl<DioService>()));
+  sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
+  sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SessionsRepository>(() => SessionsRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<SpeechToTextRepository>(() => SpeechToTextRepositoryImpl(localDataSource: sl()));
+  sl.registerLazySingleton<HaroldRepository>(() => HaroldRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -86,6 +105,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => BookSessionUseCase(sl()));
+  sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => PauseSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
+  sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
 
   // Bloc
@@ -106,7 +132,17 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl(), deletePaymentMethodUseCase: sl()));
 
   // Sessions Bloc
-  sl.registerLazySingleton(() => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl()));
+  sl.registerLazySingleton(
+    () => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl(), bookSessionUseCase: sl()),
+  );
+
+  // Speech to Text Bloc
+  sl.registerFactory(
+    () => SpeechToTextBloc(initializeUseCase: sl(), startUseCase: sl(), stopUseCase: sl(), pauseUseCase: sl(), resumeUseCase: sl(), repository: sl()),
+  );
+
+  // Harold AI Bloc
+  sl.registerLazySingleton(() => HaroldAiBloc(evaluateQueryUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

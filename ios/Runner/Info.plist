@@ -38,13 +38,16 @@
 		</array>
 		<key>UISupportedInterfaceOrientations~ipad</key>
 		<array>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
 			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		</array>
 		<key>NSCameraUsageDescription</key>
 		<string>Copyright Clinic uses the camera to capture documents or images for payment
 			purposes.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Copyright Clinic uses the microphone to convert your speech to text for easier
+			input.</string>
+		<key>NSSpeechRecognitionUsageDescription</key>
+		<string>Copyright Clinic uses speech recognition to convert your voice to text for
+			describing copyright issues.</string>
 	</dict>
 </plist>

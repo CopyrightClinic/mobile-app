@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'config/routes/app_router.dart';
 import 'config/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
+import 'core/widgets/keyboard_dismiss_wrapper.dart';
 import 'shared_features/theme/data/models/theme_model.dart';
 import 'shared_features/theme/view_models/bloc/theme_cubit.dart';
 import 'shared_features/localization/view_models/bloc/localization_cubit.dart';
@@ -12,6 +13,8 @@ import 'shared_features/localization/data/models/localization_model.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/payments/presentation/bloc/payment_bloc.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
+import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
 import 'di.dart';
 
 class MyApp extends StatelessWidget {
@@ -26,6 +29,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
         BlocProvider<PaymentBloc>(create: (context) => sl<PaymentBloc>()),
         BlocProvider<SessionsBloc>(create: (context) => sl<SessionsBloc>()),
+        BlocProvider<SpeechToTextBloc>(create: (context) => sl<SpeechToTextBloc>()),
+        BlocProvider<HaroldAiBloc>(create: (context) => sl<HaroldAiBloc>()),
       ],
       child: BlocBuilder<LocalizationCubit, LocalizationModel>(
         builder: (context, localization) {
@@ -34,16 +39,18 @@ class MyApp extends StatelessWidget {
           }
           return BlocBuilder<ThemeCubit, ThemeModel>(
             builder: (context, theme) {
-              return MaterialApp.router(
-                themeMode: theme.themeMode,
-                debugShowCheckedModeBanner: false,
-                title: tr(AppStrings.appName),
-                theme: AppTheme().light,
-                darkTheme: AppTheme().dark,
-                routerConfig: AppRouter.router,
-                locale: context.locale,
-                supportedLocales: context.supportedLocales,
-                localizationsDelegates: context.localizationDelegates,
+              return KeyboardDismissWrapper(
+                child: MaterialApp.router(
+                  themeMode: theme.themeMode,
+                  debugShowCheckedModeBanner: false,
+                  title: tr(AppStrings.appName),
+                  theme: AppTheme().light,
+                  darkTheme: AppTheme().dark,
+                  routerConfig: AppRouter.router,
+                  locale: context.locale,
+                  supportedLocales: context.supportedLocales,
+                  localizationsDelegates: context.localizationDelegates,
+                ),
               );
             },
           );
