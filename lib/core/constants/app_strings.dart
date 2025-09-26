@@ -68,6 +68,8 @@ class AppStrings {
   // Sign Up Screen
   static const createAccount = 'createAccount';
   static const enterEmailForVerification = 'enterEmailForVerification';
+  static const letsGetStarted = 'letsGetStarted';
+  static const verifyEmailFirstToContinue = 'verifyEmailFirstToContinue';
   static const createYourAccount = 'createYourAccount';
   static const confirmPassword = 'confirmPassword';
   static const verifyEmail = 'verifyEmail';
@@ -96,7 +98,8 @@ class AppStrings {
   static const emailVerificationTitle = 'emailVerificationTitle';
   static const passwordResetTitle = 'passwordResetTitle';
   static const emailVerificationDescription = 'emailVerificationDescription';
-  static const passwordResetDescription = 'passwordResetDescription';
+  static const passwordResetDescription1 = 'passwordResetDescription1';
+  static const passwordResetDescription2 = 'passwordResetDescription2';
   static const verifyEmailButton = 'verifyEmailButton';
   static const verifyCodeButton = 'verifyCodeButton';
   static const resendCodeButton = 'resendCodeButton';
@@ -125,10 +128,12 @@ class AppStrings {
   static const fullNameIsRequired = 'fullNameIsRequired';
   static const fullNameMustBeAtLeast2Characters = 'fullNameMustBeAtLeast2Characters';
   static const fullNameCanOnlyContainLetters = 'fullNameCanOnlyContainLetters';
+  static const fullNameCannotExceed100Characters = 'fullNameCannotExceed100Characters';
   static const phoneNumberIsRequired = 'phoneNumberIsRequired';
   static const phoneNumberMustBeAtLeast10Digits = 'phoneNumberMustBeAtLeast10Digits';
   static const addressIsRequired = 'addressIsRequired';
   static const addressMustBeAtLeast10Characters = 'addressMustBeAtLeast10Characters';
+  static const addressCannotExceed500Characters = 'addressCannotExceed500Characters';
 
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
@@ -178,7 +183,9 @@ class AppStrings {
   static const expirationDateIsRequired = 'expirationDateIsRequired';
   static const cvvIsRequired = 'cvvIsRequired';
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
+  static const cardholderNameCannotExceed100Characters = 'cardholderNameCannotExceed100Characters';
   static const noPaymentMethods = 'noPaymentMethods';
+  static const tapToAdd = 'tapToAdd';
   static const noPaymentMethodsYet = 'noPaymentMethodsYet';
   static const noPaymentMethodsAddOne = 'noPaymentMethodsAddOne';
   static const addAnotherPaymentMethod = 'addAnotherPaymentMethod';
@@ -252,6 +259,36 @@ class AppStrings {
   static const sessionRequestSentDescription = 'sessionRequestSentDescription';
   static const okay = 'okay';
 
+  // Harold AI Screen
+  static const describeYourCopyrightIssue = 'describeYourCopyrightIssue';
+  static const describe = 'describe';
+  static const submit = 'submit';
+  static const haroldAiHasResponseForYou = 'haroldAiHasResponseForYou';
+  static const pleaseSignUpOrLogInToViewIt = 'pleaseSignUpOrLogInToViewIt';
+  static const haroldCanConnectYou = 'haroldCanConnectYou';
+  static const haroldConsultationDescription = 'haroldConsultationDescription';
+  static const scheduleAppointment = 'scheduleAppointment';
+  static const yourMatterFallsOutsideScope = 'yourMatterFallsOutsideScope';
+  static const goToHome = 'goToHome';
+  static const failedToEvaluateQuery = 'failedToEvaluateQuery';
+  static const haroldAiEvaluationNotSuccessful = 'haroldAiEvaluationNotSuccessful';
+  static const unexpectedErrorOccurred = 'unexpectedErrorOccurred';
+  static const unexpectedErrorOccurredWhileEvaluatingQuery = 'unexpectedErrorOccurredWhileEvaluatingQuery';
+  static const speechRecognitionError = 'speechRecognitionError';
+  static const speechRecognitionNetworkError = 'speechRecognitionNetworkError';
+  static const speechRecognitionDisabledError = 'speechRecognitionDisabledError';
+  static const speechRecognitionGenericError = 'speechRecognitionGenericError';
+  static const speechRecognitionNotAvailable = 'speechRecognitionNotAvailable';
+  static const speechRecognitionPermissionDenied = 'speechRecognitionPermissionDenied';
+  static const speechRecognitionPermissionRestricted = 'speechRecognitionPermissionRestricted';
+  static const speechRecognitionPermissionNotDetermined = 'speechRecognitionPermissionNotDetermined';
+  static const speechRecognitionPermissionUnknown = 'speechRecognitionPermissionUnknown';
+  static const microphonePermissionDenied = 'microphonePermissionDenied';
+  static const audioSessionError = 'audioSessionError';
+  static const recognitionRequestError = 'recognitionRequestError';
+  static const audioEngineError = 'audioEngineError';
+  static const audioEngineStartError = 'audioEngineStartError';
+
   // Days of the week
   static const monday = 'monday';
   static const tuesday = 'tuesday';
@@ -280,6 +317,9 @@ class AppStrings {
   static const failedToCancelSession = 'failedToCancelSession';
   static const failedToLoadSessionAvailability = 'failedToLoadSessionAvailability';
   static const sessionCancelledSuccessfully = 'sessionCancelledSuccessfully';
+  static const failedToBookSession = 'failedToBookSession';
+  static const sessionBookedSuccessfully = 'sessionBookedSuccessfully';
+  static const to = 'to';
   static const copyrightConsultation = 'copyrightConsultation';
   static const copyrightConsultationSession = 'copyrightConsultationSession';
   static const legalConsultation = 'legalConsultation';

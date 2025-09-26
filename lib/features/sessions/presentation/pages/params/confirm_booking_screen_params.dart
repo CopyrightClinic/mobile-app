@@ -4,6 +4,7 @@ class ConfirmBookingScreenParams {
   final DateTime sessionDate;
   final String timeSlot;
   final PaymentMethodEntity paymentMethod;
+  final String query;
 
-  const ConfirmBookingScreenParams({required this.sessionDate, required this.timeSlot, required this.paymentMethod});
+  const ConfirmBookingScreenParams({required this.sessionDate, required this.timeSlot, required this.paymentMethod, required this.query});
 }

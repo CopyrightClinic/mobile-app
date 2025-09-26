@@ -5,8 +5,7 @@ import '../../data/data_sources/themes.dart';
 import '../../data/models/theme_model.dart';
 
 class ThemeCubit extends HydratedCubit<ThemeModel> {
-  /// default theme is system theme mode
-  ThemeCubit() : super(AppThemeData.system);
+  ThemeCubit() : super(AppThemeData.dark);
 
   void changeTheme(ThemeModel theme) => emit(theme);
 

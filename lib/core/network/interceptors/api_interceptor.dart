@@ -1,12 +1,17 @@
 import 'package:dio/dio.dart';
 
 import '../../utils/storage/token_storage.dart';
+import '../../../config/app_config/config.dart';
 
 class ApiInterceptor extends Interceptor {
   ApiInterceptor() : super();
 
   @override
   Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    if (options.path.contains('/copyright-evaluation')) {
+      options.headers.addAll(<String, Object?>{'x-api-key': Config.haroldApiKey});
+    }
+
     if (options.extra.containsKey('requiresAuthToken')) {
       if (options.extra['requiresAuthToken'] == true) {
         final token = await TokenStorage.getAccessToken();
@@ -19,8 +24,6 @@ class ApiInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // For your API, we don't need to check headers since the response structure is different
-    // Just pass through the response
     return handler.next(response);
   }
 }

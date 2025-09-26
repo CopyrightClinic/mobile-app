@@ -71,6 +71,8 @@ mixin Validator {
       return tr(AppStrings.fullNameIsRequired);
     } else if (value.trim().length < 2) {
       return tr(AppStrings.fullNameMustBeAtLeast2Characters);
+    } else if (value.trim().length > 100) {
+      return tr(AppStrings.fullNameCannotExceed100Characters);
     } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value.trim())) {
       return tr(AppStrings.fullNameCanOnlyContainLetters);
     }
@@ -93,6 +95,8 @@ mixin Validator {
       return tr(AppStrings.addressIsRequired);
     } else if (value.trim().length < 10) {
       return tr(AppStrings.addressMustBeAtLeast10Characters);
+    } else if (value.trim().length > 500) {
+      return tr(AppStrings.addressCannotExceed500Characters);
     }
     return null;
   }

@@ -8,6 +8,7 @@ import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/utils/timezone_helper.dart';
+import '../../../../core/utils/session_datetime_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -20,10 +21,13 @@ import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
 import '../widgets/time_slot_widget.dart';
 import '../widgets/day_selector_widget.dart';
+import 'params/schedule_session_screen_params.dart';
 import 'params/select_payment_method_screen_params.dart';
 
 class ScheduleSessionScreen extends StatefulWidget {
-  const ScheduleSessionScreen({super.key});
+  final ScheduleSessionScreenParams params;
+
+  const ScheduleSessionScreen({super.key, required this.params});
 
   @override
   State<ScheduleSessionScreen> createState() => _ScheduleSessionScreenState();
@@ -130,25 +134,9 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                             : scheduleState.availableTimeSlotsForSelectedDate.isEmpty
                             ? EmptyStateWidget(
                               title: AppStrings.noTimeSlotsAvailable,
-                              subtitle: AppStrings.noTimeSlotsForSelectedDate,
+                              subtitle: AppStrings.trySelectingDifferentDate,
                               icon: Icons.access_time_outlined,
                               iconColor: context.darkTextSecondary,
-                              action: Container(
-                                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap8Px.h),
-                                decoration: BoxDecoration(
-                                  color: context.filledBgDark,
-                                  borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r),
-                                  border: Border.all(color: context.darkTextSecondary.withOpacity(0.2)),
-                                ),
-                                child: TranslatedText(
-                                  AppStrings.trySelectingDifferentDate,
-                                  style: TextStyle(
-                                    color: context.darkTextSecondary,
-                                    fontSize: DimensionConstants.font14Px.f,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
                             )
                             : GridView.builder(
                               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -160,7 +148,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                               itemCount: scheduleState.availableTimeSlotsForSelectedDate.length,
                               itemBuilder: (context, index) {
                                 final timeSlot = scheduleState.availableTimeSlotsForSelectedDate[index];
-                                final timeSlotKey = '${timeSlot.start.toIso8601String()}-${timeSlot.end.toIso8601String()}';
+                                final timeSlotKey = SessionDateTimeUtils.createTimeSlotKey(timeSlot.start, timeSlot.end);
                                 final isSelected = scheduleState.selectedTimeSlot == timeSlotKey;
 
                                 return TimeSlotWidget(
@@ -201,7 +189,11 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
     if (scheduleState.selectedTimeSlot != null) {
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
-        extra: SelectPaymentMethodScreenParams(sessionDate: scheduleState.selectedDate, timeSlot: scheduleState.selectedTimeSlot!),
+        extra: SelectPaymentMethodScreenParams(
+          sessionDate: scheduleState.selectedDate,
+          timeSlot: scheduleState.selectedTimeSlot!,
+          query: widget.params.query,
+        ),
       );
     }
   }

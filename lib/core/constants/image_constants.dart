@@ -50,4 +50,8 @@ class ImageConstants {
   static const String sessionPrice = '$svg/session_amount.svg';
   static const String clock = '$svg/clock.svg';
   static const String mic = '$svg/mike.svg';
+  static const String haroldSuccess = '$svg/harold_success.svg';
+  static const String haroldFailed = '$svg/harold_failed.svg';
+  static const String haroldSignup = '$svg/harold_signup.svg';
+  static const String noPaymentMethods = '$svg/no_payment_method.svg';
 }

@@ -19,6 +19,7 @@ class CustomPhoneField extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onEditingComplete;
   final ValueChanged<PhoneNumber>? onChanged;
+  final ValueChanged<bool>? onValidationChanged;
   final String? initialValue;
   final String? initialCountryCode;
 
@@ -35,6 +36,7 @@ class CustomPhoneField extends StatefulWidget {
     this.focusNode,
     this.onEditingComplete,
     this.onChanged,
+    this.onValidationChanged,
     this.initialValue,
     this.initialCountryCode = 'US',
   });
@@ -109,6 +111,7 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
           },
           onInputValidated: (bool value) {
             _isPhoneValidNotifier.value = value;
+            widget.onValidationChanged?.call(value);
           },
           selectorConfig: SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
@@ -117,7 +120,7 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
             leadingPadding: 16,
             trailingSpace: false,
           ),
-          ignoreBlank: true,
+          ignoreBlank: false,
           autoValidateMode: widget.autovalidateMode,
           selectorTextStyle: TextStyle(color: context.textColor, fontSize: 16.f, fontWeight: FontWeight.w400),
           initialValue: _phoneNumberNotifier.value,
@@ -181,13 +184,7 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
   String? get parsedPhoneNumber => _phoneNumberNotifier.value?.parseNumber();
 
   bool isValid() {
-    final phoneNumber = _phoneNumberNotifier.value;
-    final hasPhoneNumber = phoneNumber != null && phoneNumber.phoneNumber != null && phoneNumber.phoneNumber!.isNotEmpty;
-
-    final isValidByPackage = _isPhoneValidNotifier.value;
-    final result = hasPhoneNumber && isValidByPackage;
-
-    return result;
+    return _isPhoneValidNotifier.value;
   }
 
   bool get isPhoneValid => isValid();

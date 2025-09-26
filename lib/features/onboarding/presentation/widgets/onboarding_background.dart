@@ -18,8 +18,8 @@ class OnboardingBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.black.withValues(alpha: 0.05), Colors.black.withValues(alpha: 0.3), Colors.black.withValues(alpha: 0.9)],
-              stops: const [0.0, 0.5, 1.0],
+              colors: [Colors.black.withValues(alpha: 0.1), Colors.black.withValues(alpha: 0.45), Colors.black.withValues(alpha: 0.9)],
+              stops: const [0.01, 0.5, 1.0],
             ),
           ),
         ),

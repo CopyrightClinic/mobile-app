@@ -1,0 +1,14 @@
+/* Speech Recognition Error Messages */
+"speech_recognition_not_available" = "Speech recognition not available";
+"speech_recognition_network_error" = "Speech recognition requires internet connection on iOS 16 and earlier. Please check your connection.";
+"speech_recognition_disabled_error" = "Speech recognition is disabled. Please enable Dictation in Settings → General → Keyboard → Enable Dictation.";
+"speech_recognition_generic_error" = "Speech recognition error: %@";
+"speech_recognition_permission_denied" = "Speech recognition permission denied";
+"speech_recognition_permission_restricted" = "Speech recognition permission restricted";
+"speech_recognition_permission_not_determined" = "Speech recognition permission not determined";
+"speech_recognition_permission_unknown" = "Unknown speech recognition permission status";
+"microphone_permission_denied" = "Microphone permission denied";
+"audio_session_error" = "Failed to configure audio session";
+"recognition_request_error" = "Failed to create recognition request";
+"audio_engine_error" = "Failed to create audio engine";
+"audio_engine_start_error" = "Failed to start audio engine";

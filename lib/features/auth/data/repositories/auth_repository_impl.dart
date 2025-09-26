@@ -89,6 +89,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(response.message);
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('An unexpected error occurred: $e'));
     }
   }
 

@@ -50,8 +50,6 @@ class EmptyStateWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
 
-            SizedBox(height: DimensionConstants.gap12Px.h),
-
             // Subtitle
             TranslatedText(
               subtitle,
