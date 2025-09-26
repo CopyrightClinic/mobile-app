@@ -71,10 +71,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           titleText: AppStrings.profile.tr(),
           automaticallyImplyLeading: false,
           actions: [
-            Padding(
-              padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
-              child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: DimensionConstants.gap24Px.w),
+            Container(
+              width: DimensionConstants.gap40Px.w,
+              height: DimensionConstants.gap40Px.w,
+              decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
+              child: InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
+                child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w)),
+              ),
             ),
+            SizedBox(width: DimensionConstants.gap16Px.w),
           ],
         ),
         body: SafeArea(
