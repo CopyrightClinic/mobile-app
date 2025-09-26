@@ -68,6 +68,8 @@ class AppStrings {
   // Sign Up Screen
   static const createAccount = 'createAccount';
   static const enterEmailForVerification = 'enterEmailForVerification';
+  static const letsGetStarted = 'letsGetStarted';
+  static const verifyEmailFirstToContinue = 'verifyEmailFirstToContinue';
   static const createYourAccount = 'createYourAccount';
   static const confirmPassword = 'confirmPassword';
   static const verifyEmail = 'verifyEmail';
@@ -96,7 +98,8 @@ class AppStrings {
   static const emailVerificationTitle = 'emailVerificationTitle';
   static const passwordResetTitle = 'passwordResetTitle';
   static const emailVerificationDescription = 'emailVerificationDescription';
-  static const passwordResetDescription = 'passwordResetDescription';
+  static const passwordResetDescription1 = 'passwordResetDescription1';
+  static const passwordResetDescription2 = 'passwordResetDescription2';
   static const verifyEmailButton = 'verifyEmailButton';
   static const verifyCodeButton = 'verifyCodeButton';
   static const resendCodeButton = 'resendCodeButton';
@@ -182,6 +185,7 @@ class AppStrings {
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
   static const cardholderNameCannotExceed100Characters = 'cardholderNameCannotExceed100Characters';
   static const noPaymentMethods = 'noPaymentMethods';
+  static const tapToAdd = 'tapToAdd';
   static const noPaymentMethodsYet = 'noPaymentMethodsYet';
   static const noPaymentMethodsAddOne = 'noPaymentMethodsAddOne';
   static const addAnotherPaymentMethod = 'addAnotherPaymentMethod';
@@ -271,6 +275,19 @@ class AppStrings {
   static const unexpectedErrorOccurred = 'unexpectedErrorOccurred';
   static const unexpectedErrorOccurredWhileEvaluatingQuery = 'unexpectedErrorOccurredWhileEvaluatingQuery';
   static const speechRecognitionError = 'speechRecognitionError';
+  static const speechRecognitionNetworkError = 'speechRecognitionNetworkError';
+  static const speechRecognitionDisabledError = 'speechRecognitionDisabledError';
+  static const speechRecognitionGenericError = 'speechRecognitionGenericError';
+  static const speechRecognitionNotAvailable = 'speechRecognitionNotAvailable';
+  static const speechRecognitionPermissionDenied = 'speechRecognitionPermissionDenied';
+  static const speechRecognitionPermissionRestricted = 'speechRecognitionPermissionRestricted';
+  static const speechRecognitionPermissionNotDetermined = 'speechRecognitionPermissionNotDetermined';
+  static const speechRecognitionPermissionUnknown = 'speechRecognitionPermissionUnknown';
+  static const microphonePermissionDenied = 'microphonePermissionDenied';
+  static const audioSessionError = 'audioSessionError';
+  static const recognitionRequestError = 'recognitionRequestError';
+  static const audioEngineError = 'audioEngineError';
+  static const audioEngineStartError = 'audioEngineStartError';
 
   // Days of the week
   static const monday = 'monday';

@@ -65,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
       final password = _passwordController.text.trim();
 
       context.read<AuthBloc>().add(LoginRequested(email: email, password: password));
-
       _passwordFocusNode.unfocus();
     }
   }
@@ -133,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
                             focusNode: _passwordFocusNode,
                             isPassword: true,
                             validator: (value) => validatePassword(value, tr, isLogin: true),
-                            onEditingComplete: _handleLogin,
+                            onEditingComplete: () => _passwordFocusNode.unfocus(),
                             onChanged: (value) {
                               _onFieldChanged();
                             },

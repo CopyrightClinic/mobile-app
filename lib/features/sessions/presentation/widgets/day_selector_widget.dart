@@ -24,7 +24,7 @@ class DaySelectorWidget extends StatelessWidget {
     final dayNames = [AppStrings.mon, AppStrings.tue, AppStrings.wed, AppStrings.thu, AppStrings.fri, AppStrings.sat, AppStrings.sun];
 
     return SizedBox(
-      height: 70.h,
+      height: 71.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: availableDays.length,

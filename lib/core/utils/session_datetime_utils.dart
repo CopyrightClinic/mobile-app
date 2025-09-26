@@ -4,7 +4,7 @@ import '../constants/app_strings.dart';
 class SessionDateTimeUtils {
   SessionDateTimeUtils._();
 
-  static const String timeFormat = 'h:mm a';
+  static const String timeFormat = 'h:mm A';
   static const String monthDay = 'MMM d';
   static const String dayName = 'EEEE';
   static const String dayMonthDay = 'EEEE, MMM d';

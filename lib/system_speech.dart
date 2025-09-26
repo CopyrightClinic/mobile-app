@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class SystemSpeech {
@@ -12,6 +13,17 @@ class SystemSpeech {
       if (maxSeconds != null) arguments['maxSeconds'] = maxSeconds;
 
       final result = await _channel.invokeMethod('startSpeech', arguments.isEmpty ? null : arguments);
+      return result as String?;
+    } on PlatformException catch (e) {
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<String?> stopSpeech() async {
+    try {
+      final result = await _channel.invokeMethod('stopSpeech');
       return result as String?;
     } on PlatformException catch (e) {
       return null;

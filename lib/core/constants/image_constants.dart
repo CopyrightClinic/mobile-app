@@ -53,4 +53,5 @@ class ImageConstants {
   static const String haroldSuccess = '$svg/harold_success.svg';
   static const String haroldFailed = '$svg/harold_failed.svg';
   static const String haroldSignup = '$svg/harold_signup.svg';
+  static const String noPaymentMethods = '$svg/no_payment_method.svg';
 }

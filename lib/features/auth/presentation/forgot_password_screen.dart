@@ -109,7 +109,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Valida
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) => validateEmail(value, tr),
-                            onEditingComplete: () => _handleResetPassword(context),
+                            onEditingComplete: () => _emailFocusNode.unfocus(),
                             onChanged: (value) {
                               _onFieldChanged();
                             },

@@ -5,50 +5,57 @@ import 'package:flutter/material.dart';
 
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/utils/storage/token_storage.dart';
-import '../../../../core/utils/storage/shared_pref_service.dart';
 import '../../presentation/pages/params/harold_success_screen_params.dart';
 import '../../presentation/pages/params/harold_failed_screen_params.dart';
 
 class HaroldNavigationService {
-  static const String _haroldResultKey = 'harold_pending_result';
-  static const String _haroldQueryKey = 'harold_pending_query';
-  static final SharedPrefService<String> _prefService = SharedPrefService<String>();
+  static HaroldNavigationService? _instance;
+
+  HaroldNavigationService._();
+
+  factory HaroldNavigationService() {
+    _instance ??= HaroldNavigationService._();
+    return _instance!;
+  }
+
+  String? _pendingResult;
+  String? _pendingQuery;
 
   static Future<bool> isUserAuthenticated() async {
     final token = await TokenStorage.getAccessToken();
     return token != null && token.isNotEmpty;
   }
 
-  static Future<void> storePendingResult(bool isSuccess, String query) async {
-    await _prefService.write(_haroldResultKey, isSuccess ? 'success' : 'failure');
-    await _prefService.write(_haroldQueryKey, query);
+  void storePendingResult(bool isSuccess, String query) {
+    _pendingResult = isSuccess ? 'success' : 'failure';
+    _pendingQuery = query;
   }
 
-  static Future<String?> getPendingResult() async {
-    final result = await _prefService.read(_haroldResultKey);
+  String? getPendingResult() {
+    final result = _pendingResult;
     if (result != null) {
-      await _prefService.delete(_haroldResultKey);
+      _pendingResult = null;
     }
     return result;
   }
 
-  static Future<String?> getPendingQuery() async {
-    final query = await _prefService.read(_haroldQueryKey);
+  String? getPendingQuery() {
+    final query = _pendingQuery;
     if (query != null) {
-      await _prefService.delete(_haroldQueryKey);
+      _pendingQuery = null;
     }
     return query;
   }
 
-  static Future<Map<String, String?>> getPendingResultAndQuery() async {
-    final result = await _prefService.read(_haroldResultKey);
-    final query = await _prefService.read(_haroldQueryKey);
+  Map<String, String?> getPendingResultAndQuery() {
+    final result = _pendingResult;
+    final query = _pendingQuery;
 
     if (result != null) {
-      await _prefService.delete(_haroldResultKey);
+      _pendingResult = null;
     }
     if (query != null) {
-      await _prefService.delete(_haroldQueryKey);
+      _pendingQuery = null;
     }
 
     return {'result': result, 'query': query};
@@ -62,26 +69,24 @@ class HaroldNavigationService {
         context.push(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: false, query: query));
       }
     } else {
-      storePendingResult(isSuccess, query).then((_) {
-        context.push(AppRoutes.haroldSignupRouteName);
-      });
+      HaroldNavigationService().storePendingResult(isSuccess, query);
+      context.push(AppRoutes.haroldSignupRouteName);
     }
   }
 
   static void handlePostAuthNavigation(BuildContext context) {
-    getPendingResultAndQuery().then((data) {
-      final pendingResult = data['result'];
-      final pendingQuery = data['query'];
+    final data = HaroldNavigationService().getPendingResultAndQuery();
+    final pendingResult = data['result'];
+    final pendingQuery = data['query'];
 
-      if (pendingResult != null) {
-        if (pendingResult == 'success') {
-          context.go(AppRoutes.haroldSuccessRouteName, extra: HaroldSuccessScreenParams(fromAuthFlow: true, query: pendingQuery));
-        } else {
-          context.go(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: true, query: pendingQuery));
-        }
+    if (pendingResult != null) {
+      if (pendingResult == 'success') {
+        context.go(AppRoutes.haroldSuccessRouteName, extra: HaroldSuccessScreenParams(fromAuthFlow: true, query: pendingQuery));
       } else {
-        context.go(AppRoutes.homeRouteName);
+        context.go(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: true, query: pendingQuery));
       }
-    });
+    } else {
+      context.go(AppRoutes.homeRouteName);
+    }
   }
 }

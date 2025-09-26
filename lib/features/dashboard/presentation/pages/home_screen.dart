@@ -13,6 +13,7 @@ import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../payments/domain/entities/payment_method_entity.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

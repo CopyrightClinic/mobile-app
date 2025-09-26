@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../di.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -57,23 +59,56 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
 
   void _toggleVoiceInput() async {
     if (_isListeningNotifier.value) {
-      return;
+      _stopVoiceInput();
+    } else {
+      _startVoiceInput();
     }
+  }
 
+  void _startVoiceInput() async {
     _isListeningNotifier.value = true;
 
     try {
-      final existingText = _textController.text;
       final result = await SystemSpeech.startSpeech(prompt: 'Describe your copyright issue', locale: 'en-US', maxSeconds: 120);
 
       if (result != null && result.isNotEmpty) {
+        final existingText = _textController.text;
         final separator = existingText.isNotEmpty ? ' ' : '';
         final combinedText = existingText + separator + result;
         _textController.text = combinedText;
         _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
       }
     } catch (e) {
-      SnackBarUtils.showError(context, 'Speech recognition error: ${e.toString()}');
+      String errorMessage = tr(AppStrings.speechRecognitionGenericError, namedArgs: {'error': e.toString()});
+
+      final errorString = e.toString();
+      if (errorString.contains('network') ||
+          errorString.contains('internet') ||
+          errorString.contains('connection') ||
+          errorString.contains('speech_not_available')) {
+        errorMessage = tr(AppStrings.speechRecognitionNetworkError);
+      } else if (errorString.contains('Siri and Dictation are disabled') || errorString.contains('enable Dictation in Settings')) {
+        errorMessage = tr(AppStrings.speechRecognitionDisabledError);
+      }
+
+      SnackBarUtils.showError(context, errorMessage);
+    } finally {
+      _isListeningNotifier.value = false;
+    }
+  }
+
+  void _stopVoiceInput() async {
+    try {
+      final result = await SystemSpeech.stopSpeech();
+
+      if (result != null && result.isNotEmpty) {
+        final existingText = _textController.text;
+        final separator = existingText.isNotEmpty ? ' ' : '';
+        final combinedText = existingText + separator + result;
+        _textController.text = combinedText;
+        _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
+      }
+    } catch (e) {
     } finally {
       _isListeningNotifier.value = false;
     }
@@ -246,7 +281,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                               decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
                             ),
                           Icon(
-                            isListening ? Icons.mic : Icons.mic,
+                            isListening ? Icons.stop : Icons.mic,
                             color:
                                 isListening ? Colors.white : (isEnabled ? context.darkTextPrimary : context.darkTextPrimary.withValues(alpha: 0.5)),
                             size: 24.w,
