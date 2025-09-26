@@ -277,6 +277,7 @@ class AppStrings {
   static const termsAndConditions = 'termsAndConditions';
   static const deleteAccount = 'deleteAccount';
   static const changePassword = 'changePassword';
+  static const delete = 'delete';
   // Phone Field
   static const searchCountry = 'searchCountry';
 

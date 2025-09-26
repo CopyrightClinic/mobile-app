@@ -69,7 +69,7 @@ class CustomBottomSheet extends StatelessWidget {
                 assetPath: iconPath!,
                 width: DimensionConstants.gap48Px.w,
                 height: DimensionConstants.gap48Px.h,
-                loadingSize: DimensionConstants.gap48Px.w,
+                loadingSize: DimensionConstants.gap40Px.w,
               ),
 
             SizedBox(height: DimensionConstants.gap24Px.h),
