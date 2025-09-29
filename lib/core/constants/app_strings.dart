@@ -4,6 +4,7 @@ class AppStrings {
 
   // Welcome Screen
   static const welcomeTo = 'welcomeTo';
+  static const welcome = 'welcome';
   static const copyrightClinic = 'copyrightClinic';
   static const whatWeDo = 'whatWeDo';
   static const askHaroldAI = 'askHaroldAI';
@@ -261,6 +262,7 @@ class AppStrings {
 
   // Harold AI Screen
   static const describeYourCopyrightIssue = 'describeYourCopyrightIssue';
+  static const haroldWillHelpYou = 'haroldWillHelpYou';
   static const describe = 'describe';
   static const submit = 'submit';
   static const haroldAiHasResponseForYou = 'haroldAiHasResponseForYou';

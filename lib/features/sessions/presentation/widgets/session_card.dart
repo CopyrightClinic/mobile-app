@@ -7,6 +7,7 @@ import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../domain/entities/session_entity.dart';
 
@@ -46,11 +47,11 @@ class SessionCard extends StatelessWidget {
                       SessionDateTimeUtils.formatSessionDate(session.scheduledDate),
                       style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
-                    SizedBox(height: 2.h),
+                    SizedBox(height: DimensionConstants.gap2Px.h),
                     Text(
-                      '(${session.formattedDuration} ${AppStrings.session.tr()})',
+                      '(${session.formattedDuration} ${AppStrings.session})',
                       style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
-                    ),
+                    ).tr(),
                   ],
                 ),
               ),
@@ -78,9 +79,9 @@ class SessionCard extends StatelessWidget {
                     session.formattedPrice,
                     style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                   ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    session.isCompleted ? AppStrings.charged.tr() : AppStrings.holdAmountChargedAfterSession.tr(),
+                  SizedBox(height: DimensionConstants.gap2Px.h),
+                  TranslatedText(
+                    session.isCompleted ? AppStrings.charged : AppStrings.holdAmountChargedAfterSession,
                     style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
                   ),
                 ],
@@ -98,10 +99,10 @@ class SessionCard extends StatelessWidget {
                     backgroundColor: context.buttonSecondary,
                     disabledBackgroundColor: context.buttonDisabled,
                     textColor: context.darkTextPrimary,
-                    borderRadius: 50.r,
+                    borderRadius: DimensionConstants.radius52Px.r,
                     padding: 12.0,
-                    child: Text(
-                      AppStrings.cancelSession.tr(),
+                    child: TranslatedText(
+                      AppStrings.cancelSession,
                       style: TextStyle(
                         fontSize: DimensionConstants.font16Px.f,
                         fontWeight: FontWeight.w600,
@@ -116,10 +117,10 @@ class SessionCard extends StatelessWidget {
                     onPressed: onJoin,
                     backgroundColor: context.primary,
                     textColor: Colors.white,
-                    borderRadius: 50.r,
+                    borderRadius: DimensionConstants.radius52Px.r,
                     padding: 12.0,
-                    child: Text(
-                      AppStrings.joinSession.tr(),
+                    child: TranslatedText(
+                      AppStrings.joinSession,
                       style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                   ),
@@ -133,21 +134,21 @@ class SessionCard extends StatelessWidget {
             Text(
               '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDate)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
-            ),
+            ).tr(),
           ],
 
           if (session.isUpcoming && !session.canCancel) ...[
             SizedBox(height: DimensionConstants.gap12Px.h),
-            Text(
-              AppStrings.cancellationPeriodExpired.tr(),
+            TranslatedText(
+              AppStrings.cancellationPeriodExpired,
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.red, fontWeight: FontWeight.w500),
             ),
-            SizedBox(height: 4.h),
+            SizedBox(height: DimensionConstants.gap4Px.h),
             Text(
               '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDate)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               textAlign: TextAlign.center,
-            ),
+            ).tr(),
           ],
         ],
       ),

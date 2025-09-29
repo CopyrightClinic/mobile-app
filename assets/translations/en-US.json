@@ -1,6 +1,7 @@
 {
   "appName": "Copyright Clinic",
   "welcomeTo": "Welcome to",
+  "welcome": "Welcome",
   "copyrightClinic": "Copyright Clinic",
   "protectYourCreativeWork": "Protect Your Creative Work",
   "aboutUs": "About Us",
@@ -11,6 +12,7 @@
   "legalAdvisor": "Legal Advisor",
   "copyrightExpert": "Copyright Expert",
   "legalAnalyst": "Legal Analyst",
+  "haroldWillHelpYou": "Describe your copyright issue — Harold will guide you to legal help.",
   "cassiusTitusDescription": "CASSIUS TITUS is an attorney with expertise helping creatives develop, protect and distribute their products and services. He established © Clinic to link creative communities with live expert copyright counsel.",
   "sarahChen": "Sarah Chen",
   "michaelRoss": "Michael Ross",
@@ -320,5 +322,11 @@
   "deleteAccountFailed": "Failed to delete account",
   "failedToUpdateProfileGeneric": "Failed to update profile",
   "failedToChangePasswordGeneric": "Failed to change password",
-  "failedToDeleteAccountGeneric": "Failed to delete account"
+  "failedToDeleteAccountGeneric": "Failed to delete account",
+  "copyrightConsultation": "Copyright Consultation",
+  "copyrightConsultationSession": "Copyright Consultation Session",
+  "legalConsultation": "Legal Consultation",
+  "upcomingStatus": "Upcoming",
+  "completedStatus": "Completed",
+  "cancelledStatus": "Cancelled"
 }
