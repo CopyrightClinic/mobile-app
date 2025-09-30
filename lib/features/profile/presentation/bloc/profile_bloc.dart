@@ -6,7 +6,6 @@ import '../../domain/usecases/change_password_usecase.dart';
 import '../../domain/usecases/delete_account_usecase.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/storage/user_storage.dart';
-import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/entities/profile_entity.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';

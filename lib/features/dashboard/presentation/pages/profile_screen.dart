@@ -20,7 +20,6 @@ import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../profile/presentation/bloc/profile_bloc.dart';
 import '../../../profile/presentation/bloc/profile_event.dart';
 import '../../../profile/presentation/bloc/profile_state.dart';
-import '../../../../di.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -37,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _authBloc = context.read<AuthBloc>();
-    _profileBloc = sl<ProfileBloc>();
+    _profileBloc = context.read<ProfileBloc>();
     _profileBloc.add(const GetProfileRequested());
   }
 
@@ -62,6 +61,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context.go(AppRoutes.welcomeRouteName);
             } else if (state is DeleteAccountError) {
               SnackBarUtils.showError(context, state.message);
+            } else if (state is UpdateProfileSuccess) {
+              _profileBloc.add(const GetProfileRequested());
+              _authBloc.add(CheckAuthStatus());
             }
           },
         ),
@@ -100,9 +102,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return InkWell(
-                          onTap: () {
+                          onTap: () async {
                             if (state is AuthAuthenticated) {
-                              context.push(AppRoutes.editProfileRouteName, extra: state.user);
+                              await context.push(AppRoutes.editProfileRouteName, extra: state.user);
                             }
                           },
                           child: GlobalImage(
@@ -149,6 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: Border.all(color: context.border.withAlpha(10)),
       ),
       child: BlocBuilder<ProfileBloc, ProfileState>(
+        bloc: _profileBloc,
         builder: (context, state) {
           String userName = '-';
           String userEmail = '-';
