@@ -12,6 +12,7 @@ import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/payments/presentation/pages/payment_methods_screen.dart';
 import '../../features/sessions/presentation/pages/params/schedule_session_screen_params.dart';
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
@@ -29,6 +30,9 @@ import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
 import '../../features/dashboard/presentation/pages/profile_screen.dart';
 import '../../features/sessions/presentation/pages/schedule_session_screen.dart';
+import '../../features/profile/presentation/pages/edit_profile_screen.dart';
+import '../../features/profile/presentation/pages/change_password_screen.dart';
+import '../../features/auth/domain/entities/user_entity.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import '../../core/utils/enumns/ui/payment_method.dart';
 import 'app_routes.dart';
@@ -144,6 +148,24 @@ class AppRouter {
         path: AppRoutes.bookingRequestSentRouteName,
         name: AppRoutes.bookingRequestSentRouteName,
         builder: (context, state) => const BookingRequestSentScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editProfileRouteName,
+        name: AppRoutes.editProfileRouteName,
+        builder: (context, state) {
+          final user = state.extra as UserEntity;
+          return EditProfileScreen(user: user);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.changePasswordRouteName,
+        name: AppRoutes.changePasswordRouteName,
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.paymentMethodsRouteName,
+        name: AppRoutes.paymentMethodsRouteName,
+        builder: (context, state) => const PaymentMethodsScreen(),
       ),
       GoRoute(path: AppRoutes.askHaroldAiRouteName, name: AppRoutes.askHaroldAiRouteName, builder: (context, state) => const AskHaroldAiScreen()),
       GoRoute(path: AppRoutes.haroldSignupRouteName, name: AppRoutes.haroldSignupRouteName, builder: (context, state) => const HaroldSignupScreen()),

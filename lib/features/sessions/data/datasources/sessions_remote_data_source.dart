@@ -1,8 +1,5 @@
-import 'package:dio/dio.dart';
 import '../../../../core/network/api_service/api_service.dart';
-import '../../../../core/network/dio_service.dart';
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/utils/typedefs/type_defs.dart';
 import '../models/session_model.dart';
 import '../models/session_availability_model.dart';
 import '../models/book_session_request_model.dart';
@@ -29,9 +26,8 @@ abstract class SessionsRemoteDataSource {
 
 class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   final ApiService apiService;
-  final DioService dioService;
 
-  SessionsRemoteDataSourceImpl({required this.apiService, required this.dioService});
+  SessionsRemoteDataSourceImpl({required this.apiService});
 
   @override
   Future<List<SessionModel>> getUserSessions() async {
@@ -99,16 +95,11 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       slot: BookSessionSlotModel(start: startTime, end: endTime),
       summary: summary,
     );
-    try {
-      final response = await dioService.post<JSON>(
-        endpoint: '/session-requests/book-session',
-        data: request.toJson(),
-        options: Options(headers: {'timezone': timezone}, extra: {'requiresAuthToken': true}),
-      );
-
-      return BookSessionResponseModel.fromJson(response.data);
-    } catch (e) {
-      rethrow;
-    }
+    return await apiService.postData<BookSessionResponseModel>(
+      endpoint: '/session-requests/book-session',
+      headers: {'Timezone': timezone},
+      data: request.toJson(),
+      converter: (json) => BookSessionResponseModel.fromJson(json.data),
+    );
   }
 }

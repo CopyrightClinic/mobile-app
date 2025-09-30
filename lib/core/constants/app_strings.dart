@@ -308,6 +308,13 @@ class AppStrings {
   static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
   static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
 
+  // Profile Screen Additional Strings
+  static const other = 'other';
+  static const privacyPolicy = 'privacyPolicy';
+  static const termsAndConditions = 'termsAndConditions';
+  static const deleteAccount = 'deleteAccount';
+  static const changePassword = 'changePassword';
+  static const delete = 'delete';
   // Phone Field
   static const searchCountry = 'searchCountry';
 
@@ -359,4 +366,29 @@ class AppStrings {
   static const failedToReceive = 'failedToReceive';
   static const errorUnrecognized = 'errorUnrecognized';
   static const failedToParseNetworkResponse = 'failedToParseNetworkResponse';
+  static const personalInformation = 'personalInformation';
+
+  // Edit Profile Screen
+  static const editPersonalInformation = 'editPersonalInformation';
+  static const saveChanges = 'saveChanges';
+  static const updateProfileFailed = 'updateProfileFailed';
+  static const profileUpdatedSuccessfully = 'profileUpdatedSuccessfully';
+  static const failedToLoadProfile = 'failedToLoadProfile';
+
+  // Change Password Screen
+  static const currentPassword = 'currentPassword';
+  static const enterYourCurrentPassword = 'enterYourCurrentPassword';
+  static const newPasswordMustBeDifferent = 'newPasswordMustBeDifferent';
+  static const changePasswordFailed = 'changePasswordFailed';
+
+  // Delete Account Bottom Sheet
+  static const deleteAccountTitle = 'deleteAccountTitle';
+  static const deleteAccountSubtitle = 'deleteAccountSubtitle';
+  static const deleteAccountConfirm = 'deleteAccountConfirm';
+  static const deleteAccountFailed = 'deleteAccountFailed';
+
+  // Profile Repository Error Messages
+  static const failedToUpdateProfileGeneric = 'failedToUpdateProfileGeneric';
+  static const failedToChangePasswordGeneric = 'failedToChangePasswordGeneric';
+  static const failedToDeleteAccountGeneric = 'failedToDeleteAccountGeneric';
 }

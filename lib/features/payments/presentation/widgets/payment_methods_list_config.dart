@@ -33,8 +33,7 @@ class PaymentMethodsListConfig {
   factory PaymentMethodsListConfig.forProfile({required Function(PaymentMethodEntity) onDelete, required VoidCallback onAddPaymentMethod}) {
     return PaymentMethodsListConfig(
       title: AppStrings.paymentMethods,
-      subtitle: AppStrings.savedPaymentMethods,
-      emptyStateMessage: AppStrings.noPaymentMethodsYet,
+      emptyStateMessage: AppStrings.noPaymentMethodsAddOne,
       showAddButton: true,
       wrapWithGestureDetector: false,
       onAddPaymentMethod: onAddPaymentMethod,

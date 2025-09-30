@@ -34,6 +34,13 @@ import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/domain/usecases/book_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/profile/data/datasources/profile_remote_data_source.dart';
+import 'features/profile/data/repositories/profile_repository_impl.dart';
+import 'features/profile/domain/repositories/profile_repository.dart';
+import 'features/profile/domain/usecases/update_profile_usecase.dart';
+import 'features/profile/domain/usecases/change_password_usecase.dart';
+import 'features/profile/domain/usecases/delete_account_usecase.dart';
+import 'features/profile/presentation/bloc/profile_bloc.dart';
 import 'features/speech_to_text/data/datasources/speech_to_text_local_data_source.dart';
 import 'features/speech_to_text/data/repositories/speech_to_text_repository_impl.dart';
 import 'features/speech_to_text/domain/repositories/speech_to_text_repository.dart';
@@ -81,7 +88,8 @@ Future<void> init() async {
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>(), dioService: sl<DioService>()));
+  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
   sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
@@ -89,6 +97,7 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SessionsRepository>(() => SessionsRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SpeechToTextRepository>(() => SpeechToTextRepositoryImpl(localDataSource: sl()));
   sl.registerLazySingleton<HaroldRepository>(() => HaroldRepositoryImpl(remoteDataSource: sl()));
 
@@ -113,6 +122,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
+  sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -143,6 +155,9 @@ Future<void> init() async {
 
   // Harold AI Bloc
   sl.registerLazySingleton(() => HaroldAiBloc(evaluateQueryUseCase: sl()));
+
+  // Profile Bloc
+  sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());
