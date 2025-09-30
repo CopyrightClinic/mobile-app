@@ -44,6 +44,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
   void Function(void Function())? _buttonSetState;
   PhoneNumber? _phoneNumber;
 
+  String _originalName = '';
+  String _originalPhoneNumber = '';
+  String _originalAddress = '';
+
   @override
   void initState() {
     super.initState();
@@ -176,9 +180,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
   }
 
   void _prepopulateFields() {
-    _fullNameController.text = widget.user.name ?? '';
+    _originalName = widget.user.name ?? '';
+    _originalPhoneNumber = widget.user.phoneNumber ?? '';
+    _originalAddress = widget.user.address ?? '';
+
+    _fullNameController.text = _originalName;
     _emailController.text = widget.user.email;
-    _addressController.text = widget.user.address ?? '';
+    _addressController.text = _originalAddress;
 
     if (widget.user.phoneNumber != null && widget.user.phoneNumber!.isNotEmpty) {
       _phoneNumber = PhoneNumberUtils.createPhoneNumberFromInternational(widget.user.phoneNumber);
@@ -197,7 +205,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
     final fullNameValidation = validateFullName(_fullNameController.text.trim(), tr);
     final addressValidation = validateAddress(_addressController.text.trim(), tr);
     final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
-    return fullNameValidation == null && addressValidation == null && isPhoneValid;
+    final hasValidData = fullNameValidation == null && addressValidation == null && isPhoneValid;
+
+    final hasChanges = _hasDataChanged();
+    final noBlankFields = _hasNoBlankRequiredFields();
+
+    return hasValidData && hasChanges && noBlankFields;
+  }
+
+  bool _hasDataChanged() {
+    final currentName = _fullNameController.text.trim();
+    final currentPhoneNumber = _phoneNumber?.phoneNumber ?? '';
+    final currentAddress = _addressController.text.trim();
+
+    final nameChanged = currentName != _originalName;
+    final phoneChanged = currentPhoneNumber != _originalPhoneNumber;
+    final addressChanged = currentAddress != _originalAddress;
+
+    return nameChanged || phoneChanged || addressChanged;
+  }
+
+  bool _hasNoBlankRequiredFields() {
+    final currentName = _fullNameController.text.trim();
+    final currentPhoneNumber = _phoneNumber?.phoneNumber ?? '';
+    final currentAddress = _addressController.text.trim();
+
+    if (_originalName.isNotEmpty && currentName.isEmpty) {
+      return false;
+    }
+
+    if (_originalPhoneNumber.isNotEmpty && currentPhoneNumber.isEmpty) {
+      return false;
+    }
+
+    if (_originalAddress.isNotEmpty && currentAddress.isEmpty) {
+      return false;
+    }
+
+    return true;
   }
 
   void _onFieldChanged() {
