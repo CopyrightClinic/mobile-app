@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/image_constants.dart';
+import '../../../../config/routes/app_routes.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
@@ -152,7 +154,9 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildHaroldAIBlock(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push(AppRoutes.askHaroldAiRouteName);
+      },
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap20Px.h),
