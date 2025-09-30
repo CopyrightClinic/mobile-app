@@ -5,6 +5,9 @@ import '../../domain/usecases/update_profile_usecase.dart';
 import '../../domain/usecases/change_password_usecase.dart';
 import '../../domain/usecases/delete_account_usecase.dart';
 import '../../../../core/usecases/usecase.dart';
+import '../../../../core/utils/storage/user_storage.dart';
+import '../../../auth/domain/entities/user_entity.dart';
+import '../../domain/entities/profile_entity.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
@@ -15,9 +18,34 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc({required this.updateProfileUseCase, required this.changePasswordUseCase, required this.deleteAccountUseCase})
     : super(ProfileInitial()) {
+    on<GetProfileRequested>(_onGetProfileRequested);
     on<UpdateProfileRequested>(_onUpdateProfileRequested);
     on<ChangePasswordRequested>(_onChangePasswordRequested);
     on<DeleteAccountRequested>(_onDeleteAccountRequested);
+  }
+
+  Future<void> _onGetProfileRequested(GetProfileRequested event, Emitter<ProfileState> emit) async {
+    emit(ProfileLoading());
+
+    try {
+      final user = await UserStorage.getUser();
+      if (user != null) {
+        final profile = ProfileEntity(
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          address: user.address,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        );
+        emit(ProfileLoaded(profile));
+      } else {
+        emit(ProfileError(tr(AppStrings.userNotFound)));
+      }
+    } catch (e) {
+      emit(ProfileError(tr(AppStrings.failedToLoadProfile)));
+    }
   }
 
   Future<void> _onUpdateProfileRequested(UpdateProfileRequested event, Emitter<ProfileState> emit) async {

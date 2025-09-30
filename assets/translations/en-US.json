@@ -312,6 +312,7 @@
   "updateProfileFailed": "Failed to update profile",
   "profileUpdatedSuccessfully": "Profile updated successfully",
   "failedToLoadProfile": "Failed to load profile",
+  "userNotFound": "User not found",
   "currentPassword": "Current Password",
   "enterYourCurrentPassword": "Enter your current password",
   "newPasswordMustBeDifferent": "New password must be different from current password",
@@ -325,8 +326,14 @@
   "failedToDeleteAccountGeneric": "Failed to delete account",
   "copyrightConsultation": "Copyright Consultation",
   "copyrightConsultationSession": "Copyright Consultation Session",
-  "legalConsultation": "Legal Consultation",
+  "legalConsulation": "Legal Consultation",
   "upcomingStatus": "Upcoming",
   "completedStatus": "Completed",
-  "cancelledStatus": "Cancelled"
+  "cancelledStatus": "Cancelled",
+  "sessionDetailsTitle": "Session Details",
+  "yourRatingAndReview": "Your Rating & Review",
+  "unlockWrittenSummary": "Unlock a Written Summary of Your Session",
+  "unlockSummaryFor": "Unlock Summary for $25",
+  "payToRequestSummary": "Pay $25 to request a written summary, reviewed and approved by your attorney. You can request the summary till 12/06/25, 5:30 PM",
+  "requestSummaryDeadline": "You can request the summary till 12/06/25, 5:30 PM"
 }

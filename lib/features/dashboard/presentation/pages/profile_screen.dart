@@ -38,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _authBloc = context.read<AuthBloc>();
     _profileBloc = sl<ProfileBloc>();
+    _profileBloc.add(const GetProfileRequested());
   }
 
   @override
@@ -58,7 +59,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           listener: (context, state) {
             if (state is DeleteAccountSuccess) {
               SnackBarUtils.showSuccess(context, state.message);
-              // Navigate to welcome screen after successful account deletion
               context.go(AppRoutes.welcomeRouteName);
             } else if (state is DeleteAccountError) {
               SnackBarUtils.showError(context, state.message);
@@ -148,18 +148,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r),
         border: Border.all(color: context.border.withAlpha(10)),
       ),
-      child: BlocBuilder<AuthBloc, AuthState>(
+      child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           String userName = '-';
           String userEmail = '-';
           String userPhone = '-';
           String userAddress = '-';
 
-          if (state is AuthAuthenticated) {
-            userName = state.user.name ?? '-';
-            userEmail = state.user.email;
-            userPhone = state.user.phoneNumber ?? '-';
-            userAddress = state.user.address ?? '-';
+          if (state is ProfileLoaded) {
+            userName = state.profile.name ?? '-';
+            userEmail = state.profile.email;
+            userPhone = state.profile.phoneNumber ?? '-';
+            userAddress = state.profile.address ?? '-';
           }
 
           return Column(

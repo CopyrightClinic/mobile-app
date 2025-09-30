@@ -376,6 +376,7 @@ class AppStrings {
   static const updateProfileFailed = 'updateProfileFailed';
   static const profileUpdatedSuccessfully = 'profileUpdatedSuccessfully';
   static const failedToLoadProfile = 'failedToLoadProfile';
+  static const userNotFound = 'userNotFound';
 
   // Change Password Screen
   static const currentPassword = 'currentPassword';
@@ -393,4 +394,12 @@ class AppStrings {
   static const failedToUpdateProfileGeneric = 'failedToUpdateProfileGeneric';
   static const failedToChangePasswordGeneric = 'failedToChangePasswordGeneric';
   static const failedToDeleteAccountGeneric = 'failedToDeleteAccountGeneric';
+
+  // Session Details Screen
+  static const sessionDetailsTitle = 'sessionDetailsTitle';
+  static const yourRatingAndReview = 'yourRatingAndReview';
+  static const unlockWrittenSummary = 'unlockWrittenSummary';
+  static const unlockSummaryFor = 'unlockSummaryFor';
+  static const payToRequestSummary = 'payToRequestSummary';
+  static const requestSummaryDeadline = 'requestSummaryDeadline';
 }
