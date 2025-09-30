@@ -6,6 +6,7 @@ import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_phone_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_app_bar.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
+import 'package:copyright_clinic_flutter/core/utils/phone_number_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
@@ -128,7 +129,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
                                 if (_phoneNumber == null || _phoneNumber!.phoneNumber == null || _phoneNumber!.phoneNumber!.isEmpty) {
                                   return tr(AppStrings.phoneNumberRequired);
                                 }
-                                if (!(_phoneFieldKey.currentState?.isPhoneValid ?? false)) {
+                                final isValid = _phoneFieldKey.currentState?.isPhoneValid ?? false;
+                                if (!isValid) {
                                   return tr(AppStrings.invalidPhoneNumber);
                                 }
                                 return null;
@@ -138,7 +140,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
                                 _phoneNumber = phoneNumber;
                                 _onFieldChanged();
                               },
-                              initialCountryCode: 'US',
+                              initialValue: PhoneNumberUtils.getLocalPhoneNumber(widget.user.phoneNumber),
+                              initialCountryCode: PhoneNumberUtils.getCountryCodeFromPhoneNumber(widget.user.phoneNumber),
                             ),
                             SizedBox(height: DimensionConstants.gap20Px.h),
 
@@ -183,10 +186,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
   void _prepopulateFields() {
     _fullNameController.text = widget.user.name ?? '';
     _emailController.text = widget.user.email;
-    _phoneController.text = widget.user.phoneNumber ?? '';
     _addressController.text = widget.user.address ?? '';
+
     if (widget.user.phoneNumber != null && widget.user.phoneNumber!.isNotEmpty) {
-      _phoneNumber = PhoneNumber(phoneNumber: widget.user.phoneNumber);
+      _phoneNumber = PhoneNumberUtils.createPhoneNumberFromInternational(widget.user.phoneNumber);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (mounted) {
+            _phoneFieldKey.currentState?.triggerValidation();
+          }
+        });
+      });
     }
   }
 
@@ -204,6 +215,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
   void _handleSave() {
     if (_formKey.currentState!.validate() && _phoneNumber != null) {
       final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
+
       if (!isPhoneValid) {
         SnackBarUtils.showError(context, tr(AppStrings.invalidPhoneNumber));
         return;
