@@ -3,6 +3,7 @@ import '../../../../core/network/endpoints/api_endpoints.dart';
 import '../../../../core/utils/enumns/api/sessions_enums.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../models/session_model.dart';
+import '../models/session_details_model.dart';
 import '../models/session_availability_model.dart';
 import '../models/book_session_request_model.dart';
 import '../models/book_session_response_model.dart';
@@ -13,6 +14,7 @@ abstract class SessionsRemoteDataSource {
   Future<List<SessionModel>> getUpcomingSessions();
   Future<List<SessionModel>> getCompletedSessions();
   Future<SessionModel> getSessionById(String sessionId);
+  Future<SessionDetailsModel> getSessionDetails({required String sessionId, String? timezone});
   Future<String> cancelSession(String sessionId, String reason);
   Future<SessionModel> joinSession(String sessionId);
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone);
@@ -67,6 +69,20 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
     final allSessions = SessionsMockDataSource.getMockSessions();
     final session = allSessions.firstWhere((session) => session.id == sessionId);
     return session;
+  }
+
+  @override
+  Future<SessionDetailsModel> getSessionDetails({required String sessionId, String? timezone}) async {
+    final Map<String, dynamic> queryParams = {'sessionId': sessionId};
+    final Map<String, dynamic> headers = {};
+    if (timezone != null) headers['timezone'] = timezone;
+
+    return await apiService.getData<SessionDetailsModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSION_DETAILS),
+      queryParams: queryParams,
+      headers: headers.isNotEmpty ? headers : null,
+      converter: (json) => SessionDetailsModel.fromJson(json),
+    );
   }
 
   @override

@@ -31,6 +31,7 @@ import 'features/sessions/data/repositories/sessions_repository_impl.dart';
 import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
+import 'features/sessions/domain/usecases/get_session_details_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/domain/usecases/book_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
@@ -114,6 +115,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => GetSessionDetailsUseCase(sl()));
   sl.registerLazySingleton(() => BookSessionUseCase(sl()));
   sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
