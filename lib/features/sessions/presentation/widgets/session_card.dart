@@ -49,7 +49,7 @@ class SessionCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        SessionDateTimeUtils.formatSessionDate(session.scheduledDate),
+                        SessionDateTimeUtils.formatSessionDate(session.scheduledDateTime),
                         style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                       ),
                       SizedBox(height: DimensionConstants.gap2Px.h),
@@ -81,7 +81,7 @@ class SessionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      session.formattedPrice,
+                      session.formattedHoldAmount,
                       style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     SizedBox(height: DimensionConstants.gap2Px.h),
@@ -137,7 +137,7 @@ class SessionCard extends StatelessWidget {
             if (session.isUpcoming && session.canCancel) ...[
               SizedBox(height: DimensionConstants.gap12Px.h),
               Text(
-                '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDate)}.',
+                '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDateTime)}.',
                 style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               ).tr(),
             ],
@@ -150,7 +150,7 @@ class SessionCard extends StatelessWidget {
               ),
               SizedBox(height: DimensionConstants.gap4Px.h),
               Text(
-                '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDate)}.',
+                '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDateTime)}.',
                 style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
                 textAlign: TextAlign.center,
               ).tr(),

@@ -16,6 +16,7 @@ class ApiService implements ApiInterface {
   Future<List<T>> getCollectionData<T>({
     required String endpoint,
     JSON? queryParams,
+    JSON? headers,
     CancelToken? cancelToken,
     CachePolicy? cachePolicy,
     int? cacheAgeDays,
@@ -31,7 +32,7 @@ class ApiService implements ApiInterface {
           policy: cachePolicy,
           maxStale: cacheAgeDays != null ? Duration(days: cacheAgeDays) : null,
         ),
-        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}, headers: headers),
         queryParams: queryParams,
         cancelToken: cancelToken,
       );

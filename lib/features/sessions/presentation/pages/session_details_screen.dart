@@ -143,7 +143,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      SessionDateTimeUtils.formatSessionDate(session.scheduledDate),
+                      SessionDateTimeUtils.formatSessionDate(session.scheduledDateTime),
                       style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     SizedBox(height: DimensionConstants.gap2Px.h),
@@ -173,7 +173,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    session.formattedPrice,
+                    session.formattedHoldAmount,
                     style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                   ),
                   SizedBox(height: DimensionConstants.gap2Px.h),
@@ -412,7 +412,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           if (widget.params.session.canCancel) ...[
             SizedBox(height: DimensionConstants.gap12Px.h),
             Text(
-              '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(widget.params.session.scheduledDate)}.',
+              '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(widget.params.session.scheduledDateTime)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               textAlign: TextAlign.center,
             ),
@@ -425,7 +425,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
             ),
             SizedBox(height: DimensionConstants.gap4Px.h),
             Text(
-              '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(widget.params.session.scheduledDate)}.',
+              '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(widget.params.session.scheduledDateTime)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               textAlign: TextAlign.center,
             ),

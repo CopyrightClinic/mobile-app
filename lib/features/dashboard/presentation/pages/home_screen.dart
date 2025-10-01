@@ -14,21 +14,26 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
-import '../../../../core/utils/enumns/ui/session_status.dart';
+import '../../../sessions/presentation/bloc/sessions_bloc.dart';
+import '../../../sessions/presentation/bloc/sessions_event.dart';
+import '../../../sessions/presentation/bloc/sessions_state.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  SessionEntity get _dummySession => SessionEntity(
-    id: '1',
-    title: AppStrings.copyrightConsultation,
-    scheduledDate: DateTime.now().add(const Duration(days: 2, hours: 15, minutes: 30)),
-    duration: const Duration(minutes: 30),
-    price: 99.00,
-    status: SessionStatus.upcoming,
-    description: AppStrings.copyrightConsultationSession,
-    createdAt: DateTime.now().subtract(const Duration(days: 1)),
-  );
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late SessionsBloc _sessionsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _sessionsBloc = context.read<SessionsBloc>();
+    _sessionsBloc.add(const LoadUserSessions());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +110,37 @@ class HomeScreen extends StatelessWidget {
 
                 SizedBox(height: DimensionConstants.gap16Px.h),
 
-                SessionCard(session: _dummySession, onCancel: () {}, onJoin: () {}),
+                BlocBuilder<SessionsBloc, SessionsState>(
+                  builder: (context, state) {
+                    if (state is SessionsLoading) {
+                      return Container(
+                        height: 120,
+                        decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r)),
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    if (state is SessionsLoaded) {
+                      final upcomingSessions = state.upcomingSessions;
+                      if (upcomingSessions.isEmpty) {
+                        return _buildNoUpcomingSessionsCard(context);
+                      }
+
+                      final latestSession = upcomingSessions.first;
+                      return SessionCard(
+                        session: latestSession,
+                        onCancel: latestSession.canCancel ? () => _showCancelDialog(context, latestSession) : null,
+                        onJoin: () => _joinSession(context, latestSession.id),
+                      );
+                    }
+
+                    if (state is SessionsError) {
+                      return _buildErrorSessionCard(context, state.message);
+                    }
+
+                    return _buildNoUpcomingSessionsCard(context);
+                  },
+                ),
 
                 SizedBox(height: DimensionConstants.gap24Px.h),
               ],
@@ -201,4 +236,90 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildNoUpcomingSessionsCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
+      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r)),
+      child: Column(
+        children: [
+          Icon(Icons.event_note_outlined, size: DimensionConstants.gap48Px.w, color: context.darkTextSecondary),
+          SizedBox(height: DimensionConstants.gap12Px.h),
+          TranslatedText(
+            AppStrings.noUpcomingSessions,
+            style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: DimensionConstants.gap4Px.h),
+          TranslatedText(
+            AppStrings.noSessionsYet,
+            style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorSessionCard(BuildContext context, String message) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
+      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r)),
+      child: Column(
+        children: [
+          Icon(Icons.error_outline, size: DimensionConstants.gap48Px.w, color: context.red),
+          SizedBox(height: DimensionConstants.gap12Px.h),
+          TranslatedText(
+            AppStrings.somethingWentWrong,
+            style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: DimensionConstants.gap4Px.h),
+          Text(message, style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+
+  void _showCancelDialog(BuildContext context, SessionEntity session) {
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            backgroundColor: context.filledBgDark,
+            title: TranslatedText(
+              AppStrings.cancelSessionTitle,
+              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600),
+            ),
+            content: TranslatedText(
+              AppStrings.cancelSessionMessage,
+              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: TranslatedText(
+                  AppStrings.keepSession,
+                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  _sessionsBloc.add(CancelSessionRequested(sessionId: session.id, reason: AppStrings.userRequestedCancellation));
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: context.red, foregroundColor: Colors.white),
+                child: TranslatedText(
+                  AppStrings.cancelSession,
+                  style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _joinSession(BuildContext context, String sessionId) {}
 }

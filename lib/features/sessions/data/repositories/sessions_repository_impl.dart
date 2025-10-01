@@ -15,9 +15,9 @@ class SessionsRepositoryImpl implements SessionsRepository {
   SessionsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<SessionEntity>>> getUserSessions() async {
+  Future<Either<Failure, List<SessionEntity>>> getUserSessions({String? status, String? timezone}) async {
     try {
-      final sessions = await remoteDataSource.getUserSessions();
+      final sessions = await remoteDataSource.getUserSessions(status: status, timezone: timezone);
       return Right(sessions.map((session) => session.toEntity()).toList());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
