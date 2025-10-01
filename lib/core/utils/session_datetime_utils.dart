@@ -54,6 +54,21 @@ class SessionDateTimeUtils {
     return '$dateStr, $timeStr';
   }
 
+  static String formatCancelTime(String? cancelTime) {
+    if (cancelTime == null || cancelTime.isEmpty) {
+      return 'null';
+    }
+
+    try {
+      final DateTime parsedDate = DateTime.parse(cancelTime);
+      final dateStr = DateFormat(dayMonthYear).format(parsedDate);
+      final timeStr = _formatTime(parsedDate);
+      return '$dateStr, $timeStr';
+    } catch (e) {
+      return cancelTime;
+    }
+  }
+
   static String formatDateToIso(DateTime date) {
     return date.toIso8601String().split('T')[0];
   }

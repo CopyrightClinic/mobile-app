@@ -100,7 +100,7 @@ class SessionCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomButton(
-                      onPressed: onCancel,
+                      onPressed: (session.cancelTimeExpired == true) ? null : onCancel,
                       backgroundColor: context.buttonSecondary,
                       disabledBackgroundColor: context.buttonDisabled,
                       textColor: context.darkTextPrimary,
@@ -111,7 +111,7 @@ class SessionCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: DimensionConstants.font16Px.f,
                           fontWeight: FontWeight.w600,
-                          color: onCancel != null ? context.darkTextPrimary : context.darkTextSecondary,
+                          color: (session.cancelTimeExpired == true) ? context.darkTextSecondary : context.darkTextPrimary,
                         ),
                       ),
                     ),
@@ -134,15 +134,15 @@ class SessionCard extends StatelessWidget {
               ),
             ],
 
-            if (session.isUpcoming && session.canCancel) ...[
+            if (session.isUpcoming && session.cancelTimeExpired == false) ...[
               SizedBox(height: DimensionConstants.gap12Px.h),
               Text(
-                '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDateTime)}.',
+                '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
                 style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               ).tr(),
             ],
 
-            if (session.isUpcoming && !session.canCancel) ...[
+            if (session.isUpcoming && session.cancelTimeExpired == true) ...[
               SizedBox(height: DimensionConstants.gap12Px.h),
               TranslatedText(
                 AppStrings.cancellationPeriodExpired,
@@ -150,7 +150,7 @@ class SessionCard extends StatelessWidget {
               ),
               SizedBox(height: DimensionConstants.gap4Px.h),
               Text(
-                '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(session.scheduledDateTime)}.',
+                '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
                 style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
                 textAlign: TextAlign.center,
               ).tr(),

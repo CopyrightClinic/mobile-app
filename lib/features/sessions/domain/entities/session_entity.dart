@@ -22,6 +22,8 @@ class SessionEntity extends Equatable {
   final String? summary;
   final double? rating;
   final String? review;
+  final String? cancelTime;
+  final bool? cancelTimeExpired;
   final AttorneyEntity attorney;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -38,6 +40,8 @@ class SessionEntity extends Equatable {
     this.summary,
     this.rating,
     this.review,
+    this.cancelTime,
+    this.cancelTimeExpired,
     required this.attorney,
     required this.createdAt,
     required this.updatedAt,
@@ -56,6 +60,8 @@ class SessionEntity extends Equatable {
     summary,
     rating,
     review,
+    cancelTime,
+    cancelTimeExpired,
     attorney,
     createdAt,
     updatedAt,

@@ -35,6 +35,10 @@ class SessionModel {
   final String? summary;
   final double? rating;
   final String? review;
+  @JsonKey(name: 'cancelTime')
+  final String? cancelTime;
+  @JsonKey(name: 'cancelTimeExpired')
+  final bool? cancelTimeExpired;
   final AttorneyModel attorney;
   @JsonKey(name: 'createdAt')
   final DateTime createdAt;
@@ -51,6 +55,8 @@ class SessionModel {
     this.summary,
     this.rating,
     this.review,
+    this.cancelTime,
+    this.cancelTimeExpired,
     required this.attorney,
     required this.createdAt,
     required this.updatedAt,
@@ -62,7 +68,10 @@ class SessionModel {
 
   SessionEntity toEntity() {
     final holdAmount = 50.0;
-    final canCancel = status == 'upcoming' && DateTime.parse('${scheduledDate}T$startTime').difference(DateTime.now()).inHours > 24;
+    final canCancel =
+        cancelTimeExpired != null
+            ? !cancelTimeExpired!
+            : (status == 'upcoming' && DateTime.parse('${scheduledDate}T$startTime').difference(DateTime.now()).inHours > 24);
 
     return SessionEntity(
       id: id,
@@ -74,6 +83,8 @@ class SessionModel {
       summary: summary,
       rating: rating,
       review: review,
+      cancelTime: cancelTime,
+      cancelTimeExpired: cancelTimeExpired,
       attorney: attorney.toEntity(),
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -93,6 +104,8 @@ class SessionModel {
       summary: entity.summary,
       rating: entity.rating,
       review: entity.review,
+      cancelTime: null,
+      cancelTimeExpired: !entity.canCancel,
       attorney: AttorneyModel(id: entity.attorney.id, name: entity.attorney.name, email: entity.attorney.email),
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,

@@ -26,7 +26,7 @@ class ApiService implements ApiInterface {
     List<Object?> body;
 
     try {
-      final data = await _dioService.get<List<Object?>>(
+      final data = await _dioService.get<JSON>(
         endpoint: endpoint,
         cacheOptions: _dioService.globalCacheOptions?.copyWith(
           policy: cachePolicy,
@@ -37,7 +37,12 @@ class ApiService implements ApiInterface {
         cancelToken: cancelToken,
       );
 
-      body = data.data;
+      final responseData = data.data;
+      if (responseData.containsKey('data') && responseData['data'] is List) {
+        body = responseData['data'] as List<Object?>;
+      } else {
+        throw CustomException.fromParsingException(Exception('Expected response to contain data array'));
+      }
     } on Exception catch (ex) {
       throw CustomException.fromDioException(ex);
     }
