@@ -45,6 +45,8 @@ class SessionDetailsEntity extends Equatable {
   final bool summaryLocked;
   final double? rating;
   final String? review;
+  final String? cancelTime;
+  final bool? cancelTimeExpired;
   final SessionDetailsAttorneyEntity attorney;
   final SessionDetailsUserEntity user;
   final SessionRequestEntity sessionRequest;
@@ -64,6 +66,8 @@ class SessionDetailsEntity extends Equatable {
     required this.summaryLocked,
     this.rating,
     this.review,
+    this.cancelTime,
+    this.cancelTimeExpired,
     required this.attorney,
     required this.user,
     required this.sessionRequest,
@@ -85,6 +89,8 @@ class SessionDetailsEntity extends Equatable {
     summaryLocked,
     rating,
     review,
+    cancelTime,
+    cancelTimeExpired,
     attorney,
     user,
     sessionRequest,

@@ -162,6 +162,6 @@ class SessionCard extends StatelessWidget {
   }
 
   void _navigateToSessionDetails(BuildContext context) {
-    context.push(AppRoutes.sessionDetailsRouteName, extra: SessionDetailsScreenParams(session: session));
+    context.push(AppRoutes.sessionDetailsRouteName, extra: SessionDetailsScreenParams(sessionId: session.id));
   }
 }

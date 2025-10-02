@@ -402,4 +402,16 @@ class AppStrings {
   static const unlockSummaryFor = 'unlockSummaryFor';
   static const payToRequestSummary = 'payToRequestSummary';
   static const requestSummaryDeadline = 'requestSummaryDeadline';
+  static const noRating = 'noRating';
+  static const noReviewProvided = 'noReviewProvided';
+  static const summaryUnlockRequested = 'summaryUnlockRequested';
+
+  // Speech Recognition Error Messages
+  static const failedToInitializeSpeechRecognition = 'failedToInitializeSpeechRecognition';
+  static const failedToStartSpeechRecognition = 'failedToStartSpeechRecognition';
+  static const failedToStopSpeechRecognition = 'failedToStopSpeechRecognition';
+  static const failedToPauseSpeechRecognition = 'failedToPauseSpeechRecognition';
+  static const failedToResumeSpeechRecognition = 'failedToResumeSpeechRecognition';
+  static const speechRecognitionErrorOccurred = 'speechRecognitionErrorOccurred';
+  static const describeYourCopyrightIssuePrompt = 'describeYourCopyrightIssuePrompt';
 }

@@ -69,6 +69,10 @@ class SessionDetailsModel {
   final bool summaryLocked;
   final double? rating;
   final String? review;
+  @JsonKey(name: 'cancelTime')
+  final String? cancelTime;
+  @JsonKey(name: 'cancelTimeExpired')
+  final bool? cancelTimeExpired;
   final SessionDetailsAttorneyModel attorney;
   final SessionDetailsUserModel user;
   @JsonKey(name: 'sessionRequest')
@@ -89,6 +93,8 @@ class SessionDetailsModel {
     required this.summaryLocked,
     this.rating,
     this.review,
+    this.cancelTime,
+    this.cancelTimeExpired,
     required this.attorney,
     required this.user,
     required this.sessionRequest,
@@ -101,7 +107,10 @@ class SessionDetailsModel {
 
   SessionDetailsEntity toEntity() {
     final holdAmount = 50.0;
-    final canCancel = status == 'upcoming' && DateTime.parse('${scheduledDate}T$startTime').difference(DateTime.now()).inHours > 24;
+    final canCancel =
+        cancelTimeExpired != null
+            ? !cancelTimeExpired!
+            : (status == 'upcoming' && DateTime.parse('${scheduledDate}T$startTime').difference(DateTime.now()).inHours > 24);
 
     return SessionDetailsEntity(
       id: id,
@@ -114,6 +123,8 @@ class SessionDetailsModel {
       summaryLocked: summaryLocked,
       rating: rating,
       review: review,
+      cancelTime: cancelTime,
+      cancelTimeExpired: cancelTimeExpired,
       attorney: attorney.toEntity(),
       user: user.toEntity(),
       sessionRequest: sessionRequest.toEntity(),

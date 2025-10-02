@@ -335,5 +335,15 @@
   "unlockWrittenSummary": "Unlock a Written Summary of Your Session",
   "unlockSummaryFor": "Unlock Summary for $25",
   "payToRequestSummary": "Pay $25 to request a written summary, reviewed and approved by your attorney. You can request the summary till 12/06/25, 5:30 PM",
-  "requestSummaryDeadline": "You can request the summary till 12/06/25, 5:30 PM"
+  "requestSummaryDeadline": "You can request the summary till 12/06/25, 5:30 PM",
+  "noRating": "No rating",
+  "noReviewProvided": "No review provided",
+  "summaryUnlockRequested": "Summary unlock requested",
+  "failedToInitializeSpeechRecognition": "Failed to initialize speech recognition",
+  "failedToStartSpeechRecognition": "Failed to start speech recognition",
+  "failedToStopSpeechRecognition": "Failed to stop speech recognition",
+  "failedToPauseSpeechRecognition": "Failed to pause speech recognition",
+  "failedToResumeSpeechRecognition": "Failed to resume speech recognition",
+  "speechRecognitionErrorOccurred": "Speech recognition error occurred",
+  "describeYourCopyrightIssuePrompt": "Describe your copyright issue"
 }

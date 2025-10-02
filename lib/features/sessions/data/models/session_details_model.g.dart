@@ -62,6 +62,8 @@ SessionDetailsModel _$SessionDetailsModelFromJson(Map<String, dynamic> json) =>
       summaryLocked: json['summaryLocked'] as bool,
       rating: (json['rating'] as num?)?.toDouble(),
       review: json['review'] as String?,
+      cancelTime: json['cancelTime'] as String?,
+      cancelTimeExpired: json['cancelTimeExpired'] as bool?,
       attorney: SessionDetailsAttorneyModel.fromJson(
         json['attorney'] as Map<String, dynamic>,
       ),
@@ -88,6 +90,8 @@ Map<String, dynamic> _$SessionDetailsModelToJson(
   'summaryLocked': instance.summaryLocked,
   'rating': instance.rating,
   'review': instance.review,
+  'cancelTime': instance.cancelTime,
+  'cancelTimeExpired': instance.cancelTimeExpired,
   'attorney': instance.attorney,
   'user': instance.user,
   'sessionRequest': instance.sessionRequest,

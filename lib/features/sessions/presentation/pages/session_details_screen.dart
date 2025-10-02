@@ -17,110 +17,210 @@ import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
+import '../../../../di.dart';
+import '../../domain/entities/session_details_entity.dart';
+import '../bloc/session_details_bloc.dart';
+import '../bloc/session_details_event.dart';
+import '../bloc/session_details_state.dart';
 import '../bloc/sessions_bloc.dart';
-import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
 import 'params/session_details_screen_params.dart';
 
-class SessionDetailsScreen extends StatefulWidget {
+class SessionDetailsScreen extends StatelessWidget {
   final SessionDetailsScreenParams params;
 
   const SessionDetailsScreen({super.key, required this.params});
 
   @override
-  State<SessionDetailsScreen> createState() => _SessionDetailsScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<SessionDetailsBloc>()..add(LoadSessionDetails(sessionId: params.sessionId)),
+      child: SessionDetailsView(sessionId: params.sessionId),
+    );
+  }
 }
 
-class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
-  late SessionsBloc _sessionsBloc;
-  bool _isRatingExpanded = false;
+class SessionDetailsView extends StatefulWidget {
+  final String sessionId;
+
+  const SessionDetailsView({super.key, required this.sessionId});
+
+  @override
+  State<SessionDetailsView> createState() => _SessionDetailsViewState();
+}
+
+class _SessionDetailsViewState extends State<SessionDetailsView> {
+  late final ValueNotifier<bool> _isRatingExpanded;
 
   @override
   void initState() {
     super.initState();
-    _sessionsBloc = context.read<SessionsBloc>();
+    _isRatingExpanded = ValueNotifier<bool>(false);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SessionsBloc, SessionsState>(
-      listener: (context, state) {
-        if (state is SessionCancelled) {
-          SnackBarUtils.showSuccess(context, AppStrings.sessionCancelledSuccessfully.tr());
-          context.pop();
-        } else if (state is SessionsError) {
-          SnackBarUtils.showError(context, state.message);
-        }
-      },
-      child: CustomScaffold(
-        extendBodyBehindAppBar: true,
-        appBar: CustomAppBar(
-          leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
-          leading: const CustomBackButton(),
-          centerTitle: true,
-          title: TranslatedText(
-            AppStrings.sessionDetailsTitle,
-            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap12Px.w, vertical: DimensionConstants.gap6Px.h),
-                decoration: BoxDecoration(
-                  color: widget.params.session.isUpcoming ? context.neonBlue.withAlpha(30) : context.neonGreen.withAlpha(30),
-                  borderRadius: BorderRadius.circular(DimensionConstants.radius52Px.r),
-                ),
-                child: TranslatedText(
-                  widget.params.session.isUpcoming ? AppStrings.upcoming : AppStrings.completed,
-                  style: TextStyle(
-                    color: widget.params.session.isUpcoming ? context.neonBlue : context.neonGreen,
-                    fontSize: DimensionConstants.font12Px.f,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SessionsBloc, SessionsState>(
+          listener: (context, state) {
+            if (state is SessionCancelled) {
+              SnackBarUtils.showSuccess(context, AppStrings.sessionCancelledSuccessfully.tr());
+              context.pop();
+            } else if (state is SessionsError) {
+              SnackBarUtils.showError(context, state.message);
+            }
+          },
+        ),
+        BlocListener<SessionDetailsBloc, SessionDetailsState>(
+          listener: (context, state) {
+            if (state is SessionDetailsCancelled) {
+              SnackBarUtils.showSuccess(context, state.message);
+              context.pop();
+            } else if (state is SessionDetailsError) {
+              SnackBarUtils.showError(context, state.message);
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<SessionDetailsBloc, SessionDetailsState>(
+        builder: (context, state) {
+          if (state is SessionDetailsLoading) {
+            return _buildLoadingScreen(context);
+          } else if (state is SessionDetailsError) {
+            return _buildErrorScreen(context, state.message);
+          } else if (state is SessionDetailsLoaded || state is SessionDetailsCancelLoading) {
+            final sessionDetails = state is SessionDetailsLoaded ? state.sessionDetails : (state as SessionDetailsCancelLoading).sessionDetails;
+            return _buildSessionDetailsScreen(context, sessionDetails);
+          } else {
+            return _buildLoadingScreen(context);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoadingScreen(BuildContext context) {
+    return CustomScaffold(
+      extendBodyBehindAppBar: true,
+      appBar: CustomAppBar(
+        leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
+        leading: const CustomBackButton(),
+        centerTitle: true,
+        title: TranslatedText(
+          AppStrings.sessionDetailsTitle,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+        ),
+      ),
+      body: const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildErrorScreen(BuildContext context, String message) {
+    return CustomScaffold(
+      extendBodyBehindAppBar: true,
+      appBar: CustomAppBar(
+        leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
+        leading: const CustomBackButton(),
+        centerTitle: true,
+        title: TranslatedText(
+          AppStrings.sessionDetailsTitle,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: context.red),
+            SizedBox(height: DimensionConstants.gap16Px.h),
+            Text(message, style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f), textAlign: TextAlign.center),
+            SizedBox(height: DimensionConstants.gap16Px.h),
+            CustomButton(
+              onPressed: () => context.read<SessionDetailsBloc>().add(LoadSessionDetails(sessionId: widget.sessionId)),
+              backgroundColor: context.primary,
+              textColor: Colors.white,
+              borderRadius: DimensionConstants.radius52Px.r,
+              padding: 12.0,
+              child: TranslatedText(
+                AppStrings.retry,
+                style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
           ],
-        ),
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: DimensionConstants.gap24Px.h),
-                        _buildSessionDetailsSection(),
-                        if (widget.params.session.isCompleted) ...[
-                          SizedBox(height: DimensionConstants.gap24Px.h),
-                          _buildRatingReviewSection(),
-                          SizedBox(height: DimensionConstants.gap24Px.h),
-                          _buildSessionSummarySection(),
-                        ] else ...[
-                          SizedBox(height: DimensionConstants.gap24Px.h),
-                          _buildNoteSection(),
-                        ],
-                        SizedBox(height: DimensionConstants.gap24Px.h),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              if (widget.params.session.isUpcoming) _buildActionButtons() else SizedBox(height: DimensionConstants.gap16Px.h),
-            ],
-          ),
         ),
       ),
     );
   }
 
-  Widget _buildSessionDetailsSection() {
-    final session = widget.params.session;
+  Widget _buildSessionDetailsScreen(BuildContext context, SessionDetailsEntity sessionDetails) {
+    return CustomScaffold(
+      extendBodyBehindAppBar: true,
+      appBar: CustomAppBar(
+        leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
+        leading: const CustomBackButton(),
+        centerTitle: true,
+        title: TranslatedText(
+          AppStrings.sessionDetailsTitle,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap12Px.w, vertical: DimensionConstants.gap6Px.h),
+              decoration: BoxDecoration(
+                color: sessionDetails.isUpcoming ? context.neonBlue.withAlpha(30) : context.neonGreen.withAlpha(30),
+                borderRadius: BorderRadius.circular(DimensionConstants.radius52Px.r),
+              ),
+              child: TranslatedText(
+                sessionDetails.isUpcoming ? AppStrings.upcoming : AppStrings.completed,
+                style: TextStyle(
+                  color: sessionDetails.isUpcoming ? context.neonBlue : context.neonGreen,
+                  fontSize: DimensionConstants.font12Px.f,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: DimensionConstants.gap24Px.h),
+                      _buildSessionDetailsSection(sessionDetails),
+                      if (sessionDetails.isCompleted) ...[
+                        SizedBox(height: DimensionConstants.gap24Px.h),
+                        _buildRatingReviewSection(sessionDetails),
+                        SizedBox(height: DimensionConstants.gap24Px.h),
+                        _buildSessionSummarySection(sessionDetails),
+                      ] else ...[
+                        SizedBox(height: DimensionConstants.gap24Px.h),
+                        _buildNoteSection(),
+                      ],
+                      SizedBox(height: DimensionConstants.gap24Px.h),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (sessionDetails.isUpcoming) _buildActionButtons(sessionDetails) else SizedBox(height: DimensionConstants.gap16Px.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSessionDetailsSection(SessionDetailsEntity session) {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
       decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
@@ -211,67 +311,70 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     );
   }
 
-  Widget _buildRatingReviewSection() {
+  Widget _buildRatingReviewSection(SessionDetailsEntity session) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _isRatingExpanded = !_isRatingExpanded;
-        });
+        _isRatingExpanded.value = !_isRatingExpanded.value;
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-        decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: ValueListenableBuilder<bool>(
+        valueListenable: _isRatingExpanded,
+        builder: (context, isExpanded, child) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
+            decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TranslatedText(
-                  AppStrings.yourRatingAndReview,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
-                ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.star, color: context.orange, size: DimensionConstants.gap16Px.w),
-                    SizedBox(width: DimensionConstants.gap4Px.w),
-                    Text(
-                      '(4.0)',
-                      style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
+                    TranslatedText(
+                      AppStrings.yourRatingAndReview,
+                      style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
                     ),
-                    SizedBox(width: DimensionConstants.gap8Px.w),
-                    AnimatedRotation(
-                      turns: _isRatingExpanded ? 0.0 : 0.5,
-                      duration: const Duration(milliseconds: 300),
-                      child: Icon(Icons.keyboard_arrow_up, color: context.darkTextSecondary, size: DimensionConstants.gap20Px.w),
+                    Row(
+                      children: [
+                        Icon(Icons.star, color: context.orange, size: DimensionConstants.gap16Px.w),
+                        SizedBox(width: DimensionConstants.gap4Px.w),
+                        Text(
+                          session.rating != null ? '(${session.rating})' : '(${AppStrings.noRating.tr()})',
+                          style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
+                        ),
+                        SizedBox(width: DimensionConstants.gap8Px.w),
+                        AnimatedRotation(
+                          turns: isExpanded ? 0.0 : 0.5,
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(Icons.keyboard_arrow_up, color: context.darkTextSecondary, size: DimensionConstants.gap20Px.w),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                AnimatedCrossFade(
+                  firstChild: const SizedBox.shrink(),
+                  secondChild: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: DimensionConstants.gap12Px.h),
+                      Text(
+                        session.review ?? AppStrings.noReviewProvided.tr(),
+                        style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 300),
+                ),
               ],
             ),
-            AnimatedCrossFade(
-              firstChild: const SizedBox.shrink(),
-              secondChild: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: DimensionConstants.gap12Px.h),
-                  Text(
-                    'The attorney was very helpful and provided clear guidance on my legal question. Would definitely recommend!',
-                    style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-              crossFadeState: _isRatingExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-              duration: const Duration(milliseconds: 300),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildSessionSummarySection() {
+  Widget _buildSessionSummarySection(SessionDetailsEntity session) {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
       decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
@@ -355,7 +458,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(SessionDetailsEntity session) {
     return Container(
       padding: EdgeInsets.only(
         left: DimensionConstants.gap16Px.w,
@@ -369,12 +472,11 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           Row(
             children: [
               Expanded(
-                child: BlocBuilder<SessionsBloc, SessionsState>(
+                child: BlocBuilder<SessionDetailsBloc, SessionDetailsState>(
                   builder: (context, state) {
-                    final session = widget.params.session;
-                    final isLoading = state is SessionCancelLoading && state.sessionId == session.id;
+                    final isLoading = state is SessionDetailsCancelLoading;
                     return CustomButton(
-                      onPressed: session.canCancel ? () => _showCancelDialog() : null,
+                      onPressed: (session.cancelTimeExpired == true) ? null : () => _showCancelDialog(session),
                       backgroundColor: context.buttonSecondary,
                       disabledBackgroundColor: context.buttonDisabled,
                       textColor: context.darkTextPrimary,
@@ -386,7 +488,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                         style: TextStyle(
                           fontSize: DimensionConstants.font16Px.f,
                           fontWeight: FontWeight.w600,
-                          color: session.canCancel ? context.darkTextPrimary : context.darkTextSecondary,
+                          color: (session.cancelTimeExpired == true) ? context.darkTextSecondary : context.darkTextPrimary,
                         ),
                       ),
                     );
@@ -409,15 +511,15 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
               ),
             ],
           ),
-          if (widget.params.session.canCancel) ...[
+          if (session.cancelTimeExpired == false) ...[
             SizedBox(height: DimensionConstants.gap12Px.h),
             Text(
-              '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(widget.params.session.scheduledDateTime)}.',
+              '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               textAlign: TextAlign.center,
             ),
           ],
-          if (!widget.params.session.canCancel) ...[
+          if (session.cancelTimeExpired == true) ...[
             SizedBox(height: DimensionConstants.gap12Px.h),
             TranslatedText(
               AppStrings.cancellationPeriodExpired,
@@ -425,7 +527,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
             ),
             SizedBox(height: DimensionConstants.gap4Px.h),
             Text(
-              '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancellationDeadline(widget.params.session.scheduledDateTime)}.',
+              '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
               style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
               textAlign: TextAlign.center,
             ),
@@ -435,7 +537,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     );
   }
 
-  void _showCancelDialog() {
+  void _showCancelDialog(SessionDetailsEntity session) {
     CustomBottomSheet.show(
       context: context,
       iconPath: ImageConstants.warning,
@@ -445,7 +547,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
       secondaryButtonText: AppStrings.keepSession,
       onPrimaryPressed: () {
         Navigator.of(context).pop();
-        _onCancelSession();
+        _onCancelSession(session);
       },
       onSecondaryPressed: () => Navigator.of(context).pop(),
       primaryButtonColor: context.red,
@@ -453,8 +555,8 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     );
   }
 
-  void _onCancelSession() {
-    _sessionsBloc.add(CancelSessionRequested(sessionId: widget.params.session.id, reason: AppStrings.userRequestedCancellation));
+  void _onCancelSession(SessionDetailsEntity session) {
+    context.read<SessionDetailsBloc>().add(CancelSessionFromDetails(sessionId: session.id, reason: AppStrings.userRequestedCancellation));
   }
 
   void _onJoinSession() {
@@ -463,6 +565,12 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
 
   void _onUnlockSummary() {
     // TODO: Implement unlock summary functionality
-    SnackBarUtils.showSuccess(context, 'Summary unlock requested');
+    SnackBarUtils.showSuccess(context, AppStrings.summaryUnlockRequested.tr());
+  }
+
+  @override
+  void dispose() {
+    _isRatingExpanded.dispose();
+    super.dispose();
   }
 }

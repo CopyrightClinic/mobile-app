@@ -35,6 +35,7 @@ import 'features/sessions/domain/usecases/get_session_details_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/domain/usecases/book_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/sessions/presentation/bloc/session_details_bloc.dart';
 import 'features/profile/data/datasources/profile_remote_data_source.dart';
 import 'features/profile/data/repositories/profile_repository_impl.dart';
 import 'features/profile/domain/repositories/profile_repository.dart';
@@ -149,6 +150,9 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl(), bookSessionUseCase: sl()),
   );
+
+  // Session Details Bloc
+  sl.registerFactory(() => SessionDetailsBloc(getSessionDetailsUseCase: sl(), cancelSessionUseCase: sl()));
 
   // Speech to Text Bloc
   sl.registerFactory(

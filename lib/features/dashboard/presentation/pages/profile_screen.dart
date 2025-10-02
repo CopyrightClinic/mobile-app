@@ -103,7 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       builder: (context, state) {
                         return InkWell(
                           onTap: () async {
+                            print('state: $state');
                             if (state is AuthAuthenticated) {
+                              print('state.user: ${state.user}');
                               await context.push(AppRoutes.editProfileRouteName, extra: state.user);
                             }
                           },
