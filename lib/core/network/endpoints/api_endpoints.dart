@@ -78,4 +78,9 @@ class ApiEndpoint {
         return '$path/evaluate';
     }
   }
+
+  /// Notifications endpoints
+  ///
+  /// Provides notification operations:
+  static const String notifications = '/notifications';
 }

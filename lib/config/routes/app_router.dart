@@ -35,6 +35,7 @@ import '../../features/profile/presentation/pages/change_password_screen.dart';
 import '../../features/auth/domain/entities/user_entity.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import '../../core/utils/enumns/ui/payment_method.dart';
+import '../../features/notifications/presentation/pages/notifications_screen.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -184,6 +185,11 @@ class AppRouter {
           final params = state.extra as HaroldFailedScreenParams;
           return HaroldFailedScreen(params: params);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.notificationsRouteName,
+        name: AppRoutes.notificationsRouteName,
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
   );

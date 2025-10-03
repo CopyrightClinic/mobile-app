@@ -16,6 +16,7 @@ import 'features/sessions/presentation/bloc/sessions_bloc.dart';
 import 'features/profile/presentation/bloc/profile_bloc.dart';
 import 'features/speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
+import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'di.dart';
 
 class MyApp extends StatelessWidget {
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(create: (context) => sl<ProfileBloc>()),
         BlocProvider<SpeechToTextBloc>(create: (context) => sl<SpeechToTextBloc>()),
         BlocProvider<HaroldAiBloc>(create: (context) => sl<HaroldAiBloc>()),
+        BlocProvider<NotificationBloc>(create: (context) => sl<NotificationBloc>()),
       ],
       child: BlocBuilder<LocalizationCubit, LocalizationModel>(
         builder: (context, localization) {
