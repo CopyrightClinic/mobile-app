@@ -414,4 +414,8 @@ class AppStrings {
   static const failedToResumeSpeechRecognition = 'failedToResumeSpeechRecognition';
   static const speechRecognitionErrorOccurred = 'speechRecognitionErrorOccurred';
   static const describeYourCopyrightIssuePrompt = 'describeYourCopyrightIssuePrompt';
+  static const addYourRatingAndReview = 'addYourRatingAndReview';
+  static const addACommentOptional = 'addACommentOptional';
+  static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
+  static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
 }

@@ -345,5 +345,9 @@
   "failedToPauseSpeechRecognition": "Failed to pause speech recognition",
   "failedToResumeSpeechRecognition": "Failed to resume speech recognition",
   "speechRecognitionErrorOccurred": "Speech recognition error occurred",
-  "describeYourCopyrightIssuePrompt": "Describe your copyright issue"
+  "describeYourCopyrightIssuePrompt": "Describe your copyright issue",
+  "addYourRatingAndReview": "Add your rating & review",
+  "addACommentOptional": "Add a comment (optional)",
+  "theAttorneyWasVeryHelpful": "Was the advice helpful? Anything we could improve?",
+  "ratingReviewSubmittedSuccessfully": "Rating and review submitted successfully!"
 }

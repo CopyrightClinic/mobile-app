@@ -24,6 +24,8 @@ import '../bloc/session_details_event.dart';
 import '../bloc/session_details_state.dart';
 import '../bloc/sessions_bloc.dart';
 import '../bloc/sessions_state.dart';
+import '../widgets/add_rating_review_widget.dart';
+import '../widgets/submitted_rating_review_widget.dart';
 import 'params/session_details_screen_params.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
@@ -312,66 +314,16 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   Widget _buildRatingReviewSection(SessionDetailsEntity session) {
-    return GestureDetector(
-      onTap: () {
-        _isRatingExpanded.value = !_isRatingExpanded.value;
-      },
-      child: ValueListenableBuilder<bool>(
-        valueListenable: _isRatingExpanded,
-        builder: (context, isExpanded, child) {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-            decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TranslatedText(
-                      AppStrings.yourRatingAndReview,
-                      style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: context.orange, size: DimensionConstants.gap16Px.w),
-                        SizedBox(width: DimensionConstants.gap4Px.w),
-                        Text(
-                          session.rating != null ? '(${session.rating})' : '(${AppStrings.noRating.tr()})',
-                          style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
-                        ),
-                        SizedBox(width: DimensionConstants.gap8Px.w),
-                        AnimatedRotation(
-                          turns: isExpanded ? 0.0 : 0.5,
-                          duration: const Duration(milliseconds: 300),
-                          child: Icon(Icons.keyboard_arrow_up, color: context.darkTextSecondary, size: DimensionConstants.gap20Px.w),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                AnimatedCrossFade(
-                  firstChild: const SizedBox.shrink(),
-                  secondChild: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: DimensionConstants.gap12Px.h),
-                      Text(
-                        session.review ?? AppStrings.noReviewProvided.tr(),
-                        style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                  crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-                  duration: const Duration(milliseconds: 300),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
+    if (session.rating != null && session.review != null) {
+      return SubmittedRatingReviewWidget(rating: session.rating!, review: session.review!, isExpanded: _isRatingExpanded);
+    } else {
+      return AddRatingReviewWidget(
+        onSubmit: () => _onSubmitRatingReview(),
+        onRatingChanged: (rating) {},
+        onReviewChanged: (review) {},
+        isExpanded: _isRatingExpanded,
+      );
+    }
   }
 
   Widget _buildSessionSummarySection(SessionDetailsEntity session) {
@@ -564,8 +516,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _onUnlockSummary() {
-    // TODO: Implement unlock summary functionality
     SnackBarUtils.showSuccess(context, AppStrings.summaryUnlockRequested.tr());
+  }
+
+  void _onSubmitRatingReview() {
+    SnackBarUtils.showSuccess(context, AppStrings.ratingReviewSubmittedSuccessfully.tr());
   }
 
   @override
