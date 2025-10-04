@@ -7,6 +7,8 @@ import '../models/session_details_model.dart';
 import '../models/session_availability_model.dart';
 import '../models/book_session_request_model.dart';
 import '../models/book_session_response_model.dart';
+import '../models/submit_feedback_request_model.dart';
+import '../models/submit_feedback_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
@@ -15,6 +17,7 @@ abstract class SessionsRemoteDataSource {
   Future<List<SessionModel>> getCompletedSessions();
   Future<SessionModel> getSessionById(String sessionId);
   Future<SessionDetailsModel> getSessionDetails({required String sessionId, String? timezone});
+  Future<SubmitFeedbackResponseModel> submitSessionFeedback({required String sessionId, required double rating, String? review});
   Future<String> cancelSession(String sessionId, String reason);
   Future<SessionModel> joinSession(String sessionId);
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone);
@@ -82,6 +85,18 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       queryParams: queryParams,
       headers: headers.isNotEmpty ? headers : null,
       converter: (json) => SessionDetailsModel.fromJson(json),
+    );
+  }
+
+  @override
+  Future<SubmitFeedbackResponseModel> submitSessionFeedback({required String sessionId, required double rating, String? review}) async {
+    final request = SubmitFeedbackRequestModel(rating: rating, review: review);
+    final endpoint = '${ApiEndpoint.sessions(SessionsEndpoint.SESSION_FEEDBACK)}?sessionId=$sessionId';
+
+    return await apiService.patchData<SubmitFeedbackResponseModel>(
+      endpoint: endpoint,
+      data: request.toJson(),
+      converter: (response) => SubmitFeedbackResponseModel.fromJson(response.data),
     );
   }
 

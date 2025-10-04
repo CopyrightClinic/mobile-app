@@ -25,3 +25,14 @@ class CancelSessionFromDetails extends SessionDetailsEvent {
   @override
   List<Object> get props => [sessionId, reason];
 }
+
+class SubmitSessionFeedback extends SessionDetailsEvent {
+  final String sessionId;
+  final double rating;
+  final String? review;
+
+  const SubmitSessionFeedback({required this.sessionId, required this.rating, this.review});
+
+  @override
+  List<Object> get props => [sessionId, rating, review ?? ''];
+}

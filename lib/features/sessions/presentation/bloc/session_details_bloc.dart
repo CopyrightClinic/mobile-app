@@ -3,16 +3,20 @@ import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../domain/usecases/get_session_details_usecase.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
+import '../../domain/usecases/submit_session_feedback_usecase.dart';
 import 'session_details_event.dart';
 import 'session_details_state.dart';
 
 class SessionDetailsBloc extends Bloc<SessionDetailsEvent, SessionDetailsState> {
   final GetSessionDetailsUseCase getSessionDetailsUseCase;
   final CancelSessionUseCase cancelSessionUseCase;
+  final SubmitSessionFeedbackUseCase submitSessionFeedbackUseCase;
 
-  SessionDetailsBloc({required this.getSessionDetailsUseCase, required this.cancelSessionUseCase}) : super(const SessionDetailsInitial()) {
+  SessionDetailsBloc({required this.getSessionDetailsUseCase, required this.cancelSessionUseCase, required this.submitSessionFeedbackUseCase})
+    : super(const SessionDetailsInitial()) {
     on<LoadSessionDetails>(_onLoadSessionDetails);
     on<CancelSessionFromDetails>(_onCancelSessionFromDetails);
+    on<SubmitSessionFeedback>(_onSubmitSessionFeedback);
   }
 
   Future<void> _onLoadSessionDetails(LoadSessionDetails event, Emitter<SessionDetailsState> emit) async {
@@ -42,6 +46,24 @@ class SessionDetailsBloc extends Bloc<SessionDetailsEvent, SessionDetailsState> 
         (failure) => emit(SessionDetailsError(message: failure.message ?? AppStrings.failedToCancelSession)),
         (message) => emit(SessionDetailsCancelled(message: message)),
       );
+    }
+  }
+
+  Future<void> _onSubmitSessionFeedback(SubmitSessionFeedback event, Emitter<SessionDetailsState> emit) async {
+    if (state is SessionDetailsLoaded) {
+      final currentSessionDetails = (state as SessionDetailsLoaded).sessionDetails;
+      emit(SessionDetailsFeedbackLoading(sessionDetails: currentSessionDetails));
+
+      final result = await submitSessionFeedbackUseCase(
+        SubmitSessionFeedbackParams(sessionId: event.sessionId, rating: event.rating, review: event.review),
+      );
+
+      await result.fold((failure) async => emit(SessionDetailsError(message: failure.message ?? AppStrings.failedToSubmitFeedback)), (
+        response,
+      ) async {
+        emit(SessionDetailsFeedbackSubmitted(message: response.message));
+        add(LoadSessionDetails(sessionId: event.sessionId));
+      });
     }
   }
 }

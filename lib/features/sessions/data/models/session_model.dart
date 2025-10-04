@@ -4,6 +4,19 @@ import '../../domain/entities/session_entity.dart';
 
 part 'session_model.g.dart';
 
+double? _ratingFromJson(dynamic value) {
+  if (value == null) return null;
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) {
+    final parsed = double.tryParse(value);
+    return parsed;
+  }
+  return null;
+}
+
+dynamic _ratingToJson(double? value) => value;
+
 @JsonSerializable()
 class AttorneyModel {
   final String id;
@@ -33,6 +46,7 @@ class SessionModel {
   final int durationMinutes;
   final String status;
   final String? summary;
+  @JsonKey(fromJson: _ratingFromJson, toJson: _ratingToJson)
   final double? rating;
   final String? review;
   @JsonKey(name: 'cancelTime')

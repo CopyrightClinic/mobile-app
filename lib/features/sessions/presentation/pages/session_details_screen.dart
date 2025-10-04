@@ -53,6 +53,8 @@ class SessionDetailsView extends StatefulWidget {
 
 class _SessionDetailsViewState extends State<SessionDetailsView> {
   late final ValueNotifier<bool> _isRatingExpanded;
+  double _currentRating = 0.0;
+  String _currentReview = '';
 
   @override
   void initState() {
@@ -81,6 +83,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               context.pop();
             } else if (state is SessionDetailsError) {
               SnackBarUtils.showError(context, state.message);
+            } else if (state is SessionDetailsFeedbackSubmitted) {
+              SnackBarUtils.showSuccess(context, state.message);
             }
           },
         ),
@@ -91,8 +95,13 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
             return _buildLoadingScreen(context);
           } else if (state is SessionDetailsError) {
             return _buildErrorScreen(context, state.message);
-          } else if (state is SessionDetailsLoaded || state is SessionDetailsCancelLoading) {
-            final sessionDetails = state is SessionDetailsLoaded ? state.sessionDetails : (state as SessionDetailsCancelLoading).sessionDetails;
+          } else if (state is SessionDetailsLoaded || state is SessionDetailsCancelLoading || state is SessionDetailsFeedbackLoading) {
+            final sessionDetails =
+                state is SessionDetailsLoaded
+                    ? state.sessionDetails
+                    : state is SessionDetailsCancelLoading
+                    ? state.sessionDetails
+                    : (state as SessionDetailsFeedbackLoading).sessionDetails;
             return _buildSessionDetailsScreen(context, sessionDetails);
           } else {
             return _buildLoadingScreen(context);
@@ -314,13 +323,17 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   Widget _buildRatingReviewSection(SessionDetailsEntity session) {
-    if (session.rating != null && session.review != null) {
-      return SubmittedRatingReviewWidget(rating: session.rating!, review: session.review!, isExpanded: _isRatingExpanded);
+    if (session.rating != null) {
+      return SubmittedRatingReviewWidget(rating: session.rating!, review: session.review, isExpanded: _isRatingExpanded);
     } else {
       return AddRatingReviewWidget(
-        onSubmit: () => _onSubmitRatingReview(),
-        onRatingChanged: (rating) {},
-        onReviewChanged: (review) {},
+        onSubmit: () => _onSubmitRatingReview(session.id),
+        onRatingChanged: (rating) {
+          _currentRating = rating;
+        },
+        onReviewChanged: (review) {
+          _currentReview = review;
+        },
         isExpanded: _isRatingExpanded,
       );
     }
@@ -519,8 +532,12 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
     SnackBarUtils.showSuccess(context, AppStrings.summaryUnlockRequested.tr());
   }
 
-  void _onSubmitRatingReview() {
-    SnackBarUtils.showSuccess(context, AppStrings.ratingReviewSubmittedSuccessfully.tr());
+  void _onSubmitRatingReview(String sessionId) {
+    if (_currentRating > 0) {
+      context.read<SessionDetailsBloc>().add(
+        SubmitSessionFeedback(sessionId: sessionId, rating: _currentRating, review: _currentReview.isNotEmpty ? _currentReview : null),
+      );
+    }
   }
 
   @override

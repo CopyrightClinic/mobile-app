@@ -5,6 +5,7 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_details_entity.dart';
+import '../../domain/entities/submit_feedback_response_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
@@ -72,6 +73,22 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(ServerFailure('${AppStrings.failedToFetchSession}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SubmitFeedbackResponseEntity>> submitSessionFeedback({
+    required String sessionId,
+    required double rating,
+    String? review,
+  }) async {
+    try {
+      final response = await remoteDataSource.submitSessionFeedback(sessionId: sessionId, rating: rating, review: review);
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.failedToSubmitFeedback}: $e'));
     }
   }
 

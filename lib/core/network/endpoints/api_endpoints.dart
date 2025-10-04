@@ -58,6 +58,8 @@ class ApiEndpoint {
         return '/user/sessions';
       case SessionsEndpoint.SESSION_DETAILS:
         return '/user/session-details';
+      case SessionsEndpoint.SESSION_FEEDBACK:
+        return '/user/session/feedback';
       case SessionsEndpoint.SESSIONS_AVAILABILITY:
         return '/sessions-availability';
       case SessionsEndpoint.BOOK_SESSION:

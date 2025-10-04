@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_strings.dart';
@@ -10,10 +11,10 @@ import '../../../../core/widgets/global_image.dart';
 
 class SubmittedRatingReviewWidget extends StatelessWidget {
   final double rating;
-  final String review;
+  final String? review;
   final ValueNotifier<bool> isExpanded;
 
-  const SubmittedRatingReviewWidget({super.key, required this.rating, required this.review, required this.isExpanded});
+  const SubmittedRatingReviewWidget({super.key, required this.rating, this.review, required this.isExpanded});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +72,7 @@ class SubmittedRatingReviewWidget extends StatelessWidget {
                     children: [
                       SizedBox(height: DimensionConstants.gap12Px.h),
                       Text(
-                        review,
+                        review ?? AppStrings.noReviewProvided.tr(),
                         style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                       ),
                     ],

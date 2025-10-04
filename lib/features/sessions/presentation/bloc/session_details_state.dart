@@ -51,3 +51,21 @@ class SessionDetailsCancelled extends SessionDetailsState {
   @override
   List<Object> get props => [message];
 }
+
+class SessionDetailsFeedbackLoading extends SessionDetailsState {
+  final SessionDetailsEntity sessionDetails;
+
+  const SessionDetailsFeedbackLoading({required this.sessionDetails});
+
+  @override
+  List<Object> get props => [sessionDetails];
+}
+
+class SessionDetailsFeedbackSubmitted extends SessionDetailsState {
+  final String message;
+
+  const SessionDetailsFeedbackSubmitted({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

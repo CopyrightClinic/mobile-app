@@ -349,5 +349,6 @@
   "addYourRatingAndReview": "Add your rating & review",
   "addACommentOptional": "Add a comment (optional)",
   "theAttorneyWasVeryHelpful": "Was the advice helpful? Anything we could improve?",
-  "ratingReviewSubmittedSuccessfully": "Rating and review submitted successfully!"
+  "ratingReviewSubmittedSuccessfully": "Rating and review submitted successfully!",
+  "failedToSubmitFeedback": "Failed to submit feedback"
 }

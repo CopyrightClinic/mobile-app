@@ -418,4 +418,5 @@ class AppStrings {
   static const addACommentOptional = 'addACommentOptional';
   static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
   static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
+  static const failedToSubmitFeedback = 'failedToSubmitFeedback';
 }
