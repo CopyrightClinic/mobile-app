@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
 
   bool get _isFormValid {
     final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+    final password = _passwordController.text;
 
     final emailValidation = validateEmail(email, tr);
     final passwordValidation = validatePassword(password, tr, isLogin: true);
