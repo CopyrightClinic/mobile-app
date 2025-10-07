@@ -50,20 +50,17 @@ class SessionDetailsBloc extends Bloc<SessionDetailsEvent, SessionDetailsState> 
   }
 
   Future<void> _onSubmitSessionFeedback(SubmitSessionFeedback event, Emitter<SessionDetailsState> emit) async {
-    if (state is SessionDetailsLoaded) {
-      final currentSessionDetails = (state as SessionDetailsLoaded).sessionDetails;
-      emit(SessionDetailsFeedbackLoading(sessionDetails: currentSessionDetails));
+    if (state is! SessionDetailsLoaded) return;
+    final currentSessionDetails = (state as SessionDetailsLoaded).sessionDetails;
+    emit(SessionDetailsFeedbackLoading(sessionDetails: currentSessionDetails));
 
-      final result = await submitSessionFeedbackUseCase(
-        SubmitSessionFeedbackParams(sessionId: event.sessionId, rating: event.rating, review: event.review),
-      );
+    final result = await submitSessionFeedbackUseCase(
+      SubmitSessionFeedbackParams(sessionId: event.sessionId, rating: event.rating, review: event.review),
+    );
 
-      await result.fold((failure) async => emit(SessionDetailsError(message: failure.message ?? AppStrings.failedToSubmitFeedback)), (
-        response,
-      ) async {
-        emit(SessionDetailsFeedbackSubmitted(message: response.message));
-        add(LoadSessionDetails(sessionId: event.sessionId));
-      });
-    }
+    await result.fold((failure) async => emit(SessionDetailsError(message: failure.message ?? AppStrings.failedToSubmitFeedback)), (response) async {
+      emit(SessionDetailsFeedbackSubmitted(message: response.message));
+      add(LoadSessionDetails(sessionId: event.sessionId));
+    });
   }
 }

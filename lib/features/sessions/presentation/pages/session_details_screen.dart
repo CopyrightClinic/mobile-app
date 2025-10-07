@@ -96,12 +96,15 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           } else if (state is SessionDetailsError) {
             return _buildErrorScreen(context, state.message);
           } else if (state is SessionDetailsLoaded || state is SessionDetailsCancelLoading || state is SessionDetailsFeedbackLoading) {
-            final sessionDetails =
-                state is SessionDetailsLoaded
-                    ? state.sessionDetails
-                    : state is SessionDetailsCancelLoading
-                    ? state.sessionDetails
-                    : (state as SessionDetailsFeedbackLoading).sessionDetails;
+            final sessionDetails = () {
+              if (state is SessionDetailsLoaded) {
+                return state.sessionDetails;
+              } else if (state is SessionDetailsCancelLoading) {
+                return state.sessionDetails;
+              } else {
+                return (state as SessionDetailsFeedbackLoading).sessionDetails;
+              }
+            }();
             return _buildSessionDetailsScreen(context, sessionDetails);
           } else {
             return _buildLoadingScreen(context);
@@ -429,7 +432,7 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         left: DimensionConstants.gap16Px.w,
         right: DimensionConstants.gap16Px.w,
         top: DimensionConstants.gap16Px.h,
-        bottom: DimensionConstants.gap16Px.h + MediaQuery.of(context).padding.bottom,
+        bottom: DimensionConstants.gap16Px.h + MediaQuery.paddingOf(context).bottom,
       ),
       decoration: BoxDecoration(color: context.bottomNavBarBG),
       child: Column(

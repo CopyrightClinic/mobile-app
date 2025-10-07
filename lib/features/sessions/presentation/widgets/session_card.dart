@@ -105,7 +105,7 @@ class SessionCard extends StatelessWidget {
                       disabledBackgroundColor: context.buttonDisabled,
                       textColor: context.darkTextPrimary,
                       borderRadius: DimensionConstants.radius52Px.r,
-                      padding: 12.0,
+                      padding: DimensionConstants.gap12Px.w,
                       child: TranslatedText(
                         AppStrings.cancelSession,
                         style: TextStyle(
@@ -123,7 +123,7 @@ class SessionCard extends StatelessWidget {
                       backgroundColor: context.primary,
                       textColor: Colors.white,
                       borderRadius: DimensionConstants.radius52Px.r,
-                      padding: 12.0,
+                      padding: DimensionConstants.gap12Px.w,
                       child: TranslatedText(
                         AppStrings.joinSession,
                         style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),

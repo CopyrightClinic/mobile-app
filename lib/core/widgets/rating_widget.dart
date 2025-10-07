@@ -20,7 +20,7 @@ class RatingWidget extends StatelessWidget {
         final isFilled = starIndex <= rating;
 
         return GestureDetector(
-          onTap: isInteractive && onRatingChanged != null ? () => onRatingChanged!(starIndex.toDouble()) : null,
+          onTap: isInteractive ? () => onRatingChanged?.call(starIndex.toDouble()) : null,
           child: GlobalImage(
             assetPath: isFilled ? ImageConstants.starFilled : ImageConstants.starUnfilled,
             width: size.w,

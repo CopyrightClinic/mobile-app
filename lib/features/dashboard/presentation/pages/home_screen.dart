@@ -60,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(height: DimensionConstants.gap2Px.h),
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
-                            String userName = 'John Doe!';
+                            String userName = '-';
                             if (state is AuthAuthenticated) {
-                              userName = '${state.user.name ?? state.user.email.split('@').first}!';
+                              userName = '${state.user.name ?? '-'}!';
                             }
                             return Text(
                               userName,
@@ -189,9 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHaroldAIBlock(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push(AppRoutes.askHaroldAiRouteName);
-      },
+      onTap: () => context.push(AppRoutes.askHaroldAiRouteName),
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap20Px.h),
