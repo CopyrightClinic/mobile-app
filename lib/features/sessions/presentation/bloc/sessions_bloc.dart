@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
@@ -40,7 +39,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
     emit(const SessionsLoading());
 
-    final result = await getUserSessionsUseCase(NoParams());
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone));
 
     result.fold((failure) => emit(SessionsError(message: failure.message ?? AppStrings.failedToLoadSessions)), (sessions) {
       final upcomingSessions = sessions.where((session) => session.isUpcoming).toList();
@@ -54,7 +54,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     if (state is SessionsLoaded) {
       final currentState = state as SessionsLoaded;
 
-      final result = await getUserSessionsUseCase(NoParams());
+      final String timezone = await TimezoneHelper.getUserTimezone();
+      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone));
 
       result.fold((failure) => emit(SessionsError(message: failure.message ?? AppStrings.failedToRefreshSessions)), (sessions) {
         final upcomingSessions = sessions.where((session) => session.isUpcoming).toList();
@@ -100,13 +101,17 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
       final newSession = SessionEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: AppStrings.copyrightConsultation,
-        scheduledDate: event.selectedDate,
-        duration: const Duration(minutes: 30),
-        price: 50.0,
+        scheduledDate: event.selectedDate.toIso8601String().split('T')[0],
+        startTime: '14:30',
+        endTime: '15:00',
+        durationMinutes: 30,
         status: SessionStatus.upcoming,
-        description: AppStrings.copyrightConsultationSession,
+        summary: AppStrings.copyrightConsultationSession,
+        attorney: const AttorneyEntity(id: 'attorney-1', name: 'John Attorney', email: 'attorney@example.com'),
         createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        holdAmount: 50.0,
+        canCancel: true,
       );
 
       emit(SessionScheduled(session: newSession));

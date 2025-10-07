@@ -20,7 +20,6 @@ import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../profile/presentation/bloc/profile_bloc.dart';
 import '../../../profile/presentation/bloc/profile_event.dart';
 import '../../../profile/presentation/bloc/profile_state.dart';
-import '../../../../di.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -37,7 +36,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _authBloc = context.read<AuthBloc>();
-    _profileBloc = sl<ProfileBloc>();
+    _profileBloc = context.read<ProfileBloc>();
+    _profileBloc.add(const GetProfileRequested());
   }
 
   @override
@@ -58,10 +58,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           listener: (context, state) {
             if (state is DeleteAccountSuccess) {
               SnackBarUtils.showSuccess(context, state.message);
-              // Navigate to welcome screen after successful account deletion
               context.go(AppRoutes.welcomeRouteName);
             } else if (state is DeleteAccountError) {
               SnackBarUtils.showError(context, state.message);
+            } else if (state is UpdateProfileSuccess) {
+              _profileBloc.add(const GetProfileRequested());
+              _authBloc.add(CheckAuthStatus());
             }
           },
         ),
@@ -100,9 +102,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return InkWell(
-                          onTap: () {
+                          onTap: () async {
+                            print('state: $state');
                             if (state is AuthAuthenticated) {
-                              context.push(AppRoutes.editProfileRouteName, extra: state.user);
+                              print('state.user: ${state.user}');
+                              await context.push(AppRoutes.editProfileRouteName, extra: state.user);
                             }
                           },
                           child: GlobalImage(
@@ -148,18 +152,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r),
         border: Border.all(color: context.border.withAlpha(10)),
       ),
-      child: BlocBuilder<AuthBloc, AuthState>(
+      child: BlocBuilder<ProfileBloc, ProfileState>(
+        bloc: _profileBloc,
         builder: (context, state) {
           String userName = '-';
           String userEmail = '-';
           String userPhone = '-';
           String userAddress = '-';
 
-          if (state is AuthAuthenticated) {
-            userName = state.user.name ?? '-';
-            userEmail = state.user.email;
-            userPhone = state.user.phoneNumber ?? '-';
-            userAddress = state.user.address ?? '-';
+          if (state is ProfileLoaded) {
+            userName = state.profile.name ?? '-';
+            userEmail = state.profile.email;
+            userPhone = state.profile.phoneNumber ?? '-';
+            userAddress = state.profile.address ?? '-';
           }
 
           return Column(

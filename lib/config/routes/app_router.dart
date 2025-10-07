@@ -25,6 +25,8 @@ import '../../features/harold_ai/presentation/pages/params/harold_success_screen
 import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
+import '../../features/sessions/presentation/pages/session_details_screen.dart';
+import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -148,6 +150,14 @@ class AppRouter {
         path: AppRoutes.bookingRequestSentRouteName,
         name: AppRoutes.bookingRequestSentRouteName,
         builder: (context, state) => const BookingRequestSentScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.sessionDetailsRouteName,
+        name: AppRoutes.sessionDetailsRouteName,
+        builder: (context, state) {
+          final params = state.extra as SessionDetailsScreenParams;
+          return SessionDetailsScreen(params: params);
+        },
       ),
       GoRoute(
         path: AppRoutes.editProfileRouteName,

@@ -1,18 +1,40 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
 
-class AttorneyEntity extends Equatable {
+class SessionDetailsAttorneyEntity extends Equatable {
+  final String id;
+  final String name;
+  final String email;
+  final String? profileUrl;
+
+  const SessionDetailsAttorneyEntity({required this.id, required this.name, required this.email, this.profileUrl});
+
+  @override
+  List<Object?> get props => [id, name, email, profileUrl];
+}
+
+class SessionDetailsUserEntity extends Equatable {
   final String id;
   final String name;
   final String email;
 
-  const AttorneyEntity({required this.id, required this.name, required this.email});
+  const SessionDetailsUserEntity({required this.id, required this.name, required this.email});
 
   @override
   List<Object?> get props => [id, name, email];
 }
 
-class SessionEntity extends Equatable {
+class SessionRequestEntity extends Equatable {
+  final String id;
+  final String summary;
+
+  const SessionRequestEntity({required this.id, required this.summary});
+
+  @override
+  List<Object?> get props => [id, summary];
+}
+
+class SessionDetailsEntity extends Equatable {
   final String id;
   final String scheduledDate;
   final String startTime;
@@ -20,17 +42,20 @@ class SessionEntity extends Equatable {
   final int durationMinutes;
   final SessionStatus status;
   final String? summary;
+  final bool summaryLocked;
   final double? rating;
   final String? review;
   final String? cancelTime;
   final bool? cancelTimeExpired;
-  final AttorneyEntity attorney;
+  final SessionDetailsAttorneyEntity attorney;
+  final SessionDetailsUserEntity user;
+  final SessionRequestEntity sessionRequest;
   final DateTime createdAt;
   final DateTime updatedAt;
   final double? holdAmount;
   final bool canCancel;
 
-  const SessionEntity({
+  const SessionDetailsEntity({
     required this.id,
     required this.scheduledDate,
     required this.startTime,
@@ -38,11 +63,14 @@ class SessionEntity extends Equatable {
     required this.durationMinutes,
     required this.status,
     this.summary,
+    required this.summaryLocked,
     this.rating,
     this.review,
     this.cancelTime,
     this.cancelTimeExpired,
     required this.attorney,
+    required this.user,
+    required this.sessionRequest,
     required this.createdAt,
     required this.updatedAt,
     this.holdAmount,
@@ -58,11 +86,14 @@ class SessionEntity extends Equatable {
     durationMinutes,
     status,
     summary,
+    summaryLocked,
     rating,
     review,
     cancelTime,
     cancelTimeExpired,
     attorney,
+    user,
+    sessionRequest,
     createdAt,
     updatedAt,
     holdAmount,

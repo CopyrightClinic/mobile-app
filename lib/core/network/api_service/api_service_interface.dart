@@ -9,6 +9,7 @@ abstract interface class ApiInterface {
   Future<List<T>> getCollectionData<T>({
     required String endpoint,
     JSON? queryParams,
+    JSON? headers,
     CancelToken? cancelToken,
     bool requiresAuthToken = true,
     required T Function(JSON responseBody) converter,

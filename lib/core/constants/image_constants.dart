@@ -66,4 +66,7 @@ class ImageConstants {
   static const String haroldFailed = '$svg/harold_failed.svg';
   static const String haroldSignup = '$svg/harold_signup.svg';
   static const String noPaymentMethods = '$svg/no_payment_method.svg';
+  static const String unlockSummary = '$svg/unlock_summary.svg';
+  static const String starFilled = '$svg/star_filled.svg';
+  static const String starUnfilled = '$svg/star_unfilled.svg';
 }
