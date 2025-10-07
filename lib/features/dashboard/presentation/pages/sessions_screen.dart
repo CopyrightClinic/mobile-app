@@ -17,6 +17,8 @@ import '../../../sessions/presentation/bloc/sessions_state.dart';
 import '../../../sessions/presentation/widgets/sessions_tab_selector.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
+import '../../../zoom/presentation/pages/join_call_page.dart';
+import '../../../../core/utils/storage/user_storage.dart';
 
 class SessionsScreen extends StatefulWidget {
   const SessionsScreen({super.key});
@@ -118,7 +120,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             return SessionCard(
               session: session,
               onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
-              onJoin: session.isUpcoming ? () => _joinSession(context, session.id) : null,
+              onJoin: session.canJoin ? () => _joinSession(context, session) : null,
             );
           },
         ),
@@ -218,7 +220,22 @@ class _SessionsScreenState extends State<SessionsScreen> {
     );
   }
 
-  void _joinSession(BuildContext context, String sessionId) {
-    SnackBarUtils.showSuccess(context, AppStrings.joiningSession.tr());
+  Future<void> _joinSession(BuildContext context, SessionEntity session) async {
+    if (session.zoomMeetingNumber == null || session.zoomMeetingNumber!.isEmpty) {
+      SnackBarUtils.showError(context, AppStrings.zoomErrorInvalidMeetingNumber.tr());
+      return;
+    }
+
+    final user = await UserStorage.getUser();
+    final displayName = user?.name ?? 'User';
+
+    if (!context.mounted) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => JoinCallPage(meetingNumber: session.zoomMeetingNumber, passcode: session.zoomPasscode ?? '', displayName: displayName),
+      ),
+    );
   }
 }

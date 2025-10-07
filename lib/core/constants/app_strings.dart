@@ -391,4 +391,61 @@ class AppStrings {
   static const failedToUpdateProfileGeneric = 'failedToUpdateProfileGeneric';
   static const failedToChangePasswordGeneric = 'failedToChangePasswordGeneric';
   static const failedToDeleteAccountGeneric = 'failedToDeleteAccountGeneric';
+
+  // Zoom Meeting
+  static const joinMeeting = 'joinMeeting';
+  static const leaveMeeting = 'leaveMeeting';
+  static const meetingNumber = 'meetingNumber';
+  static const meetingPasscode = 'meetingPasscode';
+  static const enterMeetingNumber = 'enterMeetingNumber';
+  static const enterMeetingPasscode = 'enterMeetingPasscode';
+  static const displayName = 'displayName';
+  static const enterDisplayName = 'enterDisplayName';
+  static const joinCall = 'joinCall';
+  static const leaveCall = 'leaveCall';
+  static const cameraPermission = 'cameraPermission';
+  static const microphonePermission = 'microphonePermission';
+  static const bluetoothPermission = 'bluetoothPermission';
+  static const notificationsPermission = 'notificationsPermission';
+  static const permissionRequired = 'permissionRequired';
+  static const permissionDenied = 'permissionDenied';
+  static const pleaseGrantPermissions = 'pleaseGrantPermissions';
+  static const openSettings = 'openSettings';
+  static const grantPermissions = 'grantPermissions';
+  static const permissionsNeeded = 'permissionsNeeded';
+  static const cameraAndMicrophoneRequired = 'cameraAndMicrophoneRequired';
+
+  // Zoom Status
+  static const zoomStatusIdle = 'zoomStatusIdle';
+  static const zoomStatusConnecting = 'zoomStatusConnecting';
+  static const zoomStatusWaitingForHost = 'zoomStatusWaitingForHost';
+  static const zoomStatusInWaitingRoom = 'zoomStatusInWaitingRoom';
+  static const zoomStatusInMeeting = 'zoomStatusInMeeting';
+  static const zoomStatusDisconnecting = 'zoomStatusDisconnecting';
+  static const zoomStatusReconnecting = 'zoomStatusReconnecting';
+  static const zoomStatusFailed = 'zoomStatusFailed';
+  static const zoomStatusEnded = 'zoomStatusEnded';
+  static const zoomStatusLocked = 'zoomStatusLocked';
+  static const zoomStatusUnlocked = 'zoomStatusUnlocked';
+  static const zoomStatusAuthExpired = 'zoomStatusAuthExpired';
+  static const zoomStatusUnknown = 'zoomStatusUnknown';
+
+  // Zoom Error Messages
+  static const zoomErrorFetchJwt = 'zoomErrorFetchJwt';
+  static const zoomErrorAlreadyInitializing = 'zoomErrorAlreadyInitializing';
+  static const zoomErrorPlatformNotSupported = 'zoomErrorPlatformNotSupported';
+  static const zoomErrorInvalidMeetingNumber = 'zoomErrorInvalidMeetingNumber';
+  static const zoomErrorNetworkUnavailable = 'zoomErrorNetworkUnavailable';
+  static const zoomErrorJwtInvalid = 'zoomErrorJwtInvalid';
+  static const zoomErrorInitFailed = 'zoomErrorInitFailed';
+  static const zoomErrorJoinFailed = 'zoomErrorJoinFailed';
+  static const zoomMeetingNotStarted = 'zoomMeetingNotStarted';
+  static const zoomWrongPasscode = 'zoomWrongPasscode';
+  static const zoomMeetingLocked = 'zoomMeetingLocked';
+  static const zoomMeetingEnded = 'zoomMeetingEnded';
+  static const zoomTryAgain = 'zoomTryAgain';
+  static const zoomExit = 'zoomExit';
+  static const zoomWaitingMessage = 'zoomWaitingMessage';
+  static const zoomAdmittedSoon = 'zoomAdmittedSoon';
+  static const zoomConnectingMessage = 'zoomConnectingMessage';
 }

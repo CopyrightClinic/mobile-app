@@ -12,6 +12,8 @@ class SessionEntity extends Equatable {
   final DateTime createdAt;
   final DateTime? cancelledAt;
   final String? cancellationReason;
+  final String? zoomMeetingNumber;
+  final String? zoomPasscode;
 
   const SessionEntity({
     required this.id,
@@ -24,15 +26,31 @@ class SessionEntity extends Equatable {
     required this.createdAt,
     this.cancelledAt,
     this.cancellationReason,
+    this.zoomMeetingNumber,
+    this.zoomPasscode,
   });
 
   @override
-  List<Object?> get props => [id, title, scheduledDate, duration, price, status, description, createdAt, cancelledAt, cancellationReason];
+  List<Object?> get props => [
+    id,
+    title,
+    scheduledDate,
+    duration,
+    price,
+    status,
+    description,
+    createdAt,
+    cancelledAt,
+    cancellationReason,
+    zoomMeetingNumber,
+    zoomPasscode,
+  ];
 
   bool get isUpcoming => status.isUpcoming;
   bool get isCompleted => status.isCompleted;
   bool get isCancelled => status.isCancelled;
   bool get canCancel => isUpcoming && scheduledDate.difference(DateTime.now()).inHours > 24;
+  bool get canJoin => isUpcoming && zoomMeetingNumber != null && zoomMeetingNumber!.isNotEmpty;
 
   String get formattedDuration {
     final hours = duration.inHours;

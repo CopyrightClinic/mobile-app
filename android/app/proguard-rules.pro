@@ -80,3 +80,12 @@
 -keep class io.flutter.**  { *; }
 -keep class io.flutter.plugins.**  { *; }
 -keep class io.flutter.embedding.** { *; }
+
+# Zoom SDK rules
+-keep class us.zoom.** { *; }
+-keep class com.zipow.** { *; }
+-keep class us.zipow.** { *; }
+-keep class org.webrtc.** { *; }
+-dontwarn us.zoom.**
+-dontwarn com.zipow.**
+-dontwarn us.zipow.**

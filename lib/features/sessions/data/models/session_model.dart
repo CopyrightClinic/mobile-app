@@ -21,6 +21,10 @@ class SessionModel {
   final DateTime? cancelledAt;
   @JsonKey(name: 'cancellation_reason')
   final String? cancellationReason;
+  @JsonKey(name: 'zoom_meeting_number')
+  final String? zoomMeetingNumber;
+  @JsonKey(name: 'zoom_passcode')
+  final String? zoomPasscode;
 
   const SessionModel({
     required this.id,
@@ -33,6 +37,8 @@ class SessionModel {
     required this.createdAt,
     this.cancelledAt,
     this.cancellationReason,
+    this.zoomMeetingNumber,
+    this.zoomPasscode,
   });
 
   factory SessionModel.fromJson(Map<String, dynamic> json) => _$SessionModelFromJson(json);
@@ -51,6 +57,8 @@ class SessionModel {
       createdAt: createdAt,
       cancelledAt: cancelledAt,
       cancellationReason: cancellationReason,
+      zoomMeetingNumber: zoomMeetingNumber,
+      zoomPasscode: zoomPasscode,
     );
   }
 
@@ -66,6 +74,8 @@ class SessionModel {
       createdAt: entity.createdAt,
       cancelledAt: entity.cancelledAt,
       cancellationReason: entity.cancellationReason,
+      zoomMeetingNumber: entity.zoomMeetingNumber,
+      zoomPasscode: entity.zoomPasscode,
     );
   }
 }

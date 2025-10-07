@@ -20,6 +20,8 @@ SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
           ? null
           : DateTime.parse(json['cancelled_at'] as String),
   cancellationReason: json['cancellation_reason'] as String?,
+  zoomMeetingNumber: json['zoom_meeting_number'] as String?,
+  zoomPasscode: json['zoom_passcode'] as String?,
 );
 
 Map<String, dynamic> _$SessionModelToJson(SessionModel instance) =>
@@ -34,4 +36,6 @@ Map<String, dynamic> _$SessionModelToJson(SessionModel instance) =>
       'created_at': instance.createdAt.toIso8601String(),
       'cancelled_at': instance.cancelledAt?.toIso8601String(),
       'cancellation_reason': instance.cancellationReason,
+      'zoom_meeting_number': instance.zoomMeetingNumber,
+      'zoom_passcode': instance.zoomPasscode,
     };

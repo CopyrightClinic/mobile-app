@@ -55,6 +55,8 @@ import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
 import 'features/harold_ai/domain/repositories/harold_repository.dart';
 import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
+import 'core/services/zoom_service.dart';
+import 'features/zoom/presentation/bloc/zoom_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -84,6 +86,9 @@ Future<void> init() async {
 
   /// Register API Service as a singleton
   sl.registerLazySingleton<ApiService>(() => ApiService(sl<DioService>()));
+
+  /// Register Zoom Service as a singleton
+  sl.registerLazySingleton(() => ZoomService(sl<ApiService>()));
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
@@ -158,6 +163,9 @@ Future<void> init() async {
 
   // Profile Bloc
   sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
+
+  // Zoom Bloc
+  sl.registerFactory(() => ZoomBloc(zoomService: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());
