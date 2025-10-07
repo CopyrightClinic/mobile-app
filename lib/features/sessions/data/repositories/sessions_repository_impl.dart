@@ -4,6 +4,8 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
 import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/session_details_entity.dart';
+import '../../domain/entities/submit_feedback_response_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
@@ -15,9 +17,9 @@ class SessionsRepositoryImpl implements SessionsRepository {
   SessionsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<SessionEntity>>> getUserSessions() async {
+  Future<Either<Failure, List<SessionEntity>>> getUserSessions({String? status, String? timezone}) async {
     try {
-      final sessions = await remoteDataSource.getUserSessions();
+      final sessions = await remoteDataSource.getUserSessions(status: status, timezone: timezone);
       return Right(sessions.map((session) => session.toEntity()).toList());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
@@ -59,6 +61,34 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(ServerFailure('${AppStrings.failedToFetchSession}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SessionDetailsEntity>> getSessionDetails({required String sessionId, String? timezone}) async {
+    try {
+      final sessionDetails = await remoteDataSource.getSessionDetails(sessionId: sessionId, timezone: timezone);
+      return Right(sessionDetails.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.failedToFetchSession}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, SubmitFeedbackResponseEntity>> submitSessionFeedback({
+    required String sessionId,
+    required double rating,
+    String? review,
+  }) async {
+    try {
+      final response = await remoteDataSource.submitSessionFeedback(sessionId: sessionId, rating: rating, review: review);
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.failedToSubmitFeedback}: $e'));
     }
   }
 

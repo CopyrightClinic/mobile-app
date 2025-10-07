@@ -1,8 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
-import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/session_details_entity.dart';
 
-part 'session_model.g.dart';
+part 'session_details_model.g.dart';
 
 double? _ratingFromJson(dynamic value) {
   if (value == null) return null;
@@ -18,23 +18,55 @@ double? _ratingFromJson(dynamic value) {
 dynamic _ratingToJson(double? value) => value;
 
 @JsonSerializable()
-class AttorneyModel {
+class SessionDetailsAttorneyModel {
   final String id;
   final String name;
   final String email;
+  final String? profileUrl;
 
-  const AttorneyModel({required this.id, required this.name, required this.email});
+  const SessionDetailsAttorneyModel({required this.id, required this.name, required this.email, this.profileUrl});
 
-  factory AttorneyModel.fromJson(Map<String, dynamic> json) => _$AttorneyModelFromJson(json);
-  Map<String, dynamic> toJson() => _$AttorneyModelToJson(this);
+  factory SessionDetailsAttorneyModel.fromJson(Map<String, dynamic> json) => _$SessionDetailsAttorneyModelFromJson(json);
+  Map<String, dynamic> toJson() => _$SessionDetailsAttorneyModelToJson(this);
 
-  AttorneyEntity toEntity() {
-    return AttorneyEntity(id: id, name: name, email: email);
+  SessionDetailsAttorneyEntity toEntity() {
+    return SessionDetailsAttorneyEntity(id: id, name: name, email: email, profileUrl: profileUrl);
   }
 }
 
 @JsonSerializable()
-class SessionModel {
+class SessionDetailsUserModel {
+  final String id;
+  final String name;
+  final String email;
+
+  const SessionDetailsUserModel({required this.id, required this.name, required this.email});
+
+  factory SessionDetailsUserModel.fromJson(Map<String, dynamic> json) => _$SessionDetailsUserModelFromJson(json);
+  Map<String, dynamic> toJson() => _$SessionDetailsUserModelToJson(this);
+
+  SessionDetailsUserEntity toEntity() {
+    return SessionDetailsUserEntity(id: id, name: name, email: email);
+  }
+}
+
+@JsonSerializable()
+class SessionRequestModel {
+  final String id;
+  final String summary;
+
+  const SessionRequestModel({required this.id, required this.summary});
+
+  factory SessionRequestModel.fromJson(Map<String, dynamic> json) => _$SessionRequestModelFromJson(json);
+  Map<String, dynamic> toJson() => _$SessionRequestModelToJson(this);
+
+  SessionRequestEntity toEntity() {
+    return SessionRequestEntity(id: id, summary: summary);
+  }
+}
+
+@JsonSerializable()
+class SessionDetailsModel {
   final String id;
   @JsonKey(name: 'scheduledDate')
   final String scheduledDate;
@@ -46,6 +78,8 @@ class SessionModel {
   final int durationMinutes;
   final String status;
   final String? summary;
+  @JsonKey(name: 'summaryLocked')
+  final bool summaryLocked;
   @JsonKey(fromJson: _ratingFromJson, toJson: _ratingToJson)
   final double? rating;
   final String? review;
@@ -53,21 +87,16 @@ class SessionModel {
   final String? cancelTime;
   @JsonKey(name: 'cancelTimeExpired')
   final bool? cancelTimeExpired;
-  final AttorneyModel attorney;
+  final SessionDetailsAttorneyModel attorney;
+  final SessionDetailsUserModel user;
+  @JsonKey(name: 'sessionRequest')
+  final SessionRequestModel sessionRequest;
   @JsonKey(name: 'createdAt')
   final DateTime createdAt;
-  @JsonKey(name: 'cancelled_at')
-  final DateTime? cancelledAt;
-  @JsonKey(name: 'cancellation_reason')
-  final String? cancellationReason;
-  @JsonKey(name: 'zoom_meeting_number')
-  final String? zoomMeetingNumber;
-  @JsonKey(name: 'zoom_passcode')
-  final String? zoomPasscode;
   @JsonKey(name: 'updatedAt')
   final DateTime updatedAt;
 
-  const SessionModel({
+  const SessionDetailsModel({
     required this.id,
     required this.scheduledDate,
     required this.startTime,
@@ -75,31 +104,29 @@ class SessionModel {
     required this.durationMinutes,
     required this.status,
     this.summary,
+    required this.summaryLocked,
     this.rating,
     this.review,
     this.cancelTime,
     this.cancelTimeExpired,
     required this.attorney,
+    required this.user,
+    required this.sessionRequest,
     required this.createdAt,
-    this.cancelledAt,
-    this.cancellationReason,
-    this.zoomMeetingNumber,
-    this.zoomPasscode,
     required this.updatedAt,
   });
 
-  factory SessionModel.fromJson(Map<String, dynamic> json) => _$SessionModelFromJson(json);
+  factory SessionDetailsModel.fromJson(Map<String, dynamic> json) => _$SessionDetailsModelFromJson(json);
+  Map<String, dynamic> toJson() => _$SessionDetailsModelToJson(this);
 
-  Map<String, dynamic> toJson() => _$SessionModelToJson(this);
-
-  SessionEntity toEntity() {
+  SessionDetailsEntity toEntity() {
     final holdAmount = 50.0;
     final canCancel =
         cancelTimeExpired != null
             ? !cancelTimeExpired!
             : (status == 'upcoming' && DateTime.parse('${scheduledDate}T$startTime').difference(DateTime.now()).inHours > 24);
 
-    return SessionEntity(
+    return SessionDetailsEntity(
       id: id,
       scheduledDate: scheduledDate,
       startTime: startTime,
@@ -107,42 +134,18 @@ class SessionModel {
       durationMinutes: durationMinutes,
       status: SessionStatus.fromString(status),
       summary: summary,
+      summaryLocked: summaryLocked,
       rating: rating,
       review: review,
       cancelTime: cancelTime,
       cancelTimeExpired: cancelTimeExpired,
       attorney: attorney.toEntity(),
+      user: user.toEntity(),
+      sessionRequest: sessionRequest.toEntity(),
       createdAt: createdAt,
-      cancelledAt: cancelledAt,
-      cancellationReason: cancellationReason,
-      zoomMeetingNumber: zoomMeetingNumber,
-      zoomPasscode: zoomPasscode,
       updatedAt: updatedAt,
       holdAmount: holdAmount,
       canCancel: canCancel,
-    );
-  }
-
-  factory SessionModel.fromEntity(SessionEntity entity) {
-    return SessionModel(
-      id: entity.id,
-      scheduledDate: entity.scheduledDate,
-      startTime: entity.startTime,
-      endTime: entity.endTime,
-      durationMinutes: entity.durationMinutes,
-      status: entity.status.apiValue,
-      summary: entity.summary,
-      rating: entity.rating,
-      review: entity.review,
-      cancelTime: null,
-      cancelTimeExpired: !entity.canCancel,
-      attorney: AttorneyModel(id: entity.attorney.id, name: entity.attorney.name, email: entity.attorney.email),
-      createdAt: entity.createdAt,
-      cancelledAt: entity.cancelledAt,
-      cancellationReason: entity.cancellationReason,
-      zoomMeetingNumber: entity.zoomMeetingNumber,
-      zoomPasscode: entity.zoomPasscode,
-      updatedAt: entity.updatedAt,
     );
   }
 }

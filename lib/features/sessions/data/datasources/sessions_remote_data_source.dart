@@ -1,16 +1,23 @@
 import '../../../../core/network/api_service/api_service.dart';
+import '../../../../core/network/endpoints/api_endpoints.dart';
+import '../../../../core/utils/enumns/api/sessions_enums.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../models/session_model.dart';
+import '../models/session_details_model.dart';
 import '../models/session_availability_model.dart';
 import '../models/book_session_request_model.dart';
 import '../models/book_session_response_model.dart';
+import '../models/submit_feedback_request_model.dart';
+import '../models/submit_feedback_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
-  Future<List<SessionModel>> getUserSessions();
+  Future<List<SessionModel>> getUserSessions({String? status, String? timezone});
   Future<List<SessionModel>> getUpcomingSessions();
   Future<List<SessionModel>> getCompletedSessions();
   Future<SessionModel> getSessionById(String sessionId);
+  Future<SessionDetailsModel> getSessionDetails({required String sessionId, String? timezone});
+  Future<SubmitFeedbackResponseModel> submitSessionFeedback({required String sessionId, required double rating, String? review});
   Future<String> cancelSession(String sessionId, String reason);
   Future<SessionModel> joinSession(String sessionId);
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone);
@@ -30,9 +37,19 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   SessionsRemoteDataSourceImpl({required this.apiService});
 
   @override
-  Future<List<SessionModel>> getUserSessions() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return SessionsMockDataSource.getMockSessions();
+  Future<List<SessionModel>> getUserSessions({String? status, String? timezone}) async {
+    final Map<String, dynamic> queryParams = {};
+    if (status != null) queryParams['status'] = status;
+
+    final Map<String, dynamic> headers = {};
+    if (timezone != null) headers['timezone'] = timezone;
+
+    return await apiService.getCollectionData<SessionModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.USER_SESSIONS),
+      queryParams: queryParams.isNotEmpty ? queryParams : null,
+      headers: headers.isNotEmpty ? headers : null,
+      converter: (json) => SessionModel.fromJson(json),
+    );
   }
 
   @override
@@ -58,6 +75,32 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   }
 
   @override
+  Future<SessionDetailsModel> getSessionDetails({required String sessionId, String? timezone}) async {
+    final Map<String, dynamic> queryParams = {'sessionId': sessionId};
+    final Map<String, dynamic> headers = {};
+    if (timezone != null) headers['timezone'] = timezone;
+
+    return await apiService.getData<SessionDetailsModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSION_DETAILS),
+      queryParams: queryParams,
+      headers: headers.isNotEmpty ? headers : null,
+      converter: (json) => SessionDetailsModel.fromJson(json),
+    );
+  }
+
+  @override
+  Future<SubmitFeedbackResponseModel> submitSessionFeedback({required String sessionId, required double rating, String? review}) async {
+    final request = SubmitFeedbackRequestModel(rating: rating, review: review);
+    final endpoint = '${ApiEndpoint.sessions(SessionsEndpoint.SESSION_FEEDBACK)}?sessionId=$sessionId';
+
+    return await apiService.patchData<SubmitFeedbackResponseModel>(
+      endpoint: endpoint,
+      data: request.toJson(),
+      converter: (response) => SubmitFeedbackResponseModel.fromJson(response.data),
+    );
+  }
+
+  @override
   Future<String> cancelSession(String sessionId, String reason) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return AppStrings.sessionCancelledSuccessfully;
@@ -74,7 +117,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   @override
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone) async {
     return await apiService.getData<SessionAvailabilityModel>(
-      endpoint: '/sessions-availability',
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSIONS_AVAILABILITY),
       headers: {'Timezone': timezone},
       converter: (json) => SessionAvailabilityModel.fromJson(json),
     );
@@ -96,7 +139,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       summary: summary,
     );
     return await apiService.postData<BookSessionResponseModel>(
-      endpoint: '/session-requests/book-session',
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.BOOK_SESSION),
       headers: {'Timezone': timezone},
       data: request.toJson(),
       converter: (json) => BookSessionResponseModel.fromJson(json.data),

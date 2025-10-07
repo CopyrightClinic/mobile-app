@@ -69,7 +69,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     _isListeningNotifier.value = true;
 
     try {
-      final result = await SystemSpeech.startSpeech(prompt: 'Describe your copyright issue', locale: 'en-US', maxSeconds: 120);
+      final result = await SystemSpeech.startSpeech(prompt: AppStrings.describeYourCopyrightIssuePrompt.tr(), locale: 'en-US', maxSeconds: 120);
 
       if (result != null && result.isNotEmpty) {
         final existingText = _textController.text;

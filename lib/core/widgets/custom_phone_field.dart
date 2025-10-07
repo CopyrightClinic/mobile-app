@@ -4,6 +4,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../constants/app_strings.dart';
 import '../utils/extensions/responsive_extensions.dart';
 import '../utils/extensions/theme_extensions.dart';
+import '../utils/phone_number_utils.dart';
 
 import 'translated_text.dart';
 
@@ -62,13 +63,30 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
     _isPhoneValidNotifier = ValueNotifier<bool>(false);
     _previousCountryCode = widget.initialCountryCode;
 
-    if (widget.initialValue != null) {
+    if (widget.initialValue != null && widget.initialValue!.isNotEmpty) {
       _controller.text = widget.initialValue!;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (mounted && widget.initialValue!.isNotEmpty) {
-          final initialPhoneNumber = PhoneNumber(isoCode: widget.initialCountryCode, phoneNumber: widget.initialValue);
-          _phoneNumberNotifier.value = initialPhoneNumber;
-          widget.onChanged?.call(initialPhoneNumber);
+          try {
+            final dialCode = PhoneNumberUtils.getDialCodeFromCountryCode(widget.initialCountryCode ?? 'US');
+            final completeNumber = '$dialCode${widget.initialValue}';
+
+            final initialPhoneNumber = PhoneNumber(isoCode: widget.initialCountryCode, phoneNumber: completeNumber, dialCode: dialCode);
+
+            _phoneNumberNotifier.value = initialPhoneNumber;
+            widget.onChanged?.call(initialPhoneNumber);
+          } catch (e) {
+            final initialPhoneNumber = PhoneNumber(isoCode: widget.initialCountryCode, phoneNumber: widget.initialValue);
+            _phoneNumberNotifier.value = initialPhoneNumber;
+            widget.onChanged?.call(initialPhoneNumber);
+          }
+
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              setState(() {});
+            }
+          });
         }
       });
     }
@@ -184,8 +202,16 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
   String? get parsedPhoneNumber => _phoneNumberNotifier.value?.parseNumber();
 
   bool isValid() {
-    return _isPhoneValidNotifier.value;
+    final isValid = _isPhoneValidNotifier.value;
+    return isValid;
   }
 
   bool get isPhoneValid => isValid();
+
+  void triggerValidation() {
+    if (_phoneNumberNotifier.value != null) {
+      final currentNumber = _phoneNumberNotifier.value!;
+      widget.onChanged?.call(currentNumber);
+    }
+  }
 }

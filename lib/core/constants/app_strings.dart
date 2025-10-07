@@ -4,6 +4,7 @@ class AppStrings {
 
   // Welcome Screen
   static const welcomeTo = 'welcomeTo';
+  static const welcome = 'welcome';
   static const copyrightClinic = 'copyrightClinic';
   static const whatWeDo = 'whatWeDo';
   static const askHaroldAI = 'askHaroldAI';
@@ -261,6 +262,7 @@ class AppStrings {
 
   // Harold AI Screen
   static const describeYourCopyrightIssue = 'describeYourCopyrightIssue';
+  static const haroldWillHelpYou = 'haroldWillHelpYou';
   static const describe = 'describe';
   static const submit = 'submit';
   static const haroldAiHasResponseForYou = 'haroldAiHasResponseForYou';
@@ -374,6 +376,7 @@ class AppStrings {
   static const updateProfileFailed = 'updateProfileFailed';
   static const profileUpdatedSuccessfully = 'profileUpdatedSuccessfully';
   static const failedToLoadProfile = 'failedToLoadProfile';
+  static const userNotFound = 'userNotFound';
 
   // Change Password Screen
   static const currentPassword = 'currentPassword';
@@ -448,4 +451,28 @@ class AppStrings {
   static const zoomWaitingMessage = 'zoomWaitingMessage';
   static const zoomAdmittedSoon = 'zoomAdmittedSoon';
   static const zoomConnectingMessage = 'zoomConnectingMessage';
+  // Session Details Screen
+  static const sessionDetailsTitle = 'sessionDetailsTitle';
+  static const yourRatingAndReview = 'yourRatingAndReview';
+  static const unlockWrittenSummary = 'unlockWrittenSummary';
+  static const unlockSummaryFor = 'unlockSummaryFor';
+  static const payToRequestSummary = 'payToRequestSummary';
+  static const requestSummaryDeadline = 'requestSummaryDeadline';
+  static const noRating = 'noRating';
+  static const noReviewProvided = 'noReviewProvided';
+  static const summaryUnlockRequested = 'summaryUnlockRequested';
+
+  // Speech Recognition Error Messages
+  static const failedToInitializeSpeechRecognition = 'failedToInitializeSpeechRecognition';
+  static const failedToStartSpeechRecognition = 'failedToStartSpeechRecognition';
+  static const failedToStopSpeechRecognition = 'failedToStopSpeechRecognition';
+  static const failedToPauseSpeechRecognition = 'failedToPauseSpeechRecognition';
+  static const failedToResumeSpeechRecognition = 'failedToResumeSpeechRecognition';
+  static const speechRecognitionErrorOccurred = 'speechRecognitionErrorOccurred';
+  static const describeYourCopyrightIssuePrompt = 'describeYourCopyrightIssuePrompt';
+  static const addYourRatingAndReview = 'addYourRatingAndReview';
+  static const addACommentOptional = 'addACommentOptional';
+  static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
+  static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
+  static const failedToSubmitFeedback = 'failedToSubmitFeedback';
 }
