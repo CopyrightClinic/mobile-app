@@ -432,9 +432,16 @@ class AppStrings {
   static const zoomStatusUnlocked = 'zoomStatusUnlocked';
   static const zoomStatusAuthExpired = 'zoomStatusAuthExpired';
   static const zoomStatusUnknown = 'zoomStatusUnknown';
+  static const loadingMeetingDetails = 'loadingMeetingDetails';
+  static const zoomInitializing = 'zoomInitializing';
+  static const connectingToMeeting = 'connectingToMeeting';
+  static const pleaseWait = 'pleaseWait';
+  static const areYouSureYouWantToLeaveMeeting = 'areYouSureYouWantToLeaveMeeting';
+  static const leave = 'leave';
 
   // Zoom Error Messages
   static const zoomErrorFetchJwt = 'zoomErrorFetchJwt';
+  static const zoomErrorFetchCredentials = 'zoomErrorFetchCredentials';
   static const zoomErrorAlreadyInitializing = 'zoomErrorAlreadyInitializing';
   static const zoomErrorPlatformNotSupported = 'zoomErrorPlatformNotSupported';
   static const zoomErrorInvalidMeetingNumber = 'zoomErrorInvalidMeetingNumber';

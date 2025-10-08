@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/services.dart';
 import '../constants/app_strings.dart';
 import '../network/api_service/api_service.dart';
@@ -82,23 +81,19 @@ class ZoomService {
 
       final jwt = await _fetchJwtFromBackend();
 
-      if (Platform.isAndroid) {
-        final result = await _methodChannel.invokeMethod('initZoom', {'jwt': jwt});
+      final result = await _methodChannel.invokeMethod('initZoom', {'jwt': jwt});
 
-        if (result is Map) {
-          final resultMap = Map<String, dynamic>.from(result);
-          if (resultMap['success'] == true) {
-            _isInitialized = true;
-            Log.i('ZoomService', 'Zoom SDK initialized successfully');
-          }
-          return resultMap;
+      if (result is Map) {
+        final resultMap = Map<String, dynamic>.from(result);
+        if (resultMap['success'] == true) {
+          _isInitialized = true;
+          Log.i('ZoomService', 'Zoom SDK initialized successfully');
         }
-
-        _isInitialized = true;
-        return {'success': true, 'message': 'Initialized'};
-      } else {
-        throw UnsupportedError('${AppStrings.zoomErrorPlatformNotSupported}: ${Platform.operatingSystem}');
+        return resultMap;
       }
+
+      _isInitialized = true;
+      return {'success': true, 'message': 'Initialized'};
     } on PlatformException catch (e) {
       Log.e('ZoomService', 'Platform exception during init: ${e.code} - ${e.message}');
 
@@ -119,6 +114,43 @@ class ZoomService {
     }
   }
 
+  Future<Map<String, dynamic>> initZoomWithJwt(String jwt) async {
+    if (_isInitialized) {
+      Log.d('ZoomService', 'Already initialized, reinitializing with new JWT');
+      _isInitialized = false;
+    }
+
+    if (_isInitializing) {
+      throw Exception(AppStrings.zoomErrorAlreadyInitializing);
+    }
+
+    _isInitializing = true;
+
+    try {
+      final result = await _methodChannel.invokeMethod('initZoom', {'jwt': jwt});
+
+      if (result is Map) {
+        final resultMap = Map<String, dynamic>.from(result);
+        if (resultMap['success'] == true) {
+          _isInitialized = true;
+          Log.i('ZoomService', 'Zoom SDK initialized successfully with provided JWT');
+        }
+        return resultMap;
+      }
+
+      _isInitialized = true;
+      return {'success': true, 'message': 'Initialized'};
+    } on PlatformException catch (e) {
+      Log.e('ZoomService', 'Platform exception during init with JWT: ${e.code} - ${e.message}');
+      rethrow;
+    } catch (e) {
+      Log.e('ZoomService', 'Error during init with JWT: $e');
+      rethrow;
+    } finally {
+      _isInitializing = false;
+    }
+  }
+
   Future<Map<String, dynamic>> joinMeeting({required String meetingNumber, required String passcode, required String displayName}) async {
     if (!_isInitialized) {
       Log.d('ZoomService', 'Not initialized, initializing first');
@@ -126,21 +158,17 @@ class ZoomService {
     }
 
     try {
-      if (Platform.isAndroid) {
-        final result = await _methodChannel.invokeMethod('joinMeeting', {
-          'meetingNumber': meetingNumber,
-          'passcode': passcode,
-          'displayName': displayName,
-        });
+      final result = await _methodChannel.invokeMethod('joinMeeting', {
+        'meetingNumber': meetingNumber,
+        'passcode': passcode,
+        'displayName': displayName,
+      });
 
-        if (result is Map) {
-          return Map<String, dynamic>.from(result);
-        }
-
-        return {'success': true, 'message': 'Join request sent'};
-      } else {
-        throw UnsupportedError('${AppStrings.zoomErrorPlatformNotSupported}: ${Platform.operatingSystem}');
+      if (result is Map) {
+        return Map<String, dynamic>.from(result);
       }
+
+      return {'success': true, 'message': 'Join request sent'};
     } on PlatformException catch (e) {
       Log.e('ZoomService', 'Platform exception during join: ${e.code} - ${e.message}');
 
@@ -160,17 +188,13 @@ class ZoomService {
 
   Future<Map<String, dynamic>> leaveMeeting() async {
     try {
-      if (Platform.isAndroid) {
-        final result = await _methodChannel.invokeMethod('leaveMeeting');
+      final result = await _methodChannel.invokeMethod('leaveMeeting');
 
-        if (result is Map) {
-          return Map<String, dynamic>.from(result);
-        }
-
-        return {'success': true, 'message': 'Left meeting'};
-      } else {
-        throw UnsupportedError('${AppStrings.zoomErrorPlatformNotSupported}: ${Platform.operatingSystem}');
+      if (result is Map) {
+        return Map<String, dynamic>.from(result);
       }
+
+      return {'success': true, 'message': 'Left meeting'};
     } catch (e) {
       Log.e('ZoomService', 'Error during leave: $e');
       rethrow;
@@ -179,11 +203,8 @@ class ZoomService {
 
   Future<String?> getSdkVersion() async {
     try {
-      if (Platform.isAndroid) {
-        final version = await _methodChannel.invokeMethod('getSdkVersion');
-        return version?.toString();
-      }
-      return null;
+      final version = await _methodChannel.invokeMethod('getSdkVersion');
+      return version?.toString();
     } catch (e) {
       Log.e('ZoomService', 'Error getting SDK version: $e');
       return null;

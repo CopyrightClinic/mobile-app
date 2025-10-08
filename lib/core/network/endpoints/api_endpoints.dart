@@ -89,4 +89,15 @@ class ApiEndpoint {
         return '$path/evaluate';
     }
   }
+
+  /// Zoom endpoints
+  ///
+  /// Provides Zoom SDK operations:
+  static String zoom(ZoomEndpoint endpoint) {
+    const path = '/zoom/mobile';
+    switch (endpoint) {
+      case ZoomEndpoint.SDK_TOKEN:
+        return '$path/sdk-token';
+    }
+  }
 }

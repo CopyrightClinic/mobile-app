@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -528,7 +529,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _onJoinSession() {
-    SnackBarUtils.showSuccess(context, AppStrings.joiningSession.tr());
+    final sessionId = widget.sessionId;
+    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
   }
 
   void _onUnlockSummary() {

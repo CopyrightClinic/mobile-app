@@ -319,5 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _joinSession(BuildContext context, String sessionId) {}
+  void _joinSession(BuildContext context, String sessionId) {
+    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
+  }
 }

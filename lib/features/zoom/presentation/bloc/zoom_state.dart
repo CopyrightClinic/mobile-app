@@ -29,6 +29,15 @@ class ZoomInitializationFailed extends ZoomState {
   List<Object> get props => [message];
 }
 
+class ZoomFetchingCredentials extends ZoomState {
+  final String meetingId;
+
+  const ZoomFetchingCredentials({required this.meetingId});
+
+  @override
+  List<Object> get props => [meetingId];
+}
+
 class ZoomJoining extends ZoomState {
   final String meetingNumber;
 

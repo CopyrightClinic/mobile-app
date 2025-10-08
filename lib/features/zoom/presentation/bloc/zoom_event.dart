@@ -22,6 +22,15 @@ class JoinMeetingRequested extends ZoomEvent {
   List<Object> get props => [meetingNumber, passcode, displayName];
 }
 
+class JoinMeetingWithId extends ZoomEvent {
+  final String meetingId;
+
+  const JoinMeetingWithId({required this.meetingId});
+
+  @override
+  List<Object> get props => [meetingId];
+}
+
 class LeaveMeetingRequested extends ZoomEvent {
   const LeaveMeetingRequested();
 }

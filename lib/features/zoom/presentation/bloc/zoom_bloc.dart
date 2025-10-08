@@ -5,16 +5,19 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/services/zoom_service.dart';
 import '../../../../core/utils/enumns/ui/zoom_meeting_status.dart';
 import '../../../../core/utils/logger/logger.dart';
+import '../../domain/usecases/get_meeting_credentials_usecase.dart';
 import 'zoom_event.dart';
 import 'zoom_state.dart';
 
 class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   final ZoomService zoomService;
+  final GetMeetingCredentialsUseCase getMeetingCredentialsUseCase;
   StreamSubscription? _meetingStatusSubscription;
 
-  ZoomBloc({required this.zoomService}) : super(const ZoomInitial()) {
+  ZoomBloc({required this.zoomService, required this.getMeetingCredentialsUseCase}) : super(const ZoomInitial()) {
     on<InitializeZoom>(_onInitializeZoom);
     on<JoinMeetingRequested>(_onJoinMeetingRequested);
+    on<JoinMeetingWithId>(_onJoinMeetingWithId);
     on<LeaveMeetingRequested>(_onLeaveMeetingRequested);
     on<MeetingStatusUpdated>(_onMeetingStatusUpdated);
     on<ResetZoomState>(_onResetZoomState);
@@ -102,6 +105,57 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
       Log.e('ZoomBloc', 'Error during join: $e');
       emit(ZoomMeetingFailed(message: '${AppStrings.zoomErrorJoinFailed}: $e'));
     }
+  }
+
+  Future<void> _onJoinMeetingWithId(JoinMeetingWithId event, Emitter<ZoomState> emit) async {
+    emit(ZoomFetchingCredentials(meetingId: event.meetingId));
+
+    final result = await getMeetingCredentialsUseCase(event.meetingId);
+
+    await result.fold(
+      (failure) async {
+        Log.e('ZoomBloc', 'Failed to fetch meeting credentials: ${failure.message}');
+        emit(ZoomMeetingFailed(message: failure.message ?? AppStrings.zoomErrorFetchCredentials));
+      },
+      (credentials) async {
+        emit(ZoomJoining(meetingNumber: credentials.meetingNumber));
+
+        try {
+          await zoomService.initZoomWithJwt(credentials.signature);
+
+          await zoomService.joinMeeting(meetingNumber: credentials.meetingNumber, passcode: credentials.password, displayName: credentials.userName);
+        } on PlatformException catch (e) {
+          Log.e('ZoomBloc', 'Platform exception during join with ID: ${e.code} - ${e.message}');
+
+          String errorMessage = AppStrings.zoomErrorJoinFailed;
+
+          switch (e.code) {
+            case 'NETWORK_UNAVAILABLE':
+              errorMessage = AppStrings.zoomErrorNetworkUnavailable;
+              break;
+            case 'INVALID_ARGUMENTS':
+              errorMessage = AppStrings.zoomErrorInvalidMeetingNumber;
+              break;
+            case 'JWT_INVALID':
+              errorMessage = AppStrings.zoomErrorJwtInvalid;
+              break;
+            case 'NOT_INITIALIZED':
+              await zoomService.initZoomWithJwt(credentials.signature);
+              add(JoinMeetingRequested(meetingNumber: credentials.meetingNumber, passcode: credentials.password, displayName: credentials.userName));
+              return;
+            default:
+              if (e.message != null) {
+                errorMessage = e.message!;
+              }
+          }
+
+          emit(ZoomMeetingFailed(message: errorMessage));
+        } catch (e) {
+          Log.e('ZoomBloc', 'Error during join with ID: $e');
+          emit(ZoomMeetingFailed(message: '${AppStrings.zoomErrorJoinFailed}: $e'));
+        }
+      },
+    );
   }
 
   Future<void> _onLeaveMeetingRequested(LeaveMeetingRequested event, Emitter<ZoomState> emit) async {
