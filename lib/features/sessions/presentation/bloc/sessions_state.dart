@@ -23,21 +23,66 @@ class SessionsLoaded extends SessionsState {
   final List<SessionEntity> upcomingSessions;
   final List<SessionEntity> completedSessions;
   final SessionsTab currentTab;
+  final int upcomingPage;
+  final int completedPage;
+  final bool hasMoreUpcoming;
+  final bool hasMoreCompleted;
+  final bool isLoadingMore;
 
-  const SessionsLoaded({required this.upcomingSessions, required this.completedSessions, required this.currentTab});
+  const SessionsLoaded({
+    required this.upcomingSessions,
+    required this.completedSessions,
+    required this.currentTab,
+    this.upcomingPage = 1,
+    this.completedPage = 1,
+    this.hasMoreUpcoming = false,
+    this.hasMoreCompleted = false,
+    this.isLoadingMore = false,
+  });
 
   @override
-  List<Object> get props => [upcomingSessions, completedSessions, currentTab];
+  List<Object> get props => [
+    upcomingSessions,
+    completedSessions,
+    currentTab,
+    upcomingPage,
+    completedPage,
+    hasMoreUpcoming,
+    hasMoreCompleted,
+    isLoadingMore,
+  ];
 
   List<SessionEntity> get currentSessions {
     return currentTab == SessionsTab.upcoming ? upcomingSessions : completedSessions;
   }
 
-  SessionsLoaded copyWith({List<SessionEntity>? upcomingSessions, List<SessionEntity>? completedSessions, SessionsTab? currentTab}) {
+  bool get hasMore {
+    return currentTab == SessionsTab.upcoming ? hasMoreUpcoming : hasMoreCompleted;
+  }
+
+  int get currentPage {
+    return currentTab == SessionsTab.upcoming ? upcomingPage : completedPage;
+  }
+
+  SessionsLoaded copyWith({
+    List<SessionEntity>? upcomingSessions,
+    List<SessionEntity>? completedSessions,
+    SessionsTab? currentTab,
+    int? upcomingPage,
+    int? completedPage,
+    bool? hasMoreUpcoming,
+    bool? hasMoreCompleted,
+    bool? isLoadingMore,
+  }) {
     return SessionsLoaded(
       upcomingSessions: upcomingSessions ?? this.upcomingSessions,
       completedSessions: completedSessions ?? this.completedSessions,
       currentTab: currentTab ?? this.currentTab,
+      upcomingPage: upcomingPage ?? this.upcomingPage,
+      completedPage: completedPage ?? this.completedPage,
+      hasMoreUpcoming: hasMoreUpcoming ?? this.hasMoreUpcoming,
+      hasMoreCompleted: hasMoreCompleted ?? this.hasMoreCompleted,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
   }
 }

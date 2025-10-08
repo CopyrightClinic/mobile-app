@@ -475,4 +475,7 @@ class AppStrings {
   static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
   static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
   static const failedToSubmitFeedback = 'failedToSubmitFeedback';
+
+  static const loadingMore = 'loadingMore';
+  static const failedToLoadMoreSessions = 'failedToLoadMoreSessions';
 }

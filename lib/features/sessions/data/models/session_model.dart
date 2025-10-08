@@ -20,10 +20,10 @@ dynamic _ratingToJson(double? value) => value;
 @JsonSerializable()
 class AttorneyModel {
   final String id;
-  final String name;
+  final String? name;
   final String email;
 
-  const AttorneyModel({required this.id, required this.name, required this.email});
+  const AttorneyModel({required this.id, this.name, required this.email});
 
   factory AttorneyModel.fromJson(Map<String, dynamic> json) => _$AttorneyModelFromJson(json);
   Map<String, dynamic> toJson() => _$AttorneyModelToJson(this);
@@ -56,14 +56,6 @@ class SessionModel {
   final AttorneyModel attorney;
   @JsonKey(name: 'createdAt')
   final DateTime createdAt;
-  @JsonKey(name: 'cancelled_at')
-  final DateTime? cancelledAt;
-  @JsonKey(name: 'cancellation_reason')
-  final String? cancellationReason;
-  @JsonKey(name: 'zoom_meeting_number')
-  final String? zoomMeetingNumber;
-  @JsonKey(name: 'zoom_passcode')
-  final String? zoomPasscode;
   @JsonKey(name: 'updatedAt')
   final DateTime updatedAt;
 
@@ -81,10 +73,6 @@ class SessionModel {
     this.cancelTimeExpired,
     required this.attorney,
     required this.createdAt,
-    this.cancelledAt,
-    this.cancellationReason,
-    this.zoomMeetingNumber,
-    this.zoomPasscode,
     required this.updatedAt,
   });
 
@@ -113,10 +101,6 @@ class SessionModel {
       cancelTimeExpired: cancelTimeExpired,
       attorney: attorney.toEntity(),
       createdAt: createdAt,
-      cancelledAt: cancelledAt,
-      cancellationReason: cancellationReason,
-      zoomMeetingNumber: zoomMeetingNumber,
-      zoomPasscode: zoomPasscode,
       updatedAt: updatedAt,
       holdAmount: holdAmount,
       canCancel: canCancel,
@@ -138,10 +122,6 @@ class SessionModel {
       cancelTimeExpired: !entity.canCancel,
       attorney: AttorneyModel(id: entity.attorney.id, name: entity.attorney.name, email: entity.attorney.email),
       createdAt: entity.createdAt,
-      cancelledAt: entity.cancelledAt,
-      cancellationReason: entity.cancellationReason,
-      zoomMeetingNumber: entity.zoomMeetingNumber,
-      zoomPasscode: entity.zoomPasscode,
       updatedAt: entity.updatedAt,
     );
   }

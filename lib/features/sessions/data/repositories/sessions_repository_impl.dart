@@ -8,6 +8,7 @@ import '../../domain/entities/session_details_entity.dart';
 import '../../domain/entities/submit_feedback_response_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
+import '../../domain/entities/paginated_sessions_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
 import '../datasources/sessions_remote_data_source.dart';
 
@@ -17,10 +18,10 @@ class SessionsRepositoryImpl implements SessionsRepository {
   SessionsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<SessionEntity>>> getUserSessions({String? status, String? timezone}) async {
+  Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({String? status, String? timezone, int? page, int? limit}) async {
     try {
-      final sessions = await remoteDataSource.getUserSessions(status: status, timezone: timezone);
-      return Right(sessions.map((session) => session.toEntity()).toList());
+      final paginatedSessions = await remoteDataSource.getUserSessions(status: status, timezone: timezone, page: page, limit: limit);
+      return Right(paginatedSessions.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {

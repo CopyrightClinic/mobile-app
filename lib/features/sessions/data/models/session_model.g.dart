@@ -9,7 +9,7 @@ part of 'session_model.dart';
 AttorneyModel _$AttorneyModelFromJson(Map<String, dynamic> json) =>
     AttorneyModel(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name: json['name'] as String?,
       email: json['email'] as String,
     );
 
@@ -34,13 +34,6 @@ SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
   cancelTimeExpired: json['cancelTimeExpired'] as bool?,
   attorney: AttorneyModel.fromJson(json['attorney'] as Map<String, dynamic>),
   createdAt: DateTime.parse(json['createdAt'] as String),
-  cancelledAt:
-      json['cancelled_at'] == null
-          ? null
-          : DateTime.parse(json['cancelled_at'] as String),
-  cancellationReason: json['cancellation_reason'] as String?,
-  zoomMeetingNumber: json['zoom_meeting_number'] as String?,
-  zoomPasscode: json['zoom_passcode'] as String?,
   updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
 
@@ -59,9 +52,5 @@ Map<String, dynamic> _$SessionModelToJson(SessionModel instance) =>
       'cancelTimeExpired': instance.cancelTimeExpired,
       'attorney': instance.attorney,
       'createdAt': instance.createdAt.toIso8601String(),
-      'cancelled_at': instance.cancelledAt?.toIso8601String(),
-      'cancellation_reason': instance.cancellationReason,
-      'zoom_meeting_number': instance.zoomMeetingNumber,
-      'zoom_passcode': instance.zoomPasscode,
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

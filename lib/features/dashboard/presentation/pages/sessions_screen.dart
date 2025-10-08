@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -17,8 +18,6 @@ import '../../../sessions/presentation/bloc/sessions_state.dart';
 import '../../../sessions/presentation/widgets/sessions_tab_selector.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
-import '../../../zoom/presentation/pages/join_call_page.dart';
-import '../../../../core/utils/storage/user_storage.dart';
 
 class SessionsScreen extends StatefulWidget {
   const SessionsScreen({super.key});
@@ -29,12 +28,42 @@ class SessionsScreen extends StatefulWidget {
 
 class _SessionsScreenState extends State<SessionsScreen> {
   late SessionsBloc _sessionsBloc;
+  late ScrollController _scrollController;
+  bool _isRequestingMore = false;
 
   @override
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
     _sessionsBloc.add(const LoadUserSessions());
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isRequestingMore) return;
+
+    if (_isBottom) {
+      final state = _sessionsBloc.state;
+      if (state is SessionsLoaded && state.hasMore && !state.isLoadingMore) {
+        _isRequestingMore = true;
+        _sessionsBloc.add(const LoadMoreSessions());
+      }
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
   }
 
   @override
@@ -58,11 +87,14 @@ class _SessionsScreenState extends State<SessionsScreen> {
         ],
       ),
       body: BlocConsumer<SessionsBloc, SessionsState>(
+        bloc: _sessionsBloc,
         listener: (context, state) {
           if (state is SessionsError) {
             SnackBarUtils.showError(context, state.message);
           } else if (state is SessionCancelled) {
             SnackBarUtils.showSuccess(context, state.message);
+          } else if (state is SessionsLoaded && !state.isLoadingMore) {
+            _isRequestingMore = false;
           }
         },
         builder: (context, state) {
@@ -112,10 +144,14 @@ class _SessionsScreenState extends State<SessionsScreen> {
           _sessionsBloc.add(const RefreshSessions());
         },
         child: ListView.builder(
+          controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: sessions.length,
+          itemCount: sessions.length + (state.hasMore ? 1 : 0),
           padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
           itemBuilder: (context, index) {
+            if (index >= sessions.length) {
+              return _buildLoadingMoreIndicator(state);
+            }
             final session = sessions[index];
             return SessionCard(
               session: session,
@@ -128,6 +164,16 @@ class _SessionsScreenState extends State<SessionsScreen> {
     }
 
     return _buildEmptyState(context, true);
+  }
+
+  Widget _buildLoadingMoreIndicator(SessionsLoaded state) {
+    if (!state.isLoadingMore) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+      child: Center(child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.darkSecondary))),
+    );
   }
 
   Widget _buildEmptyState(BuildContext context, bool isUpcoming) {
@@ -220,22 +266,5 @@ class _SessionsScreenState extends State<SessionsScreen> {
     );
   }
 
-  Future<void> _joinSession(BuildContext context, SessionEntity session) async {
-    if (session.zoomMeetingNumber == null || session.zoomMeetingNumber!.isEmpty) {
-      SnackBarUtils.showError(context, AppStrings.zoomErrorInvalidMeetingNumber.tr());
-      return;
-    }
-
-    final user = await UserStorage.getUser();
-    final displayName = user?.name ?? 'User';
-
-    if (!context.mounted) return;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => JoinCallPage(meetingNumber: session.zoomMeetingNumber, passcode: session.zoomPasscode ?? '', displayName: displayName),
-      ),
-    );
-  }
+  Future<void> _joinSession(BuildContext context, SessionEntity session) async {}
 }

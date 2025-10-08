@@ -3,10 +3,10 @@ import '../../../../core/utils/enumns/ui/session_status.dart';
 
 class AttorneyEntity extends Equatable {
   final String id;
-  final String name;
+  final String? name;
   final String email;
 
-  const AttorneyEntity({required this.id, required this.name, required this.email});
+  const AttorneyEntity({required this.id, this.name, required this.email});
 
   @override
   List<Object?> get props => [id, name, email];
@@ -29,10 +29,6 @@ class SessionEntity extends Equatable {
   final DateTime updatedAt;
   final double? holdAmount;
   final bool canCancel;
-  final DateTime? cancelledAt;
-  final String? cancellationReason;
-  final String? zoomMeetingNumber;
-  final String? zoomPasscode;
 
   const SessionEntity({
     required this.id,
@@ -51,10 +47,6 @@ class SessionEntity extends Equatable {
     required this.updatedAt,
     this.holdAmount,
     required this.canCancel,
-    this.cancelledAt,
-    this.cancellationReason,
-    this.zoomMeetingNumber,
-    this.zoomPasscode,
   });
 
   @override
@@ -75,16 +67,12 @@ class SessionEntity extends Equatable {
     updatedAt,
     holdAmount,
     canCancel,
-    cancelledAt,
-    cancellationReason,
-    zoomMeetingNumber,
-    zoomPasscode,
   ];
 
   bool get isUpcoming => status.isUpcoming;
   bool get isCompleted => status.isCompleted;
   bool get isCancelled => status.isCancelled;
-  bool get canJoin => isUpcoming && zoomMeetingNumber != null && zoomMeetingNumber!.isNotEmpty;
+  bool get canJoin => isUpcoming;
 
   String get formattedDuration {
     final hours = durationMinutes ~/ 60;
