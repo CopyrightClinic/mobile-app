@@ -44,6 +44,7 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -53,10 +54,21 @@ android {
 }
 
 dependencies {
+    // Explicit Compose versions for Zoom SDK 6.5.10 compatibility
+    implementation("androidx.compose.runtime:runtime:1.7.3")
+    implementation("androidx.compose.ui:ui:1.7.3")
+    implementation("androidx.compose.foundation:foundation:1.7.3")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    
+    // Coil image loading library (required by Zoom SDK for waiting room UI)
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-gif:2.5.0")
+    
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.multidex:multidex:2.0.1")
-    implementation("us.zoom.meetingsdk:zoomsdk:6.6.0")
+    // Downgraded to 6.5.10 for better Compose compatibility
+    implementation("us.zoom.meetingsdk:zoomsdk:6.5.10")
 }
 
 flutter {

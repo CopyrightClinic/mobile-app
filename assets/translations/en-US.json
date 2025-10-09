@@ -358,7 +358,15 @@
   "zoomStatusUnlocked": "Meeting unlocked",
   "zoomStatusAuthExpired": "Authentication expired",
   "zoomStatusUnknown": "Unknown status",
+  "loadingMeetingDetails": "Loading meeting details...",
+  "zoomInitializing": "Initializing Zoom SDK...",
+  "connectingToMeeting": "Connecting to meeting...",
+  "pleaseWait": "Please wait...",
+  "leaveMeeting": "Leave Meeting",
+  "areYouSureYouWantToLeaveMeeting": "Are you sure you want to leave the meeting?",
+  "leave": "Leave",
   "zoomErrorFetchJwt": "Failed to fetch authentication token",
+  "zoomErrorFetchCredentials": "Failed to fetch meeting credentials",
   "zoomErrorAlreadyInitializing": "Already initializing Zoom SDK",
   "zoomErrorPlatformNotSupported": "Platform not supported",
   "zoomErrorInvalidMeetingNumber": "Invalid meeting number",
@@ -401,5 +409,7 @@
   "addACommentOptional": "Add a comment (optional)",
   "theAttorneyWasVeryHelpful": "Was the advice helpful? Anything we could improve?",
   "ratingReviewSubmittedSuccessfully": "Rating and review submitted successfully!",
-  "failedToSubmitFeedback": "Failed to submit feedback"
+  "failedToSubmitFeedback": "Failed to submit feedback",
+  "loadingMore": "Loading more...",
+  "failedToLoadMoreSessions": "Failed to load more sessions"
 }
