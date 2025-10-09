@@ -8,6 +8,7 @@ final class ZoomBridge: NSObject {
     private var isInitializing = false
     private var isJoining = false
     private var pendingJoinRequest: [String: Any]?
+    private var initResult: FlutterResult?
 
     private let methodChannel: FlutterMethodChannel
     private let eventChannel: FlutterEventChannel
@@ -85,6 +86,7 @@ final class ZoomBridge: NSObject {
         }
 
         isInitializing = true
+        initResult = result
         NSLog("[ZoomBridge] Initializing Zoom SDK with JWT")
 
         let context = MobileRTCSDKInitContext()
@@ -100,7 +102,8 @@ final class ZoomBridge: NSObject {
                 isInitializing = false
                 let error = FlutterError(
                     code: "INIT_FAIL", message: "Failed to get auth service", details: nil)
-                result(error)
+                initResult?(error)
+                initResult = nil
                 sendEvent([
                     "status": "FAILED", "errorCode": -1, "message": "Failed to get auth service",
                 ])
@@ -111,26 +114,15 @@ final class ZoomBridge: NSObject {
             authService.jwtToken = jwt
             authService.sdkAuth()
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self else { return }
-                if !self.isInitialized && self.isInitializing {
-                    self.isInitializing = false
-                    let error = FlutterError(
-                        code: "INIT_TIMEOUT", message: "SDK initialization timeout", details: nil)
-                    result(error)
-                    self.sendEvent([
-                        "status": "FAILED", "errorCode": -1,
-                        "message": "SDK initialization timeout",
-                    ])
-                }
-            }
+            NSLog("[ZoomBridge] SDK authentication started, waiting for callback...")
 
         } else {
             isInitializing = false
             NSLog("[ZoomBridge] MobileRTC.shared().initialize failed")
             let error = FlutterError(
                 code: "INIT_FAIL", message: "Failed to initialize SDK", details: nil)
-            result(error)
+            initResult?(error)
+            initResult = nil
             sendEvent(["status": "FAILED", "errorCode": -1, "message": "Failed to initialize SDK"])
         }
     }
@@ -358,6 +350,9 @@ extension ZoomBridge: MobileRTCAuthDelegate {
 
             registerMeetingListeners()
 
+            initResult?(["success": true, "message": "SDK initialized"])
+            initResult = nil
+
             sendEvent(["status": "IDLE", "errorCode": 0, "message": "SDK initialized"])
 
             if let pendingRequest = pendingJoinRequest {
@@ -376,6 +371,12 @@ extension ZoomBridge: MobileRTCAuthDelegate {
         } else {
             let errorMessage = getAuthErrorMessage(returnValue)
             NSLog("[ZoomBridge] Auth failed: \(errorMessage)")
+
+            let error = FlutterError(
+                code: "AUTH_FAILED", message: errorMessage,
+                details: ["errorCode": returnValue.rawValue])
+            initResult?(error)
+            initResult = nil
 
             if returnValue == .keyOrSecretWrong {
                 sendEvent([

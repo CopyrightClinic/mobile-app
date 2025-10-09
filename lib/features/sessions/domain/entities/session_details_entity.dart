@@ -3,11 +3,11 @@ import '../../../../core/utils/enumns/ui/session_status.dart';
 
 class SessionDetailsAttorneyEntity extends Equatable {
   final String id;
-  final String name;
+  final String? name;
   final String email;
   final String? profileUrl;
 
-  const SessionDetailsAttorneyEntity({required this.id, required this.name, required this.email, this.profileUrl});
+  const SessionDetailsAttorneyEntity({required this.id, this.name, required this.email, this.profileUrl});
 
   @override
   List<Object?> get props => [id, name, email, profileUrl];

@@ -10,7 +10,7 @@ SessionDetailsAttorneyModel _$SessionDetailsAttorneyModelFromJson(
   Map<String, dynamic> json,
 ) => SessionDetailsAttorneyModel(
   id: json['id'] as String,
-  name: json['name'] as String,
+  name: json['name'] as String?,
   email: json['email'] as String,
   profileUrl: json['profileUrl'] as String?,
 );
