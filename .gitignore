@@ -53,7 +53,7 @@ unlinked_spec.ds
 macos/
 linux/
 web/
-ios/
+ios/ZoomSDK/
 
 # Android related
 **/android/**/gradle-wrapper.jar
