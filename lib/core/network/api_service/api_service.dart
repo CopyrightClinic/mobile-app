@@ -16,6 +16,7 @@ class ApiService implements ApiInterface {
   Future<List<T>> getCollectionData<T>({
     required String endpoint,
     JSON? queryParams,
+    JSON? headers,
     CancelToken? cancelToken,
     CachePolicy? cachePolicy,
     int? cacheAgeDays,
@@ -25,18 +26,23 @@ class ApiService implements ApiInterface {
     List<Object?> body;
 
     try {
-      final data = await _dioService.get<List<Object?>>(
+      final data = await _dioService.get<JSON>(
         endpoint: endpoint,
         cacheOptions: _dioService.globalCacheOptions?.copyWith(
           policy: cachePolicy,
           maxStale: cacheAgeDays != null ? Duration(days: cacheAgeDays) : null,
         ),
-        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}),
+        options: Options(extra: <String, Object?>{'requiresAuthToken': requiresAuthToken}, headers: headers),
         queryParams: queryParams,
         cancelToken: cancelToken,
       );
 
-      body = data.data;
+      final responseData = data.data;
+      if (responseData.containsKey('data') && responseData['data'] is List) {
+        body = responseData['data'] as List<Object?>;
+      } else {
+        throw CustomException.fromParsingException(Exception('Expected response to contain data array'));
+      }
     } on Exception catch (ex) {
       throw CustomException.fromDioException(ex);
     }

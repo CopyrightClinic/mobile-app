@@ -6,13 +6,13 @@ import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_phone_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_app_bar.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_back_button.dart';
+import 'package:copyright_clinic_flutter/core/utils/phone_number_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
-import 'package:copyright_clinic_flutter/di.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,6 +44,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
   void Function(void Function())? _buttonSetState;
   PhoneNumber? _phoneNumber;
 
+  String _originalName = '';
+  String _originalPhoneNumber = '';
+  String _originalAddress = '';
+
   @override
   void initState() {
     super.initState();
@@ -52,126 +56,121 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: sl<ProfileBloc>(),
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<ProfileBloc, ProfileState>(
-            listener: (context, state) {
-              if (state is UpdateProfileSuccess) {
-                SnackBarUtils.showSuccess(context, state.message);
-                context.pop();
-              } else if (state is UpdateProfileError) {
-                SnackBarUtils.showError(context, state.message);
-              }
-            },
+    return BlocListener<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+        if (state is UpdateProfileSuccess) {
+          SnackBarUtils.showSuccess(context, state.message);
+          context.pop();
+        } else if (state is UpdateProfileError) {
+          SnackBarUtils.showError(context, state.message);
+        }
+      },
+
+      child: CustomScaffold(
+        extendBodyBehindAppBar: true,
+        appBar: CustomAppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
+          leading: const CustomBackButton(),
+          title: TranslatedText(
+            AppStrings.editPersonalInformation,
+            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
           ),
-        ],
-        child: CustomScaffold(
-          extendBodyBehindAppBar: true,
-          appBar: CustomAppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
-            leading: const CustomBackButton(),
-            title: TranslatedText(
-              AppStrings.editPersonalInformation,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
-            ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: DimensionConstants.gap20Px.h),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.only(bottom: DimensionConstants.gap20Px.h),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomTextField(
-                              label: AppStrings.fullName,
-                              placeholder: AppStrings.enterYourFullName,
-                              controller: _fullNameController,
-                              focusNode: _fullNameFocusNode,
-                              keyboardType: TextInputType.name,
-                              validator: (value) => validateFullName(value, tr),
-                              onEditingComplete: () => _phoneFocusNode.requestFocus(),
-                              onChanged: (value) => _onFieldChanged(),
-                            ),
-                            SizedBox(height: DimensionConstants.gap20Px.h),
+          centerTitle: true,
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: DimensionConstants.gap20Px.h),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(bottom: DimensionConstants.gap20Px.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomTextField(
+                            label: AppStrings.fullName,
+                            placeholder: AppStrings.enterYourFullName,
+                            controller: _fullNameController,
+                            focusNode: _fullNameFocusNode,
+                            keyboardType: TextInputType.name,
+                            validator: (value) => validateFullName(value, tr),
+                            onEditingComplete: () => _phoneFocusNode.requestFocus(),
+                            onChanged: (value) => _onFieldChanged(),
+                          ),
+                          SizedBox(height: DimensionConstants.gap20Px.h),
 
-                            CustomTextField(
-                              label: AppStrings.email,
-                              placeholder: AppStrings.enterYourEmail,
-                              controller: _emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              readOnly: true, // Non-editable email field
-                              validator: null, // No validation needed for non-editable field
-                            ),
-                            SizedBox(height: DimensionConstants.gap20Px.h),
+                          CustomTextField(
+                            label: AppStrings.email,
+                            placeholder: AppStrings.enterYourEmail,
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            readOnly: true,
+                            validator: null,
+                          ),
+                          SizedBox(height: DimensionConstants.gap20Px.h),
 
-                            CustomPhoneField(
-                              key: _phoneFieldKey,
-                              label: AppStrings.phoneNumber,
-                              placeholder: AppStrings.enterYourPhoneNumber,
-                              controller: _phoneController,
-                              focusNode: _phoneFocusNode,
-                              validator: (value) {
-                                if (_phoneNumber == null || _phoneNumber!.phoneNumber == null || _phoneNumber!.phoneNumber!.isEmpty) {
-                                  return tr(AppStrings.phoneNumberRequired);
-                                }
-                                if (!(_phoneFieldKey.currentState?.isPhoneValid ?? false)) {
-                                  return tr(AppStrings.invalidPhoneNumber);
-                                }
-                                return null;
-                              },
-                              onEditingComplete: () => _addressFocusNode.requestFocus(),
-                              onChanged: (PhoneNumber phoneNumber) {
-                                _phoneNumber = phoneNumber;
-                                _onFieldChanged();
-                              },
-                              initialCountryCode: 'US',
-                            ),
-                            SizedBox(height: DimensionConstants.gap20Px.h),
+                          CustomPhoneField(
+                            key: _phoneFieldKey,
+                            label: AppStrings.phoneNumber,
+                            placeholder: AppStrings.enterYourPhoneNumber,
+                            controller: _phoneController,
+                            focusNode: _phoneFocusNode,
+                            validator: (value) {
+                              if (_phoneNumber == null || _phoneNumber!.phoneNumber == null || _phoneNumber!.phoneNumber!.isEmpty) {
+                                return tr(AppStrings.phoneNumberRequired);
+                              }
+                              final isValid = _phoneFieldKey.currentState?.isPhoneValid ?? false;
+                              if (!isValid) {
+                                return tr(AppStrings.invalidPhoneNumber);
+                              }
+                              return null;
+                            },
+                            onEditingComplete: () => _addressFocusNode.requestFocus(),
+                            onChanged: (PhoneNumber phoneNumber) {
+                              _phoneNumber = phoneNumber;
+                              _onFieldChanged();
+                            },
+                            initialValue: PhoneNumberUtils.getLocalPhoneNumber(widget.user.phoneNumber),
+                            initialCountryCode: PhoneNumberUtils.getCountryCodeFromPhoneNumber(widget.user.phoneNumber),
+                          ),
+                          SizedBox(height: DimensionConstants.gap20Px.h),
 
-                            CustomTextField(
-                              label: AppStrings.address,
-                              placeholder: AppStrings.enterYourAddress,
-                              controller: _addressController,
-                              focusNode: _addressFocusNode,
-                              keyboardType: TextInputType.streetAddress,
-                              maxLines: 3,
-                              validator: (value) => validateAddress(value, tr),
-                              onEditingComplete: _handleSave,
-                              onChanged: (value) => _onFieldChanged(),
-                            ),
-                          ],
-                        ),
+                          CustomTextField(
+                            label: AppStrings.address,
+                            placeholder: AppStrings.enterYourAddress,
+                            controller: _addressController,
+                            focusNode: _addressFocusNode,
+                            keyboardType: TextInputType.streetAddress,
+                            maxLines: 3,
+                            validator: (value) => validateAddress(value, tr),
+                            onEditingComplete: _handleSave,
+                            onChanged: (value) => _onFieldChanged(),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
 
-                    BlocBuilder<ProfileBloc, ProfileState>(
-                      bloc: sl<ProfileBloc>(),
-                      builder: (context, state) {
-                        final isLoading = state is UpdateProfileLoading;
-                        return StatefulBuilder(
-                          builder: (context, setState) {
-                            _buttonSetState = setState;
-                            return AuthButton(text: AppStrings.saveChanges, onPressed: _handleSave, isLoading: isLoading, isEnabled: _isFormValid);
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                  BlocBuilder<ProfileBloc, ProfileState>(
+                    builder: (context, state) {
+                      final isLoading = state is UpdateProfileLoading;
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          _buttonSetState = setState;
+                          return AuthButton(text: AppStrings.saveChanges, onPressed: _handleSave, isLoading: isLoading, isEnabled: _isFormValid);
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),
@@ -181,12 +180,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
   }
 
   void _prepopulateFields() {
-    _fullNameController.text = widget.user.name ?? '';
+    _originalName = widget.user.name ?? '';
+    _originalPhoneNumber = widget.user.phoneNumber ?? '';
+    _originalAddress = widget.user.address ?? '';
+
+    _fullNameController.text = _originalName;
     _emailController.text = widget.user.email;
-    _phoneController.text = widget.user.phoneNumber ?? '';
-    _addressController.text = widget.user.address ?? '';
+    _addressController.text = _originalAddress;
+
     if (widget.user.phoneNumber != null && widget.user.phoneNumber!.isNotEmpty) {
-      _phoneNumber = PhoneNumber(phoneNumber: widget.user.phoneNumber);
+      _phoneNumber = PhoneNumberUtils.createPhoneNumberFromInternational(widget.user.phoneNumber);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (mounted) {
+            _phoneFieldKey.currentState?.triggerValidation();
+          }
+        });
+      });
     }
   }
 
@@ -194,7 +205,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
     final fullNameValidation = validateFullName(_fullNameController.text.trim(), tr);
     final addressValidation = validateAddress(_addressController.text.trim(), tr);
     final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
-    return fullNameValidation == null && addressValidation == null && isPhoneValid;
+    final hasValidData = fullNameValidation == null && addressValidation == null && isPhoneValid;
+
+    final hasChanges = _hasDataChanged();
+    final noBlankFields = _hasNoBlankRequiredFields();
+
+    return hasValidData && hasChanges && noBlankFields;
+  }
+
+  bool _hasDataChanged() {
+    final currentName = _fullNameController.text.trim();
+    final currentPhoneNumber = _phoneNumber?.phoneNumber ?? '';
+    final currentAddress = _addressController.text.trim();
+
+    final nameChanged = currentName != _originalName;
+    final phoneChanged = currentPhoneNumber != _originalPhoneNumber;
+    final addressChanged = currentAddress != _originalAddress;
+
+    return nameChanged || phoneChanged || addressChanged;
+  }
+
+  bool _hasNoBlankRequiredFields() {
+    final currentName = _fullNameController.text.trim();
+    final currentPhoneNumber = _phoneNumber?.phoneNumber ?? '';
+    final currentAddress = _addressController.text.trim();
+
+    if (_originalName.isNotEmpty && currentName.isEmpty) {
+      return false;
+    }
+
+    if (_originalPhoneNumber.isNotEmpty && currentPhoneNumber.isEmpty) {
+      return false;
+    }
+
+    if (_originalAddress.isNotEmpty && currentAddress.isEmpty) {
+      return false;
+    }
+
+    return true;
   }
 
   void _onFieldChanged() {
@@ -204,6 +252,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
   void _handleSave() {
     if (_formKey.currentState!.validate() && _phoneNumber != null) {
       final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
+
       if (!isPhoneValid) {
         SnackBarUtils.showError(context, tr(AppStrings.invalidPhoneNumber));
         return;

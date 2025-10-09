@@ -132,6 +132,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final request = CompleteProfileRequestModel(name: name, phoneNumber: phoneNumber, address: address);
       final response = await remoteDataSource.completeProfile(request);
+      await UserStorage.saveUser(response.toEntity());
       return Right(response.message);
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
