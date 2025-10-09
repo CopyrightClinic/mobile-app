@@ -94,4 +94,15 @@ class ApiEndpoint {
   ///
   /// Provides notification operations:
   static const String notifications = '/notifications';
+
+  /// User endpoints
+  ///
+  /// Provides user-related operations:
+  static String user(UserEndpoint endpoint) {
+    const path = '/user';
+    switch (endpoint) {
+      case UserEndpoint.DEVICE_TOKEN:
+        return '$path/device-token';
+    }
+  }
 }

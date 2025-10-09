@@ -63,6 +63,7 @@ import 'features/notifications/data/repositories/notification_repository_impl.da
 import 'features/notifications/domain/repositories/notification_repository.dart';
 import 'features/notifications/domain/usecases/get_notifications_usecase.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
+import 'core/services/fcm_service.dart';
 
 final sl = GetIt.instance;
 
@@ -92,6 +93,9 @@ Future<void> init() async {
 
   /// Register API Service as a singleton
   sl.registerLazySingleton<ApiService>(() => ApiService(sl<DioService>()));
+
+  /// Register FCM Service as a singleton
+  sl.registerLazySingleton<FCMService>(() => FCMService(remoteDataSource: sl()));
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));

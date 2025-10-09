@@ -11,6 +11,7 @@ import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:copyright_clinic_flutter/core/utils/password_strength.dart';
 import 'package:copyright_clinic_flutter/core/widgets/password_strength_indicator.dart';
+import 'package:copyright_clinic_flutter/core/services/fcm_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -138,6 +139,7 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
         listener: (context, state) {
           if (state is SignupSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
+            sl<FCMService>().initialize();
             context.go(AppRoutes.signupSuccessRouteName);
           } else if (state is SignupError) {
             SnackBarUtils.showError(context, state.message);

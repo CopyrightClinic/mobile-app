@@ -6,11 +6,13 @@ import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/responsive_extensions.dart';
+import 'package:copyright_clinic_flutter/core/services/fcm_service.dart';
 import 'package:copyright_clinic_flutter/features/onboarding/presentation/widgets/onboarding_background.dart';
 import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
 import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_event.dart';
 import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_state.dart';
+import 'package:copyright_clinic_flutter/di.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -70,13 +72,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          // User is logged in, navigate to home screen
+          sl<FCMService>().initialize();
           context.go(AppRoutes.homeRouteName);
         } else if (state is AuthUnauthenticated) {
-          // User is not logged in, navigate to welcome screen
           context.go(AppRoutes.welcomeRouteName);
         }
-        // AuthLoading state - keep showing splash screen
       },
       child: Scaffold(
         body: OnboardingBackground(
