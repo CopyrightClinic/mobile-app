@@ -20,10 +20,10 @@ dynamic _ratingToJson(double? value) => value;
 @JsonSerializable()
 class AttorneyModel {
   final String id;
-  final String name;
+  final String? name;
   final String email;
 
-  const AttorneyModel({required this.id, required this.name, required this.email});
+  const AttorneyModel({required this.id, this.name, required this.email});
 
   factory AttorneyModel.fromJson(Map<String, dynamic> json) => _$AttorneyModelFromJson(json);
   Map<String, dynamic> toJson() => _$AttorneyModelToJson(this);
