@@ -6,10 +6,13 @@ import '../../../../core/utils/enumns/api/export.dart';
 import '../../../../core/utils/typedefs/type_defs.dart';
 import '../models/notification_model.dart';
 import '../models/device_token_model.dart';
-import 'notifications_mock_data_source.dart';
+import '../models/notification_list_response_model.dart';
 
 abstract class NotificationRemoteDataSource {
-  Future<List<NotificationModel>> getNotifications();
+  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20});
+
+  Future<NotificationModel> markAsRead(String notificationId);
+
   Future<RegisterDeviceTokenResponseModel> registerDeviceToken(RegisterDeviceTokenRequestModel request);
 }
 
@@ -19,20 +22,35 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   NotificationRemoteDataSourceImpl({required this.apiService});
 
   @override
-  Future<List<NotificationModel>> getNotifications() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return NotificationsMockDataSource.getMockNotifications();
+  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20}) async {
+    try {
+      final response = await apiService.getData<NotificationListResponseModel>(
+        endpoint: '${ApiEndpoint.notifications}/user/$userId',
+        queryParams: {'page': page, 'limit': limit},
+        requiresAuthToken: true,
+        converter: (JSON json) => NotificationListResponseModel.fromJson(json),
+      );
+      return response;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
 
-    // TODO: Replace with actual API call when backend is ready
-    // try {
-    //   final response = await apiService.getCollectionData<NotificationModel>(
-    //     endpoint: ApiEndpoint.notifications,
-    //     converter: (JSON json) => NotificationModel.fromJson(json),
-    //   );
-    //   return response;
-    // } catch (e) {
-    //   throw CustomException.fromDioException(e as Exception);
-    // }
+  @override
+  Future<NotificationModel> markAsRead(String notificationId) async {
+    try {
+      final response = await apiService.patchData<NotificationModel>(
+        endpoint: '${ApiEndpoint.notifications}/$notificationId/read',
+        data: {},
+        requiresAuthToken: true,
+        converter: (ResponseModel<JSON> response) {
+          return NotificationModel.fromJson(response.data);
+        },
+      );
+      return response;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
   }
 
   @override

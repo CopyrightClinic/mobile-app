@@ -7,46 +7,65 @@ import '../../domain/entities/notification_entity.dart';
 
 class NotificationCard extends StatelessWidget {
   final NotificationEntity notification;
+  final VoidCallback? onTap;
 
-  const NotificationCard({super.key, required this.notification});
+  const NotificationCard({super.key, required this.notification, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: DimensionConstants.gap16Px.h),
-      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r)),
-      child: Padding(
-        padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    notification.title.tr(),
-                    style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: DimensionConstants.gap8Px.h),
-                  Text(
-                    notification.description.tr(),
-                    style: TextStyle(
-                      color: context.darkTextSecondary,
-                      fontSize: DimensionConstants.font14Px.f,
-                      fontWeight: FontWeight.w400,
-                      height: 1.4,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: DimensionConstants.gap16Px.h),
+        decoration: BoxDecoration(
+          color: notification.isRead ? context.filledBgDark : context.filledBgDark.withValues(alpha: 0.95),
+          borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r),
+          border: notification.isRead ? null : Border.all(color: context.primary.withValues(alpha: 0.2), width: 1),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!notification.isRead)
+                Container(
+                  margin: EdgeInsets.only(right: DimensionConstants.gap12Px.w, top: DimensionConstants.gap6Px.h),
+                  width: DimensionConstants.gap8Px.w,
+                  height: DimensionConstants.gap8Px.w,
+                  decoration: BoxDecoration(color: context.primary, shape: BoxShape.circle),
+                ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      notification.title,
+                      style: TextStyle(
+                        color: context.darkTextPrimary,
+                        fontSize: DimensionConstants.font16Px.f,
+                        fontWeight: notification.isRead ? FontWeight.w600 : FontWeight.w700,
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: DimensionConstants.gap8Px.h),
+                    Text(
+                      notification.body,
+                      style: TextStyle(
+                        color: context.darkTextSecondary,
+                        fontSize: DimensionConstants.font14Px.f,
+                        fontWeight: FontWeight.w400,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(width: DimensionConstants.gap12Px.w),
-            Text(
-              _formatTime(notification.createdAt),
-              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w400),
-            ),
-          ],
+              SizedBox(width: DimensionConstants.gap12Px.w),
+              Text(
+                _formatTime(notification.createdAt),
+                style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w400),
+              ),
+            ],
+          ),
         ),
       ),
     );

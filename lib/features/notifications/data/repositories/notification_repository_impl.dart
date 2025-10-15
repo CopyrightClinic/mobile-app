@@ -11,10 +11,30 @@ class NotificationRepositoryImpl implements NotificationRepository {
   NotificationRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<NotificationEntity>>> getNotifications() async {
+  Future<Either<Failure, NotificationListResult>> getNotifications({required String userId, int page = 1, int limit = 20}) async {
     try {
-      final notifications = await remoteDataSource.getNotifications();
-      return Right(notifications.map((model) => model.toEntity()).toList());
+      final response = await remoteDataSource.getNotifications(userId: userId, page: page, limit: limit);
+
+      return Right(
+        NotificationListResult(
+          notifications: response.data.map((model) => model.toEntity()).toList(),
+          total: response.total,
+          page: response.page,
+          limit: response.limit,
+        ),
+      );
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, NotificationEntity>> markAsRead(String notificationId) async {
+    try {
+      final notification = await remoteDataSource.markAsRead(notificationId);
+      return Right(notification.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {

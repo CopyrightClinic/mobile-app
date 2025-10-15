@@ -6,6 +6,7 @@ import 'config/routes/app_router.dart';
 import 'config/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
 import 'core/widgets/keyboard_dismiss_wrapper.dart';
+import 'core/services/push_notification_handler.dart';
 import 'shared_features/theme/data/models/theme_model.dart';
 import 'shared_features/theme/view_models/bloc/theme_cubit.dart';
 import 'shared_features/localization/view_models/bloc/localization_cubit.dart';
@@ -19,8 +20,21 @@ import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'di.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    PushNotificationHandler().initialize(_navigatorKey);
+  }
 
   @override
   Widget build(BuildContext context) {

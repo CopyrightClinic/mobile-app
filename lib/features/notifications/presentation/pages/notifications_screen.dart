@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/extensions.dart';
+import '../../../../core/utils/storage/user_storage.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -22,12 +23,39 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   late NotificationBloc _notificationBloc;
+  late ScrollController _scrollController;
+  final ValueNotifier<String?> _userIdNotifier = ValueNotifier<String?>(null);
 
   @override
   void initState() {
     super.initState();
     _notificationBloc = context.read<NotificationBloc>();
-    _notificationBloc.add(const LoadNotifications());
+    _scrollController = ScrollController()..addListener(_onScroll);
+    _loadUserAndNotifications();
+  }
+
+  Future<void> _loadUserAndNotifications() async {
+    final user = await UserStorage.getUser();
+    if (user != null && mounted) {
+      _userIdNotifier.value = user.id;
+      _notificationBloc.add(LoadNotifications(userId: user.id));
+    }
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+      final userId = _userIdNotifier.value;
+      if (userId != null) {
+        _notificationBloc.add(LoadMoreNotifications(userId: userId));
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _userIdNotifier.dispose();
+    super.dispose();
   }
 
   @override
@@ -89,17 +117,40 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           ),
           Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                _notificationBloc.add(const RefreshNotifications());
+            child: ValueListenableBuilder<String?>(
+              valueListenable: _userIdNotifier,
+              builder: (context, userId, child) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    if (userId != null) {
+                      _notificationBloc.add(RefreshNotifications(userId: userId));
+                    }
+                  },
+                  child: child!,
+                );
               },
               child: ListView.builder(
+                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-                itemCount: notifications.length,
+                itemCount: notifications.length + (state.isLoadingMore ? 1 : 0),
                 itemBuilder: (context, index) {
+                  if (index >= notifications.length) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
                   final notification = notifications[index];
-                  return NotificationCard(notification: notification);
+                  return NotificationCard(
+                    notification: notification,
+                    onTap: () {
+                      if (!notification.isRead) {
+                        _notificationBloc.add(MarkNotificationAsRead(notificationId: notification.id));
+                      }
+                    },
+                  );
                 },
               ),
             ),
@@ -133,11 +184,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: DimensionConstants.gap24Px.h),
-          ElevatedButton(
-            onPressed: () {
-              _notificationBloc.add(const LoadNotifications());
+          ValueListenableBuilder<String?>(
+            valueListenable: _userIdNotifier,
+            builder: (context, userId, child) {
+              return ElevatedButton(
+                onPressed:
+                    userId != null
+                        ? () {
+                          _notificationBloc.add(LoadNotifications(userId: userId));
+                        }
+                        : null,
+                child: TranslatedText(AppStrings.retry),
+              );
             },
-            child: TranslatedText(AppStrings.retry),
           ),
         ],
       ),

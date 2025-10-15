@@ -18,11 +18,31 @@ class NotificationLoading extends NotificationState {
 
 class NotificationLoaded extends NotificationState {
   final List<NotificationEntity> notifications;
+  final int total;
+  final int currentPage;
+  final bool hasMore;
+  final bool isLoadingMore;
 
-  const NotificationLoaded({required this.notifications});
+  const NotificationLoaded({
+    required this.notifications,
+    required this.total,
+    required this.currentPage,
+    required this.hasMore,
+    this.isLoadingMore = false,
+  });
+
+  NotificationLoaded copyWith({List<NotificationEntity>? notifications, int? total, int? currentPage, bool? hasMore, bool? isLoadingMore}) {
+    return NotificationLoaded(
+      notifications: notifications ?? this.notifications,
+      total: total ?? this.total,
+      currentPage: currentPage ?? this.currentPage,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
 
   @override
-  List<Object> get props => [notifications];
+  List<Object> get props => [notifications, total, currentPage, hasMore, isLoadingMore];
 }
 
 class NotificationError extends NotificationState {

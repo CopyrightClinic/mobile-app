@@ -2,18 +2,22 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../features/notifications/data/datasources/notification_remote_data_source.dart';
 import '../../features/notifications/data/models/device_token_model.dart';
 import '../utils/logger/logger.dart';
+import 'local_notification_service.dart';
 
 class FCMService {
   final NotificationRemoteDataSource remoteDataSource;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final LocalNotificationService _localNotificationService = LocalNotificationService();
 
   FCMService({required this.remoteDataSource});
 
   Future<void> initialize() async {
     try {
       await _requestPermission();
+      await _localNotificationService.initialize();
       await _registerDeviceToken();
       _setupForegroundNotificationHandling();
+      _setupTokenRefreshListener();
     } catch (e) {
       Log.e(runtimeType, 'Error initializing FCM: $e');
     }
@@ -54,7 +58,21 @@ class FCMService {
       Log.i(runtimeType, 'Device token registered successfully');
     } catch (e) {
       Log.e(runtimeType, 'Error registering device token: $e');
+      _scheduleTokenRetry(token);
     }
+  }
+
+  void _scheduleTokenRetry(String token) {
+    Future.delayed(const Duration(seconds: 30), () async {
+      Log.i(runtimeType, 'Retrying device token registration');
+      try {
+        final request = RegisterDeviceTokenRequestModel(token: token);
+        await remoteDataSource.registerDeviceToken(request);
+        Log.i(runtimeType, 'Device token registered successfully on retry');
+      } catch (e) {
+        Log.e(runtimeType, 'Error registering device token on retry: $e');
+      }
+    });
   }
 
   void _setupForegroundNotificationHandling() {
@@ -64,11 +82,16 @@ class FCMService {
 
       if (message.notification != null) {
         Log.i(runtimeType, 'Message notification: ${message.notification?.title} - ${message.notification?.body}');
+
+        _localNotificationService.showNotification(message);
       }
     });
+  }
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      Log.i(runtimeType, 'Message clicked!');
+  void _setupTokenRefreshListener() {
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      Log.i(runtimeType, 'FCM token refreshed: $newToken');
+      registerToken(newToken);
     });
   }
 
