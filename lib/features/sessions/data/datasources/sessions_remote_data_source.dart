@@ -9,6 +9,8 @@ import '../models/book_session_request_model.dart';
 import '../models/book_session_response_model.dart';
 import '../models/submit_feedback_request_model.dart';
 import '../models/submit_feedback_response_model.dart';
+import '../models/unlock_summary_request_model.dart';
+import '../models/unlock_summary_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
@@ -29,6 +31,7 @@ abstract class SessionsRemoteDataSource {
     required String summary,
     required String timezone,
   });
+  Future<UnlockSummaryResponseModel> unlockSessionSummary({required String sessionId, required String paymentMethodId, required double summaryFee});
 }
 
 class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
@@ -143,6 +146,21 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       headers: {'Timezone': timezone},
       data: request.toJson(),
       converter: (json) => BookSessionResponseModel.fromJson(json.data),
+    );
+  }
+
+  @override
+  Future<UnlockSummaryResponseModel> unlockSessionSummary({
+    required String sessionId,
+    required String paymentMethodId,
+    required double summaryFee,
+  }) async {
+    final request = UnlockSummaryRequestModel(sessionId: sessionId, paymentMethodId: paymentMethodId, summaryFee: summaryFee);
+
+    return await apiService.postData<UnlockSummaryResponseModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSION_SUMMARY),
+      data: request.toJson(),
+      converter: (json) => UnlockSummaryResponseModel.fromJson(json.data),
     );
   }
 }

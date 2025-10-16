@@ -19,6 +19,8 @@ import '../../../payments/presentation/bloc/payment_event.dart';
 import '../../../payments/presentation/bloc/payment_state.dart';
 import '../../../payments/presentation/widgets/payment_method_card.dart';
 import '../../../payments/presentation/widgets/payment_methods_list_config.dart';
+import '../bloc/session_details_bloc.dart';
+import '../bloc/session_details_event.dart';
 
 class UnlockSummaryPaymentBottomSheet extends StatefulWidget {
   final String sessionId;
@@ -104,7 +106,7 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('\$25', style: TextStyle(color: context.neonBlue, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700)),
+                Text('\$25', style: TextStyle(color: context.primary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700)),
                 SizedBox(width: DimensionConstants.gap8Px.w),
                 TranslatedText(
                   AppStrings.forSessionSummary,
@@ -148,7 +150,7 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
               },
             ),
             SizedBox(height: DimensionConstants.gap24Px.h),
-            Padding(
+            Container(
               padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
               child: Row(
                 children: [
@@ -160,7 +162,7 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
                       borderColor: context.buttonSecondary,
                       borderWidth: 1,
                       borderRadius: 50.r,
-                      height: 48.h,
+                      height: 56.h,
                       padding: 0,
                       child: TranslatedText(
                         AppStrings.cancel,
@@ -176,7 +178,7 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
                       disabledBackgroundColor: context.buttonDisabled,
                       textColor: Colors.white,
                       borderRadius: 50.r,
-                      height: 48.h,
+                      height: 56.h,
                       padding: 0,
                       child: TranslatedText(
                         AppStrings.confirmAndPay,
@@ -297,8 +299,10 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
 
   void _onConfirmAndPay() {
     if (_selectedPaymentMethod != null) {
-      widget.onPaymentSuccess?.call();
-      context.pop(_selectedPaymentMethod);
+      context.read<SessionDetailsBloc>().add(
+        UnlockSessionSummary(sessionId: widget.sessionId, paymentMethodId: _selectedPaymentMethod!.id, summaryFee: 25.0),
+      );
+      context.pop();
     }
   }
 }

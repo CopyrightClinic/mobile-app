@@ -87,6 +87,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               SnackBarUtils.showError(context, state.message);
             } else if (state is SessionDetailsFeedbackSubmitted) {
               SnackBarUtils.showSuccess(context, state.message);
+            } else if (state is SessionDetailsSummaryUnlocked) {
+              SnackBarUtils.showSuccess(context, state.message);
             }
           },
         ),
@@ -541,14 +543,9 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
       isDismissible: true,
       enableDrag: true,
       builder:
-          (bottomSheetContext) => BlocProvider.value(
-            value: context.read<PaymentBloc>(),
-            child: UnlockSummaryPaymentBottomSheet(
-              sessionId: widget.sessionId,
-              onPaymentSuccess: () {
-                SnackBarUtils.showSuccess(context, AppStrings.summaryUnlockRequested.tr());
-              },
-            ),
+          (bottomSheetContext) => MultiBlocProvider(
+            providers: [BlocProvider.value(value: context.read<PaymentBloc>()), BlocProvider.value(value: context.read<SessionDetailsBloc>())],
+            child: UnlockSummaryPaymentBottomSheet(sessionId: widget.sessionId),
           ),
     );
   }

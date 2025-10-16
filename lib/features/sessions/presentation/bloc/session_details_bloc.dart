@@ -4,6 +4,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../domain/usecases/get_session_details_usecase.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/submit_session_feedback_usecase.dart';
+import '../../domain/usecases/unlock_session_summary_usecase.dart';
 import 'session_details_event.dart';
 import 'session_details_state.dart';
 
@@ -11,12 +12,18 @@ class SessionDetailsBloc extends Bloc<SessionDetailsEvent, SessionDetailsState> 
   final GetSessionDetailsUseCase getSessionDetailsUseCase;
   final CancelSessionUseCase cancelSessionUseCase;
   final SubmitSessionFeedbackUseCase submitSessionFeedbackUseCase;
+  final UnlockSessionSummaryUseCase unlockSessionSummaryUseCase;
 
-  SessionDetailsBloc({required this.getSessionDetailsUseCase, required this.cancelSessionUseCase, required this.submitSessionFeedbackUseCase})
-    : super(const SessionDetailsInitial()) {
+  SessionDetailsBloc({
+    required this.getSessionDetailsUseCase,
+    required this.cancelSessionUseCase,
+    required this.submitSessionFeedbackUseCase,
+    required this.unlockSessionSummaryUseCase,
+  }) : super(const SessionDetailsInitial()) {
     on<LoadSessionDetails>(_onLoadSessionDetails);
     on<CancelSessionFromDetails>(_onCancelSessionFromDetails);
     on<SubmitSessionFeedback>(_onSubmitSessionFeedback);
+    on<UnlockSessionSummary>(_onUnlockSessionSummary);
   }
 
   Future<void> _onLoadSessionDetails(LoadSessionDetails event, Emitter<SessionDetailsState> emit) async {
@@ -60,6 +67,23 @@ class SessionDetailsBloc extends Bloc<SessionDetailsEvent, SessionDetailsState> 
 
     await result.fold((failure) async => emit(SessionDetailsError(message: failure.message ?? AppStrings.failedToSubmitFeedback)), (response) async {
       emit(SessionDetailsFeedbackSubmitted(message: response.message));
+      add(LoadSessionDetails(sessionId: event.sessionId));
+    });
+  }
+
+  Future<void> _onUnlockSessionSummary(UnlockSessionSummary event, Emitter<SessionDetailsState> emit) async {
+    if (state is! SessionDetailsLoaded) return;
+    final currentSessionDetails = (state as SessionDetailsLoaded).sessionDetails;
+    emit(SessionDetailsSummaryUnlockLoading(sessionDetails: currentSessionDetails));
+
+    final result = await unlockSessionSummaryUseCase(
+      UnlockSessionSummaryParams(sessionId: event.sessionId, paymentMethodId: event.paymentMethodId, summaryFee: event.summaryFee),
+    );
+
+    await result.fold((failure) async => emit(SessionDetailsError(message: failure.message ?? AppStrings.failedToUnlockSessionSummary)), (
+      response,
+    ) async {
+      emit(SessionDetailsSummaryUnlocked(message: response.message));
       add(LoadSessionDetails(sessionId: event.sessionId));
     });
   }

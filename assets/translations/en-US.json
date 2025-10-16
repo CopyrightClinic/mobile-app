@@ -356,5 +356,6 @@
   "forSessionSummary": "for Session Summary",
   "selectPaymentMethod": "Select Payment Method",
   "confirmAndPay": "Confirm & Pay",
-  "failedToLoadPaymentMethods": "Failed to load payment methods"
+  "failedToLoadPaymentMethods": "Failed to load payment methods",
+  "failedToUnlockSessionSummary": "Failed to unlock session summary"
 }

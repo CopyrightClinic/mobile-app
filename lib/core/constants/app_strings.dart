@@ -424,4 +424,5 @@ class AppStrings {
   static const forSessionSummary = 'forSessionSummary';
   static const selectPaymentMethod = 'selectPaymentMethod';
   static const confirmAndPay = 'confirmAndPay';
+  static const failedToUnlockSessionSummary = 'failedToUnlockSessionSummary';
 }

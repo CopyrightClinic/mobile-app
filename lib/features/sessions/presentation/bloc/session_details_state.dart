@@ -69,3 +69,21 @@ class SessionDetailsFeedbackSubmitted extends SessionDetailsState {
   @override
   List<Object> get props => [message];
 }
+
+class SessionDetailsSummaryUnlockLoading extends SessionDetailsState {
+  final SessionDetailsEntity sessionDetails;
+
+  const SessionDetailsSummaryUnlockLoading({required this.sessionDetails});
+
+  @override
+  List<Object> get props => [sessionDetails];
+}
+
+class SessionDetailsSummaryUnlocked extends SessionDetailsState {
+  final String message;
+
+  const SessionDetailsSummaryUnlocked({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

@@ -5,6 +5,7 @@ import '../entities/session_details_entity.dart';
 import '../entities/submit_feedback_response_entity.dart';
 import '../entities/session_availability_entity.dart';
 import '../entities/book_session_response_entity.dart';
+import '../entities/unlock_summary_response_entity.dart';
 
 abstract class SessionsRepository {
   Future<Either<Failure, List<SessionEntity>>> getUserSessions({String? status, String? timezone});
@@ -23,5 +24,10 @@ abstract class SessionsRepository {
     required String endTime,
     required String summary,
     required String timezone,
+  });
+  Future<Either<Failure, UnlockSummaryResponseEntity>> unlockSessionSummary({
+    required String sessionId,
+    required String paymentMethodId,
+    required double summaryFee,
   });
 }

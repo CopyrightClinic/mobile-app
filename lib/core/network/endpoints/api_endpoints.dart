@@ -64,6 +64,8 @@ class ApiEndpoint {
         return '/sessions-availability';
       case SessionsEndpoint.BOOK_SESSION:
         return '/session-requests/book-session';
+      case SessionsEndpoint.SESSION_SUMMARY:
+        return '/session-summary';
     }
   }
 
