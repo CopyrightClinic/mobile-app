@@ -3,6 +3,7 @@ import '../../features/notifications/data/datasources/notification_remote_data_s
 import '../../features/notifications/data/models/device_token_model.dart';
 import '../utils/logger/logger.dart';
 import 'local_notification_service.dart';
+import 'notification_type_mapper.dart';
 
 class FCMService {
   final NotificationRemoteDataSource remoteDataSource;
@@ -77,15 +78,49 @@ class FCMService {
 
   void _setupForegroundNotificationHandling() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      Log.i(runtimeType, 'Got a message whilst in the foreground!');
-      Log.i(runtimeType, 'Message data: ${message.data}');
+      Log.i(runtimeType, '📱 ========================================');
+      Log.i(runtimeType, '📱 FOREGROUND NOTIFICATION RECEIVED');
+      Log.i(runtimeType, '📱 ========================================');
+      Log.i(runtimeType, '📱 Message ID: ${message.messageId}');
+      Log.i(runtimeType, '📱 Notification Title: ${message.notification?.title}');
+      Log.i(runtimeType, '📱 Notification Body: ${message.notification?.body}');
+      Log.i(runtimeType, '📱 Data Payload: ${message.data}');
+      Log.i(runtimeType, '📱 ========================================');
 
       if (message.notification != null) {
-        Log.i(runtimeType, 'Message notification: ${message.notification?.title} - ${message.notification?.body}');
-
+        _processNotification(message);
         _localNotificationService.showNotification(message);
+      } else {
+        Log.w(runtimeType, '⚠️ No notification payload, skipping display');
       }
     });
+  }
+
+  void _processNotification(RemoteMessage message) {
+    try {
+      final data = message.data;
+      final type = data['type'] as String?;
+
+      Log.i(runtimeType, '🔍 Processing notification...');
+      Log.i(runtimeType, '🔍 Type from payload: $type');
+
+      if (type == null) {
+        Log.w(runtimeType, '⚠️ Notification type is null, cannot process');
+        return;
+      }
+
+      final shouldCreateInApp = NotificationTypeMapper.shouldCreateInAppNotification(type);
+
+      if (shouldCreateInApp) {
+        final inAppType = NotificationTypeMapper.mapFCMToInApp(type);
+        Log.i(runtimeType, '✅ Type $type → In-app: $inAppType (will sync with backend)');
+      } else {
+        Log.i(runtimeType, '📲 Type $type is push-only (no in-app notification)');
+      }
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Error processing notification: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
   }
 
   void _setupTokenRefreshListener() {

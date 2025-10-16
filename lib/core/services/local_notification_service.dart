@@ -28,15 +28,29 @@ class LocalNotificationService {
   }
 
   void _onNotificationTapped(NotificationResponse response) {
+    Log.i(runtimeType, '👆 ========================================');
+    Log.i(runtimeType, '👆 LOCAL NOTIFICATION TAPPED');
+    Log.i(runtimeType, '👆 ========================================');
+    Log.i(runtimeType, '👆 Response ID: ${response.id}');
+    Log.i(runtimeType, '👆 Action ID: ${response.actionId}');
+
     if (response.payload != null) {
       try {
+        Log.i(runtimeType, '👆 Payload: ${response.payload}');
         final data = jsonDecode(response.payload!);
+        Log.i(runtimeType, '👆 Decoded Data: $data');
+
         final message = RemoteMessage(data: Map<String, dynamic>.from(data));
+        Log.i(runtimeType, '👆 Forwarding to PushNotificationHandler...');
         PushNotificationHandler().handleNotificationTap(message);
-      } catch (e) {
-        Log.e(runtimeType, 'Error handling notification tap: $e');
+      } catch (e, stackTrace) {
+        Log.e(runtimeType, '❌ Error handling local notification tap: $e');
+        Log.e(runtimeType, 'Stack trace: $stackTrace');
       }
+    } else {
+      Log.w(runtimeType, '⚠️ No payload in notification response');
     }
+    Log.i(runtimeType, '👆 ========================================');
   }
 
   Future<void> showNotification(RemoteMessage message) async {
@@ -48,14 +62,26 @@ class LocalNotificationService {
       final notification = message.notification;
       final data = message.data;
 
+      Log.i(runtimeType, '🔔 ========================================');
+      Log.i(runtimeType, '🔔 SHOWING LOCAL NOTIFICATION');
+      Log.i(runtimeType, '🔔 ========================================');
+
       if (notification == null) {
-        Log.w(runtimeType, 'Notification payload is null');
+        Log.w(runtimeType, '⚠️ Notification payload is null, cannot show');
         return;
       }
 
       final notificationType = _getNotificationType(data);
+      Log.i(runtimeType, '🔔 Notification Type: ${notificationType?.toApiString() ?? "Unknown"}');
+      Log.i(runtimeType, '🔔 Title: ${notification.title}');
+      Log.i(runtimeType, '🔔 Body: ${notification.body}');
+
       final androidDetails = _getAndroidNotificationDetails(notificationType);
       final iosDetails = _getIOSNotificationDetails(notificationType);
+
+      Log.i(runtimeType, '🔔 Android Channel: ${androidDetails.channelId}');
+      Log.i(runtimeType, '🔔 Android Priority: ${androidDetails.priority}');
+      Log.i(runtimeType, '🔔 iOS Interruption Level: ${iosDetails.interruptionLevel}');
 
       await _flutterLocalNotificationsPlugin.show(
         message.hashCode,
@@ -65,9 +91,11 @@ class LocalNotificationService {
         payload: jsonEncode(data),
       );
 
-      Log.i(runtimeType, 'Local notification shown: ${notification.title}');
-    } catch (e) {
-      Log.e(runtimeType, 'Error showing local notification: $e');
+      Log.i(runtimeType, '✅ Local notification displayed successfully');
+      Log.i(runtimeType, '🔔 ========================================');
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Error showing local notification: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
     }
   }
 
@@ -134,9 +162,9 @@ class LocalNotificationService {
     switch (type) {
       case PushNotificationType.joinSessionActivated:
       case PushNotificationType.sessionReminderPreStart:
-      case PushNotificationType.failedPayment:
-        return Importance.high;
+      case PushNotificationType.paymentAuthorizationFailed:
       case PushNotificationType.sessionCancelledByAttorney:
+      case PushNotificationType.systemErrorAlert:
         return Importance.high;
       default:
         return Importance.defaultImportance;
@@ -149,9 +177,9 @@ class LocalNotificationService {
     switch (type) {
       case PushNotificationType.joinSessionActivated:
       case PushNotificationType.sessionReminderPreStart:
-      case PushNotificationType.failedPayment:
-        return Priority.high;
+      case PushNotificationType.paymentAuthorizationFailed:
       case PushNotificationType.sessionCancelledByAttorney:
+      case PushNotificationType.systemErrorAlert:
         return Priority.high;
       default:
         return Priority.defaultPriority;
@@ -164,9 +192,9 @@ class LocalNotificationService {
     switch (type) {
       case PushNotificationType.joinSessionActivated:
       case PushNotificationType.sessionReminderPreStart:
-        return InterruptionLevel.timeSensitive;
-      case PushNotificationType.failedPayment:
+      case PushNotificationType.paymentAuthorizationFailed:
       case PushNotificationType.sessionCancelledByAttorney:
+      case PushNotificationType.systemErrorAlert:
         return InterruptionLevel.timeSensitive;
       default:
         return InterruptionLevel.active;
