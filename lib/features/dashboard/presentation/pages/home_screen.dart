@@ -92,9 +92,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 Row(
                   children: [
-                    Expanded(child: _buildActionBlock(context, icon: ImageConstants.aboutUs, title: AppStrings.aboutUs, onTap: () {})),
+                    Expanded(
+                      child: _buildActionBlock(
+                        context,
+                        icon: ImageConstants.aboutUs,
+                        title: AppStrings.aboutUs,
+                        onTap: () {
+                          context.push(AppRoutes.aboutUsRouteName);
+                        },
+                      ),
+                    ),
                     SizedBox(width: DimensionConstants.gap16Px.w),
-                    Expanded(child: _buildActionBlock(context, icon: ImageConstants.whatWeDo, title: AppStrings.whatWeDo, onTap: () {})),
+                    Expanded(
+                      child: _buildActionBlock(
+                        context,
+                        icon: ImageConstants.whatWeDo,
+                        title: AppStrings.whatWeDo,
+                        onTap: () {
+                          context.push(AppRoutes.whatWeDoRouteName);
+                        },
+                      ),
+                    ),
                   ],
                 ),
 
