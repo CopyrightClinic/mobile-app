@@ -11,6 +11,12 @@ class SessionsState extends Equatable {
   final List<SessionEntity>? completedSessions;
   final SessionsTab currentTab;
   final bool isLoadingSessions;
+  final bool isLoadingMoreUpcoming;
+  final bool isLoadingMoreCompleted;
+  final int currentUpcomingPage;
+  final int currentCompletedPage;
+  final bool hasMoreUpcoming;
+  final bool hasMoreCompleted;
   final bool isProcessingCancel;
   final String? cancellingSessionId;
   final bool isProcessingJoin;
@@ -31,6 +37,12 @@ class SessionsState extends Equatable {
     this.completedSessions,
     this.currentTab = SessionsTab.upcoming,
     this.isLoadingSessions = false,
+    this.isLoadingMoreUpcoming = false,
+    this.isLoadingMoreCompleted = false,
+    this.currentUpcomingPage = 1,
+    this.currentCompletedPage = 1,
+    this.hasMoreUpcoming = false,
+    this.hasMoreCompleted = false,
     this.isProcessingCancel = false,
     this.cancellingSessionId,
     this.isProcessingJoin = false,
@@ -76,6 +88,12 @@ class SessionsState extends Equatable {
     List<SessionEntity>? completedSessions,
     SessionsTab? currentTab,
     bool? isLoadingSessions,
+    bool? isLoadingMoreUpcoming,
+    bool? isLoadingMoreCompleted,
+    int? currentUpcomingPage,
+    int? currentCompletedPage,
+    bool? hasMoreUpcoming,
+    bool? hasMoreCompleted,
     bool? isProcessingCancel,
     String? cancellingSessionId,
     bool? isProcessingJoin,
@@ -102,6 +120,12 @@ class SessionsState extends Equatable {
       completedSessions: completedSessions ?? this.completedSessions,
       currentTab: currentTab ?? this.currentTab,
       isLoadingSessions: isLoadingSessions ?? this.isLoadingSessions,
+      isLoadingMoreUpcoming: isLoadingMoreUpcoming ?? this.isLoadingMoreUpcoming,
+      isLoadingMoreCompleted: isLoadingMoreCompleted ?? this.isLoadingMoreCompleted,
+      currentUpcomingPage: currentUpcomingPage ?? this.currentUpcomingPage,
+      currentCompletedPage: currentCompletedPage ?? this.currentCompletedPage,
+      hasMoreUpcoming: hasMoreUpcoming ?? this.hasMoreUpcoming,
+      hasMoreCompleted: hasMoreCompleted ?? this.hasMoreCompleted,
       isProcessingCancel: isProcessingCancel ?? this.isProcessingCancel,
       cancellingSessionId: clearCancellingSessionId ? null : (cancellingSessionId ?? this.cancellingSessionId),
       isProcessingJoin: isProcessingJoin ?? this.isProcessingJoin,
@@ -125,6 +149,12 @@ class SessionsState extends Equatable {
     completedSessions,
     currentTab,
     isLoadingSessions,
+    isLoadingMoreUpcoming,
+    isLoadingMoreCompleted,
+    currentUpcomingPage,
+    currentCompletedPage,
+    hasMoreUpcoming,
+    hasMoreCompleted,
     isProcessingCancel,
     cancellingSessionId,
     isProcessingJoin,

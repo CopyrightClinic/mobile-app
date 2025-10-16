@@ -54,9 +54,16 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
     if (_isBottom) {
       final state = _sessionsBloc.state;
-      if (state is SessionsLoaded && state.hasMore && !state.isLoadingMore) {
+      final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
+      final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
+      final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
+
+      if (state.hasData && hasMore && !isLoadingMore) {
         _isRequestingMore = true;
         _sessionsBloc.add(const LoadMoreSessions());
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _isRequestingMore = false;
+        });
       }
     }
   }
@@ -134,6 +141,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
     if (state.hasData) {
       final sessions = state.currentSessions;
+      final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
+      final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
+      final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
 
       if (sessions.isEmpty) {
         return _buildEmptyState(context, state.currentTab == SessionsTab.upcoming);
@@ -146,11 +156,11 @@ class _SessionsScreenState extends State<SessionsScreen> {
         child: ListView.builder(
           controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: sessions.length + (state.hasMore ? 1 : 0),
+          itemCount: sessions.length + (hasMore ? 1 : 0),
           padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
           itemBuilder: (context, index) {
             if (index >= sessions.length) {
-              return _buildLoadingMoreIndicator(state);
+              return _buildLoadingMoreIndicator(isLoadingMore);
             }
             final session = sessions[index];
             return SessionCard(
@@ -166,8 +176,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
     return _buildEmptyState(context, true);
   }
 
-  Widget _buildLoadingMoreIndicator(SessionsLoaded state) {
-    if (!state.isLoadingMore) {
+  Widget _buildLoadingMoreIndicator(bool isLoadingMore) {
+    if (!isLoadingMore) {
       return const SizedBox.shrink();
     }
     return Padding(

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/session_entity.dart';
+import '../entities/paginated_sessions_entity.dart';
 import '../entities/session_details_entity.dart';
 import '../entities/submit_feedback_response_entity.dart';
 import '../entities/cancel_session_response_entity.dart';
