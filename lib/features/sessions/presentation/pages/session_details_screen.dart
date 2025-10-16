@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/summary_approval_status.dart';
@@ -29,6 +30,7 @@ import '../widgets/submitted_rating_review_widget.dart';
 import '../widgets/unlock_summary_payment_bottom_sheet.dart';
 import '../widgets/cancel_session_bottom_sheet.dart';
 import 'params/session_details_screen_params.dart';
+import 'params/session_summary_screen_params.dart';
 import '../../../payments/presentation/bloc/payment_bloc.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
@@ -636,7 +638,14 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
     );
   }
 
-  void _onViewSummary(SessionDetailsEntity session) {}
+  void _onViewSummary(SessionDetailsEntity session) {
+    if (session.aiGeneratedSummary != null) {
+      context.push(
+        AppRoutes.sessionSummaryRouteName,
+        extra: SessionSummaryScreenParams(sessionId: session.id, aiGeneratedSummary: session.aiGeneratedSummary!),
+      );
+    }
+  }
 
   void _onSubmitRatingReview(String sessionId) {
     if (_currentRating > 0) {

@@ -27,6 +27,8 @@ import '../../features/sessions/presentation/pages/params/select_payment_method_
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/sessions/presentation/pages/session_details_screen.dart';
 import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
+import '../../features/sessions/presentation/pages/session_summary_screen.dart';
+import '../../features/sessions/presentation/pages/params/session_summary_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -157,6 +159,14 @@ class AppRouter {
         builder: (context, state) {
           final params = state.extra as SessionDetailsScreenParams;
           return SessionDetailsScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.sessionSummaryRouteName,
+        name: AppRoutes.sessionSummaryRouteName,
+        builder: (context, state) {
+          final params = state.extra as SessionSummaryScreenParams;
+          return SessionSummaryScreen(params: params);
         },
       ),
       GoRoute(

@@ -407,6 +407,8 @@ class AppStrings {
   static const attorneyReviewInProgressDescription = 'attorneyReviewInProgressDescription';
   static const yourSummaryIsReady = 'yourSummaryIsReady';
   static const viewSummary = 'viewSummary';
+  static const downloadPDF = 'downloadPDF';
+  static const failedToGeneratePDF = 'failedToGeneratePDF';
   static const noRating = 'noRating';
   static const noReviewProvided = 'noReviewProvided';
   static const summaryUnlockRequested = 'summaryUnlockRequested';

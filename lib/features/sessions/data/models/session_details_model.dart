@@ -83,6 +83,8 @@ class SessionDetailsModel {
   final bool summaryLocked;
   @JsonKey(name: 'summaryApprovalStatus')
   final String? summaryApprovalStatus;
+  @JsonKey(name: 'aiGeneratedSummary')
+  final String? aiGeneratedSummary;
   @JsonKey(fromJson: _ratingFromJson, toJson: _ratingToJson)
   final double? rating;
   final String? review;
@@ -109,6 +111,7 @@ class SessionDetailsModel {
     this.summary,
     required this.summaryLocked,
     this.summaryApprovalStatus,
+    this.aiGeneratedSummary,
     this.rating,
     this.review,
     this.cancelTime,
@@ -140,6 +143,7 @@ class SessionDetailsModel {
       summary: summary,
       summaryLocked: summaryLocked,
       summaryApprovalStatus: summaryApprovalStatus != null ? SummaryApprovalStatus.fromString(summaryApprovalStatus!) : null,
+      aiGeneratedSummary: aiGeneratedSummary,
       rating: rating,
       review: review,
       cancelTime: cancelTime,

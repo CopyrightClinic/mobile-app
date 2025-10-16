@@ -362,5 +362,7 @@
   "selectPaymentMethod": "Select Payment Method",
   "confirmAndPay": "Confirm & Pay",
   "failedToLoadPaymentMethods": "Failed to load payment methods",
-  "failedToUnlockSessionSummary": "Failed to unlock session summary"
+  "failedToUnlockSessionSummary": "Failed to unlock session summary",
+  "downloadPDF": "Download PDF",
+  "failedToGeneratePDF": "Failed to generate PDF"
 }

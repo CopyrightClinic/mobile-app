@@ -45,6 +45,7 @@ class SessionDetailsEntity extends Equatable {
   final String? summary;
   final bool summaryLocked;
   final SummaryApprovalStatus? summaryApprovalStatus;
+  final String? aiGeneratedSummary;
   final double? rating;
   final String? review;
   final String? cancelTime;
@@ -67,6 +68,7 @@ class SessionDetailsEntity extends Equatable {
     this.summary,
     required this.summaryLocked,
     this.summaryApprovalStatus,
+    this.aiGeneratedSummary,
     this.rating,
     this.review,
     this.cancelTime,
@@ -91,6 +93,7 @@ class SessionDetailsEntity extends Equatable {
     summary,
     summaryLocked,
     summaryApprovalStatus,
+    aiGeneratedSummary,
     rating,
     review,
     cancelTime,
