@@ -26,7 +26,9 @@ import '../bloc/sessions_bloc.dart';
 import '../bloc/sessions_state.dart';
 import '../widgets/add_rating_review_widget.dart';
 import '../widgets/submitted_rating_review_widget.dart';
+import '../widgets/unlock_summary_payment_bottom_sheet.dart';
 import 'params/session_details_screen_params.dart';
+import '../../../payments/presentation/bloc/payment_bloc.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
   final SessionDetailsScreenParams params;
@@ -532,7 +534,23 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _onUnlockSummary() {
-    SnackBarUtils.showSuccess(context, AppStrings.summaryUnlockRequested.tr());
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      builder:
+          (bottomSheetContext) => BlocProvider.value(
+            value: context.read<PaymentBloc>(),
+            child: UnlockSummaryPaymentBottomSheet(
+              sessionId: widget.sessionId,
+              onPaymentSuccess: () {
+                SnackBarUtils.showSuccess(context, AppStrings.summaryUnlockRequested.tr());
+              },
+            ),
+          ),
+    );
   }
 
   void _onSubmitRatingReview(String sessionId) {

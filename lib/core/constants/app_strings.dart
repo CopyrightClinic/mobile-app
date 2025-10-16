@@ -419,4 +419,9 @@ class AppStrings {
   static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
   static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
   static const failedToSubmitFeedback = 'failedToSubmitFeedback';
+  static const confirmPurchase = 'confirmPurchase';
+  static const professionallyReviewedSummaryDescription = 'professionallyReviewedSummaryDescription';
+  static const forSessionSummary = 'forSessionSummary';
+  static const selectPaymentMethod = 'selectPaymentMethod';
+  static const confirmAndPay = 'confirmAndPay';
 }

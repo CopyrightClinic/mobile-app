@@ -350,5 +350,11 @@
   "addACommentOptional": "Add a comment (optional)",
   "theAttorneyWasVeryHelpful": "Was the advice helpful? Anything we could improve?",
   "ratingReviewSubmittedSuccessfully": "Rating and review submitted successfully!",
-  "failedToSubmitFeedback": "Failed to submit feedback"
+  "failedToSubmitFeedback": "Failed to submit feedback",
+  "confirmPurchase": "Confirm Purchase",
+  "professionallyReviewedSummaryDescription": "You're about to request for a professionally reviewed summary of your consultation. Once purchased, it's yours to keep.",
+  "forSessionSummary": "for Session Summary",
+  "selectPaymentMethod": "Select Payment Method",
+  "confirmAndPay": "Confirm & Pay",
+  "failedToLoadPaymentMethods": "Failed to load payment methods"
 }
