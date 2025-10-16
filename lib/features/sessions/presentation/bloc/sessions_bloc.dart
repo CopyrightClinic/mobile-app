@@ -78,7 +78,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
           final upcomingSessions = sessions.where((session) => session.isUpcoming).toList();
           final completedSessions = sessions.where((session) => session.isCompleted).toList();
 
-          emit(state.copyWith(upcomingSessions: upcomingSessions, completedSessions: completedSessions, clearError: true));
+          emit(state.copyWith(upcomingSessions: upcomingSessions, completedSessions: completedSessions, clearError: true, clearSuccess: true));
         },
       );
     } else {

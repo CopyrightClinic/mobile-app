@@ -26,7 +26,7 @@ class CancelSessionBottomSheet extends StatelessWidget {
     return BlocListener<SessionsBloc, SessionsState>(
       listener: (context, state) {
         if (state.lastOperation == SessionsOperation.cancelSession) {
-          if (state.hasSuccess) {
+          if (state.hasSuccess && context.mounted) {
             context.pop();
           }
         }
