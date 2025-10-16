@@ -1,9 +1,10 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
+import '../../../../core/utils/enumns/ui/summary_approval_status.dart';
 
 class SessionDetailsAttorneyEntity extends Equatable {
   final String id;
-  final String name;
+  final String? name;
   final String email;
   final String? profileUrl;
 
@@ -43,6 +44,7 @@ class SessionDetailsEntity extends Equatable {
   final SessionStatus status;
   final String? summary;
   final bool summaryLocked;
+  final SummaryApprovalStatus? summaryApprovalStatus;
   final double? rating;
   final String? review;
   final String? cancelTime;
@@ -64,6 +66,7 @@ class SessionDetailsEntity extends Equatable {
     required this.status,
     this.summary,
     required this.summaryLocked,
+    this.summaryApprovalStatus,
     this.rating,
     this.review,
     this.cancelTime,
@@ -87,6 +90,7 @@ class SessionDetailsEntity extends Equatable {
     status,
     summary,
     summaryLocked,
+    summaryApprovalStatus,
     rating,
     review,
     cancelTime,

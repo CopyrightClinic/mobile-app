@@ -3,7 +3,7 @@ import '../../../../core/utils/enumns/ui/session_status.dart';
 
 class AttorneyEntity extends Equatable {
   final String id;
-  final String name;
+  final String? name;
   final String email;
 
   const AttorneyEntity({required this.id, required this.name, required this.email});
