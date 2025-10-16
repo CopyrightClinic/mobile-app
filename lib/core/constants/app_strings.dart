@@ -465,6 +465,13 @@ class AppStrings {
   static const unlockSummaryFor = 'unlockSummaryFor';
   static const payToRequestSummary = 'payToRequestSummary';
   static const requestSummaryDeadline = 'requestSummaryDeadline';
+  static const summaryReviewInProgress = 'summaryReviewInProgress';
+  static const adminReviewInProgressDescription = 'adminReviewInProgressDescription';
+  static const attorneyReviewInProgressDescription = 'attorneyReviewInProgressDescription';
+  static const yourSummaryIsReady = 'yourSummaryIsReady';
+  static const viewSummary = 'viewSummary';
+  static const downloadPDF = 'downloadPDF';
+  static const failedToGeneratePDF = 'failedToGeneratePDF';
   static const noRating = 'noRating';
   static const noReviewProvided = 'noReviewProvided';
   static const summaryUnlockRequested = 'summaryUnlockRequested';
@@ -485,4 +492,10 @@ class AppStrings {
 
   static const loadingMore = 'loadingMore';
   static const failedToLoadMoreSessions = 'failedToLoadMoreSessions';
+  static const confirmPurchase = 'confirmPurchase';
+  static const professionallyReviewedSummaryDescription = 'professionallyReviewedSummaryDescription';
+  static const forSessionSummary = 'forSessionSummary';
+  static const selectPaymentMethod = 'selectPaymentMethod';
+  static const confirmAndPay = 'confirmAndPay';
+  static const failedToUnlockSessionSummary = 'failedToUnlockSessionSummary';
 }

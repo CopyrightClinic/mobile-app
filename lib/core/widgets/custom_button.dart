@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
@@ -23,6 +21,8 @@ class CustomButton extends StatelessWidget {
     this.fontSize,
     this.isLoading = false,
     this.isDisabled = false,
+    this.loadingSize = 20,
+    this.loadingStrokeWidth = 2,
   });
 
   final VoidCallback? onPressed;
@@ -40,6 +40,8 @@ class CustomButton extends StatelessWidget {
   final double? fontSize;
   final bool isLoading;
   final bool isDisabled;
+  final double loadingSize;
+  final double loadingStrokeWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,17 @@ class CustomButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: padding.h),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius ?? 0)),
       ),
-      child: isLoading ? const CircularProgressIndicator() : child,
+      child:
+          isLoading
+              ? SizedBox(
+                height: loadingSize.h,
+                width: loadingSize.w,
+                child: CircularProgressIndicator(
+                  strokeWidth: loadingStrokeWidth,
+                  valueColor: AlwaysStoppedAnimation<Color>(textColor ?? context.white),
+                ),
+              )
+              : child,
     );
   }
 }
