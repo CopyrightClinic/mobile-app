@@ -16,7 +16,10 @@ class SessionAvailabilityModel {
 
   final List<AvailabilityDayModel> days;
 
-  const SessionAvailabilityModel({required this.startDate, required this.endDate, required this.slotMinutes, required this.days});
+  @JsonKey(name: 'session_fee')
+  final SessionFeeModel fee;
+
+  const SessionAvailabilityModel({required this.startDate, required this.endDate, required this.slotMinutes, required this.days, required this.fee});
 
   factory SessionAvailabilityModel.fromJson(Map<String, dynamic> json) => _$SessionAvailabilityModelFromJson(json);
 
@@ -28,6 +31,7 @@ class SessionAvailabilityModel {
       endDate: DateTime.parse(endDate),
       slotMinutes: slotMinutes,
       days: days.map((day) => day.toEntity()).toList(),
+      fee: fee.toEntity(),
     );
   }
 }
@@ -62,5 +66,23 @@ class TimeSlotModel {
 
   TimeSlotEntity toEntity() {
     return TimeSlotEntity(start: DateTime.parse(start), end: DateTime.parse(end));
+  }
+}
+
+@JsonSerializable()
+class SessionFeeModel {
+  @JsonKey(name: 'totalFee')
+  final num amount;
+
+  final String currency;
+
+  const SessionFeeModel({required this.amount, required this.currency});
+
+  factory SessionFeeModel.fromJson(Map<String, dynamic> json) => _$SessionFeeModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SessionFeeModelToJson(this);
+
+  SessionFeeEntity toEntity() {
+    return SessionFeeEntity(amount: amount, currency: currency);
   }
 }
