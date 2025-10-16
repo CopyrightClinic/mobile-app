@@ -402,6 +402,11 @@ class AppStrings {
   static const unlockSummaryFor = 'unlockSummaryFor';
   static const payToRequestSummary = 'payToRequestSummary';
   static const requestSummaryDeadline = 'requestSummaryDeadline';
+  static const summaryReviewInProgress = 'summaryReviewInProgress';
+  static const adminReviewInProgressDescription = 'adminReviewInProgressDescription';
+  static const attorneyReviewInProgressDescription = 'attorneyReviewInProgressDescription';
+  static const yourSummaryIsReady = 'yourSummaryIsReady';
+  static const viewSummary = 'viewSummary';
   static const noRating = 'noRating';
   static const noReviewProvided = 'noReviewProvided';
   static const summaryUnlockRequested = 'summaryUnlockRequested';

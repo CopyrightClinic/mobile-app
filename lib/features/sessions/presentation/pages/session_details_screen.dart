@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/utils/enumns/ui/summary_approval_status.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/utils/session_datetime_utils.dart';
@@ -80,36 +81,25 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         ),
         BlocListener<SessionDetailsBloc, SessionDetailsState>(
           listener: (context, state) {
-            if (state is SessionDetailsCancelled) {
-              SnackBarUtils.showSuccess(context, state.message);
-              context.pop();
-            } else if (state is SessionDetailsError) {
-              SnackBarUtils.showError(context, state.message);
-            } else if (state is SessionDetailsFeedbackSubmitted) {
-              SnackBarUtils.showSuccess(context, state.message);
-            } else if (state is SessionDetailsSummaryUnlocked) {
-              SnackBarUtils.showSuccess(context, state.message);
+            if (state.successMessage != null) {
+              SnackBarUtils.showSuccess(context, state.successMessage!);
+              if (state.lastOperation == SessionDetailsOperation.cancel) {
+                context.pop();
+              }
+            } else if (state.errorMessage != null) {
+              SnackBarUtils.showError(context, state.errorMessage!);
             }
           },
         ),
       ],
       child: BlocBuilder<SessionDetailsBloc, SessionDetailsState>(
         builder: (context, state) {
-          if (state is SessionDetailsLoading) {
+          if (state.isLoadingDetails && !state.hasData) {
             return _buildLoadingScreen(context);
-          } else if (state is SessionDetailsError) {
-            return _buildErrorScreen(context, state.message);
-          } else if (state is SessionDetailsLoaded || state is SessionDetailsCancelLoading || state is SessionDetailsFeedbackLoading) {
-            final sessionDetails = () {
-              if (state is SessionDetailsLoaded) {
-                return state.sessionDetails;
-              } else if (state is SessionDetailsCancelLoading) {
-                return state.sessionDetails;
-              } else {
-                return (state as SessionDetailsFeedbackLoading).sessionDetails;
-              }
-            }();
-            return _buildSessionDetailsScreen(context, sessionDetails);
+          } else if (state.hasError && !state.hasData) {
+            return _buildErrorScreen(context, state.errorMessage!);
+          } else if (state.hasData) {
+            return _buildSessionDetailsScreen(context, state.sessionDetails!);
           } else {
             return _buildLoadingScreen(context);
           }
@@ -347,6 +337,20 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   Widget _buildSessionSummarySection(SessionDetailsEntity session) {
+    final summaryStatus = session.summaryApprovalStatus;
+
+    if (summaryStatus == null || summaryStatus.isNotRequested) {
+      return _buildUnlockSummaryWidget(session);
+    } else if (summaryStatus.isAdminApprovalPending || summaryStatus.isAttorneyReviewPending) {
+      return _buildSummaryReviewInProgressWidget(summaryStatus);
+    } else if (summaryStatus.isReadyForUser) {
+      return _buildSummaryReadyWidget(session);
+    }
+
+    return _buildUnlockSummaryWidget(session);
+  }
+
+  Widget _buildUnlockSummaryWidget(SessionDetailsEntity session) {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
       decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
@@ -371,7 +375,7 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           Container(
             width: double.infinity,
             height: 120.h,
-            decoration: BoxDecoration(color: context.bgDark2, borderRadius: BorderRadius.circular(DimensionConstants.radius8Px.r)),
+            decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
             child: Center(child: Icon(Icons.lock_outline, color: context.darkTextSecondary, size: DimensionConstants.gap32Px.w)),
           ),
           SizedBox(height: DimensionConstants.gap16Px.h),
@@ -391,6 +395,100 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               padding: 16.0,
               child: TranslatedText(
                 AppStrings.unlockSummaryFor,
+                style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryReviewInProgressWidget(SummaryApprovalStatus status) {
+    final descriptionKey =
+        status.isAdminApprovalPending ? AppStrings.adminReviewInProgressDescription : AppStrings.attorneyReviewInProgressDescription;
+
+    return Container(
+      padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
+      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+      child: Column(
+        children: [
+          GlobalImage(
+            assetPath: ImageConstants.unlockSummary,
+            width: DimensionConstants.gap40Px.w,
+            height: DimensionConstants.gap40Px.h,
+            fit: BoxFit.contain,
+            showLoading: false,
+            showError: false,
+            fadeIn: false,
+          ),
+          SizedBox(height: DimensionConstants.gap16Px.h),
+          TranslatedText(
+            AppStrings.summaryReviewInProgress,
+            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: DimensionConstants.gap16Px.h),
+          Container(
+            width: double.infinity,
+            height: 120.h,
+            decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+            child: Center(child: Icon(Icons.lock_outline, color: context.darkTextSecondary, size: DimensionConstants.gap32Px.w)),
+          ),
+          SizedBox(height: DimensionConstants.gap16Px.h),
+          TranslatedText(
+            descriptionKey,
+            style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryReadyWidget(SessionDetailsEntity session) {
+    return Container(
+      padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
+      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+      child: Column(
+        children: [
+          GlobalImage(
+            assetPath: ImageConstants.unlockSummary,
+            width: DimensionConstants.gap40Px.w,
+            height: DimensionConstants.gap40Px.h,
+            fit: BoxFit.contain,
+            showLoading: false,
+            showError: false,
+            fadeIn: false,
+          ),
+          SizedBox(height: DimensionConstants.gap16Px.h),
+          TranslatedText(
+            AppStrings.yourSummaryIsReady,
+            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: DimensionConstants.gap16Px.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(DimensionConstants.gap20Px.w),
+            decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+            child: Text(
+              session.summary ?? '',
+              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          SizedBox(height: DimensionConstants.gap20Px.h),
+          SizedBox(
+            width: double.infinity,
+            child: CustomButton(
+              onPressed: () => _onViewSummary(session),
+              backgroundColor: context.primary,
+              textColor: Colors.white,
+              borderRadius: DimensionConstants.radius52Px.r,
+              padding: 16.0,
+              child: TranslatedText(
+                AppStrings.viewSummary,
                 style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
@@ -446,7 +544,6 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               Expanded(
                 child: BlocBuilder<SessionDetailsBloc, SessionDetailsState>(
                   builder: (context, state) {
-                    final isLoading = state is SessionDetailsCancelLoading;
                     return CustomButton(
                       onPressed: (session.cancelTimeExpired == true) ? null : () => _showCancelDialog(session),
                       backgroundColor: context.buttonSecondary,
@@ -454,7 +551,7 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                       textColor: context.darkTextPrimary,
                       borderRadius: DimensionConstants.radius52Px.r,
                       padding: 12.0,
-                      isLoading: isLoading,
+                      isLoading: state.isProcessingCancel,
                       child: TranslatedText(
                         AppStrings.cancelSession,
                         style: TextStyle(
@@ -549,6 +646,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           ),
     );
   }
+
+  void _onViewSummary(SessionDetailsEntity session) {}
 
   void _onSubmitRatingReview(String sessionId) {
     if (_currentRating > 0) {

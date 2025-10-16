@@ -21,6 +21,7 @@ import '../../../payments/presentation/widgets/payment_method_card.dart';
 import '../../../payments/presentation/widgets/payment_methods_list_config.dart';
 import '../bloc/session_details_bloc.dart';
 import '../bloc/session_details_event.dart';
+import '../bloc/session_details_state.dart';
 
 class UnlockSummaryPaymentBottomSheet extends StatefulWidget {
   final String sessionId;
@@ -44,158 +45,173 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFF16181E),
+    return BlocListener<SessionDetailsBloc, SessionDetailsState>(
+      listener: (context, state) {
+        if (state.lastOperation == SessionDetailsOperation.unlockSummary) {
+          if (state.successMessage != null) {
+            context.pop();
+          }
+        }
+      },
       child: Container(
-        decoration: BoxDecoration(
-          gradient: AppTheme.customBackgroundGradient,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(DimensionConstants.radius20Px.r),
-            topRight: Radius.circular(DimensionConstants.radius20Px.r),
+        color: const Color(0xFF16181E),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: AppTheme.customBackgroundGradient,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(DimensionConstants.radius20Px.r),
+              topRight: Radius.circular(DimensionConstants.radius20Px.r),
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 45.w,
-              height: 4.h,
-              margin: EdgeInsets.only(top: DimensionConstants.gap12Px.h),
-              decoration: BoxDecoration(color: context.white, borderRadius: BorderRadius.circular(2.r)),
-            ),
-            SizedBox(height: DimensionConstants.gap24Px.h),
-            GlobalImage(
-              assetPath: ImageConstants.unlockSummaryPayment,
-              width: DimensionConstants.gap64Px.w,
-              height: DimensionConstants.gap64Px.h,
-              fit: BoxFit.contain,
-              showLoading: false,
-              showError: false,
-              fadeIn: false,
-            ),
-            SizedBox(height: DimensionConstants.gap20Px.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
-              child: Column(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 45.w,
+                height: 4.h,
+                margin: EdgeInsets.only(top: DimensionConstants.gap12Px.h),
+                decoration: BoxDecoration(color: context.white, borderRadius: BorderRadius.circular(2.r)),
+              ),
+              SizedBox(height: DimensionConstants.gap24Px.h),
+              GlobalImage(
+                assetPath: ImageConstants.unlockSummaryPayment,
+                width: DimensionConstants.gap64Px.w,
+                height: DimensionConstants.gap64Px.h,
+                fit: BoxFit.contain,
+                showLoading: false,
+                showError: false,
+                fadeIn: false,
+              ),
+              SizedBox(height: DimensionConstants.gap20Px.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
+                child: Column(
+                  children: [
+                    TranslatedText(
+                      AppStrings.confirmPurchase,
+                      style: TextStyle(
+                        color: context.darkTextPrimary,
+                        fontSize: DimensionConstants.font22Px.f,
+                        fontWeight: FontWeight.w600,
+                        height: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: DimensionConstants.gap12Px.h),
+                    TranslatedText(
+                      AppStrings.professionallyReviewedSummaryDescription,
+                      style: TextStyle(
+                        color: context.darkTextSecondary,
+                        fontSize: DimensionConstants.font14Px.f,
+                        fontWeight: FontWeight.w400,
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: DimensionConstants.gap20Px.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text('\$25', style: TextStyle(color: context.primary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700)),
+                  SizedBox(width: DimensionConstants.gap8Px.w),
                   TranslatedText(
-                    AppStrings.confirmPurchase,
-                    style: TextStyle(
-                      color: context.darkTextPrimary,
-                      fontSize: DimensionConstants.font22Px.f,
-                      fontWeight: FontWeight.w600,
-                      height: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: DimensionConstants.gap12Px.h),
-                  TranslatedText(
-                    AppStrings.professionallyReviewedSummaryDescription,
-                    style: TextStyle(
-                      color: context.darkTextSecondary,
-                      fontSize: DimensionConstants.font14Px.f,
-                      fontWeight: FontWeight.w400,
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
+                    AppStrings.forSessionSummary,
+                    style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
                   ),
                 ],
               ),
-            ),
-            SizedBox(height: DimensionConstants.gap20Px.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('\$25', style: TextStyle(color: context.primary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700)),
-                SizedBox(width: DimensionConstants.gap8Px.w),
-                TranslatedText(
-                  AppStrings.forSessionSummary,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w400),
+              SizedBox(height: DimensionConstants.gap24Px.h),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
+                child: TranslatedText(
+                  AppStrings.selectPaymentMethod,
+                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
                 ),
-              ],
-            ),
-            SizedBox(height: DimensionConstants.gap24Px.h),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
-              child: TranslatedText(
-                AppStrings.selectPaymentMethod,
-                style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
               ),
-            ),
-            SizedBox(height: DimensionConstants.gap16Px.h),
-            BlocBuilder<PaymentBloc, PaymentState>(
-              builder: (context, state) {
-                if (state is PaymentLoading) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap32Px.h),
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
-                } else if (state is PaymentError) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap32Px.h),
-                    child: Center(
-                      child: TranslatedText(
-                        AppStrings.failedToLoadPaymentMethods,
-                        style: TextStyle(color: context.red, fontSize: DimensionConstants.font14Px.f),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                } else if (state is PaymentMethodsLoaded) {
-                  final paymentMethods = state.paymentMethods;
-                  return _buildPaymentMethodsList(paymentMethods);
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-            SizedBox(height: DimensionConstants.gap24Px.h),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: () => context.pop(),
-                      backgroundColor: context.buttonSecondary,
-                      textColor: context.darkTextPrimary,
-                      borderColor: context.buttonSecondary,
-                      borderWidth: 1,
-                      borderRadius: 50.r,
-                      height: 56.h,
-                      padding: 0,
-                      child: TranslatedText(
-                        AppStrings.cancel,
-                        style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: DimensionConstants.gap12Px.w),
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: _selectedPaymentMethodId != null ? _onConfirmAndPay : null,
-                      backgroundColor: context.primary,
-                      disabledBackgroundColor: context.buttonDisabled,
-                      textColor: Colors.white,
-                      borderRadius: 50.r,
-                      height: 56.h,
-                      padding: 0,
-                      child: TranslatedText(
-                        AppStrings.confirmAndPay,
-                        style: TextStyle(
-                          fontSize: DimensionConstants.font16Px.f,
-                          fontWeight: FontWeight.w600,
-                          color: _selectedPaymentMethodId != null ? Colors.white : context.darkTextSecondary,
+              SizedBox(height: DimensionConstants.gap16Px.h),
+              BlocBuilder<PaymentBloc, PaymentState>(
+                builder: (context, state) {
+                  if (state is PaymentLoading) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap32Px.h),
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  } else if (state is PaymentError) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap32Px.h),
+                      child: Center(
+                        child: TranslatedText(
+                          AppStrings.failedToLoadPaymentMethods,
+                          style: TextStyle(color: context.red, fontSize: DimensionConstants.font14Px.f),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
-                  ),
-                ],
+                    );
+                  } else if (state is PaymentMethodsLoaded) {
+                    final paymentMethods = state.paymentMethods;
+                    return _buildPaymentMethodsList(paymentMethods);
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-            ),
-            SizedBox(height: DimensionConstants.gap24Px.h),
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
-          ],
+              SizedBox(height: DimensionConstants.gap24Px.h),
+              BlocBuilder<SessionDetailsBloc, SessionDetailsState>(
+                builder: (context, sessionState) {
+                  final isProcessing = sessionState.isProcessingUnlockSummary;
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: CustomButton(
+                            onPressed: isProcessing ? null : () => context.pop(),
+                            backgroundColor: context.buttonSecondary,
+                            textColor: context.darkTextPrimary,
+                            borderColor: context.buttonSecondary,
+                            borderWidth: 1,
+                            borderRadius: 50.r,
+
+                            padding: 0,
+                            child: TranslatedText(
+                              AppStrings.cancel,
+                              style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: DimensionConstants.gap12Px.w),
+                        Expanded(
+                          child: CustomButton(
+                            onPressed: (_selectedPaymentMethodId != null && !isProcessing) ? _onConfirmAndPay : null,
+                            backgroundColor: context.primary,
+                            disabledBackgroundColor: context.buttonDisabled,
+                            textColor: Colors.white,
+                            borderRadius: 50.r,
+
+                            padding: 0,
+                            isLoading: isProcessing,
+                            child: TranslatedText(
+                              AppStrings.confirmAndPay,
+                              style: TextStyle(
+                                fontSize: DimensionConstants.font16Px.f,
+                                fontWeight: FontWeight.w600,
+                                color: _selectedPaymentMethodId != null ? Colors.white : context.darkTextSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: DimensionConstants.gap24Px.h),
+              SizedBox(height: MediaQuery.of(context).padding.bottom),
+            ],
+          ),
         ),
       ),
     );
@@ -302,7 +318,6 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
       context.read<SessionDetailsBloc>().add(
         UnlockSessionSummary(sessionId: widget.sessionId, paymentMethodId: _selectedPaymentMethod!.id, summaryFee: 25.0),
       );
-      context.pop();
     }
   }
 }
