@@ -14,6 +14,7 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
+import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
 import '../../../sessions/presentation/bloc/sessions_bloc.dart';
 import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
@@ -112,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 BlocBuilder<SessionsBloc, SessionsState>(
                   builder: (context, state) {
-                    if (state is SessionsLoading) {
+                    if (state.isLoadingSessions) {
                       return Container(
                         height: 120,
                         decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r)),
@@ -120,8 +121,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
 
-                    if (state is SessionsLoaded) {
-                      final upcomingSessions = state.upcomingSessions;
+                    if (state.hasData) {
+                      final upcomingSessions = state.upcomingSessions!;
                       if (upcomingSessions.isEmpty) {
                         return _buildNoUpcomingSessionsCard(context);
                       }
@@ -134,8 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
 
-                    if (state is SessionsError) {
-                      return _buildErrorSessionCard(context, state.message);
+                    if (state.hasError) {
+                      return _buildErrorSessionCard(context, state.errorMessage!);
                     }
 
                     return _buildNoUpcomingSessionsCard(context);
@@ -282,39 +283,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       builder:
-          (dialogContext) => AlertDialog(
-            backgroundColor: context.filledBgDark,
-            title: TranslatedText(
-              AppStrings.cancelSessionTitle,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600),
-            ),
-            content: TranslatedText(
-              AppStrings.cancelSessionMessage,
-              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: TranslatedText(
-                  AppStrings.keepSession,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  _sessionsBloc.add(CancelSessionRequested(sessionId: session.id, reason: AppStrings.userRequestedCancellation));
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: context.red, foregroundColor: Colors.white),
-                child: TranslatedText(
-                  AppStrings.cancelSession,
-                  style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
+          (bottomSheetContext) => BlocProvider.value(
+            value: _sessionsBloc,
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
           ),
     );
   }

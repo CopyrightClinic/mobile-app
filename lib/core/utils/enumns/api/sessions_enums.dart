@@ -7,4 +7,5 @@ enum SessionsEndpoint {
   SESSIONS_AVAILABILITY, // GET /sessions-availability
   BOOK_SESSION, // POST /session-requests/book-session
   SESSION_SUMMARY, // POST /session-summary
+  CANCEL_SESSION, // POST /sessions/{sessionId}/cancel
 }

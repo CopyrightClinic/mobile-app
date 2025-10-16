@@ -156,14 +156,7 @@ Future<void> init() async {
   );
 
   // Session Details Bloc
-  sl.registerFactory(
-    () => SessionDetailsBloc(
-      getSessionDetailsUseCase: sl(),
-      cancelSessionUseCase: sl(),
-      submitSessionFeedbackUseCase: sl(),
-      unlockSessionSummaryUseCase: sl(),
-    ),
-  );
+  sl.registerFactory(() => SessionDetailsBloc(getSessionDetailsUseCase: sl(), submitSessionFeedbackUseCase: sl(), unlockSessionSummaryUseCase: sl()));
 
   // Speech to Text Bloc
   sl.registerFactory(

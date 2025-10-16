@@ -4,7 +4,6 @@ import '../../domain/entities/session_details_entity.dart';
 class SessionDetailsState extends Equatable {
   final SessionDetailsEntity? sessionDetails;
   final bool isLoadingDetails;
-  final bool isProcessingCancel;
   final bool isProcessingFeedback;
   final bool isProcessingUnlockSummary;
   final String? errorMessage;
@@ -14,7 +13,6 @@ class SessionDetailsState extends Equatable {
   const SessionDetailsState({
     this.sessionDetails,
     this.isLoadingDetails = false,
-    this.isProcessingCancel = false,
     this.isProcessingFeedback = false,
     this.isProcessingUnlockSummary = false,
     this.errorMessage,
@@ -24,12 +22,12 @@ class SessionDetailsState extends Equatable {
 
   bool get hasData => sessionDetails != null;
   bool get hasError => errorMessage != null;
-  bool get isProcessing => isProcessingCancel || isProcessingFeedback || isProcessingUnlockSummary;
+  bool get hasSuccess => successMessage != null;
+  bool get isProcessing => isProcessingFeedback || isProcessingUnlockSummary;
 
   SessionDetailsState copyWith({
     SessionDetailsEntity? sessionDetails,
     bool? isLoadingDetails,
-    bool? isProcessingCancel,
     bool? isProcessingFeedback,
     bool? isProcessingUnlockSummary,
     String? errorMessage,
@@ -41,7 +39,6 @@ class SessionDetailsState extends Equatable {
     return SessionDetailsState(
       sessionDetails: sessionDetails ?? this.sessionDetails,
       isLoadingDetails: isLoadingDetails ?? this.isLoadingDetails,
-      isProcessingCancel: isProcessingCancel ?? this.isProcessingCancel,
       isProcessingFeedback: isProcessingFeedback ?? this.isProcessingFeedback,
       isProcessingUnlockSummary: isProcessingUnlockSummary ?? this.isProcessingUnlockSummary,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
@@ -54,7 +51,6 @@ class SessionDetailsState extends Equatable {
   List<Object?> get props => [
     sessionDetails,
     isLoadingDetails,
-    isProcessingCancel,
     isProcessingFeedback,
     isProcessingUnlockSummary,
     errorMessage,
@@ -63,4 +59,4 @@ class SessionDetailsState extends Equatable {
   ];
 }
 
-enum SessionDetailsOperation { loadDetails, cancel, submitFeedback, unlockSummary }
+enum SessionDetailsOperation { loadDetails, submitFeedback, unlockSummary }

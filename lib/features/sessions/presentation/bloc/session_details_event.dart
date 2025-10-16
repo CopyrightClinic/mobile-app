@@ -16,16 +16,6 @@ class LoadSessionDetails extends SessionDetailsEvent {
   List<Object> get props => [sessionId];
 }
 
-class CancelSessionFromDetails extends SessionDetailsEvent {
-  final String sessionId;
-  final String reason;
-
-  const CancelSessionFromDetails({required this.sessionId, required this.reason});
-
-  @override
-  List<Object> get props => [sessionId, reason];
-}
-
 class SubmitSessionFeedback extends SessionDetailsEvent {
   final String sessionId;
   final double rating;

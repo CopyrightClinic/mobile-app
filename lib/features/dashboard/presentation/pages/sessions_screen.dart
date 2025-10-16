@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
@@ -16,6 +15,7 @@ import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
 import '../../../sessions/presentation/widgets/sessions_tab_selector.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
+import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 
 class SessionsScreen extends StatefulWidget {
@@ -57,10 +57,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
       ),
       body: BlocConsumer<SessionsBloc, SessionsState>(
         listener: (context, state) {
-          if (state is SessionsError) {
-            SnackBarUtils.showError(context, state.message);
-          } else if (state is SessionCancelled) {
-            SnackBarUtils.showSuccess(context, state.message);
+          if (state.hasError) {
+            SnackBarUtils.showError(context, state.errorMessage!);
+          } else if (state.hasSuccess && state.lastOperation == SessionsOperation.cancelSession) {
+            SnackBarUtils.showSuccess(context, state.successMessage!);
           }
         },
         builder: (context, state) {
@@ -68,7 +68,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap12Px.h),
             child: Column(
               children: [
-                if (state is SessionsLoaded) ...[
+                if (state.hasData) ...[
                   SessionsTabSelector(
                     isUpcomingSelected: state.currentTab == SessionsTab.upcoming,
                     onUpcomingTap: () {
@@ -90,15 +90,15 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   Widget _buildContent(BuildContext context, SessionsState state) {
-    if (state is SessionsLoading) {
+    if (state.isLoadingSessions && !state.hasData) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (state is SessionsError) {
-      return _buildErrorState(context, state.message);
+    if (state.hasError && !state.hasData) {
+      return _buildErrorState(context, state.errorMessage!);
     }
 
-    if (state is SessionsLoaded) {
+    if (state.hasData) {
       final sessions = state.currentSessions;
 
       if (sessions.isEmpty) {
@@ -181,39 +181,16 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       builder:
-          (dialogContext) => AlertDialog(
-            backgroundColor: context.filledBgDark,
-            title: TranslatedText(
-              AppStrings.cancelSessionTitle,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600),
-            ),
-            content: TranslatedText(
-              AppStrings.cancelSessionMessage,
-              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => context.pop(),
-                child: TranslatedText(
-                  AppStrings.keepSession,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  context.pop();
-                  _sessionsBloc.add(CancelSessionRequested(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()));
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: context.red, foregroundColor: Colors.white),
-                child: TranslatedText(
-                  AppStrings.cancelSession,
-                  style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
+          (bottomSheetContext) => BlocProvider.value(
+            value: _sessionsBloc,
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
           ),
     );
   }

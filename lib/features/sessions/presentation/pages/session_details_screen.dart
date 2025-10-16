@@ -15,7 +15,6 @@ import '../../../../core/widgets/custom_back_button.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
-import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../di.dart';
@@ -28,6 +27,7 @@ import '../bloc/sessions_state.dart';
 import '../widgets/add_rating_review_widget.dart';
 import '../widgets/submitted_rating_review_widget.dart';
 import '../widgets/unlock_summary_payment_bottom_sheet.dart';
+import '../widgets/cancel_session_bottom_sheet.dart';
 import 'params/session_details_screen_params.dart';
 import '../../../payments/presentation/bloc/payment_bloc.dart';
 
@@ -71,11 +71,15 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
       listeners: [
         BlocListener<SessionsBloc, SessionsState>(
           listener: (context, state) {
-            if (state is SessionCancelled) {
-              SnackBarUtils.showSuccess(context, AppStrings.sessionCancelledSuccessfully.tr());
-              context.pop();
-            } else if (state is SessionsError) {
-              SnackBarUtils.showError(context, state.message);
+            if (state.hasSuccess && state.lastOperation == SessionsOperation.cancelSession) {
+              SnackBarUtils.showSuccess(context, state.successMessage!);
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (context.mounted) {
+                  context.pop();
+                }
+              });
+            } else if (state.hasError && state.lastOperation == SessionsOperation.cancelSession) {
+              SnackBarUtils.showError(context, state.errorMessage!);
             }
           },
         ),
@@ -83,9 +87,6 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           listener: (context, state) {
             if (state.successMessage != null) {
               SnackBarUtils.showSuccess(context, state.successMessage!);
-              if (state.lastOperation == SessionDetailsOperation.cancel) {
-                context.pop();
-              }
             } else if (state.errorMessage != null) {
               SnackBarUtils.showError(context, state.errorMessage!);
             }
@@ -542,26 +543,21 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           Row(
             children: [
               Expanded(
-                child: BlocBuilder<SessionDetailsBloc, SessionDetailsState>(
-                  builder: (context, state) {
-                    return CustomButton(
-                      onPressed: (session.cancelTimeExpired == true) ? null : () => _showCancelDialog(session),
-                      backgroundColor: context.buttonSecondary,
-                      disabledBackgroundColor: context.buttonDisabled,
-                      textColor: context.darkTextPrimary,
-                      borderRadius: DimensionConstants.radius52Px.r,
-                      padding: 12.0,
-                      isLoading: state.isProcessingCancel,
-                      child: TranslatedText(
-                        AppStrings.cancelSession,
-                        style: TextStyle(
-                          fontSize: DimensionConstants.font16Px.f,
-                          fontWeight: FontWeight.w600,
-                          color: (session.cancelTimeExpired == true) ? context.darkTextSecondary : context.darkTextPrimary,
-                        ),
-                      ),
-                    );
-                  },
+                child: CustomButton(
+                  onPressed: (session.cancelTimeExpired == true) ? null : () => _showCancelDialog(session),
+                  backgroundColor: context.buttonSecondary,
+                  disabledBackgroundColor: context.buttonDisabled,
+                  textColor: context.darkTextPrimary,
+                  borderRadius: DimensionConstants.radius52Px.r,
+                  padding: 12.0,
+                  child: TranslatedText(
+                    AppStrings.cancelSession,
+                    style: TextStyle(
+                      fontSize: DimensionConstants.font16Px.f,
+                      fontWeight: FontWeight.w600,
+                      color: (session.cancelTimeExpired == true) ? context.darkTextSecondary : context.darkTextPrimary,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(width: DimensionConstants.gap12Px.w),
@@ -607,25 +603,18 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _showCancelDialog(SessionDetailsEntity session) {
-    CustomBottomSheet.show(
+    showModalBottomSheet(
       context: context,
-      iconPath: ImageConstants.warning,
-      title: AppStrings.cancelSessionTitle,
-      subtitle: AppStrings.cancelSessionMessage,
-      primaryButtonText: AppStrings.cancelSession,
-      secondaryButtonText: AppStrings.keepSession,
-      onPrimaryPressed: () {
-        Navigator.of(context).pop();
-        _onCancelSession(session);
-      },
-      onSecondaryPressed: () => Navigator.of(context).pop(),
-      primaryButtonColor: context.red,
-      primaryTextColor: Colors.white,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      builder:
+          (bottomSheetContext) => BlocProvider.value(
+            value: context.read<SessionsBloc>(),
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
+          ),
     );
-  }
-
-  void _onCancelSession(SessionDetailsEntity session) {
-    context.read<SessionDetailsBloc>().add(CancelSessionFromDetails(sessionId: session.id, reason: AppStrings.userRequestedCancellation));
   }
 
   void _onJoinSession() {

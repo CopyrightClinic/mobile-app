@@ -6,6 +6,7 @@ import '../../../../core/network/exception/custom_exception.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_details_entity.dart';
 import '../../domain/entities/submit_feedback_response_entity.dart';
+import '../../domain/entities/cancel_session_response_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/entities/unlock_summary_response_entity.dart';
@@ -94,10 +95,10 @@ class SessionsRepositoryImpl implements SessionsRepository {
   }
 
   @override
-  Future<Either<Failure, String>> cancelSession(String sessionId, String reason) async {
+  Future<Either<Failure, CancelSessionResponseEntity>> cancelSession(String sessionId, String reason) async {
     try {
-      final message = await remoteDataSource.cancelSession(sessionId, reason);
-      return Right(message);
+      final response = await remoteDataSource.cancelSession(sessionId, reason);
+      return Right(response.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
