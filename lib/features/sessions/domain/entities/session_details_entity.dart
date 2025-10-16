@@ -3,7 +3,7 @@ import '../../../../core/utils/enumns/ui/session_status.dart';
 
 class SessionDetailsAttorneyEntity extends Equatable {
   final String id;
-  final String name;
+  final String? name;
   final String email;
   final String? profileUrl;
 
