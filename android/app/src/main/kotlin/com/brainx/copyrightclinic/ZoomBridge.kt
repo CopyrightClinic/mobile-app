@@ -1,4 +1,4 @@
-package com.example.copyrightClinicFlutter
+package com.brainx.copyrightclinic
 
 import android.content.Context
 import android.util.Log
