@@ -29,12 +29,35 @@ class SessionsScreen extends StatefulWidget {
 
 class _SessionsScreenState extends State<SessionsScreen> {
   late SessionsBloc _sessionsBloc;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     _sessionsBloc.add(const LoadUserSessions());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.9) {
+      final state = _sessionsBloc.state;
+      final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
+      final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
+      final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
+
+      if (!isLoadingMore && hasMore) {
+        _sessionsBloc.add(const LoadMoreSessions());
+      }
+    }
   }
 
   @override
@@ -130,11 +153,24 @@ class _SessionsScreenState extends State<SessionsScreen> {
               );
             }
 
+            final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
+            final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
+
             return ListView.builder(
+              controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: sessions.length,
+              itemCount: sessions.length + (hasMore ? 1 : 0),
               padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
               itemBuilder: (context, index) {
+                if (index == sessions.length) {
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+                      child: isLoadingMore ? CircularProgressIndicator(color: context.primary) : const SizedBox.shrink(),
+                    ),
+                  );
+                }
+
                 final session = sessions[index];
                 return SessionCard(
                   session: session,
