@@ -1,18 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/get_notifications_usecase.dart';
-import '../../domain/usecases/mark_notification_as_read_usecase.dart';
+import '../../domain/usecases/mark_all_notifications_as_read_usecase.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final GetNotificationsUseCase getNotificationsUseCase;
-  final MarkNotificationAsReadUseCase markNotificationAsReadUseCase;
+  final MarkAllNotificationsAsReadUseCase markAllNotificationsAsReadUseCase;
 
-  NotificationBloc({required this.getNotificationsUseCase, required this.markNotificationAsReadUseCase}) : super(const NotificationInitial()) {
+  NotificationBloc({required this.getNotificationsUseCase, required this.markAllNotificationsAsReadUseCase}) : super(const NotificationInitial()) {
     on<LoadNotifications>(_onLoadNotifications);
     on<RefreshNotifications>(_onRefreshNotifications);
     on<LoadMoreNotifications>(_onLoadMoreNotifications);
-    on<MarkNotificationAsRead>(_onMarkNotificationAsRead);
+    on<MarkAllNotificationsAsRead>(_onMarkAllNotificationsAsRead);
   }
 
   Future<void> _onLoadNotifications(LoadNotifications event, Emitter<NotificationState> emit) async {
@@ -71,41 +71,28 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     });
   }
 
-  Future<void> _onMarkNotificationAsRead(MarkNotificationAsRead event, Emitter<NotificationState> emit) async {
+  Future<void> _onMarkAllNotificationsAsRead(MarkAllNotificationsAsRead event, Emitter<NotificationState> emit) async {
     if (state is! NotificationLoaded) return;
 
     final currentState = state as NotificationLoaded;
     final originalNotifications = currentState.notifications;
 
-    final optimisticNotifications =
-        currentState.notifications.map((notification) {
-          if (notification.id == event.notificationId) {
-            return notification.copyWith(isRead: true);
-          }
-          return notification;
-        }).toList();
+    final optimisticNotifications = currentState.notifications.map((notification) => notification.copyWith(isRead: true)).toList();
 
     emit(currentState.copyWith(notifications: optimisticNotifications));
 
-    final result = await markNotificationAsReadUseCase(MarkNotificationAsReadParams(notificationId: event.notificationId));
+    final result = await markAllNotificationsAsReadUseCase();
 
     result.fold(
       (failure) {
         emit(currentState.copyWith(notifications: originalNotifications));
+        emit(NotificationError(failure.message ?? 'Failed to mark all as read'));
+        emit(currentState);
       },
-      (updatedNotification) {
+      (markedCount) {
         if (state is! NotificationLoaded) return;
         final latestState = state as NotificationLoaded;
-
-        final updatedNotifications =
-            latestState.notifications.map((notification) {
-              if (notification.id == updatedNotification.id) {
-                return updatedNotification;
-              }
-              return notification;
-            }).toList();
-
-        emit(latestState.copyWith(notifications: updatedNotifications));
+        emit(latestState.copyWith(notifications: optimisticNotifications));
       },
     );
   }

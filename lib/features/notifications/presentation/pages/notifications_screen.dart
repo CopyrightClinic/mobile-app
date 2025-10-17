@@ -74,7 +74,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         child: BlocConsumer<NotificationBloc, NotificationState>(
           listener: (context, state) {
             if (state is NotificationError) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.red));
+              if (state.message.contains('Failed to mark all as read')) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.red));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: context.red));
+              }
             }
           },
           builder: (context, state) {
@@ -101,6 +105,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return _buildEmptyState(context);
       }
 
+      final hasUnreadNotifications = notifications.any((notification) => !notification.isRead);
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -111,9 +117,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               DimensionConstants.gap16Px.w,
               DimensionConstants.gap8Px.h,
             ),
-            child: TranslatedText(
-              AppStrings.today,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TranslatedText(
+                  AppStrings.today,
+                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+                ),
+                if (hasUnreadNotifications)
+                  TextButton(
+                    onPressed: () {
+                      _notificationBloc.add(const MarkAllNotificationsAsRead());
+                    },
+                    child: TranslatedText(
+                      AppStrings.markAllAsRead,
+                      style: TextStyle(color: context.primaryColor, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+              ],
             ),
           ),
           Expanded(
@@ -143,14 +164,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   }
 
                   final notification = notifications[index];
-                  return NotificationCard(
-                    notification: notification,
-                    onTap: () {
-                      if (!notification.isRead) {
-                        _notificationBloc.add(MarkNotificationAsRead(notificationId: notification.id));
-                      }
-                    },
-                  );
+                  return NotificationCard(notification: notification, onTap: () {});
                 },
               ),
             ),

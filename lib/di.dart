@@ -62,7 +62,7 @@ import 'features/notifications/data/datasources/notification_remote_data_source.
 import 'features/notifications/data/repositories/notification_repository_impl.dart';
 import 'features/notifications/domain/repositories/notification_repository.dart';
 import 'features/notifications/domain/usecases/get_notifications_usecase.dart';
-import 'features/notifications/domain/usecases/mark_notification_as_read_usecase.dart';
+import 'features/notifications/domain/usecases/mark_all_notifications_as_read_usecase.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'core/services/fcm_service.dart';
 
@@ -143,7 +143,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
   sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
   sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
-  sl.registerLazySingleton(() => MarkNotificationAsReadUseCase(sl()));
+  sl.registerLazySingleton(() => MarkAllNotificationsAsReadUseCase(repository: sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -182,7 +182,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
 
   // Notification Bloc
-  sl.registerLazySingleton(() => NotificationBloc(getNotificationsUseCase: sl(), markNotificationAsReadUseCase: sl()));
+  sl.registerLazySingleton(() => NotificationBloc(getNotificationsUseCase: sl(), markAllNotificationsAsReadUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());
