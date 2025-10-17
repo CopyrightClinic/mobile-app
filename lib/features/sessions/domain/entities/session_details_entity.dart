@@ -121,6 +121,28 @@ class SessionDetailsEntity extends Equatable {
     return now.isAfter(tenMinutesBeforeSession) || now.isAtSameMomentAs(tenMinutesBeforeSession);
   }
 
+  bool get canRequestSummary {
+    if (!isCompleted) return false;
+
+    final now = DateTime.now();
+    final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
+    final oneHourAfterSession = sessionEnd.add(const Duration(hours: 1));
+    final fifteenDaysAfterSession = sessionEnd.add(const Duration(days: 15));
+
+    return (now.isAfter(oneHourAfterSession) || now.isAtSameMomentAs(oneHourAfterSession)) && now.isBefore(fifteenDaysAfterSession);
+  }
+
+  DateTime get summaryRequestDeadline {
+    final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
+    return sessionEnd.add(const Duration(days: 15));
+  }
+
+  bool get hasSummaryRequestExpired {
+    if (!isCompleted) return false;
+    final now = DateTime.now();
+    return now.isAfter(summaryRequestDeadline) || now.isAtSameMomentAs(summaryRequestDeadline);
+  }
+
   String get formattedDuration {
     final hours = durationMinutes ~/ 60;
     final minutes = durationMinutes % 60;

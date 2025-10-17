@@ -382,23 +382,42 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
             child: Center(child: Icon(Icons.lock_outline, color: context.darkTextSecondary, size: DimensionConstants.gap32Px.w)),
           ),
           SizedBox(height: DimensionConstants.gap16Px.h),
-          TranslatedText(
-            AppStrings.payToRequestSummary,
-            style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+          RichText(
             textAlign: TextAlign.center,
+            text: TextSpan(
+              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+              children: [
+                TextSpan(text: AppStrings.payToRequestSummary.tr()),
+                TextSpan(text: ' '),
+                if (session.hasSummaryRequestExpired)
+                  TextSpan(text: AppStrings.summaryRequestExpired.tr(), style: TextStyle(color: context.red, fontWeight: FontWeight.w500))
+                else if (!session.canRequestSummary)
+                  TextSpan(text: AppStrings.summaryAvailable1HourAfterSession.tr(), style: const TextStyle(fontWeight: FontWeight.w500))
+                else
+                  TextSpan(
+                    text: '${AppStrings.youCanRequestUntil.tr()} ${SessionDateTimeUtils.formatSessionDate(session.summaryRequestDeadline)}',
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+              ],
+            ),
           ),
           SizedBox(height: DimensionConstants.gap20Px.h),
           SizedBox(
             width: double.infinity,
             child: CustomButton(
-              onPressed: () => _onUnlockSummary(),
+              onPressed: session.canRequestSummary ? () => _onUnlockSummary() : null,
               backgroundColor: context.primary,
+              disabledBackgroundColor: context.buttonDisabled,
               textColor: Colors.white,
               borderRadius: DimensionConstants.radius52Px.r,
               padding: 16.0,
               child: TranslatedText(
                 AppStrings.unlockSummaryFor,
-                style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
+                style: TextStyle(
+                  fontSize: DimensionConstants.font16Px.f,
+                  fontWeight: FontWeight.w600,
+                  color: session.canRequestSummary ? Colors.white : context.darkTextSecondary,
+                ),
               ),
             ),
           ),

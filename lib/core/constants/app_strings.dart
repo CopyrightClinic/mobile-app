@@ -222,6 +222,9 @@ class AppStrings {
   static const cancelSession = 'cancelSession';
   static const joinSession = 'joinSession';
   static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
+  static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
+  static const youCanRequestUntil = 'youCanRequestUntil';
+  static const summaryRequestExpired = 'summaryRequestExpired';
   static const charged = 'charged';
   static const holdAmountChargedAfterSession = 'holdAmountChargedAfterSession';
   static const youCanCancelTill = 'youCanCancelTill';
