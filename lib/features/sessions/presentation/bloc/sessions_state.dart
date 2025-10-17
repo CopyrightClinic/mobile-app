@@ -61,6 +61,7 @@ class SessionsState extends Equatable {
 
   bool get hasUpcomingData => upcomingSessions != null;
   bool get hasCompletedData => completedSessions != null;
+  bool get hasData => upcomingSessions != null && completedSessions != null;
   bool get hasError => errorMessage != null;
   bool get hasSuccess => successMessage != null;
   bool get isScheduling => selectedDate != null;

@@ -72,7 +72,6 @@ class SessionEntity extends Equatable {
   bool get isUpcoming => status.isUpcoming;
   bool get isCompleted => status.isCompleted;
   bool get isCancelled => status.isCancelled;
-  bool get canJoin => isUpcoming;
 
   bool get canJoin {
     if (!isUpcoming) return false;
