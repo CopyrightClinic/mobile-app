@@ -140,6 +140,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   }
 
   Widget _buildPaymentSummarySection() {
+    final fee = widget.params.fee;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,9 +154,9 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
           child: Column(
             children: [
-              _buildPaymentSummaryItem(AppStrings.holdAmount, AppStrings.holdAmountDescription),
+              _buildPaymentSummaryItem(fee.formattedSessionFee, AppStrings.holdAmountDescription),
               SizedBox(height: DimensionConstants.gap16Px.h),
-              _buildPaymentSummaryItem(AppStrings.processingFee, AppStrings.processingFeeNonRefundable),
+              _buildPaymentSummaryItem(fee.formattedProcessingFee, AppStrings.processingFeeNonRefundable),
               SizedBox(height: DimensionConstants.gap16Px.h),
               Container(height: 1.h, color: context.darkTextSecondary.withOpacity(0.2)),
               SizedBox(height: DimensionConstants.gap16Px.h),
@@ -166,8 +167,8 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
                     AppStrings.totalAmountLabel,
                     style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
                   ),
-                  TranslatedText(
-                    AppStrings.totalAmount,
+                  Text(
+                    fee.formattedTotalFee,
                     style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
                   ),
                 ],
@@ -180,20 +181,23 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
     );
   }
 
-  Widget _buildPaymentSummaryItem(String amountKey, String descriptionKey) {
+  Widget _buildPaymentSummaryItem(String amountLabel, String descriptionKey) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TranslatedText(
-              amountKey,
-              style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
-            ),
-            SizedBox(height: DimensionConstants.gap2Px.h),
-            TranslatedText(descriptionKey, style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary)),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                amountLabel,
+                style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+              ),
+              SizedBox(height: DimensionConstants.gap2Px.h),
+              TranslatedText(descriptionKey, style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary)),
+            ],
+          ),
         ),
       ],
     );

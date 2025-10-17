@@ -135,6 +135,7 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
           timeSlot: widget.params.timeSlot,
           paymentMethod: _selectedPaymentMethod!,
           query: widget.params.query,
+          fee: widget.params.fee,
         ),
       );
     }

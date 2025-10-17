@@ -184,13 +184,14 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
   }
 
   void _onContinueToPayment(SessionsState scheduleState) {
-    if (scheduleState.selectedTimeSlot != null) {
+    if (scheduleState.selectedTimeSlot != null && scheduleState.availability?.fee != null) {
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
         extra: SelectPaymentMethodScreenParams(
           sessionDate: scheduleState.selectedDate!,
           timeSlot: scheduleState.selectedTimeSlot!,
           query: widget.params.query,
+          fee: scheduleState.availability!.fee,
         ),
       );
     }

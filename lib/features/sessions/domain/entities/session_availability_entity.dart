@@ -40,8 +40,14 @@ class TimeSlotEntity {
 }
 
 class SessionFeeEntity {
-  final num amount;
+  final num sessionFee;
+  final num processingFee;
+  final num totalFee;
   final String currency;
 
-  const SessionFeeEntity({required this.amount, required this.currency});
+  const SessionFeeEntity({required this.sessionFee, required this.processingFee, required this.totalFee, required this.currency});
+
+  String get formattedSessionFee => '\$${sessionFee.toStringAsFixed(2)}';
+  String get formattedProcessingFee => '\$${processingFee.toStringAsFixed(2)}';
+  String get formattedTotalFee => '\$${totalFee.toStringAsFixed(2)}';
 }
