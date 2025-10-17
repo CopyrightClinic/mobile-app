@@ -73,6 +73,16 @@ class SessionEntity extends Equatable {
   bool get isCompleted => status.isCompleted;
   bool get isCancelled => status.isCancelled;
 
+  bool get canJoin {
+    if (!isUpcoming) return false;
+
+    final now = DateTime.now();
+    final sessionStart = scheduledDateTime;
+    final tenMinutesBeforeSession = sessionStart.subtract(const Duration(minutes: 10));
+
+    return now.isAfter(tenMinutesBeforeSession) || now.isAtSameMomentAs(tenMinutesBeforeSession);
+  }
+
   String get formattedDuration {
     final hours = durationMinutes ~/ 60;
     final minutes = durationMinutes % 60;

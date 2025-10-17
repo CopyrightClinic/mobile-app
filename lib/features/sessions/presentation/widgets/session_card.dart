@@ -119,14 +119,19 @@ class SessionCard extends StatelessWidget {
                   SizedBox(width: DimensionConstants.gap12Px.w),
                   Expanded(
                     child: CustomButton(
-                      onPressed: onJoin,
+                      onPressed: session.canJoin ? onJoin : null,
                       backgroundColor: context.primary,
+                      disabledBackgroundColor: context.buttonDisabled,
                       textColor: Colors.white,
                       borderRadius: DimensionConstants.radius52Px.r,
                       padding: DimensionConstants.gap12Px.w,
                       child: TranslatedText(
                         AppStrings.joinSession,
-                        style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: DimensionConstants.font16Px.f,
+                          fontWeight: FontWeight.w600,
+                          color: session.canJoin ? Colors.white : context.darkTextSecondary,
+                        ),
                       ),
                     ),
                   ),
@@ -134,7 +139,16 @@ class SessionCard extends StatelessWidget {
               ),
             ],
 
-            if (session.isUpcoming && session.cancelTimeExpired == false) ...[
+            if (session.isUpcoming && !session.canJoin) ...[
+              SizedBox(height: DimensionConstants.gap12Px.h),
+              TranslatedText(
+                AppStrings.joinAvailable10MinutesBeforeSession,
+                style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+              ),
+            ],
+
+            if (session.isUpcoming && session.cancelTimeExpired == false && session.canJoin) ...[
               SizedBox(height: DimensionConstants.gap12Px.h),
               Text(
                 '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',

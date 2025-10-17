@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return SessionCard(
                           session: latestSession,
                           onCancel: latestSession.canCancel ? () => _showCancelDialog(context, latestSession) : null,
-                          onJoin: () => _joinSession(context, latestSession.id),
+                          onJoin: latestSession.canJoin ? () => _joinSession(context, latestSession.id) : null,
                         );
                       }
 

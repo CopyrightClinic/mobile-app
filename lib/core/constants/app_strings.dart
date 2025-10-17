@@ -221,6 +221,7 @@ class AppStrings {
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
   static const joinSession = 'joinSession';
+  static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
   static const charged = 'charged';
   static const holdAmountChargedAfterSession = 'holdAmountChargedAfterSession';
   static const youCanCancelTill = 'youCanCancelTill';

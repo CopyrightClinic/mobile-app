@@ -200,6 +200,7 @@
   "youCanCancelTill": "You can cancel till",
   "cancellationPeriodExpired": "Cancellation Period Expired.",
   "youCouldHaveCanceled": "You could have canceled the session until",
+  "joinAvailable10MinutesBeforeSession": "You can join 10 minutes before the session starts",
   "cancelSessionTitle": "Cancel Session",
   "cancelSessionMessage": "Are you sure you want to cancel this session? This action cannot be undone.",
   "keepSession": "Keep Session",
