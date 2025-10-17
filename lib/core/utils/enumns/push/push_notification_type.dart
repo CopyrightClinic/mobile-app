@@ -1,5 +1,6 @@
 enum PushNotificationType {
   aiAcceptsCase,
+  sessionAccepted,
   sessionBookedSuccessfully,
   paymentHoldCreated,
   paymentReleasedToAttorney,
@@ -23,6 +24,8 @@ enum PushNotificationType {
     switch (value.toUpperCase()) {
       case 'AI_ACCEPTS_CASE':
         return PushNotificationType.aiAcceptsCase;
+      case 'SESSION_ACCEPTED':
+        return PushNotificationType.sessionAccepted;
       case 'SESSION_BOOKED_SUCCESSFULLY':
         return PushNotificationType.sessionBookedSuccessfully;
       case 'PAYMENT_HOLD_CREATED':
@@ -71,6 +74,8 @@ enum PushNotificationType {
     switch (this) {
       case PushNotificationType.aiAcceptsCase:
         return 'AI_ACCEPTS_CASE';
+      case PushNotificationType.sessionAccepted:
+        return 'SESSION_ACCEPTED';
       case PushNotificationType.sessionBookedSuccessfully:
         return 'SESSION_BOOKED_SUCCESSFULLY';
       case PushNotificationType.paymentHoldCreated:
@@ -113,6 +118,7 @@ enum PushNotificationType {
   bool get requiresNavigation {
     switch (this) {
       case PushNotificationType.aiAcceptsCase:
+      case PushNotificationType.sessionAccepted:
       case PushNotificationType.sessionBookedSuccessfully:
       case PushNotificationType.sessionReminderPreStart:
       case PushNotificationType.joinSessionActivated:
@@ -139,6 +145,7 @@ enum PushNotificationType {
   bool get isSessionRelated {
     switch (this) {
       case PushNotificationType.aiAcceptsCase:
+      case PushNotificationType.sessionAccepted:
       case PushNotificationType.sessionBookedSuccessfully:
       case PushNotificationType.sessionReminderPreStart:
       case PushNotificationType.joinSessionActivated:

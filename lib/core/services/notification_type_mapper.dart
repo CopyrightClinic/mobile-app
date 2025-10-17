@@ -12,6 +12,7 @@ class NotificationTypeMapper {
       NotificationType? result;
 
       switch (pushType) {
+        case PushNotificationType.sessionAccepted:
         case PushNotificationType.sessionBookedSuccessfully:
         case PushNotificationType.aiAcceptsCase:
           result = NotificationType.sessionAccepted;
