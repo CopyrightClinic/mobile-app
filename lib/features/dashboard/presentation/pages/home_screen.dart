@@ -88,7 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: DimensionConstants.gap40Px.w,
                         decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            context.push(AppRoutes.notificationsRouteName);
+                          },
                           borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
                           child: Center(
                             child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w),

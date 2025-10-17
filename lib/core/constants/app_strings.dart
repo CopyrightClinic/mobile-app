@@ -472,6 +472,8 @@ class AppStrings {
   static const oneHourAgo = 'oneHourAgo';
   static const noNotifications = 'noNotifications';
   static const noNotificationsDescription = 'noNotificationsDescription';
+  static const markAllAsRead = 'markAllAsRead';
+  static const allNotificationsMarkedAsRead = 'allNotificationsMarkedAsRead';
   // Session Details Screen
   static const sessionDetailsTitle = 'sessionDetailsTitle';
   static const yourRatingAndReview = 'yourRatingAndReview';

@@ -16,5 +16,5 @@ class NotificationListResult {
 abstract class NotificationRepository {
   Future<Either<Failure, NotificationListResult>> getNotifications({required String userId, int page = 1, int limit = 20});
 
-  Future<Either<Failure, NotificationEntity>> markAsRead(String notificationId);
+  Future<Either<Failure, int>> markAllAsRead();
 }

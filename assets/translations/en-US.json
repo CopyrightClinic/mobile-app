@@ -395,6 +395,8 @@
   "oneHourAgo": "12:24 PM",
   "noNotifications": "No notifications yet",
   "noNotificationsDescription": "When you have notifications, they'll appear here.",
+  "markAllAsRead": "Mark All as Read",
+  "allNotificationsMarkedAsRead": "All notifications marked as read",
   "copyrightConsultation": "Copyright Consultation",
   "copyrightConsultationSession": "Copyright Consultation Session",
   "legalConsulation": "Legal Consultation",
