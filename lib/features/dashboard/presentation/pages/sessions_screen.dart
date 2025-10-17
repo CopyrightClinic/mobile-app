@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
@@ -223,6 +225,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   void _joinSession(BuildContext context, String sessionId) {
-    SnackBarUtils.showSuccess(context, AppStrings.joiningSession.tr());
+    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
   }
 }
