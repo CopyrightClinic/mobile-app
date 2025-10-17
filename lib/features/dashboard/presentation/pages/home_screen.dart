@@ -41,128 +41,142 @@ class _HomeScreenState extends State<HomeScreen> {
     return CustomScaffold(
       backgroundColor: context.bgDark,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: DimensionConstants.gap2Px.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TranslatedText(
-                          AppStrings.welcome,
-                          style: TextStyle(fontSize: DimensionConstants.font16Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w400),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _sessionsBloc.add(const RefreshSessions());
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: DimensionConstants.gap2Px.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TranslatedText(
+                            AppStrings.welcome,
+                            style: TextStyle(fontSize: DimensionConstants.font16Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w400),
+                          ),
+                          SizedBox(height: DimensionConstants.gap2Px.h),
+                          BlocBuilder<AuthBloc, AuthState>(
+                            builder: (context, state) {
+                              String userName = '-';
+                              if (state is AuthAuthenticated) {
+                                userName = '${state.user.name ?? '-'}!';
+                              }
+                              return Text(
+                                userName,
+                                style: TextStyle(
+                                  fontSize: DimensionConstants.font20Px.f,
+                                  fontWeight: FontWeight.w700,
+                                  color: context.darkTextPrimary,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      Container(
+                        width: DimensionConstants.gap40Px.w,
+                        height: DimensionConstants.gap40Px.w,
+                        decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
+                        child: InkWell(
+                          onTap: () {},
+                          borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
+                          child: Center(
+                            child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w),
+                          ),
                         ),
-                        SizedBox(height: DimensionConstants.gap2Px.h),
-                        BlocBuilder<AuthBloc, AuthState>(
-                          builder: (context, state) {
-                            String userName = '-';
-                            if (state is AuthAuthenticated) {
-                              userName = '${state.user.name ?? '-'}!';
-                            }
-                            return Text(
-                              userName,
-                              style: TextStyle(fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
-                            );
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: DimensionConstants.gap32Px.h),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildActionBlock(
+                          context,
+                          icon: ImageConstants.aboutUs,
+                          title: AppStrings.aboutUs,
+                          onTap: () {
+                            context.push(AppRoutes.aboutUsRouteName);
                           },
                         ),
-                      ],
-                    ),
-                    Container(
-                      width: DimensionConstants.gap40Px.w,
-                      height: DimensionConstants.gap40Px.w,
-                      decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
-                      child: InkWell(
-                        onTap: () {},
-                        borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
-                        child: Center(
-                          child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w),
+                      ),
+                      SizedBox(width: DimensionConstants.gap16Px.w),
+                      Expanded(
+                        child: _buildActionBlock(
+                          context,
+                          icon: ImageConstants.whatWeDo,
+                          title: AppStrings.whatWeDo,
+                          onTap: () {
+                            context.push(AppRoutes.whatWeDoRouteName);
+                          },
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
-                SizedBox(height: DimensionConstants.gap32Px.h),
+                  SizedBox(height: DimensionConstants.gap24Px.h),
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildActionBlock(
-                        context,
-                        icon: ImageConstants.aboutUs,
-                        title: AppStrings.aboutUs,
-                        onTap: () {
-                          context.push(AppRoutes.aboutUsRouteName);
-                        },
-                      ),
-                    ),
-                    SizedBox(width: DimensionConstants.gap16Px.w),
-                    Expanded(
-                      child: _buildActionBlock(
-                        context,
-                        icon: ImageConstants.whatWeDo,
-                        title: AppStrings.whatWeDo,
-                        onTap: () {
-                          context.push(AppRoutes.whatWeDoRouteName);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  _buildHaroldAIBlock(context),
 
-                SizedBox(height: DimensionConstants.gap24Px.h),
+                  SizedBox(height: DimensionConstants.gap32Px.h),
 
-                _buildHaroldAIBlock(context),
+                  TranslatedText(
+                    AppStrings.upcomingSessions,
+                    style: TextStyle(fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
+                  ),
 
-                SizedBox(height: DimensionConstants.gap32Px.h),
+                  SizedBox(height: DimensionConstants.gap16Px.h),
 
-                TranslatedText(
-                  AppStrings.upcomingSessions,
-                  style: TextStyle(fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
-                ),
-
-                SizedBox(height: DimensionConstants.gap16Px.h),
-
-                BlocBuilder<SessionsBloc, SessionsState>(
-                  builder: (context, state) {
-                    if (state.isLoadingSessions) {
-                      return Container(
-                        height: 120,
-                        decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r)),
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
-                    }
-
-                    if (state.hasData) {
-                      final upcomingSessions = state.upcomingSessions!;
-                      if (upcomingSessions.isEmpty) {
-                        return _buildNoUpcomingSessionsCard(context);
+                  BlocBuilder<SessionsBloc, SessionsState>(
+                    builder: (context, state) {
+                      if (state.isLoadingSessions) {
+                        return Container(
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: context.filledBgDark,
+                            borderRadius: BorderRadius.circular(DimensionConstants.radius16Px.r),
+                          ),
+                          child: const Center(child: CircularProgressIndicator()),
+                        );
                       }
 
-                      final latestSession = upcomingSessions.first;
-                      return SessionCard(
-                        session: latestSession,
-                        onCancel: latestSession.canCancel ? () => _showCancelDialog(context, latestSession) : null,
-                        onJoin: () => _joinSession(context, latestSession.id),
-                      );
-                    }
+                      if (state.hasUpcomingData) {
+                        final upcomingSessions = state.upcomingSessions!;
+                        if (upcomingSessions.isEmpty) {
+                          return _buildNoUpcomingSessionsCard(context);
+                        }
 
-                    if (state.hasError) {
-                      return _buildErrorSessionCard(context, state.errorMessage!);
-                    }
+                        final latestSession = upcomingSessions.first;
+                        return SessionCard(
+                          session: latestSession,
+                          onCancel: latestSession.canCancel ? () => _showCancelDialog(context, latestSession) : null,
+                          onJoin: latestSession.canJoin ? () => _joinSession(context, latestSession.id) : null,
+                        );
+                      }
 
-                    return _buildNoUpcomingSessionsCard(context);
-                  },
-                ),
+                      if (state.hasError) {
+                        return _buildErrorSessionCard(context, state.errorMessage!);
+                      }
 
-                SizedBox(height: DimensionConstants.gap24Px.h),
-              ],
+                      return _buildNoUpcomingSessionsCard(context);
+                    },
+                  ),
+
+                  SizedBox(height: DimensionConstants.gap24Px.h),
+                ],
+              ),
             ),
           ),
         ),

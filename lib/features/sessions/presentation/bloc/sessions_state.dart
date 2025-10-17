@@ -59,15 +59,19 @@ class SessionsState extends Equatable {
     this.bookSessionResponse,
   });
 
-  bool get hasData => upcomingSessions != null && completedSessions != null;
+  bool get hasUpcomingData => upcomingSessions != null;
+  bool get hasCompletedData => completedSessions != null;
   bool get hasError => errorMessage != null;
   bool get hasSuccess => successMessage != null;
   bool get isScheduling => selectedDate != null;
   bool get canContinueToPayment => selectedTimeSlot != null;
 
   List<SessionEntity> get currentSessions {
-    if (!hasData) return [];
-    return currentTab == SessionsTab.upcoming ? upcomingSessions! : completedSessions!;
+    if (currentTab == SessionsTab.upcoming) {
+      return upcomingSessions ?? [];
+    } else {
+      return completedSessions ?? [];
+    }
   }
 
   List<AvailabilityDayEntity> get availableDays => availability?.days ?? [];

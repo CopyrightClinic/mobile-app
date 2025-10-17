@@ -1,9 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
@@ -30,49 +27,12 @@ class SessionsScreen extends StatefulWidget {
 
 class _SessionsScreenState extends State<SessionsScreen> {
   late SessionsBloc _sessionsBloc;
-  late ScrollController _scrollController;
-  bool _isRequestingMore = false;
 
   @override
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
     _sessionsBloc.add(const LoadUserSessions());
-    _scrollController = ScrollController();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_isRequestingMore) return;
-
-    if (_isBottom) {
-      final state = _sessionsBloc.state;
-      final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
-      final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
-      final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
-
-      if (state.hasData && hasMore && !isLoadingMore) {
-        _isRequestingMore = true;
-        _sessionsBloc.add(const LoadMoreSessions());
-        Future.delayed(const Duration(milliseconds: 500), () {
-          _isRequestingMore = false;
-        });
-      }
-    }
-  }
-
-  bool get _isBottom {
-    if (!_scrollController.hasClients) return false;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
-    return currentScroll >= (maxScroll * 0.9);
   }
 
   @override
@@ -87,9 +47,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             height: DimensionConstants.gap40Px.w,
             decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
             child: InkWell(
-              onTap: () {
-                context.pushNamed(AppRoutes.notificationsRouteName);
-              },
+              onTap: () {},
               borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
               child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w)),
             ),
@@ -98,7 +56,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
         ],
       ),
       body: BlocConsumer<SessionsBloc, SessionsState>(
-        bloc: _sessionsBloc,
         listener: (context, state) {
           if (state.hasError) {
             SnackBarUtils.showError(context, state.errorMessage!);
@@ -111,7 +68,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap12Px.h),
             child: Column(
               children: [
-                if (state.hasData) ...[
+                if (state.hasUpcomingData) ...[
                   SessionsTabSelector(
                     isUpcomingSelected: state.currentTab == SessionsTab.upcoming,
                     onUpcomingTap: () {
@@ -133,110 +90,120 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   Widget _buildContent(BuildContext context, SessionsState state) {
-    if (state.isLoadingSessions && !state.hasData) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
+    final hasData = isUpcomingTab ? state.hasUpcomingData : state.hasCompletedData;
 
-    if (state.hasError && !state.hasData) {
-      return _buildErrorState(context, state.errorMessage!);
-    }
-
-    if (state.hasData) {
-      final sessions = state.currentSessions;
-      final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
-      final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
-      final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
-
-      if (sessions.isEmpty) {
-        return _buildEmptyState(context, state.currentTab == SessionsTab.upcoming);
-      }
-
-      return RefreshIndicator(
-        onRefresh: () async {
-          _sessionsBloc.add(const RefreshSessions());
-        },
-        child: ListView.builder(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: sessions.length + (hasMore ? 1 : 0),
-          padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
-          itemBuilder: (context, index) {
-            if (index >= sessions.length) {
-              return _buildLoadingMoreIndicator(isLoadingMore);
-            }
-            final session = sessions[index];
-            return SessionCard(
-              session: session,
-              onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
-              onJoin: session.canJoin ? () => _joinSession(context, session) : null,
+    return RefreshIndicator(
+      onRefresh: () async {
+        _sessionsBloc.add(const RefreshSessions());
+      },
+      child: Builder(
+        builder: (context) {
+          if (state.isLoadingSessions && !hasData) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: const Center(child: CircularProgressIndicator()))],
             );
-          },
-        ),
-      );
-    }
+          }
 
-    return _buildEmptyState(context, true);
-  }
+          if (state.hasError && !hasData) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildErrorState(context, state.errorMessage!))],
+            );
+          }
 
-  Widget _buildLoadingMoreIndicator(bool isLoadingMore) {
-    if (!isLoadingMore) {
-      return const SizedBox.shrink();
-    }
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-      child: Center(child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(context.darkSecondary))),
+          if (hasData) {
+            final sessions = state.currentSessions;
+
+            if (sessions.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: _buildEmptyState(context, state.currentTab == SessionsTab.upcoming),
+                  ),
+                ],
+              );
+            }
+
+            return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: sessions.length,
+              padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
+              itemBuilder: (context, index) {
+                final session = sessions[index];
+                return SessionCard(
+                  session: session,
+                  onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
+                  onJoin: session.isUpcoming ? () => _joinSession(context, session.id) : null,
+                );
+              },
+            );
+          }
+
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, true))],
+          );
+        },
+      ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context, bool isUpcoming) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.event_note_outlined, size: DimensionConstants.gap64Px.w, color: context.darkTextSecondary),
-          SizedBox(height: DimensionConstants.gap24Px.h),
-          TranslatedText(
-            isUpcoming ? AppStrings.noUpcomingSessions : AppStrings.noCompletedSessions,
-            style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
-          ),
-          SizedBox(height: DimensionConstants.gap8Px.h),
-          TranslatedText(
-            isUpcoming ? AppStrings.noSessionsYet : AppStrings.completedSessionsDescription,
-            style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.event_note_outlined, size: DimensionConstants.gap64Px.w, color: context.darkTextSecondary),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+        TranslatedText(
+          isUpcoming ? AppStrings.noUpcomingSessions : AppStrings.noCompletedSessions,
+          style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
+        ),
+        SizedBox(height: DimensionConstants.gap8Px.h),
+        TranslatedText(
+          isUpcoming ? AppStrings.noSessionsYet : AppStrings.completedSessionsDescription,
+          style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+        ),
+      ],
     );
   }
 
   Widget _buildErrorState(BuildContext context, String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: DimensionConstants.gap64Px.w, color: context.red),
-          SizedBox(height: DimensionConstants.gap24Px.h),
-          TranslatedText(
-            AppStrings.somethingWentWrong,
-            style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.error_outline, size: DimensionConstants.gap64Px.w, color: context.red),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+        TranslatedText(
+          AppStrings.somethingWentWrong,
+          style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
+        ),
+        SizedBox(height: DimensionConstants.gap8Px.h),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+          child: Text(
+            message,
+            style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+            textAlign: TextAlign.center,
           ),
-          SizedBox(height: DimensionConstants.gap8Px.h),
-          Text(message, style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary), textAlign: TextAlign.center),
-          SizedBox(height: DimensionConstants.gap24Px.h),
-          ElevatedButton(
-            onPressed: () {
-              _sessionsBloc.add(const LoadUserSessions());
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.darkSecondary,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap12Px.h),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
-            ),
-            child: TranslatedText(AppStrings.retry, style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600)),
+        ),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+        ElevatedButton(
+          onPressed: () {
+            _sessionsBloc.add(const LoadUserSessions());
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: context.darkSecondary,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap12Px.h),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
           ),
-        ],
-      ),
+          child: TranslatedText(AppStrings.retry, style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600)),
+        ),
+      ],
     );
   }
 
@@ -255,7 +222,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
     );
   }
 
-  Future<void> _joinSession(BuildContext context, SessionEntity session) async {
-    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': session.id});
+  void _joinSession(BuildContext context, String sessionId) {
+    SnackBarUtils.showSuccess(context, AppStrings.joiningSession.tr());
   }
 }

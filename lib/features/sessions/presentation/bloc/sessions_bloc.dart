@@ -23,7 +23,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   }) : super(const SessionsState()) {
     on<LoadUserSessions>(_onLoadUserSessions);
     on<RefreshSessions>(_onRefreshSessions);
-    on<LoadMoreSessions>(_onLoadMoreSessions);
     on<SwitchToUpcoming>(_onSwitchToUpcoming);
     on<SwitchToCompleted>(_onSwitchToCompleted);
     on<CancelSessionRequested>(_onCancelSessionRequested);
@@ -39,167 +38,81 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     emit(state.copyWith(isLoadingSessions: true, clearError: true, clearSuccess: true));
 
     final String timezone = await TimezoneHelper.getUserTimezone();
-    final upcomingResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming', page: 1, limit: 10));
-    final completedResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed', page: 1, limit: 10));
+    final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming'));
 
-    await upcomingResult.fold(
-      (failure) async => emit(
+    result.fold(
+      (failure) => emit(
         state.copyWith(
           isLoadingSessions: false,
           errorMessage: failure.message ?? AppStrings.failedToLoadSessions,
           lastOperation: SessionsOperation.loadSessions,
         ),
       ),
-      (upcomingPaginated) async {
-        await completedResult.fold(
-          (failure) async => emit(
-            state.copyWith(
-              isLoadingSessions: false,
-              errorMessage: failure.message ?? AppStrings.failedToLoadSessions,
-              lastOperation: SessionsOperation.loadSessions,
-            ),
+      (sessions) {
+        emit(
+          state.copyWith(
+            upcomingSessions: sessions,
+            isLoadingSessions: false,
+            currentTab: SessionsTab.upcoming,
+            clearError: true,
+            lastOperation: SessionsOperation.loadSessions,
           ),
-          (completedPaginated) async {
-            emit(
-              state.copyWith(
-                upcomingSessions: upcomingPaginated.sessions,
-                completedSessions: completedPaginated.sessions,
-                currentUpcomingPage: upcomingPaginated.page,
-                currentCompletedPage: completedPaginated.page,
-                hasMoreUpcoming: upcomingPaginated.hasMore,
-                hasMoreCompleted: completedPaginated.hasMore,
-                isLoadingSessions: false,
-                currentTab: SessionsTab.upcoming,
-                clearError: true,
-                lastOperation: SessionsOperation.loadSessions,
-              ),
-            );
-          },
         );
       },
     );
   }
 
   Future<void> _onRefreshSessions(RefreshSessions event, Emitter<SessionsState> emit) async {
-    if (state.hasData) {
-      final String timezone = await TimezoneHelper.getUserTimezone();
-      final upcomingResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming', page: 1, limit: 10));
-      final completedResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed', page: 1, limit: 10));
+    final String timezone = await TimezoneHelper.getUserTimezone();
 
-      await upcomingResult.fold(
-        (failure) async =>
+    if (state.currentTab == SessionsTab.upcoming) {
+      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming'));
+      result.fold(
+        (failure) =>
             emit(state.copyWith(errorMessage: failure.message ?? AppStrings.failedToRefreshSessions, lastOperation: SessionsOperation.loadSessions)),
-        (upcomingPaginated) async {
-          await completedResult.fold(
-            (failure) async => emit(
-              state.copyWith(errorMessage: failure.message ?? AppStrings.failedToRefreshSessions, lastOperation: SessionsOperation.loadSessions),
-            ),
-            (completedPaginated) async {
-              emit(
-                state.copyWith(
-                  upcomingSessions: upcomingPaginated.sessions,
-                  completedSessions: completedPaginated.sessions,
-                  currentUpcomingPage: upcomingPaginated.page,
-                  currentCompletedPage: completedPaginated.page,
-                  hasMoreUpcoming: upcomingPaginated.hasMore,
-                  hasMoreCompleted: completedPaginated.hasMore,
-                  clearError: true,
-                  clearSuccess: true,
-                ),
-              );
-            },
-          );
-        },
+        (sessions) => emit(state.copyWith(upcomingSessions: sessions, clearError: true, clearSuccess: true)),
       );
     } else {
-      await _onLoadUserSessions(const LoadUserSessions(), emit);
+      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed'));
+      result.fold(
+        (failure) =>
+            emit(state.copyWith(errorMessage: failure.message ?? AppStrings.failedToRefreshSessions, lastOperation: SessionsOperation.loadSessions)),
+        (sessions) => emit(state.copyWith(completedSessions: sessions, clearError: true, clearSuccess: true)),
+      );
     }
-  }
-
-  Future<void> _onLoadMoreSessions(LoadMoreSessions event, Emitter<SessionsState> emit) async {
-    if (!state.hasData) return;
-
-    final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
-    final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
-    final isAlreadyLoading = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
-
-    if (!hasMore || isAlreadyLoading) return;
-
-    final nextPage = (isUpcomingTab ? state.currentUpcomingPage : state.currentCompletedPage) + 1;
-
-    if (isUpcomingTab) {
-      emit(state.copyWith(isLoadingMoreUpcoming: true, clearError: true));
-    } else {
-      emit(state.copyWith(isLoadingMoreCompleted: true, clearError: true));
-    }
-
-    final String timezone = await TimezoneHelper.getUserTimezone();
-    final status = isUpcomingTab ? 'upcoming' : 'completed';
-    final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: status, page: nextPage, limit: 10));
-
-    result.fold(
-      (failure) {
-        if (isUpcomingTab) {
-          emit(
-            state.copyWith(
-              isLoadingMoreUpcoming: false,
-              errorMessage: failure.message ?? AppStrings.failedToLoadMoreSessions,
-              lastOperation: SessionsOperation.loadSessions,
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-              isLoadingMoreCompleted: false,
-              errorMessage: failure.message ?? AppStrings.failedToLoadMoreSessions,
-              lastOperation: SessionsOperation.loadSessions,
-            ),
-          );
-        }
-      },
-      (paginatedSessions) {
-        if (isUpcomingTab) {
-          final updatedSessions = [...state.upcomingSessions!, ...paginatedSessions.sessions];
-          emit(
-            state.copyWith(
-              upcomingSessions: updatedSessions,
-              currentUpcomingPage: paginatedSessions.page,
-              hasMoreUpcoming: paginatedSessions.hasMore,
-              isLoadingMoreUpcoming: false,
-              clearError: true,
-            ),
-          );
-        } else {
-          final updatedSessions = [...state.completedSessions!, ...paginatedSessions.sessions];
-          emit(
-            state.copyWith(
-              completedSessions: updatedSessions,
-              currentCompletedPage: paginatedSessions.page,
-              hasMoreCompleted: paginatedSessions.hasMore,
-              isLoadingMoreCompleted: false,
-              clearError: true,
-            ),
-          );
-        }
-      },
-    );
   }
 
   void _onSwitchToUpcoming(SwitchToUpcoming event, Emitter<SessionsState> emit) {
-    if (state.hasData) {
-      emit(state.copyWith(currentTab: SessionsTab.upcoming));
-    }
+    emit(state.copyWith(currentTab: SessionsTab.upcoming));
   }
 
-  void _onSwitchToCompleted(SwitchToCompleted event, Emitter<SessionsState> emit) {
-    if (state.hasData) {
-      emit(state.copyWith(currentTab: SessionsTab.completed));
+  Future<void> _onSwitchToCompleted(SwitchToCompleted event, Emitter<SessionsState> emit) async {
+    emit(state.copyWith(currentTab: SessionsTab.completed));
+
+    if (!state.hasCompletedData) {
+      emit(state.copyWith(isLoadingSessions: true, clearError: true));
+
+      final String timezone = await TimezoneHelper.getUserTimezone();
+      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed'));
+
+      result.fold(
+        (failure) => emit(
+          state.copyWith(
+            isLoadingSessions: false,
+            errorMessage: failure.message ?? AppStrings.failedToLoadSessions,
+            lastOperation: SessionsOperation.loadSessions,
+          ),
+        ),
+        (sessions) {
+          emit(
+            state.copyWith(completedSessions: sessions, isLoadingSessions: false, clearError: true, lastOperation: SessionsOperation.loadSessions),
+          );
+        },
+      );
     }
   }
 
   Future<void> _onCancelSessionRequested(CancelSessionRequested event, Emitter<SessionsState> emit) async {
-    if (!state.hasData) return;
-
     emit(state.copyWith(isProcessingCancel: true, cancellingSessionId: event.sessionId, clearError: true, clearSuccess: true));
 
     final result = await cancelSessionUseCase(CancelSessionParams(sessionId: event.sessionId, reason: event.reason));
