@@ -28,12 +28,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-
   @override
   void initState() {
     super.initState();
-    PushNotificationHandler().initialize(_navigatorKey);
+    PushNotificationHandler().initialize();
   }
 
   @override

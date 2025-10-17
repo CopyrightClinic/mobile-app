@@ -1,27 +1,23 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/routes/app_router.dart';
 import '../../config/routes/app_routes.dart';
 import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import 'push_notification_payload.dart';
+import 'pending_navigation_service.dart';
 
 class PushNotificationHandler {
   static final PushNotificationHandler _instance = PushNotificationHandler._internal();
   factory PushNotificationHandler() => _instance;
   PushNotificationHandler._internal();
 
-  BuildContext? _context;
-  GlobalKey<NavigatorState>? _navigatorKey;
+  final _pendingNavService = PendingNavigationService();
 
-  void initialize(GlobalKey<NavigatorState> navigatorKey) {
-    _navigatorKey = navigatorKey;
+  void initialize() {
     _setupMessageHandlers();
-  }
-
-  void setContext(BuildContext context) {
-    _context = context;
   }
 
   void _setupMessageHandlers() {
@@ -31,8 +27,12 @@ class PushNotificationHandler {
       Log.i(runtimeType, '🔔 ========================================');
       Log.i(runtimeType, '🔔 Message ID: ${message.messageId}');
       Log.i(runtimeType, '🔔 Data: ${message.data}');
+      Log.i(runtimeType, '🔔 App was in background, navigating directly...');
       Log.i(runtimeType, '🔔 ========================================');
-      handleNotificationTap(message);
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        handleNotificationTap(message);
+      });
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
@@ -42,21 +42,23 @@ class PushNotificationHandler {
         Log.i(runtimeType, '🚀 ========================================');
         Log.i(runtimeType, '🚀 Message ID: ${message.messageId}');
         Log.i(runtimeType, '🚀 Data: ${message.data}');
-        Log.i(runtimeType, '🚀 Waiting 1 second for app to initialize...');
+        Log.i(runtimeType, '🚀 Storing as PENDING - will navigate after splash');
         Log.i(runtimeType, '🚀 ========================================');
-        Future.delayed(const Duration(seconds: 1), () {
-          handleNotificationTap(message);
-        });
+
+        _pendingNavService.setPendingNotification(message);
       } else {
         Log.i(runtimeType, '📱 App opened normally (not from notification)');
       }
     });
   }
 
-  Future<void> handleNotificationTap(RemoteMessage message) async {
+  Future<void> handleNotificationTap(RemoteMessage message, {bool isFromPending = false}) async {
     try {
       Log.i(runtimeType, '🎯 ========================================');
       Log.i(runtimeType, '🎯 HANDLING NOTIFICATION TAP');
+      if (isFromPending) {
+        Log.i(runtimeType, '🎯 (Deferred from terminated state)');
+      }
       Log.i(runtimeType, '🎯 ========================================');
 
       final payload = PushNotificationPayload.fromRemoteMessage(message);
@@ -70,6 +72,10 @@ class PushNotificationHandler {
 
       await _navigateBasedOnType(payload);
 
+      if (isFromPending) {
+        _pendingNavService.markAsHandled();
+      }
+
       Log.i(runtimeType, '🎯 ========================================');
     } catch (e, stackTrace) {
       Log.e(runtimeType, '❌ Error handling notification tap: $e');
@@ -77,10 +83,56 @@ class PushNotificationHandler {
     }
   }
 
+  Future<void> handlePendingNotificationIfExists() async {
+    final pendingMessage = _pendingNavService.getPendingNotification();
+
+    if (pendingMessage != null) {
+      Log.i(runtimeType, '🎬 ========================================');
+      Log.i(runtimeType, '🎬 EXECUTING PENDING NOTIFICATION NAVIGATION');
+      Log.i(runtimeType, '🎬 Splash has completed, now navigating...');
+      Log.i(runtimeType, '🎬 Step 1: Navigate to Home (replace splash)');
+      Log.i(runtimeType, '🎬 Step 2: Push notification destination');
+      Log.i(runtimeType, '🎬 ========================================');
+
+      final context = AppRouter.router.routerDelegate.navigatorKey.currentContext;
+
+      if (context != null && context.mounted) {
+        Log.i(runtimeType, '🏠 Navigating to Home first (replaces splash in stack)');
+        context.go(AppRoutes.homeRouteName);
+
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        Log.i(runtimeType, '🎯 Now handling notification navigation on top of Home');
+        await handleNotificationTap(pendingMessage, isFromPending: true);
+      } else {
+        Log.e(runtimeType, '❌ Context not available for pending navigation');
+      }
+    }
+  }
+
   Future<void> _navigateBasedOnType(PushNotificationPayload payload) async {
-    final context = _navigatorKey?.currentContext ?? _context;
+    BuildContext? context = AppRouter.router.routerDelegate.navigatorKey.currentContext;
+
     if (context == null) {
-      Log.w(runtimeType, '⚠️ Navigation context is null, cannot navigate');
+      Log.w(runtimeType, '⚠️ GoRouter context is null, waiting...');
+
+      for (int i = 0; i < 15; i++) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        context = AppRouter.router.routerDelegate.navigatorKey.currentContext;
+        if (context != null) {
+          Log.i(runtimeType, '✅ GoRouter context is now available after ${(i + 1) * 200}ms');
+          break;
+        }
+      }
+
+      if (context == null) {
+        Log.e(runtimeType, '❌ GoRouter context still null after 3 seconds, aborting navigation');
+        return;
+      }
+    }
+
+    if (!context.mounted) {
+      Log.w(runtimeType, '⚠️ Context is no longer mounted, aborting navigation');
       return;
     }
 
@@ -92,6 +144,7 @@ class PushNotificationHandler {
         _navigateToBookingRequestSent(context);
         break;
 
+      case PushNotificationType.sessionAccepted:
       case PushNotificationType.sessionBookedSuccessfully:
       case PushNotificationType.sessionReminderPreStart:
       case PushNotificationType.joinSessionActivated:
@@ -141,26 +194,49 @@ class PushNotificationHandler {
       return;
     }
 
-    Log.i(runtimeType, '✅ Navigating: ${AppRoutes.sessionDetailsRouteName} with sessionId: $sessionId');
-    context.push(AppRoutes.sessionDetailsRouteName, extra: SessionDetailsScreenParams(sessionId: sessionId));
-    Log.i(runtimeType, '✅ Navigation completed');
+    try {
+      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.sessionDetailsRouteName}');
+      Log.i(runtimeType, '✅ Session ID: $sessionId');
+
+      context.push(AppRoutes.sessionDetailsRouteName, extra: SessionDetailsScreenParams(sessionId: sessionId));
+
+      Log.i(runtimeType, '✅ Navigation completed successfully');
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Navigation failed: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
   }
 
   void _navigateToSessions(BuildContext context) {
-    Log.i(runtimeType, '✅ Navigating: ${AppRoutes.sessionsRouteName}');
-    context.go(AppRoutes.sessionsRouteName);
-    Log.i(runtimeType, '✅ Navigation completed');
+    try {
+      Log.i(runtimeType, '✅ Using GoRouter.go to: ${AppRoutes.sessionsRouteName}');
+      context.go(AppRoutes.sessionsRouteName);
+      Log.i(runtimeType, '✅ Navigation completed successfully');
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Navigation failed: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
   }
 
   void _navigateToBookingRequestSent(BuildContext context) {
-    Log.i(runtimeType, '✅ Navigating: ${AppRoutes.bookingRequestSentRouteName}');
-    context.push(AppRoutes.bookingRequestSentRouteName);
-    Log.i(runtimeType, '✅ Navigation completed');
+    try {
+      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.bookingRequestSentRouteName}');
+      context.push(AppRoutes.bookingRequestSentRouteName);
+      Log.i(runtimeType, '✅ Navigation completed successfully');
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Navigation failed: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
   }
 
   void _navigateToPaymentMethods(BuildContext context) {
-    Log.i(runtimeType, '✅ Navigating: ${AppRoutes.paymentMethodsRouteName}');
-    context.push(AppRoutes.paymentMethodsRouteName);
-    Log.i(runtimeType, '✅ Navigation completed');
+    try {
+      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.paymentMethodsRouteName}');
+      context.push(AppRoutes.paymentMethodsRouteName);
+      Log.i(runtimeType, '✅ Navigation completed successfully');
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Navigation failed: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
   }
 }

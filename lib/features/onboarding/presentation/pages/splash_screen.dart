@@ -7,6 +7,8 @@ import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/responsive_extensions.dart';
 import 'package:copyright_clinic_flutter/core/services/fcm_service.dart';
+import 'package:copyright_clinic_flutter/core/services/push_notification_handler.dart';
+import 'package:copyright_clinic_flutter/core/services/pending_navigation_service.dart';
 import 'package:copyright_clinic_flutter/features/onboarding/presentation/widgets/onboarding_background.dart';
 import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
 import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_bloc.dart';
@@ -70,12 +72,23 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is AuthAuthenticated) {
           sl<FCMService>().initialize();
-          context.go(AppRoutes.homeRouteName);
+
+          final hasPendingNotification = PendingNavigationService().shouldSkipDefaultNavigation();
+
+          if (hasPendingNotification) {
+            await PushNotificationHandler().handlePendingNotificationIfExists();
+          } else {
+            if (mounted) {
+              context.go(AppRoutes.homeRouteName);
+            }
+          }
         } else if (state is AuthUnauthenticated) {
-          context.go(AppRoutes.welcomeRouteName);
+          if (mounted) {
+            context.go(AppRoutes.welcomeRouteName);
+          }
         }
       },
       child: Scaffold(
