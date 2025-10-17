@@ -40,13 +40,16 @@ class WhatWeDoScreen extends StatelessWidget {
                 ),
                 SizedBox(height: DimensionConstants.gap20Px.h),
                 Expanded(
-                  child: ListView.separated(
-                    itemCount: 5,
-                    padding: EdgeInsets.zero,
-                    separatorBuilder: (context, index) => SizedBox(height: DimensionConstants.gap6Px.h),
-                    itemBuilder: (context, index) {
-                      return _buildServiceCardByIndex(index);
-                    },
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        for (int index = 0; index < 5; index++) ...[
+                          _buildServiceCardByIndex(index),
+                          if (index < 4) SizedBox(height: DimensionConstants.gap6Px.h),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ],

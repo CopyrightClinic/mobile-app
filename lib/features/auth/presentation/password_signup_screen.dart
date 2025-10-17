@@ -11,6 +11,7 @@ import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
 import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:copyright_clinic_flutter/core/utils/password_strength.dart';
 import 'package:copyright_clinic_flutter/core/widgets/password_strength_indicator.dart';
+import 'package:copyright_clinic_flutter/core/services/fcm_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,8 +54,8 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
   }
 
   bool get _isFormValid {
-    final password = _passwordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
     final passwordValidation = validatePassword(password, tr, isLogin: false);
     final confirmPasswordValidation = _validateConfirmPassword(password, confirmPassword, tr);
@@ -111,7 +112,7 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
 
   void _handleConfirmPasswordChange(String value) {
     if (value.isNotEmpty && _passwordController.text.isNotEmpty) {
-      if (_passwordController.text.trim() == value) {
+      if (_passwordController.text == value) {
         _buttonSetState?.call(() {});
       } else {
         _buttonSetState?.call(() {});
@@ -138,6 +139,7 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
         listener: (context, state) {
           if (state is SignupSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
+            sl<FCMService>().initialize();
             context.go(AppRoutes.signupSuccessRouteName);
           } else if (state is SignupError) {
             SnackBarUtils.showError(context, state.message);
@@ -219,7 +221,7 @@ class _PasswordSignupScreenState extends State<PasswordSignupScreen> with Valida
                                   controller: _confirmPasswordController,
                                   focusNode: _confirmPasswordFocusNode,
                                   isPassword: true,
-                                  validator: (value) => _validateConfirmPassword(_passwordController.text.trim(), value, tr),
+                                  validator: (value) => _validateConfirmPassword(_passwordController.text, value, tr),
                                   onEditingComplete: () => _confirmPasswordFocusNode.unfocus(),
                                   onChanged: (value) {
                                     _onFieldChanged();

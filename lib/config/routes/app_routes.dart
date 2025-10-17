@@ -33,4 +33,5 @@ class AppRoutes {
   static const String haroldSuccessRouteName = '/harold-success';
   static const String haroldFailedRouteName = '/harold-failed';
   static const String joinMeetingRouteName = '/join-meeting';
+  static const String notificationsRouteName = '/notifications';
 }
