@@ -38,7 +38,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     emit(state.copyWith(isLoadingSessions: true, clearError: true, clearSuccess: true));
 
     final String timezone = await TimezoneHelper.getUserTimezone();
-    final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone));
+    final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming'));
 
     result.fold(
       (failure) => emit(
@@ -49,13 +49,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         ),
       ),
       (sessions) {
-        final upcomingSessions = sessions.where((session) => session.isUpcoming).toList();
-        final completedSessions = sessions.where((session) => session.isCompleted).toList();
-
         emit(
           state.copyWith(
-            upcomingSessions: upcomingSessions,
-            completedSessions: completedSessions,
+            upcomingSessions: sessions,
             isLoadingSessions: false,
             currentTab: SessionsTab.upcoming,
             clearError: true,
@@ -67,40 +63,56 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   }
 
   Future<void> _onRefreshSessions(RefreshSessions event, Emitter<SessionsState> emit) async {
-    if (state.hasData) {
-      final String timezone = await TimezoneHelper.getUserTimezone();
-      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone));
+    final String timezone = await TimezoneHelper.getUserTimezone();
 
+    if (state.currentTab == SessionsTab.upcoming) {
+      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming'));
       result.fold(
         (failure) =>
             emit(state.copyWith(errorMessage: failure.message ?? AppStrings.failedToRefreshSessions, lastOperation: SessionsOperation.loadSessions)),
-        (sessions) {
-          final upcomingSessions = sessions.where((session) => session.isUpcoming).toList();
-          final completedSessions = sessions.where((session) => session.isCompleted).toList();
-
-          emit(state.copyWith(upcomingSessions: upcomingSessions, completedSessions: completedSessions, clearError: true, clearSuccess: true));
-        },
+        (sessions) => emit(state.copyWith(upcomingSessions: sessions, clearError: true, clearSuccess: true)),
       );
     } else {
-      await _onLoadUserSessions(const LoadUserSessions(), emit);
+      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed'));
+      result.fold(
+        (failure) =>
+            emit(state.copyWith(errorMessage: failure.message ?? AppStrings.failedToRefreshSessions, lastOperation: SessionsOperation.loadSessions)),
+        (sessions) => emit(state.copyWith(completedSessions: sessions, clearError: true, clearSuccess: true)),
+      );
     }
   }
 
   void _onSwitchToUpcoming(SwitchToUpcoming event, Emitter<SessionsState> emit) {
-    if (state.hasData) {
-      emit(state.copyWith(currentTab: SessionsTab.upcoming));
-    }
+    emit(state.copyWith(currentTab: SessionsTab.upcoming));
   }
 
-  void _onSwitchToCompleted(SwitchToCompleted event, Emitter<SessionsState> emit) {
-    if (state.hasData) {
-      emit(state.copyWith(currentTab: SessionsTab.completed));
+  Future<void> _onSwitchToCompleted(SwitchToCompleted event, Emitter<SessionsState> emit) async {
+    emit(state.copyWith(currentTab: SessionsTab.completed));
+
+    if (!state.hasCompletedData) {
+      emit(state.copyWith(isLoadingSessions: true, clearError: true));
+
+      final String timezone = await TimezoneHelper.getUserTimezone();
+      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed'));
+
+      result.fold(
+        (failure) => emit(
+          state.copyWith(
+            isLoadingSessions: false,
+            errorMessage: failure.message ?? AppStrings.failedToLoadSessions,
+            lastOperation: SessionsOperation.loadSessions,
+          ),
+        ),
+        (sessions) {
+          emit(
+            state.copyWith(completedSessions: sessions, isLoadingSessions: false, clearError: true, lastOperation: SessionsOperation.loadSessions),
+          );
+        },
+      );
     }
   }
 
   Future<void> _onCancelSessionRequested(CancelSessionRequested event, Emitter<SessionsState> emit) async {
-    if (!state.hasData) return;
-
     emit(state.copyWith(isProcessingCancel: true, cancellingSessionId: event.sessionId, clearError: true, clearSuccess: true));
 
     final result = await cancelSessionUseCase(CancelSessionParams(sessionId: event.sessionId, reason: event.reason));

@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
 
-                      if (state.hasData) {
+                      if (state.hasUpcomingData) {
                         final upcomingSessions = state.upcomingSessions!;
                         if (upcomingSessions.isEmpty) {
                           return _buildNoUpcomingSessionsCard(context);
