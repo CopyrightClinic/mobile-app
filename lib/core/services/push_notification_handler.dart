@@ -90,21 +90,26 @@ class PushNotificationHandler {
       Log.i(runtimeType, '🎬 ========================================');
       Log.i(runtimeType, '🎬 EXECUTING PENDING NOTIFICATION NAVIGATION');
       Log.i(runtimeType, '🎬 Splash has completed, now navigating...');
+      Log.i(runtimeType, '🎬 Step 1: Navigate to Home (replace splash)');
+      Log.i(runtimeType, '🎬 Step 2: Push notification destination');
       Log.i(runtimeType, '🎬 ========================================');
 
       final context = AppRouter.router.routerDelegate.navigatorKey.currentContext;
 
       if (context != null && context.mounted) {
+        Log.i(runtimeType, '🏠 Navigating to Home first (replaces splash in stack)');
+        context.go(AppRoutes.homeRouteName);
+
+        await Future.delayed(const Duration(milliseconds: 500));
+
         final payload = PushNotificationPayload.fromRemoteMessage(pendingMessage);
 
         if (payload.type.requiresNavigation) {
-          Log.i(runtimeType, '🎯 Notification requires navigation to session details');
-          await Future.delayed(const Duration(milliseconds: 500));
+          Log.i(runtimeType, '🎯 Now handling notification navigation on top of Home');
           await handleNotificationTap(pendingMessage, isFromPending: true);
         } else {
-          Log.i(runtimeType, '🏠 Notification does not require navigation (${payload.type.toApiString()})');
-          Log.i(runtimeType, '🏠 Navigating to Home screen instead');
-          context.go(AppRoutes.homeRouteName);
+          Log.i(runtimeType, '✅ Notification does not require navigation (${payload.type.toApiString()})');
+          Log.i(runtimeType, '✅ Staying on Home screen');
           _pendingNavService.markAsHandled();
         }
       } else {
