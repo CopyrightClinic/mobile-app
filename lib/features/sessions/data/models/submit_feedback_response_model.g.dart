@@ -11,7 +11,7 @@ SubmitFeedbackSessionModel _$SubmitFeedbackSessionModelFromJson(
 ) => SubmitFeedbackSessionModel(
   id: json['id'] as String,
   rating: (json['rating'] as num).toDouble(),
-  review: json['review'] as String,
+  review: json['review'] as String?,
   updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
 
