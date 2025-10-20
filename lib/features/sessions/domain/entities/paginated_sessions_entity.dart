@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'session_entity.dart';
+import 'session_availability_entity.dart';
 
 class PaginatedSessionsEntity extends Equatable {
   final List<SessionEntity> sessions;
@@ -7,12 +8,19 @@ class PaginatedSessionsEntity extends Equatable {
   final int page;
   final int limit;
   final int totalPages;
+  final SessionFeeEntity? sessionFee;
 
-  const PaginatedSessionsEntity({required this.sessions, required this.total, required this.page, required this.limit, required this.totalPages});
+  const PaginatedSessionsEntity({
+    required this.sessions,
+    required this.total,
+    required this.page,
+    required this.limit,
+    required this.totalPages,
+    this.sessionFee,
+  });
 
   bool get hasMore => page < totalPages;
 
   @override
-  List<Object> get props => [sessions, total, page, limit, totalPages];
+  List<Object?> get props => [sessions, total, page, limit, totalPages, sessionFee];
 }
-

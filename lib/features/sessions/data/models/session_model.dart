@@ -84,8 +84,9 @@ class SessionModel {
 
   Map<String, dynamic> toJson() => _$SessionModelToJson(this);
 
-  SessionEntity toEntity() {
-    final holdAmount = sessionFee?.sessionFee.toDouble() ?? 50.0;
+  SessionEntity toEntity({SessionFeeModel? sharedSessionFee}) {
+    final effectiveFee = sessionFee ?? sharedSessionFee;
+    final holdAmount = effectiveFee?.sessionFee.toDouble() ?? 50.0;
     final canCancel =
         cancelTimeExpired != null
             ? !cancelTimeExpired!
@@ -104,7 +105,7 @@ class SessionModel {
       cancelTime: cancelTime,
       cancelTimeExpired: cancelTimeExpired,
       attorney: attorney.toEntity(),
-      sessionFee: sessionFee?.toEntity(),
+      sessionFee: effectiveFee?.toEntity(),
       createdAt: createdAt,
       updatedAt: updatedAt,
       holdAmount: holdAmount,
