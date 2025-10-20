@@ -10,14 +10,15 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/translated_text.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
 import '../../../sessions/presentation/bloc/sessions_bloc.dart';
 import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
+import '../../../profile/presentation/bloc/profile_bloc.dart';
+import '../../../profile/presentation/bloc/profile_event.dart';
+import '../../../profile/presentation/bloc/profile_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,12 +29,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late SessionsBloc _sessionsBloc;
+  late ProfileBloc _profileBloc;
 
   @override
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
+    _profileBloc = context.read<ProfileBloc>();
     _sessionsBloc.add(const LoadUserSessions());
+    _profileBloc.add(const GetProfileRequested());
   }
 
   @override
@@ -65,11 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: TextStyle(fontSize: DimensionConstants.font16Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w400),
                           ),
                           SizedBox(height: DimensionConstants.gap2Px.h),
-                          BlocBuilder<AuthBloc, AuthState>(
+                          BlocBuilder<ProfileBloc, ProfileState>(
+                            bloc: _profileBloc,
                             builder: (context, state) {
                               String userName = '-';
-                              if (state is AuthAuthenticated) {
-                                userName = '${state.user.name ?? '-'}!';
+                              if (state is ProfileLoaded) {
+                                userName = state.profile.name != null ? '${state.profile.name}!' : '-';
                               }
                               return Text(
                                 userName,

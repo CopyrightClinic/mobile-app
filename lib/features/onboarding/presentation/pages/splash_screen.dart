@@ -14,6 +14,8 @@ import 'package:copyright_clinic_flutter/config/routes/app_routes.dart';
 import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_event.dart';
 import 'package:copyright_clinic_flutter/features/auth/presentation/bloc/auth_state.dart';
+import 'package:copyright_clinic_flutter/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:copyright_clinic_flutter/features/profile/presentation/bloc/profile_event.dart';
 import 'package:copyright_clinic_flutter/di.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -75,6 +77,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       listener: (context, state) async {
         if (state is AuthAuthenticated) {
           sl<FCMService>().initialize();
+          context.read<ProfileBloc>().add(const GetProfileRequested());
 
           final hasPendingNotification = PendingNavigationService().shouldSkipDefaultNavigation();
 

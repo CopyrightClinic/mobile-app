@@ -64,8 +64,6 @@ class CustomPhoneFieldState extends State<CustomPhoneField> {
     _previousCountryCode = widget.initialCountryCode;
 
     if (widget.initialValue != null && widget.initialValue!.isNotEmpty) {
-      _controller.text = widget.initialValue!;
-
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (mounted && widget.initialValue!.isNotEmpty) {
           try {
