@@ -35,7 +35,7 @@ android {
         multiDexEnabled = true
         
         ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
+            abiFilters.add("arm64-v8a")
         }
     }
 
@@ -50,6 +50,18 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+    
+    bundle {
+        abi {
+            enableSplit = true
+        }
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = true
         }
     }
 }

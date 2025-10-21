@@ -81,7 +81,7 @@ class ZoomBridge(
             }
             "getSdkVersion" -> {
                 try {
-                    result.success("6.6.0")
+                    result.success("6.5.10")
                 } catch (e: Exception) {
                     result.error("ERROR", "Failed to get SDK version: ${e.message}", null)
                 }
