@@ -174,11 +174,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           return _buildNoUpcomingSessionsCard(context);
                         }
 
-                        final latestSession = upcomingSessions.first;
-                        return SessionCard(
-                          session: latestSession,
-                          onCancel: latestSession.canCancel ? () => _showCancelDialog(context, latestSession) : null,
-                          onJoin: latestSession.canJoin ? () => _joinSession(context, latestSession.id) : null,
+                        final sessionsToShow = upcomingSessions.take(5).toList();
+                        return Column(
+                          children: List.generate(sessionsToShow.length, (index) {
+                            final session = sessionsToShow[index];
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: index < sessionsToShow.length - 1 ? DimensionConstants.gap16Px.h : 0),
+                              child: SessionCard(
+                                session: session,
+                                onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
+                                onJoin: session.canJoin ? () => _joinSession(context, session.id) : null,
+                              ),
+                            );
+                          }),
                         );
                       }
 
