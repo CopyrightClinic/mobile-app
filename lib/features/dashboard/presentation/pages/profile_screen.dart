@@ -176,7 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               _buildInfoRow(context, iconPath: ImageConstants.name, label: AppStrings.fullName, value: userName),
               _buildInfoRow(context, iconPath: ImageConstants.email, label: AppStrings.email, value: userEmail),
-              _buildInfoRow(context, iconPath: ImageConstants.phone, label: AppStrings.phoneNumber, value: userPhone),
+              _buildInfoRow(context, iconPath: ImageConstants.phone, label: AppStrings.phone, value: userPhone),
               _buildInfoRow(context, iconPath: ImageConstants.address, label: AppStrings.address, value: userAddress, isLast: true),
             ],
           );

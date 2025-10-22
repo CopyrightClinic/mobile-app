@@ -118,6 +118,7 @@ class AppStrings {
   static const completeYourProfile = 'completeYourProfile';
   static const fullName = 'fullName';
   static const phoneNumber = 'phoneNumber';
+  static const phone = 'phone';
   static const address = 'address';
   static const enterYourFullName = 'enterYourFullName';
   static const enterYourPhoneNumber = 'enterYourPhoneNumber';

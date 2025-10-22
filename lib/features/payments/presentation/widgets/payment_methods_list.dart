@@ -80,6 +80,7 @@ class PaymentMethodsList extends StatelessWidget {
             TranslatedText(
               config.emptyStateMessage ?? AppStrings.noPaymentMethods,
               style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w700),
+              textAlign: TextAlign.center,
             ),
             TranslatedText(
               AppStrings.tapToAdd,
