@@ -9,7 +9,7 @@ import '../models/notification_list_response_model.dart';
 import '../models/mark_all_as_read_response_model.dart';
 
 abstract class NotificationRemoteDataSource {
-  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20});
+  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20, String? timezone});
 
   Future<MarkAllAsReadResponseModel> markAllAsRead();
 
@@ -22,11 +22,15 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   NotificationRemoteDataSourceImpl({required this.apiService});
 
   @override
-  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20}) async {
+  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20, String? timezone}) async {
     try {
+      final Map<String, dynamic> headers = {};
+      if (timezone != null) headers['timezone'] = timezone;
+
       final response = await apiService.getData<NotificationListResponseModel>(
         endpoint: '${ApiEndpoint.notifications}/user/$userId',
         queryParams: {'page': page, 'limit': limit},
+        headers: headers.isNotEmpty ? headers : null,
         requiresAuthToken: true,
         converter: (JSON json) => NotificationListResponseModel.fromJson(json),
       );

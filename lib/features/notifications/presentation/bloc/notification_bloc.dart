@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/timezone_helper.dart';
 import '../../domain/usecases/get_notifications_usecase.dart';
 import '../../domain/usecases/mark_all_notifications_as_read_usecase.dart';
 import 'notification_event.dart';
@@ -18,7 +19,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   Future<void> _onLoadNotifications(LoadNotifications event, Emitter<NotificationState> emit) async {
     emit(const NotificationLoading());
 
-    final result = await getNotificationsUseCase(GetNotificationsParams(userId: event.userId, page: event.page, limit: event.limit));
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final result = await getNotificationsUseCase(
+      GetNotificationsParams(userId: event.userId, page: event.page, limit: event.limit, timezone: timezone),
+    );
 
     result.fold((failure) => emit(NotificationError(failure.message ?? 'Unknown error')), (notificationResult) {
       emit(
@@ -33,7 +37,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   }
 
   Future<void> _onRefreshNotifications(RefreshNotifications event, Emitter<NotificationState> emit) async {
-    final result = await getNotificationsUseCase(GetNotificationsParams(userId: event.userId, page: 1, limit: 20));
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final result = await getNotificationsUseCase(GetNotificationsParams(userId: event.userId, page: 1, limit: 20, timezone: timezone));
 
     result.fold((failure) => emit(NotificationError(failure.message ?? 'Unknown error')), (notificationResult) {
       emit(
@@ -55,7 +60,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     emit(currentState.copyWith(isLoadingMore: true));
 
-    final result = await getNotificationsUseCase(GetNotificationsParams(userId: event.userId, page: currentState.currentPage + 1, limit: 20));
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final result = await getNotificationsUseCase(
+      GetNotificationsParams(userId: event.userId, page: currentState.currentPage + 1, limit: 20, timezone: timezone),
+    );
 
     result.fold((failure) => emit(currentState.copyWith(isLoadingMore: false)), (notificationResult) {
       final updatedNotifications = List.of(currentState.notifications)..addAll(notificationResult.notifications);
