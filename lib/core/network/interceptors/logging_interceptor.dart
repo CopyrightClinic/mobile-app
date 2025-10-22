@@ -139,7 +139,7 @@ class LoggingInterceptor extends Interceptor {
       case DioExceptionType.cancel:
         return 'Request Cancelled';
       case DioExceptionType.connectionError:
-        return 'Connection Error';
+        return 'No Internet Connection!';
       case DioExceptionType.unknown:
         return 'Unknown Error';
       default:
