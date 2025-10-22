@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId = "com.brainx.copyrightclinic"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -36,6 +36,7 @@ android {
         
         ndk {
             abiFilters.add("arm64-v8a")
+            // abiFilters.add("armeabi-v7a")
         }
     }
 
