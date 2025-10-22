@@ -61,33 +61,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TranslatedText(
-                            AppStrings.welcome,
-                            style: TextStyle(fontSize: DimensionConstants.font16Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w400),
-                          ),
-                          SizedBox(height: DimensionConstants.gap2Px.h),
-                          BlocBuilder<ProfileBloc, ProfileState>(
-                            bloc: _profileBloc,
-                            builder: (context, state) {
-                              String userName = '-';
-                              if (state is ProfileLoaded) {
-                                userName = state.profile.name != null ? '${state.profile.name}!' : '-';
-                              }
-                              return Text(
-                                userName,
-                                style: TextStyle(
-                                  fontSize: DimensionConstants.font20Px.f,
-                                  fontWeight: FontWeight.w700,
-                                  color: context.darkTextPrimary,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TranslatedText(
+                              AppStrings.welcome,
+                              style: TextStyle(
+                                fontSize: DimensionConstants.font16Px.f,
+                                color: context.darkTextSecondary,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            SizedBox(height: DimensionConstants.gap2Px.h),
+                            BlocBuilder<ProfileBloc, ProfileState>(
+                              bloc: _profileBloc,
+                              builder: (context, state) {
+                                String userName = '-';
+                                if (state is ProfileLoaded) {
+                                  userName = state.profile.name != null ? '${state.profile.name}!' : '-';
+                                }
+                                return Text(
+                                  userName,
+                                  style: TextStyle(
+                                    fontSize: DimensionConstants.font20Px.f,
+                                    fontWeight: FontWeight.w700,
+                                    color: context.darkTextPrimary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
+                      SizedBox(width: DimensionConstants.gap8Px.w),
                       Container(
                         width: DimensionConstants.gap40Px.w,
                         height: DimensionConstants.gap40Px.w,
