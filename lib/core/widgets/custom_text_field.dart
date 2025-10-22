@@ -5,6 +5,7 @@ import '../constants/dimensions.dart';
 import '../utils/mixin/validator.dart';
 import '../utils/extensions/responsive_extensions.dart';
 import '../utils/extensions/theme_extensions.dart';
+import '../utils/password_strength.dart';
 import 'translated_text.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -25,6 +26,9 @@ class CustomTextField extends StatefulWidget {
   final VoidCallback? onEditingComplete;
   final ValueChanged<String>? onChanged;
   final String? initialValue;
+  final PasswordStrengthResult? passwordStrength;
+  final String? errorText;
+  final Color? focusedBorderColor;
 
   const CustomTextField({
     super.key,
@@ -45,6 +49,9 @@ class CustomTextField extends StatefulWidget {
     this.onEditingComplete,
     this.onChanged,
     this.initialValue,
+    this.passwordStrength,
+    this.errorText,
+    this.focusedBorderColor,
   });
 
   @override
@@ -80,6 +87,8 @@ class _CustomTextFieldState extends State<CustomTextField> with Validator {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveFocusedBorderColor = widget.focusedBorderColor ?? context.primaryColor;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -112,7 +121,7 @@ class _CustomTextFieldState extends State<CustomTextField> with Validator {
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(context.radiusMedium), borderSide: BorderSide.none),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(context.radiusMedium),
-              borderSide: BorderSide(color: context.primaryColor, width: 1.5),
+              borderSide: BorderSide(color: effectiveFocusedBorderColor, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(context.radiusMedium),
@@ -140,7 +149,27 @@ class _CustomTextFieldState extends State<CustomTextField> with Validator {
                     : widget.suffixIcon,
           ),
         ),
+        if (widget.passwordStrength != null || widget.errorText != null) _buildMessageText(context),
       ],
+    );
+  }
+
+  Widget _buildMessageText(BuildContext context) {
+    final message = widget.passwordStrength?.message ?? widget.errorText;
+    final color = widget.passwordStrength?.strength.color ?? context.red;
+
+    if (message == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: EdgeInsets.only(top: DimensionConstants.gap8Px.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_rounded, color: color, size: DimensionConstants.icon16Px.h),
+          SizedBox(width: DimensionConstants.gap8Px.w),
+          Expanded(child: Text(message, style: TextStyle(color: color, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w400))),
+        ],
+      ),
     );
   }
 }
