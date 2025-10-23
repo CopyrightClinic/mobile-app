@@ -100,8 +100,6 @@ class PushNotificationHandler {
         Log.i(runtimeType, '🏠 Navigating to Home first (replaces splash in stack)');
         context.go(AppRoutes.homeRouteName);
 
-        await Future.delayed(const Duration(milliseconds: 500));
-
         Log.i(runtimeType, '🎯 Now handling notification navigation on top of Home');
         await handleNotificationTap(pendingMessage, isFromPending: true);
       } else {
