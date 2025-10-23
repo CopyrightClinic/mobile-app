@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
+import '../../../../core/utils/enumns/ui/summary_approval_status.dart';
 import '../../domain/entities/session_details_entity.dart';
 
 part 'session_details_model.g.dart';
@@ -80,6 +81,10 @@ class SessionDetailsModel {
   final String? summary;
   @JsonKey(name: 'summaryLocked')
   final bool summaryLocked;
+  @JsonKey(name: 'summaryApprovalStatus')
+  final String? summaryApprovalStatus;
+  @JsonKey(name: 'aiGeneratedSummary')
+  final String? aiGeneratedSummary;
   @JsonKey(fromJson: _ratingFromJson, toJson: _ratingToJson)
   final double? rating;
   final String? review;
@@ -105,6 +110,8 @@ class SessionDetailsModel {
     required this.status,
     this.summary,
     required this.summaryLocked,
+    this.summaryApprovalStatus,
+    this.aiGeneratedSummary,
     this.rating,
     this.review,
     this.cancelTime,
@@ -135,6 +142,8 @@ class SessionDetailsModel {
       status: SessionStatus.fromString(status),
       summary: summary,
       summaryLocked: summaryLocked,
+      summaryApprovalStatus: summaryApprovalStatus != null ? SummaryApprovalStatus.fromString(summaryApprovalStatus!) : null,
+      aiGeneratedSummary: aiGeneratedSummary,
       rating: rating,
       review: review,
       cancelTime: cancelTime,

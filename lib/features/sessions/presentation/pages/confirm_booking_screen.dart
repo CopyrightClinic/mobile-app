@@ -46,15 +46,15 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   Widget build(BuildContext context) {
     return BlocListener<SessionsBloc, SessionsState>(
       listener: (context, state) {
-        if (state is SessionScheduled) {
+        if (state.hasSuccess && state.lastOperation == SessionsOperation.scheduleSession) {
           context.go(AppRoutes.bookingRequestSentRouteName);
-        } else if (state is SessionScheduleError) {
-          SnackBarUtils.showError(context, state.message);
-        } else if (state is SessionBooked) {
+        } else if (state.hasError && state.lastOperation == SessionsOperation.scheduleSession) {
+          SnackBarUtils.showError(context, state.errorMessage!);
+        } else if (state.hasSuccess && state.lastOperation == SessionsOperation.bookSession && state.bookSessionResponse != null) {
           SnackBarUtils.showSuccess(context, AppStrings.sessionBookedSuccessfully.tr());
           context.go(AppRoutes.bookingRequestSentRouteName);
-        } else if (state is SessionBookError) {
-          SnackBarUtils.showError(context, state.message);
+        } else if (state.hasError && state.lastOperation == SessionsOperation.bookSession) {
+          SnackBarUtils.showError(context, state.errorMessage!);
         }
       },
       child: CustomScaffold(
@@ -234,7 +234,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       padding: EdgeInsets.only(left: DimensionConstants.gap16Px.w, right: DimensionConstants.gap16Px.w, top: DimensionConstants.gap10Px.h),
       child: BlocBuilder<SessionsBloc, SessionsState>(
         builder: (context, state) {
-          final isLoading = state is SessionScheduleLoading || state is SessionBookLoading;
+          final isLoading = state.isProcessingSchedule || state.isProcessingBook;
           return AuthButton(text: AppStrings.confirmAndBookSession, onPressed: _onConfirmBooking, isLoading: isLoading, isEnabled: true);
         },
       ),

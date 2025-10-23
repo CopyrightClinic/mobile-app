@@ -69,4 +69,5 @@ class ImageConstants {
   static const String unlockSummary = '$svg/unlock_summary.svg';
   static const String starFilled = '$svg/star_filled.svg';
   static const String starUnfilled = '$svg/star_unfilled.svg';
+  static const String unlockSummaryPayment = '$svg/unlock_summary_payment.svg';
 }
