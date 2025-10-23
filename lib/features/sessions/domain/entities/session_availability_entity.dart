@@ -3,8 +3,9 @@ class SessionAvailabilityEntity {
   final DateTime endDate;
   final int slotMinutes;
   final List<AvailabilityDayEntity> days;
+  final SessionFeeEntity fee;
 
-  const SessionAvailabilityEntity({required this.startDate, required this.endDate, required this.slotMinutes, required this.days});
+  const SessionAvailabilityEntity({required this.startDate, required this.endDate, required this.slotMinutes, required this.days, required this.fee});
 }
 
 class AvailabilityDayEntity {
@@ -36,4 +37,11 @@ class TimeSlotEntity {
 
     return '${formatTime(startHour, startMinute)} - ${formatTime(endHour, endMinute)}';
   }
+}
+
+class SessionFeeEntity {
+  final num amount;
+  final String currency;
+
+  const SessionFeeEntity({required this.amount, required this.currency});
 }

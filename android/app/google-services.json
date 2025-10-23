@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "679420297161",
+    "project_id": "copyright-clinic-c0d97",
+    "storage_bucket": "copyright-clinic-c0d97.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679420297161:android:688cfc8c6ff009da947218",
+        "android_client_info": {
+          "package_name": "com.brainx.copyrightclinic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzZMZZkBb01EHAyap5Lu74apF8Jwhmt6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

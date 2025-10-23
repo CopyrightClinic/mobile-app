@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
@@ -47,7 +49,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
             height: DimensionConstants.gap40Px.w,
             decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                context.pushNamed(AppRoutes.notificationsRouteName);
+              },
               borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
               child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w)),
             ),

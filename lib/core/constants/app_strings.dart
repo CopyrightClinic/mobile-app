@@ -399,6 +399,18 @@ class AppStrings {
   static const failedToChangePasswordGeneric = 'failedToChangePasswordGeneric';
   static const failedToDeleteAccountGeneric = 'failedToDeleteAccountGeneric';
 
+  // Notifications
+  static const notifications = 'notifications';
+  static const yourSessionSummaryIsReady = 'yourSessionSummaryIsReady';
+  static const sessionSummaryDescription = 'sessionSummaryDescription';
+  static const yourSessionStartsIn1Hour = 'yourSessionStartsIn1Hour';
+  static const sessionStartsDescription = 'sessionStartsDescription';
+  static const justNow = 'justNow';
+  static const oneHourAgo = 'oneHourAgo';
+  static const noNotifications = 'noNotifications';
+  static const noNotificationsDescription = 'noNotificationsDescription';
+  static const markAllAsRead = 'markAllAsRead';
+  static const allNotificationsMarkedAsRead = 'allNotificationsMarkedAsRead';
   // Session Details Screen
   static const sessionDetailsTitle = 'sessionDetailsTitle';
   static const yourRatingAndReview = 'yourRatingAndReview';

@@ -59,6 +59,13 @@ import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
 import 'features/harold_ai/domain/repositories/harold_repository.dart';
 import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
+import 'features/notifications/data/datasources/notification_remote_data_source.dart';
+import 'features/notifications/data/repositories/notification_repository_impl.dart';
+import 'features/notifications/domain/repositories/notification_repository.dart';
+import 'features/notifications/domain/usecases/get_notifications_usecase.dart';
+import 'features/notifications/domain/usecases/mark_all_notifications_as_read_usecase.dart';
+import 'features/notifications/presentation/bloc/notification_bloc.dart';
+import 'core/services/fcm_service.dart';
 
 final sl = GetIt.instance;
 
@@ -89,6 +96,9 @@ Future<void> init() async {
   /// Register API Service as a singleton
   sl.registerLazySingleton<ApiService>(() => ApiService(sl<DioService>()));
 
+  /// Register FCM Service as a singleton
+  sl.registerLazySingleton<FCMService>(() => FCMService(remoteDataSource: sl()));
+
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
@@ -96,6 +106,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
   sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
@@ -104,6 +115,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SpeechToTextRepository>(() => SpeechToTextRepositoryImpl(localDataSource: sl()));
   sl.registerLazySingleton<HaroldRepository>(() => HaroldRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -132,6 +144,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
   sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
   sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
+  sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
+  sl.registerLazySingleton(() => MarkAllNotificationsAsReadUseCase(repository: sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -168,6 +182,9 @@ Future<void> init() async {
 
   // Profile Bloc
   sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
+
+  // Notification Bloc
+  sl.registerLazySingleton(() => NotificationBloc(getNotificationsUseCase: sl(), markAllNotificationsAsReadUseCase: sl()));
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

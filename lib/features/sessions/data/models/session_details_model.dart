@@ -25,7 +25,7 @@ class SessionDetailsAttorneyModel {
   final String email;
   final String? profileUrl;
 
-  const SessionDetailsAttorneyModel({required this.id, required this.name, required this.email, this.profileUrl});
+  const SessionDetailsAttorneyModel({required this.id, this.name, required this.email, this.profileUrl});
 
   factory SessionDetailsAttorneyModel.fromJson(Map<String, dynamic> json) => _$SessionDetailsAttorneyModelFromJson(json);
   Map<String, dynamic> toJson() => _$SessionDetailsAttorneyModelToJson(this);

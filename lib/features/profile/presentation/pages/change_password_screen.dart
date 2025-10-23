@@ -54,9 +54,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with Valida
   }
 
   bool get _isFormValid {
-    final currentPassword = _currentPasswordController.text.trim();
-    final newPassword = _newPasswordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
+    final currentPassword = _currentPasswordController.text;
+    final newPassword = _newPasswordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
     final currentPasswordValidation = validatePassword(currentPassword, tr, isLogin: true);
     final newPasswordValidation = _validateNewPassword(currentPassword, newPassword, tr);
@@ -136,7 +136,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with Valida
 
   void _handleConfirmPasswordChange(String value) {
     if (value.isNotEmpty && _newPasswordController.text.isNotEmpty) {
-      if (_newPasswordController.text.trim() == value) {
+      if (_newPasswordController.text == value) {
         _buttonSetState?.call(() {});
       } else {
         _buttonSetState?.call(() {});
@@ -210,7 +210,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with Valida
                                       controller: _newPasswordController,
                                       focusNode: _newPasswordFocusNode,
                                       isPassword: true,
-                                      validator: (value) => _validateNewPassword(_currentPasswordController.text.trim(), value, tr),
+                                      validator: (value) => _validateNewPassword(_currentPasswordController.text, value, tr),
                                       onEditingComplete: () => _confirmPasswordFocusNode.requestFocus(),
                                       onChanged: (value) {
                                         _onFieldChanged();
@@ -233,7 +233,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with Valida
                                   controller: _confirmPasswordController,
                                   focusNode: _confirmPasswordFocusNode,
                                   isPassword: true,
-                                  validator: (value) => _validateConfirmPassword(_newPasswordController.text.trim(), value, tr),
+                                  validator: (value) => _validateConfirmPassword(_newPasswordController.text, value, tr),
                                   onEditingComplete: _handleChangePassword,
                                   onChanged: (value) {
                                     _onFieldChanged();

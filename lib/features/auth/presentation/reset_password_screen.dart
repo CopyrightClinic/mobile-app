@@ -52,8 +52,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
   }
 
   bool get _isFormValid {
-    final newPassword = _newPasswordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
+    final newPassword = _newPasswordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
     final passwordValidation = validatePassword(newPassword, tr, isLogin: false);
     final confirmPasswordValidation = _validateConfirmPassword(newPassword, confirmPassword, tr);
@@ -112,7 +112,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
 
   void _handleConfirmPasswordChange(String value) {
     if (value.isNotEmpty && _newPasswordController.text.isNotEmpty) {
-      if (_newPasswordController.text.trim() == value) {
+      if (_newPasswordController.text == value) {
         _buttonSetState?.call(() {});
       } else {
         _buttonSetState?.call(() {});
@@ -200,7 +200,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
                                 controller: _confirmPasswordController,
                                 focusNode: _confirmPasswordFocusNode,
                                 isPassword: true,
-                                validator: (value) => _validateConfirmPassword(_newPasswordController.text.trim(), value, tr),
+                                validator: (value) => _validateConfirmPassword(_newPasswordController.text, value, tr),
                                 onEditingComplete: () => _confirmPasswordFocusNode.unfocus(),
                                 onChanged: (value) {
                                   _onFieldChanged();
