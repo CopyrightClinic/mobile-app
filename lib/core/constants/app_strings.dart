@@ -514,4 +514,9 @@ class AppStrings {
   static const selectPaymentMethod = 'selectPaymentMethod';
   static const confirmAndPay = 'confirmAndPay';
   static const failedToUnlockSessionSummary = 'failedToUnlockSessionSummary';
+
+  static const sessionSummary = 'sessionSummary';
+  static const sessionId = 'sessionId';
+  static const pageOf = 'pageOf';
+  static const sessionSummaryFilename = 'sessionSummaryFilename';
 }

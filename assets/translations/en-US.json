@@ -439,5 +439,9 @@
   "failedToLoadPaymentMethods": "Failed to load payment methods",
   "failedToUnlockSessionSummary": "Failed to unlock session summary",
   "downloadPDF": "Download PDF",
-  "failedToGeneratePDF": "Failed to generate PDF"
+  "failedToGeneratePDF": "Failed to generate PDF",
+  "sessionSummary": "Session Summary",
+  "sessionId": "Session ID",
+  "pageOf": "Page {pageNumber} of {pagesCount}",
+  "sessionSummaryFilename": "session_summary"
 }
