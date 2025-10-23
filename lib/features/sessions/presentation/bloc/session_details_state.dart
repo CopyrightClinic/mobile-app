@@ -1,71 +1,62 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/session_details_entity.dart';
 
-abstract class SessionDetailsState extends Equatable {
-  const SessionDetailsState();
+class SessionDetailsState extends Equatable {
+  final SessionDetailsEntity? sessionDetails;
+  final bool isLoadingDetails;
+  final bool isProcessingFeedback;
+  final bool isProcessingUnlockSummary;
+  final String? errorMessage;
+  final String? successMessage;
+  final SessionDetailsOperation? lastOperation;
+
+  const SessionDetailsState({
+    this.sessionDetails,
+    this.isLoadingDetails = false,
+    this.isProcessingFeedback = false,
+    this.isProcessingUnlockSummary = false,
+    this.errorMessage,
+    this.successMessage,
+    this.lastOperation,
+  });
+
+  bool get hasData => sessionDetails != null;
+  bool get hasError => errorMessage != null;
+  bool get hasSuccess => successMessage != null;
+  bool get isProcessing => isProcessingFeedback || isProcessingUnlockSummary;
+
+  SessionDetailsState copyWith({
+    SessionDetailsEntity? sessionDetails,
+    bool? isLoadingDetails,
+    bool? isProcessingFeedback,
+    bool? isProcessingUnlockSummary,
+    String? errorMessage,
+    bool clearError = false,
+    String? successMessage,
+    bool clearSuccess = false,
+    SessionDetailsOperation? lastOperation,
+  }) {
+    return SessionDetailsState(
+      sessionDetails: sessionDetails ?? this.sessionDetails,
+      isLoadingDetails: isLoadingDetails ?? this.isLoadingDetails,
+      isProcessingFeedback: isProcessingFeedback ?? this.isProcessingFeedback,
+      isProcessingUnlockSummary: isProcessingUnlockSummary ?? this.isProcessingUnlockSummary,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      successMessage: clearSuccess ? null : (successMessage ?? this.successMessage),
+      lastOperation: lastOperation ?? this.lastOperation,
+    );
+  }
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [
+    sessionDetails,
+    isLoadingDetails,
+    isProcessingFeedback,
+    isProcessingUnlockSummary,
+    errorMessage,
+    successMessage,
+    lastOperation,
+  ];
 }
 
-class SessionDetailsInitial extends SessionDetailsState {
-  const SessionDetailsInitial();
-}
-
-class SessionDetailsLoading extends SessionDetailsState {
-  const SessionDetailsLoading();
-}
-
-class SessionDetailsLoaded extends SessionDetailsState {
-  final SessionDetailsEntity sessionDetails;
-
-  const SessionDetailsLoaded({required this.sessionDetails});
-
-  @override
-  List<Object> get props => [sessionDetails];
-}
-
-class SessionDetailsError extends SessionDetailsState {
-  final String message;
-
-  const SessionDetailsError({required this.message});
-
-  @override
-  List<Object> get props => [message];
-}
-
-class SessionDetailsCancelLoading extends SessionDetailsState {
-  final SessionDetailsEntity sessionDetails;
-
-  const SessionDetailsCancelLoading({required this.sessionDetails});
-
-  @override
-  List<Object> get props => [sessionDetails];
-}
-
-class SessionDetailsCancelled extends SessionDetailsState {
-  final String message;
-
-  const SessionDetailsCancelled({required this.message});
-
-  @override
-  List<Object> get props => [message];
-}
-
-class SessionDetailsFeedbackLoading extends SessionDetailsState {
-  final SessionDetailsEntity sessionDetails;
-
-  const SessionDetailsFeedbackLoading({required this.sessionDetails});
-
-  @override
-  List<Object> get props => [sessionDetails];
-}
-
-class SessionDetailsFeedbackSubmitted extends SessionDetailsState {
-  final String message;
-
-  const SessionDetailsFeedbackSubmitted({required this.message});
-
-  @override
-  List<Object> get props => [message];
-}
+enum SessionDetailsOperation { loadDetails, submitFeedback, unlockSummary }

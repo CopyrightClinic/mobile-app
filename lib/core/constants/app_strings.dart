@@ -221,6 +221,10 @@ class AppStrings {
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
   static const joinSession = 'joinSession';
+  static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
+  static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
+  static const youCanRequestUntil = 'youCanRequestUntil';
+  static const summaryRequestExpired = 'summaryRequestExpired';
   static const charged = 'charged';
   static const holdAmountChargedAfterSession = 'holdAmountChargedAfterSession';
   static const youCanCancelTill = 'youCanCancelTill';
@@ -402,6 +406,13 @@ class AppStrings {
   static const unlockSummaryFor = 'unlockSummaryFor';
   static const payToRequestSummary = 'payToRequestSummary';
   static const requestSummaryDeadline = 'requestSummaryDeadline';
+  static const summaryReviewInProgress = 'summaryReviewInProgress';
+  static const adminReviewInProgressDescription = 'adminReviewInProgressDescription';
+  static const attorneyReviewInProgressDescription = 'attorneyReviewInProgressDescription';
+  static const yourSummaryIsReady = 'yourSummaryIsReady';
+  static const viewSummary = 'viewSummary';
+  static const downloadPDF = 'downloadPDF';
+  static const failedToGeneratePDF = 'failedToGeneratePDF';
   static const noRating = 'noRating';
   static const noReviewProvided = 'noReviewProvided';
   static const summaryUnlockRequested = 'summaryUnlockRequested';
@@ -419,4 +430,15 @@ class AppStrings {
   static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
   static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
   static const failedToSubmitFeedback = 'failedToSubmitFeedback';
+  static const confirmPurchase = 'confirmPurchase';
+  static const professionallyReviewedSummaryDescription = 'professionallyReviewedSummaryDescription';
+  static const forSessionSummary = 'forSessionSummary';
+  static const selectPaymentMethod = 'selectPaymentMethod';
+  static const confirmAndPay = 'confirmAndPay';
+  static const failedToUnlockSessionSummary = 'failedToUnlockSessionSummary';
+
+  static const sessionSummary = 'sessionSummary';
+  static const sessionId = 'sessionId';
+  static const pageOf = 'pageOf';
+  static const sessionSummaryFilename = 'sessionSummaryFilename';
 }

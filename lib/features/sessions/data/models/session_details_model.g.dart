@@ -10,7 +10,7 @@ SessionDetailsAttorneyModel _$SessionDetailsAttorneyModelFromJson(
   Map<String, dynamic> json,
 ) => SessionDetailsAttorneyModel(
   id: json['id'] as String,
-  name: json['name'] as String,
+  name: json['name'] as String?,
   email: json['email'] as String,
   profileUrl: json['profileUrl'] as String?,
 );
@@ -60,6 +60,8 @@ SessionDetailsModel _$SessionDetailsModelFromJson(Map<String, dynamic> json) =>
       status: json['status'] as String,
       summary: json['summary'] as String?,
       summaryLocked: json['summaryLocked'] as bool,
+      summaryApprovalStatus: json['summaryApprovalStatus'] as String?,
+      aiGeneratedSummary: json['aiGeneratedSummary'] as String?,
       rating: _ratingFromJson(json['rating']),
       review: json['review'] as String?,
       cancelTime: json['cancelTime'] as String?,
@@ -88,6 +90,8 @@ Map<String, dynamic> _$SessionDetailsModelToJson(
   'status': instance.status,
   'summary': instance.summary,
   'summaryLocked': instance.summaryLocked,
+  'summaryApprovalStatus': instance.summaryApprovalStatus,
+  'aiGeneratedSummary': instance.aiGeneratedSummary,
   'rating': _ratingToJson(instance.rating),
   'review': instance.review,
   'cancelTime': instance.cancelTime,

@@ -20,7 +20,7 @@ dynamic _ratingToJson(double? value) => value;
 @JsonSerializable()
 class AttorneyModel {
   final String id;
-  final String name;
+  final String? name;
   final String email;
 
   const AttorneyModel({required this.id, required this.name, required this.email});

@@ -1,9 +1,10 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
+import '../../../../core/utils/enumns/ui/summary_approval_status.dart';
 
 class SessionDetailsAttorneyEntity extends Equatable {
   final String id;
-  final String name;
+  final String? name;
   final String email;
   final String? profileUrl;
 
@@ -43,6 +44,8 @@ class SessionDetailsEntity extends Equatable {
   final SessionStatus status;
   final String? summary;
   final bool summaryLocked;
+  final SummaryApprovalStatus? summaryApprovalStatus;
+  final String? aiGeneratedSummary;
   final double? rating;
   final String? review;
   final String? cancelTime;
@@ -64,6 +67,8 @@ class SessionDetailsEntity extends Equatable {
     required this.status,
     this.summary,
     required this.summaryLocked,
+    this.summaryApprovalStatus,
+    this.aiGeneratedSummary,
     this.rating,
     this.review,
     this.cancelTime,
@@ -87,6 +92,8 @@ class SessionDetailsEntity extends Equatable {
     status,
     summary,
     summaryLocked,
+    summaryApprovalStatus,
+    aiGeneratedSummary,
     rating,
     review,
     cancelTime,
@@ -103,6 +110,38 @@ class SessionDetailsEntity extends Equatable {
   bool get isUpcoming => status.isUpcoming;
   bool get isCompleted => status.isCompleted;
   bool get isCancelled => status.isCancelled;
+
+  bool get canJoin {
+    if (!isUpcoming) return false;
+
+    final now = DateTime.now();
+    final sessionStart = scheduledDateTime;
+    final tenMinutesBeforeSession = sessionStart.subtract(const Duration(minutes: 10));
+
+    return now.isAfter(tenMinutesBeforeSession) || now.isAtSameMomentAs(tenMinutesBeforeSession);
+  }
+
+  bool get canRequestSummary {
+    if (!isCompleted) return false;
+
+    final now = DateTime.now();
+    final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
+    final oneHourAfterSession = sessionEnd.add(const Duration(hours: 1));
+    final fifteenDaysAfterSession = sessionEnd.add(const Duration(days: 15));
+
+    return (now.isAfter(oneHourAfterSession) || now.isAtSameMomentAs(oneHourAfterSession)) && now.isBefore(fifteenDaysAfterSession);
+  }
+
+  DateTime get summaryRequestDeadline {
+    final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
+    return sessionEnd.add(const Duration(days: 15));
+  }
+
+  bool get hasSummaryRequestExpired {
+    if (!isCompleted) return false;
+    final now = DateTime.now();
+    return now.isAfter(summaryRequestDeadline) || now.isAtSameMomentAs(summaryRequestDeadline);
+  }
 
   String get formattedDuration {
     final hours = durationMinutes ~/ 60;

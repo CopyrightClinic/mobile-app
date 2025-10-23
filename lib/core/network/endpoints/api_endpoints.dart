@@ -52,7 +52,7 @@ class ApiEndpoint {
   /// Sessions endpoints
   ///
   /// Provides session operations:
-  static String sessions(SessionsEndpoint endpoint) {
+  static String sessions(SessionsEndpoint endpoint, {String? sessionId}) {
     switch (endpoint) {
       case SessionsEndpoint.USER_SESSIONS:
         return '/user/sessions';
@@ -64,6 +64,10 @@ class ApiEndpoint {
         return '/sessions-availability';
       case SessionsEndpoint.BOOK_SESSION:
         return '/session-requests/book-session';
+      case SessionsEndpoint.SESSION_SUMMARY:
+        return '/session-summary';
+      case SessionsEndpoint.CANCEL_SESSION:
+        return '/sessions/${sessionId ?? ''}/cancel';
     }
   }
 

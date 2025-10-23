@@ -56,6 +56,19 @@ class PaymentMethodsListConfig {
     );
   }
 
+  /// Factory constructor for unlock summary bottom sheet configuration
+  /// Shows payment methods with selection functionality and add button
+  factory PaymentMethodsListConfig.forUnlockSummary({required Function(PaymentMethodEntity) onSelect, required VoidCallback onAddPaymentMethod}) {
+    return PaymentMethodsListConfig(
+      emptyStateMessage: AppStrings.noPaymentMethodsAddOne,
+      showAddButton: true,
+      wrapWithGestureDetector: true,
+      onAddPaymentMethod: onAddPaymentMethod,
+      onPaymentMethodTap: onSelect,
+      onPaymentMethodSelect: onSelect,
+    );
+  }
+
   /// Returns the appropriate action for a payment method based on the configuration
   PaymentMethodCardAction getActionForPaymentMethod(PaymentMethodEntity paymentMethod) {
     if (onPaymentMethodDelete != null) {

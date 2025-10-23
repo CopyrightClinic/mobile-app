@@ -9,7 +9,7 @@ part of 'session_model.dart';
 AttorneyModel _$AttorneyModelFromJson(Map<String, dynamic> json) =>
     AttorneyModel(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name: json['name'] as String?,
       email: json['email'] as String,
     );
 

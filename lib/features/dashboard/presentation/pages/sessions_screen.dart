@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
@@ -16,6 +15,7 @@ import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
 import '../../../sessions/presentation/widgets/sessions_tab_selector.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
+import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 
 class SessionsScreen extends StatefulWidget {
@@ -57,10 +57,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
       ),
       body: BlocConsumer<SessionsBloc, SessionsState>(
         listener: (context, state) {
-          if (state is SessionsError) {
-            SnackBarUtils.showError(context, state.message);
-          } else if (state is SessionCancelled) {
-            SnackBarUtils.showSuccess(context, state.message);
+          if (state.hasError) {
+            SnackBarUtils.showError(context, state.errorMessage!);
+          } else if (state.hasSuccess && state.lastOperation == SessionsOperation.cancelSession) {
+            SnackBarUtils.showSuccess(context, state.successMessage!);
           }
         },
         builder: (context, state) {
@@ -68,7 +68,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap12Px.h),
             child: Column(
               children: [
-                if (state is SessionsLoaded) ...[
+                if (state.hasUpcomingData) ...[
                   SessionsTabSelector(
                     isUpcomingSelected: state.currentTab == SessionsTab.upcoming,
                     onUpcomingTap: () {
@@ -90,130 +90,134 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   Widget _buildContent(BuildContext context, SessionsState state) {
-    if (state is SessionsLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
+    final hasData = isUpcomingTab ? state.hasUpcomingData : state.hasCompletedData;
 
-    if (state is SessionsError) {
-      return _buildErrorState(context, state.message);
-    }
-
-    if (state is SessionsLoaded) {
-      final sessions = state.currentSessions;
-
-      if (sessions.isEmpty) {
-        return _buildEmptyState(context, state.currentTab == SessionsTab.upcoming);
-      }
-
-      return RefreshIndicator(
-        onRefresh: () async {
-          _sessionsBloc.add(const RefreshSessions());
-        },
-        child: ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: sessions.length,
-          padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
-          itemBuilder: (context, index) {
-            final session = sessions[index];
-            return SessionCard(
-              session: session,
-              onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
-              onJoin: session.isUpcoming ? () => _joinSession(context, session.id) : null,
+    return RefreshIndicator(
+      onRefresh: () async {
+        _sessionsBloc.add(const RefreshSessions());
+      },
+      child: Builder(
+        builder: (context) {
+          if (state.isLoadingSessions && !hasData) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: const Center(child: CircularProgressIndicator()))],
             );
-          },
-        ),
-      );
-    }
+          }
 
-    return _buildEmptyState(context, true);
+          if (state.hasError && !hasData) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildErrorState(context, state.errorMessage!))],
+            );
+          }
+
+          if (hasData) {
+            final sessions = state.currentSessions;
+
+            if (sessions.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: _buildEmptyState(context, state.currentTab == SessionsTab.upcoming),
+                  ),
+                ],
+              );
+            }
+
+            return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: sessions.length,
+              padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
+              itemBuilder: (context, index) {
+                final session = sessions[index];
+                return SessionCard(
+                  session: session,
+                  onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
+                  onJoin: session.isUpcoming ? () => _joinSession(context, session.id) : null,
+                );
+              },
+            );
+          }
+
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, true))],
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildEmptyState(BuildContext context, bool isUpcoming) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.event_note_outlined, size: DimensionConstants.gap64Px.w, color: context.darkTextSecondary),
-          SizedBox(height: DimensionConstants.gap24Px.h),
-          TranslatedText(
-            isUpcoming ? AppStrings.noUpcomingSessions : AppStrings.noCompletedSessions,
-            style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
-          ),
-          SizedBox(height: DimensionConstants.gap8Px.h),
-          TranslatedText(
-            isUpcoming ? AppStrings.noSessionsYet : AppStrings.completedSessionsDescription,
-            style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.event_note_outlined, size: DimensionConstants.gap64Px.w, color: context.darkTextSecondary),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+        TranslatedText(
+          isUpcoming ? AppStrings.noUpcomingSessions : AppStrings.noCompletedSessions,
+          style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
+        ),
+        SizedBox(height: DimensionConstants.gap8Px.h),
+        TranslatedText(
+          isUpcoming ? AppStrings.noSessionsYet : AppStrings.completedSessionsDescription,
+          style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+        ),
+      ],
     );
   }
 
   Widget _buildErrorState(BuildContext context, String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: DimensionConstants.gap64Px.w, color: context.red),
-          SizedBox(height: DimensionConstants.gap24Px.h),
-          TranslatedText(
-            AppStrings.somethingWentWrong,
-            style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.error_outline, size: DimensionConstants.gap64Px.w, color: context.red),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+        TranslatedText(
+          AppStrings.somethingWentWrong,
+          style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
+        ),
+        SizedBox(height: DimensionConstants.gap8Px.h),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+          child: Text(
+            message,
+            style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+            textAlign: TextAlign.center,
           ),
-          SizedBox(height: DimensionConstants.gap8Px.h),
-          Text(message, style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary), textAlign: TextAlign.center),
-          SizedBox(height: DimensionConstants.gap24Px.h),
-          ElevatedButton(
-            onPressed: () {
-              _sessionsBloc.add(const LoadUserSessions());
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.darkSecondary,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap12Px.h),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
-            ),
-            child: TranslatedText(AppStrings.retry, style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600)),
+        ),
+        SizedBox(height: DimensionConstants.gap24Px.h),
+        ElevatedButton(
+          onPressed: () {
+            _sessionsBloc.add(const LoadUserSessions());
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: context.darkSecondary,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap12Px.h),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
           ),
-        ],
-      ),
+          child: TranslatedText(AppStrings.retry, style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600)),
+        ),
+      ],
     );
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       builder:
-          (dialogContext) => AlertDialog(
-            backgroundColor: context.filledBgDark,
-            title: TranslatedText(
-              AppStrings.cancelSessionTitle,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600),
-            ),
-            content: TranslatedText(
-              AppStrings.cancelSessionMessage,
-              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => context.pop(),
-                child: TranslatedText(
-                  AppStrings.keepSession,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  context.pop();
-                  _sessionsBloc.add(CancelSessionRequested(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()));
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: context.red, foregroundColor: Colors.white),
-                child: TranslatedText(
-                  AppStrings.cancelSession,
-                  style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
+          (bottomSheetContext) => BlocProvider.value(
+            value: _sessionsBloc,
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
           ),
     );
   }
