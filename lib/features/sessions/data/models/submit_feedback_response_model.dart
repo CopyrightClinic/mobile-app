@@ -7,11 +7,11 @@ part 'submit_feedback_response_model.g.dart';
 class SubmitFeedbackSessionModel {
   final String id;
   final double rating;
-  final String review;
+  final String? review;
   @JsonKey(name: 'updatedAt')
   final DateTime updatedAt;
 
-  const SubmitFeedbackSessionModel({required this.id, required this.rating, required this.review, required this.updatedAt});
+  const SubmitFeedbackSessionModel({required this.id, required this.rating, this.review, required this.updatedAt});
 
   factory SubmitFeedbackSessionModel.fromJson(Map<String, dynamic> json) => _$SubmitFeedbackSessionModelFromJson(json);
   Map<String, dynamic> toJson() => _$SubmitFeedbackSessionModelToJson(this);

@@ -118,6 +118,7 @@ class AppStrings {
   static const completeYourProfile = 'completeYourProfile';
   static const fullName = 'fullName';
   static const phoneNumber = 'phoneNumber';
+  static const phone = 'phone';
   static const address = 'address';
   static const enterYourFullName = 'enterYourFullName';
   static const enterYourPhoneNumber = 'enterYourPhoneNumber';
@@ -399,6 +400,69 @@ class AppStrings {
   static const failedToChangePasswordGeneric = 'failedToChangePasswordGeneric';
   static const failedToDeleteAccountGeneric = 'failedToDeleteAccountGeneric';
 
+  // Zoom Meeting
+  static const joinMeeting = 'joinMeeting';
+  static const leaveMeeting = 'leaveMeeting';
+  static const meetingNumber = 'meetingNumber';
+  static const meetingPasscode = 'meetingPasscode';
+  static const enterMeetingNumber = 'enterMeetingNumber';
+  static const enterMeetingPasscode = 'enterMeetingPasscode';
+  static const displayName = 'displayName';
+  static const enterDisplayName = 'enterDisplayName';
+  static const joinCall = 'joinCall';
+  static const leaveCall = 'leaveCall';
+  static const cameraPermission = 'cameraPermission';
+  static const microphonePermission = 'microphonePermission';
+  static const bluetoothPermission = 'bluetoothPermission';
+  static const notificationsPermission = 'notificationsPermission';
+  static const permissionRequired = 'permissionRequired';
+  static const permissionDenied = 'permissionDenied';
+  static const pleaseGrantPermissions = 'pleaseGrantPermissions';
+  static const openSettings = 'openSettings';
+  static const grantPermissions = 'grantPermissions';
+  static const permissionsNeeded = 'permissionsNeeded';
+  static const cameraAndMicrophoneRequired = 'cameraAndMicrophoneRequired';
+
+  // Zoom Status
+  static const zoomStatusIdle = 'zoomStatusIdle';
+  static const zoomStatusConnecting = 'zoomStatusConnecting';
+  static const zoomStatusWaitingForHost = 'zoomStatusWaitingForHost';
+  static const zoomStatusInWaitingRoom = 'zoomStatusInWaitingRoom';
+  static const zoomStatusInMeeting = 'zoomStatusInMeeting';
+  static const zoomStatusDisconnecting = 'zoomStatusDisconnecting';
+  static const zoomStatusReconnecting = 'zoomStatusReconnecting';
+  static const zoomStatusFailed = 'zoomStatusFailed';
+  static const zoomStatusEnded = 'zoomStatusEnded';
+  static const zoomStatusLocked = 'zoomStatusLocked';
+  static const zoomStatusUnlocked = 'zoomStatusUnlocked';
+  static const zoomStatusAuthExpired = 'zoomStatusAuthExpired';
+  static const zoomStatusUnknown = 'zoomStatusUnknown';
+  static const loadingMeetingDetails = 'loadingMeetingDetails';
+  static const zoomInitializing = 'zoomInitializing';
+  static const connectingToMeeting = 'connectingToMeeting';
+  static const pleaseWait = 'pleaseWait';
+  static const areYouSureYouWantToLeaveMeeting = 'areYouSureYouWantToLeaveMeeting';
+  static const leave = 'leave';
+
+  // Zoom Error Messages
+  static const zoomErrorFetchJwt = 'zoomErrorFetchJwt';
+  static const zoomErrorFetchCredentials = 'zoomErrorFetchCredentials';
+  static const zoomErrorAlreadyInitializing = 'zoomErrorAlreadyInitializing';
+  static const zoomErrorPlatformNotSupported = 'zoomErrorPlatformNotSupported';
+  static const zoomErrorInvalidMeetingNumber = 'zoomErrorInvalidMeetingNumber';
+  static const zoomErrorNetworkUnavailable = 'zoomErrorNetworkUnavailable';
+  static const zoomErrorJwtInvalid = 'zoomErrorJwtInvalid';
+  static const zoomErrorInitFailed = 'zoomErrorInitFailed';
+  static const zoomErrorJoinFailed = 'zoomErrorJoinFailed';
+  static const zoomMeetingNotStarted = 'zoomMeetingNotStarted';
+  static const zoomWrongPasscode = 'zoomWrongPasscode';
+  static const zoomMeetingLocked = 'zoomMeetingLocked';
+  static const zoomMeetingEnded = 'zoomMeetingEnded';
+  static const zoomTryAgain = 'zoomTryAgain';
+  static const zoomExit = 'zoomExit';
+  static const zoomWaitingMessage = 'zoomWaitingMessage';
+  static const zoomAdmittedSoon = 'zoomAdmittedSoon';
+  static const zoomConnectingMessage = 'zoomConnectingMessage';
   // Notifications
   static const notifications = 'notifications';
   static const yourSessionSummaryIsReady = 'yourSessionSummaryIsReady';
@@ -442,6 +506,9 @@ class AppStrings {
   static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
   static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
   static const failedToSubmitFeedback = 'failedToSubmitFeedback';
+
+  static const loadingMore = 'loadingMore';
+  static const failedToLoadMoreSessions = 'failedToLoadMoreSessions';
   static const confirmPurchase = 'confirmPurchase';
   static const professionallyReviewedSummaryDescription = 'professionallyReviewedSummaryDescription';
   static const forSessionSummary = 'forSessionSummary';

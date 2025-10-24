@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
 import '../../domain/entities/session_entity.dart';
+import 'session_availability_model.dart';
 
 part 'session_model.g.dart';
 
@@ -54,6 +55,8 @@ class SessionModel {
   @JsonKey(name: 'cancelTimeExpired')
   final bool? cancelTimeExpired;
   final AttorneyModel attorney;
+  @JsonKey(name: 'session_fee')
+  final SessionFeeModel? sessionFee;
   @JsonKey(name: 'createdAt')
   final DateTime createdAt;
   @JsonKey(name: 'updatedAt')
@@ -72,6 +75,7 @@ class SessionModel {
     this.cancelTime,
     this.cancelTimeExpired,
     required this.attorney,
+    this.sessionFee,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -80,8 +84,9 @@ class SessionModel {
 
   Map<String, dynamic> toJson() => _$SessionModelToJson(this);
 
-  SessionEntity toEntity() {
-    final holdAmount = 50.0;
+  SessionEntity toEntity({SessionFeeModel? sharedSessionFee}) {
+    final effectiveFee = sessionFee ?? sharedSessionFee;
+    final holdAmount = effectiveFee?.sessionFee.toDouble() ?? 50.0;
     final canCancel =
         cancelTimeExpired != null
             ? !cancelTimeExpired!
@@ -100,6 +105,7 @@ class SessionModel {
       cancelTime: cancelTime,
       cancelTimeExpired: cancelTimeExpired,
       attorney: attorney.toEntity(),
+      sessionFee: effectiveFee?.toEntity(),
       createdAt: createdAt,
       updatedAt: updatedAt,
       holdAmount: holdAmount,
@@ -121,6 +127,15 @@ class SessionModel {
       cancelTime: null,
       cancelTimeExpired: !entity.canCancel,
       attorney: AttorneyModel(id: entity.attorney.id, name: entity.attorney.name, email: entity.attorney.email),
+      sessionFee:
+          entity.sessionFee != null
+              ? SessionFeeModel(
+                sessionFee: entity.sessionFee!.sessionFee,
+                processingFee: entity.sessionFee!.processingFee,
+                totalFee: entity.sessionFee!.totalFee,
+                currency: entity.sessionFee!.currency,
+              )
+              : null,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     );

@@ -71,18 +71,24 @@ class TimeSlotModel {
 
 @JsonSerializable()
 class SessionFeeModel {
+  @JsonKey(name: 'sessionFee')
+  final num sessionFee;
+
+  @JsonKey(name: 'processingFee')
+  final num processingFee;
+
   @JsonKey(name: 'totalFee')
-  final num amount;
+  final num totalFee;
 
   final String currency;
 
-  const SessionFeeModel({required this.amount, required this.currency});
+  const SessionFeeModel({required this.sessionFee, required this.processingFee, required this.totalFee, required this.currency});
 
   factory SessionFeeModel.fromJson(Map<String, dynamic> json) => _$SessionFeeModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$SessionFeeModelToJson(this);
 
   SessionFeeEntity toEntity() {
-    return SessionFeeEntity(amount: amount, currency: currency);
+    return SessionFeeEntity(sessionFee: sessionFee, processingFee: processingFee, totalFee: totalFee, currency: currency);
   }
 }

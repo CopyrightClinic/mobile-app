@@ -15,6 +15,10 @@ class RefreshSessions extends SessionsEvent {
   const RefreshSessions();
 }
 
+class LoadMoreSessions extends SessionsEvent {
+  const LoadMoreSessions();
+}
+
 class SwitchToUpcoming extends SessionsEvent {
   const SwitchToUpcoming();
 }

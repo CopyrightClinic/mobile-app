@@ -23,6 +23,7 @@ import '../../features/harold_ai/presentation/pages/harold_success_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_failed_screen.dart';
 import '../../features/harold_ai/presentation/pages/params/harold_success_screen_params.dart';
 import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
+import '../../features/zoom/presentation/pages/join_meeting_page.dart';
 import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/sessions/presentation/pages/session_details_screen.dart';
@@ -210,6 +211,15 @@ class AppRouter {
         path: AppRoutes.notificationsRouteName,
         name: AppRoutes.notificationsRouteName,
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.joinMeetingRouteName,
+        name: AppRoutes.joinMeetingRouteName,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, String>;
+          final meetingId = extra['meetingId']!;
+          return JoinMeetingPage(meetingId: meetingId);
+        },
       ),
     ],
   );

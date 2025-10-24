@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
 import '../../../../core/utils/enumns/ui/summary_approval_status.dart';
 import '../../domain/entities/session_details_entity.dart';
+import 'session_availability_model.dart';
 
 part 'session_details_model.g.dart';
 
@@ -96,6 +97,8 @@ class SessionDetailsModel {
   final SessionDetailsUserModel user;
   @JsonKey(name: 'sessionRequest')
   final SessionRequestModel sessionRequest;
+  @JsonKey(name: 'session_fee')
+  final SessionFeeModel? sessionFee;
   @JsonKey(name: 'createdAt')
   final DateTime createdAt;
   @JsonKey(name: 'updatedAt')
@@ -119,6 +122,7 @@ class SessionDetailsModel {
     required this.attorney,
     required this.user,
     required this.sessionRequest,
+    this.sessionFee,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -127,7 +131,7 @@ class SessionDetailsModel {
   Map<String, dynamic> toJson() => _$SessionDetailsModelToJson(this);
 
   SessionDetailsEntity toEntity() {
-    final holdAmount = 50.0;
+    final holdAmount = sessionFee?.sessionFee.toDouble() ?? 50.0;
     final canCancel =
         cancelTimeExpired != null
             ? !cancelTimeExpired!
@@ -151,6 +155,7 @@ class SessionDetailsModel {
       attorney: attorney.toEntity(),
       user: user.toEntity(),
       sessionRequest: sessionRequest.toEntity(),
+      sessionFee: sessionFee?.toEntity(),
       createdAt: createdAt,
       updatedAt: updatedAt,
       holdAmount: holdAmount,

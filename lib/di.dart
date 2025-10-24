@@ -59,6 +59,12 @@ import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
 import 'features/harold_ai/domain/repositories/harold_repository.dart';
 import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
+import 'core/services/zoom_service.dart';
+import 'features/zoom/data/datasources/zoom_remote_data_source.dart';
+import 'features/zoom/data/repositories/zoom_repository_impl.dart';
+import 'features/zoom/domain/repositories/zoom_repository.dart';
+import 'features/zoom/domain/usecases/get_meeting_credentials_usecase.dart';
+import 'features/zoom/presentation/bloc/zoom_bloc.dart';
 import 'features/notifications/data/datasources/notification_remote_data_source.dart';
 import 'features/notifications/data/repositories/notification_repository_impl.dart';
 import 'features/notifications/domain/repositories/notification_repository.dart';
@@ -95,6 +101,18 @@ Future<void> init() async {
 
   /// Register API Service as a singleton
   sl.registerLazySingleton<ApiService>(() => ApiService(sl<DioService>()));
+
+  /// Register Zoom Service as a singleton
+  sl.registerLazySingleton(() => ZoomService(sl<ApiService>()));
+
+  // Zoom Data Sources
+  sl.registerLazySingleton<ZoomRemoteDataSource>(() => ZoomRemoteDataSourceImpl(apiService: sl()));
+
+  // Zoom Repository
+  sl.registerLazySingleton<ZoomRepository>(() => ZoomRepositoryImpl(remoteDataSource: sl()));
+
+  // Zoom Use Cases
+  sl.registerLazySingleton(() => GetMeetingCredentialsUseCase(sl()));
 
   /// Register FCM Service as a singleton
   sl.registerLazySingleton<FCMService>(() => FCMService(remoteDataSource: sl()));
@@ -183,6 +201,8 @@ Future<void> init() async {
   // Profile Bloc
   sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
 
+  // Zoom Bloc
+  sl.registerFactory(() => ZoomBloc(zoomService: sl(), getMeetingCredentialsUseCase: sl()));
   // Notification Bloc
   sl.registerLazySingleton(() => NotificationBloc(getNotificationsUseCase: sl(), markAllNotificationsAsReadUseCase: sl()));
 

@@ -160,11 +160,7 @@ class LocalNotificationService {
     if (type == null) return Importance.defaultImportance;
 
     switch (type) {
-      case PushNotificationType.joinSessionActivated:
-      case PushNotificationType.sessionReminderPreStart:
-      case PushNotificationType.paymentAuthorizationFailed:
-      case PushNotificationType.sessionCancelledByAttorney:
-      case PushNotificationType.systemErrorAlert:
+      case PushNotificationType.sessionReminder:
         return Importance.high;
       default:
         return Importance.defaultImportance;
@@ -175,11 +171,7 @@ class LocalNotificationService {
     if (type == null) return Priority.defaultPriority;
 
     switch (type) {
-      case PushNotificationType.joinSessionActivated:
-      case PushNotificationType.sessionReminderPreStart:
-      case PushNotificationType.paymentAuthorizationFailed:
-      case PushNotificationType.sessionCancelledByAttorney:
-      case PushNotificationType.systemErrorAlert:
+      case PushNotificationType.sessionReminder:
         return Priority.high;
       default:
         return Priority.defaultPriority;
@@ -190,11 +182,7 @@ class LocalNotificationService {
     if (type == null) return InterruptionLevel.active;
 
     switch (type) {
-      case PushNotificationType.joinSessionActivated:
-      case PushNotificationType.sessionReminderPreStart:
-      case PushNotificationType.paymentAuthorizationFailed:
-      case PushNotificationType.sessionCancelledByAttorney:
-      case PushNotificationType.systemErrorAlert:
+      case PushNotificationType.sessionReminder:
         return InterruptionLevel.timeSensitive;
       default:
         return InterruptionLevel.active;

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/session_entity.dart';
+import '../entities/paginated_sessions_entity.dart';
 import '../entities/session_details_entity.dart';
 import '../entities/submit_feedback_response_entity.dart';
 import '../entities/cancel_session_response_entity.dart';
@@ -9,7 +10,7 @@ import '../entities/book_session_response_entity.dart';
 import '../entities/unlock_summary_response_entity.dart';
 
 abstract class SessionsRepository {
-  Future<Either<Failure, List<SessionEntity>>> getUserSessions({String? status, String? timezone});
+  Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({String? status, String? timezone, int? page, int? limit});
   Future<Either<Failure, List<SessionEntity>>> getUpcomingSessions();
   Future<Either<Failure, List<SessionEntity>>> getCompletedSessions();
   Future<Either<Failure, SessionEntity>> getSessionById(String sessionId);

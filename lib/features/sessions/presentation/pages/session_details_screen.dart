@@ -652,7 +652,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _onJoinSession() {
-    SnackBarUtils.showSuccess(context, AppStrings.joiningSession.tr());
+    final sessionId = widget.sessionId;
+    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
   }
 
   void _onUnlockSummary() {

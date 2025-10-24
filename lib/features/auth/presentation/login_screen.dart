@@ -18,6 +18,8 @@ import '../../../config/routes/app_routes.dart';
 import '../../../di.dart';
 import '../../../core/services/fcm_service.dart';
 import '../../harold_ai/domain/services/harold_navigation_service.dart';
+import '../../profile/presentation/bloc/profile_bloc.dart';
+import '../../profile/presentation/bloc/profile_event.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -82,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
         if (state is LoginSuccess) {
           SnackBarUtils.showSuccess(context, state.message);
           sl<FCMService>().initialize();
+          context.read<ProfileBloc>().add(const GetProfileRequested());
           HaroldNavigationService.handlePostAuthNavigation(context);
         } else if (state is LoginError) {
           SnackBarUtils.showError(context, state.message, duration: const Duration(seconds: 3), showDismissAction: false);

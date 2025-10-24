@@ -56,12 +56,16 @@ Map<String, dynamic> _$TimeSlotModelToJson(TimeSlotModel instance) =>
 
 SessionFeeModel _$SessionFeeModelFromJson(Map<String, dynamic> json) =>
     SessionFeeModel(
-      amount: json['totalFee'] as num,
+      sessionFee: json['sessionFee'] as num,
+      processingFee: json['processingFee'] as num,
+      totalFee: json['totalFee'] as num,
       currency: json['currency'] as String,
     );
 
 Map<String, dynamic> _$SessionFeeModelToJson(SessionFeeModel instance) =>
     <String, dynamic>{
-      'totalFee': instance.amount,
+      'sessionFee': instance.sessionFee,
+      'processingFee': instance.processingFee,
+      'totalFee': instance.totalFee,
       'currency': instance.currency,
     };

@@ -75,6 +75,12 @@ SessionDetailsModel _$SessionDetailsModelFromJson(Map<String, dynamic> json) =>
       sessionRequest: SessionRequestModel.fromJson(
         json['sessionRequest'] as Map<String, dynamic>,
       ),
+      sessionFee:
+          json['session_fee'] == null
+              ? null
+              : SessionFeeModel.fromJson(
+                json['session_fee'] as Map<String, dynamic>,
+              ),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -99,6 +105,7 @@ Map<String, dynamic> _$SessionDetailsModelToJson(
   'attorney': instance.attorney,
   'user': instance.user,
   'sessionRequest': instance.sessionRequest,
+  'session_fee': instance.sessionFee,
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),
 };
