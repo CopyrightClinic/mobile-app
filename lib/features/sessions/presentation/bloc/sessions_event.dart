@@ -107,3 +107,13 @@ class BookSessionRequested extends SessionsEvent {
   @override
   List<Object> get props => [stripePaymentMethodId, date, startTime, endTime, summary, timezone];
 }
+
+class ExtendSession extends SessionsEvent {
+  final String sessionId;
+  final String paymentMethodId;
+
+  const ExtendSession({required this.sessionId, required this.paymentMethodId});
+
+  @override
+  List<Object> get props => [sessionId, paymentMethodId];
+}

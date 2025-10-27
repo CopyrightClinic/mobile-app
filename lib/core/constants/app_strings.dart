@@ -520,4 +520,14 @@ class AppStrings {
   static const sessionId = 'sessionId';
   static const pageOf = 'pageOf';
   static const sessionSummaryFilename = 'sessionSummaryFilename';
+
+  static const extendSession = 'extendSession';
+  static const extensionDuration = 'extensionDuration';
+  static const extensionDurationValue = 'extensionDurationValue';
+  static const extensionFee = 'extensionFee';
+  static const extensionFeeDescription = 'extensionFeeDescription';
+  static const extensionNote = 'extensionNote';
+  static const payNow = 'payNow';
+  static const sessionExtendedSuccess = 'sessionExtendedSuccess';
+  static const sessionExtendError = 'sessionExtendError';
 }

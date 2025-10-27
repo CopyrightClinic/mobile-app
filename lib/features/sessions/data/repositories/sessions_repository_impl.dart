@@ -11,6 +11,7 @@ import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/entities/paginated_sessions_entity.dart';
 import '../../domain/entities/unlock_summary_response_entity.dart';
+import '../../domain/entities/extend_session_response_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
 import '../datasources/sessions_remote_data_source.dart';
 
@@ -185,6 +186,25 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(errorMessage));
     } catch (e) {
       return Left(ServerFailure('${AppStrings.failedToUnlockSessionSummary}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({required String sessionId, required String paymentMethodId}) async {
+    try {
+      final response = await remoteDataSource.extendSession(sessionId: sessionId, paymentMethodId: paymentMethodId);
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on DioException catch (e) {
+      String errorMessage = AppStrings.sessionExtendError;
+      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
+        final responseData = e.response!.data as Map<String, dynamic>;
+        errorMessage = responseData['message'] ?? errorMessage;
+      }
+      return Left(ServerFailure(errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(AppStrings.sessionExtendError));
     }
   }
 }

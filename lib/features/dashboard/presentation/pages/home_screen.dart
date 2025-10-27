@@ -5,6 +5,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../config/routes/app_routes.dart';
+import '../../../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
@@ -111,7 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
                         child: InkWell(
                           onTap: () {
-                            context.push(AppRoutes.notificationsRouteName);
+                            // context.push(AppRoutes.notificationsRouteName);
+                            context.push(AppRoutes.extendSessionRouteName, extra: ExtendSessionScreenParams(sessionId: '123'));
                           },
                           borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
                           child: Center(

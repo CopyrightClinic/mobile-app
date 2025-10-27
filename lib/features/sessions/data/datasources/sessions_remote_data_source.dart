@@ -12,6 +12,8 @@ import '../models/paginated_sessions_model.dart';
 import '../models/unlock_summary_request_model.dart';
 import '../models/unlock_summary_response_model.dart';
 import '../models/cancel_session_response_model.dart';
+import '../models/extend_session_request_model.dart';
+import '../models/extend_session_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
@@ -33,6 +35,7 @@ abstract class SessionsRemoteDataSource {
     required String timezone,
   });
   Future<UnlockSummaryResponseModel> unlockSessionSummary({required String sessionId, required String paymentMethodId, required double summaryFee});
+  Future<ExtendSessionResponseModel> extendSession({required String sessionId, required String paymentMethodId});
 }
 
 class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
@@ -167,6 +170,17 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSION_SUMMARY),
       data: request.toJson(),
       converter: (json) => UnlockSummaryResponseModel.fromJson(json.data),
+    );
+  }
+
+  @override
+  Future<ExtendSessionResponseModel> extendSession({required String sessionId, required String paymentMethodId}) async {
+    final request = ExtendSessionRequestModel(paymentMethodId: paymentMethodId);
+
+    return await apiService.postData<ExtendSessionResponseModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.EXTEND_SESSION, sessionId: sessionId),
+      data: request.toJson(),
+      converter: (json) => ExtendSessionResponseModel.fromJson(json.data),
     );
   }
 }

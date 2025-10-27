@@ -26,6 +26,7 @@ class NotificationTypeMapper {
 
         case PushNotificationType.sessionSummaryAvailable:
         case PushNotificationType.refundIssued:
+        case PushNotificationType.sessionExtensionPrompt:
           result = null;
           break;
       }

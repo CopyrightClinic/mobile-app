@@ -6,6 +6,7 @@ import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
 import '../../domain/usecases/book_session_usecase.dart';
+import '../../domain/usecases/extend_session_usecase.dart';
 import 'sessions_event.dart';
 import 'sessions_state.dart';
 
@@ -14,12 +15,14 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   final CancelSessionUseCase cancelSessionUseCase;
   final GetSessionAvailabilityUseCase getSessionAvailabilityUseCase;
   final BookSessionUseCase bookSessionUseCase;
+  final ExtendSessionUseCase extendSessionUseCase;
 
   SessionsBloc({
     required this.getUserSessionsUseCase,
     required this.cancelSessionUseCase,
     required this.getSessionAvailabilityUseCase,
     required this.bookSessionUseCase,
+    required this.extendSessionUseCase,
   }) : super(const SessionsState()) {
     on<LoadUserSessions>(_onLoadUserSessions);
     on<RefreshSessions>(_onRefreshSessions);
@@ -33,6 +36,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<TimeSlotSelected>(_onTimeSlotSelected);
     on<LoadSessionAvailability>(_onLoadSessionAvailability);
     on<BookSessionRequested>(_onBookSessionRequested);
+    on<ExtendSession>(_onExtendSession);
   }
 
   Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
@@ -363,6 +367,33 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
             bookSessionResponse: response,
             successMessage: response.message,
             lastOperation: SessionsOperation.bookSession,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onExtendSession(ExtendSession event, Emitter<SessionsState> emit) async {
+    emit(state.copyWith(isProcessingExtension: true, clearError: true, clearSuccess: true));
+
+    final result = await extendSessionUseCase(ExtendSessionParams(sessionId: event.sessionId, paymentMethodId: event.paymentMethodId));
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            isProcessingExtension: false,
+            errorMessage: failure.message ?? AppStrings.sessionExtendError,
+            lastOperation: SessionsOperation.extendSession,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            isProcessingExtension: false,
+            successMessage: response.message ?? AppStrings.sessionExtendedSuccess,
+            lastOperation: SessionsOperation.extendSession,
           ),
         );
       },

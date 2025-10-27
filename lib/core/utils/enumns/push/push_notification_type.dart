@@ -3,7 +3,8 @@ enum PushNotificationType {
   refundIssued,
   sessionReminder,
   sessionCompleted,
-  sessionSummaryAvailable;
+  sessionSummaryAvailable,
+  sessionExtensionPrompt;
 
   static PushNotificationType fromString(String value) {
     switch (value.toUpperCase()) {
@@ -17,6 +18,8 @@ enum PushNotificationType {
         return PushNotificationType.sessionCompleted;
       case 'SESSION_SUMMARY_AVAILABLE':
         return PushNotificationType.sessionSummaryAvailable;
+      case 'SESSION_EXTENSION_PROMPT':
+        return PushNotificationType.sessionExtensionPrompt;
       default:
         throw ArgumentError('Unknown push notification type: $value');
     }
@@ -34,6 +37,8 @@ enum PushNotificationType {
         return 'SESSION_COMPLETED';
       case PushNotificationType.sessionSummaryAvailable:
         return 'SESSION_SUMMARY_AVAILABLE';
+      case PushNotificationType.sessionExtensionPrompt:
+        return 'SESSION_EXTENSION_PROMPT';
     }
   }
 
@@ -43,6 +48,7 @@ enum PushNotificationType {
       case PushNotificationType.sessionReminder:
       case PushNotificationType.sessionCompleted:
       case PushNotificationType.sessionSummaryAvailable:
+      case PushNotificationType.sessionExtensionPrompt:
         return true;
       case PushNotificationType.refundIssued:
         return false;
@@ -55,6 +61,7 @@ enum PushNotificationType {
       case PushNotificationType.sessionReminder:
       case PushNotificationType.sessionCompleted:
       case PushNotificationType.sessionSummaryAvailable:
+      case PushNotificationType.sessionExtensionPrompt:
         return true;
       case PushNotificationType.refundIssued:
         return false;

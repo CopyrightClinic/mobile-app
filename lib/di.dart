@@ -36,6 +36,7 @@ import 'features/sessions/domain/usecases/submit_session_feedback_usecase.dart';
 import 'features/sessions/domain/usecases/unlock_session_summary_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/domain/usecases/book_session_usecase.dart';
+import 'features/sessions/domain/usecases/extend_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
 import 'features/sessions/presentation/bloc/session_details_bloc.dart';
 import 'features/profile/data/datasources/profile_remote_data_source.dart';
@@ -152,6 +153,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SubmitSessionFeedbackUseCase(sl()));
   sl.registerLazySingleton(() => UnlockSessionSummaryUseCase(sl()));
   sl.registerLazySingleton(() => BookSessionUseCase(sl()));
+  sl.registerLazySingleton(() => ExtendSessionUseCase(sl()));
   sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
@@ -184,7 +186,13 @@ Future<void> init() async {
 
   // Sessions Bloc
   sl.registerLazySingleton(
-    () => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl(), bookSessionUseCase: sl()),
+    () => SessionsBloc(
+      getUserSessionsUseCase: sl(),
+      cancelSessionUseCase: sl(),
+      getSessionAvailabilityUseCase: sl(),
+      bookSessionUseCase: sl(),
+      extendSessionUseCase: sl(),
+    ),
   );
 
   // Session Details Bloc
