@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/services/zoom_service.dart';
 import '../../../../core/utils/enumns/ui/zoom_meeting_status.dart';
-import '../../../../core/utils/logger/logger.dart';
 import '../../domain/usecases/get_meeting_credentials_usecase.dart';
 import 'zoom_event.dart';
 import 'zoom_state.dart';
@@ -45,8 +44,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
       await zoomService.initZoom();
       emit(const ZoomInitialized());
     } on PlatformException catch (e) {
-      Log.e('ZoomBloc', 'Platform exception during initialization: ${e.code} - ${e.message}');
-
       String errorMessage = AppStrings.zoomErrorInitFailed;
 
       switch (e.code) {
@@ -64,7 +61,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
       emit(ZoomInitializationFailed(message: errorMessage));
     } catch (e) {
-      Log.e('ZoomBloc', 'Error during initialization: $e');
       emit(ZoomInitializationFailed(message: '${AppStrings.zoomErrorInitFailed}: $e'));
     }
   }
@@ -75,8 +71,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
     try {
       await zoomService.joinMeeting(meetingNumber: event.meetingNumber, passcode: event.passcode, displayName: event.displayName);
     } on PlatformException catch (e) {
-      Log.e('ZoomBloc', 'Platform exception during join: ${e.code} - ${e.message}');
-
       String errorMessage = AppStrings.zoomErrorJoinFailed;
 
       switch (e.code) {
@@ -102,7 +96,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
       emit(ZoomMeetingFailed(message: errorMessage));
     } catch (e) {
-      Log.e('ZoomBloc', 'Error during join: $e');
       emit(ZoomMeetingFailed(message: '${AppStrings.zoomErrorJoinFailed}: $e'));
     }
   }
@@ -114,7 +107,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
     await result.fold(
       (failure) async {
-        Log.e('ZoomBloc', 'Failed to fetch meeting credentials: ${failure.message}');
         emit(ZoomMeetingFailed(message: failure.message ?? AppStrings.zoomErrorFetchCredentials));
       },
       (credentials) async {
@@ -125,8 +117,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
           await zoomService.joinMeeting(meetingNumber: credentials.meetingNumber, passcode: credentials.password, displayName: credentials.userName);
         } on PlatformException catch (e) {
-          Log.e('ZoomBloc', 'Platform exception during join with ID: ${e.code} - ${e.message}');
-
           String errorMessage = AppStrings.zoomErrorJoinFailed;
 
           switch (e.code) {
@@ -151,7 +141,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
           emit(ZoomMeetingFailed(message: errorMessage));
         } catch (e) {
-          Log.e('ZoomBloc', 'Error during join with ID: $e');
           emit(ZoomMeetingFailed(message: '${AppStrings.zoomErrorJoinFailed}: $e'));
         }
       },
@@ -163,7 +152,7 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
       await zoomService.leaveMeeting();
       emit(const ZoomMeetingEnded(message: null));
     } catch (e) {
-      Log.e('ZoomBloc', 'Error leaving meeting: $e');
+      // Silently handle error
     }
   }
 
@@ -172,6 +161,8 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
     if (status.isActive || status.isWaiting || status.isConnecting) {
       emit(ZoomMeetingActive(status: status, message: event.message));
+    } else if (status == ZoomMeetingStatus.disconnecting) {
+      // Do nothing, wait for end state
     } else if (status.isError) {
       emit(ZoomMeetingFailed(message: event.message ?? AppStrings.zoomStatusFailed));
     } else if (status.isFinished) {

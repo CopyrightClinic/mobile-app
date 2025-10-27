@@ -32,6 +32,8 @@ import '../widgets/cancel_session_bottom_sheet.dart';
 import 'params/session_details_screen_params.dart';
 import 'params/session_summary_screen_params.dart';
 import '../../../payments/presentation/bloc/payment_bloc.dart';
+import '../../../zoom/presentation/bloc/zoom_bloc.dart';
+import '../../../zoom/presentation/widgets/zoom_connection_dialog.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
   final SessionDetailsScreenParams params;
@@ -65,6 +67,12 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   void initState() {
     super.initState();
     _isRatingExpanded = ValueNotifier<bool>(false);
+  }
+
+  @override
+  void dispose() {
+    _isRatingExpanded.dispose();
+    super.dispose();
   }
 
   @override
@@ -653,7 +661,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
 
   void _onJoinSession() {
     final sessionId = widget.sessionId;
-    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
+    final zoomBloc = sl<ZoomBloc>();
+    ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }
 
   void _onUnlockSummary() {
@@ -686,11 +695,5 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         SubmitSessionFeedback(sessionId: sessionId, rating: _currentRating, review: _currentReview.isNotEmpty ? _currentReview : null),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _isRatingExpanded.dispose();
-    super.dispose();
   }
 }

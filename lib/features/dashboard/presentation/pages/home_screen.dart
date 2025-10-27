@@ -10,6 +10,7 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/translated_text.dart';
+import '../../../../di.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
@@ -19,6 +20,8 @@ import '../../../sessions/presentation/bloc/sessions_state.dart';
 import '../../../profile/presentation/bloc/profile_bloc.dart';
 import '../../../profile/presentation/bloc/profile_event.dart';
 import '../../../profile/presentation/bloc/profile_state.dart';
+import '../../../zoom/presentation/bloc/zoom_bloc.dart';
+import '../../../zoom/presentation/widgets/zoom_connection_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,6 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _profileBloc = context.read<ProfileBloc>();
     _sessionsBloc.add(const LoadUserSessions());
     _profileBloc.add(const GetProfileRequested());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -183,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: SessionCard(
                                 session: session,
                                 onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
-                                onJoin: session.canJoin ? () => _joinSession(context, session.id) : null,
+                                onJoin: session.canJoin ? () => _joinSessionDirectly(context, session.id) : null,
                               ),
                             );
                           }),
@@ -353,7 +361,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _joinSession(BuildContext context, String sessionId) {
-    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
+  void _joinSessionDirectly(BuildContext context, String sessionId) {
+    final zoomBloc = sl<ZoomBloc>();
+    ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }
 }
