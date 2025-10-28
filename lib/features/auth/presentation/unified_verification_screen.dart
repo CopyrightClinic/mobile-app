@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -34,8 +35,26 @@ class UnifiedVerificationScreen extends StatefulWidget {
 
 class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   final TextEditingController _otpController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthBloc _authBloc = sl<AuthBloc>();
+
+  late StreamController<ErrorAnimationType> _errorController;
+  late ValueNotifier<String?> _otpErrorNotifier;
+  bool _isProgrammaticClear = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _errorController = StreamController<ErrorAnimationType>();
+    _otpErrorNotifier = ValueNotifier<String?>(null);
+  }
+
+  @override
+  void dispose() {
+    _errorController.close();
+    _otpErrorNotifier.dispose();
+    _otpController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +108,15 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   void _onOtpChanged(String value) {
+    if (_isProgrammaticClear) {
+      _isProgrammaticClear = false;
+      return;
+    }
+
+    if (_otpErrorNotifier.value != null) {
+      _otpErrorNotifier.value = null;
+    }
+
     if (value.length == 6) {
       _verifyOtp(value);
     }
@@ -114,6 +142,8 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   void _handleSuccess(AuthState state) {
+    if (!mounted) return;
+
     String message = '';
     String route = '';
 
@@ -139,6 +169,8 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   void _handleError(AuthState state) {
+    if (!mounted) return;
+
     String message = '';
 
     if (state is VerifyEmailError) {
@@ -148,16 +180,22 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
     }
 
     if (message.isNotEmpty) {
-      SnackBarUtils.showError(context, message, duration: const Duration(seconds: 3), showDismissAction: false);
+      _isProgrammaticClear = true;
+      _otpController.clear();
+
+      _otpErrorNotifier.value = message;
+      _errorController.add(ErrorAnimationType.shake);
     }
   }
 
   void _handleResendSuccess(AuthState state) {
+    if (!mounted) return;
     String message = tr(AppStrings.codeSent);
     SnackBarUtils.showSuccess(context, message, duration: const Duration(seconds: 2));
   }
 
   void _handleResendError(AuthState state) {
+    if (!mounted) return;
     String message = '';
 
     if (state is ResendEmailVerificationError) {
@@ -198,40 +236,76 @@ class _UnifiedVerificationScreenState extends State<UnifiedVerificationScreen> {
   }
 
   Widget _buildOtpInput() {
-    return Form(
-      key: _formKey,
-      child: PinCodeTextField(
-        appContext: context,
-        length: 6,
-        controller: _otpController,
-        onChanged: _onOtpChanged,
-        textStyle: TextStyle(
-          color: AppTheme.white,
-          fontSize: DimensionConstants.font24Px.f,
-          fontWeight: FontWeight.w600,
-          fontFamily: AppTheme.fontFamily,
-        ),
-        pinTheme: PinTheme(
-          shape: PinCodeFieldShape.box,
-          borderRadius: BorderRadius.circular(12),
-          fieldHeight: 56.h,
-          fieldWidth: 48.w,
-          activeFillColor: AppTheme.filledBgDark,
-          activeColor: AppTheme.filledBgDark,
-          selectedColor: AppTheme.filledBgDark,
-          inactiveColor: AppTheme.filledBgDark,
-          selectedFillColor: AppTheme.filledBgDark,
-          inactiveFillColor: AppTheme.filledBgDark,
-          borderWidth: 0,
-        ),
-        animationType: AnimationType.fade,
-        animationDuration: const Duration(milliseconds: 300),
-        autoFocus: true,
-        enableActiveFill: true,
-        errorTextSpace: 0,
-        errorAnimationController: null,
-        keyboardType: TextInputType.number,
-      ),
+    return ValueListenableBuilder<String?>(
+      valueListenable: _otpErrorNotifier,
+      builder: (context, otpErrorMessage, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PinCodeTextField(
+              appContext: context,
+              length: 6,
+              controller: _otpController,
+              onChanged: _onOtpChanged,
+              textStyle: TextStyle(
+                color: AppTheme.white,
+                fontSize: DimensionConstants.font24Px.f,
+                fontWeight: FontWeight.w600,
+                fontFamily: AppTheme.fontFamily,
+              ),
+              pinTheme: PinTheme(
+                shape: PinCodeFieldShape.box,
+                borderRadius: BorderRadius.circular(12),
+                fieldHeight: 56.h,
+                fieldWidth: 48.w,
+                activeFillColor: otpErrorMessage != null ? AppTheme.red.withValues(alpha: 0.1) : AppTheme.filledBgDark,
+                activeColor: otpErrorMessage != null ? AppTheme.red : AppTheme.filledBgDark,
+                selectedColor: otpErrorMessage != null ? AppTheme.red : AppTheme.filledBgDark,
+                inactiveColor: otpErrorMessage != null ? AppTheme.red.withValues(alpha: 0.5) : AppTheme.filledBgDark,
+                selectedFillColor: otpErrorMessage != null ? AppTheme.red.withValues(alpha: 0.1) : AppTheme.filledBgDark,
+                inactiveFillColor: otpErrorMessage != null ? AppTheme.red.withValues(alpha: 0.05) : AppTheme.filledBgDark,
+                borderWidth: otpErrorMessage != null ? 1 : 0,
+                errorBorderColor: AppTheme.red,
+              ),
+              animationType: AnimationType.fade,
+              animationDuration: const Duration(milliseconds: 300),
+              autoFocus: true,
+              enableActiveFill: true,
+              errorTextSpace: 0,
+              errorAnimationController: _errorController,
+              keyboardType: TextInputType.number,
+              beforeTextPaste: (text) {
+                return true;
+              },
+            ),
+            if (otpErrorMessage != null) ...[
+              SizedBox(height: DimensionConstants.gap12Px.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap4Px.w),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.error_outline, color: AppTheme.red, size: DimensionConstants.icon16Px.h),
+                    SizedBox(width: DimensionConstants.gap8Px.w),
+                    Expanded(
+                      child: Text(
+                        otpErrorMessage,
+                        style: TextStyle(
+                          color: AppTheme.red,
+                          fontSize: DimensionConstants.font12Px.f,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: AppTheme.fontFamily,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 
