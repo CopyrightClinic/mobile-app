@@ -349,10 +349,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
     BottomSheetService.show(
-      builder: (bottomSheetContext) => BlocProvider.value(
-        value: _sessionsBloc,
-        child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
-      ),
+      builder:
+          (bottomSheetContext) => BlocProvider.value(
+            value: _sessionsBloc,
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
+          ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
