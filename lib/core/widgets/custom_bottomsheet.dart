@@ -3,6 +3,7 @@ import '../../config/theme/app_theme.dart';
 import '../constants/dimensions.dart';
 import '../utils/extensions/responsive_extensions.dart';
 import '../utils/extensions/theme_extensions.dart';
+import '../services/bottom_sheet_service.dart';
 import 'global_image.dart';
 import 'translated_text.dart';
 import 'custom_button.dart';
@@ -182,27 +183,25 @@ class CustomBottomSheet extends StatelessWidget {
     bool isDismissible = true,
     bool enableDrag = true,
   }) {
-    return showModalBottomSheet<T>(
-      context: context,
+    return BottomSheetService.show<T>(
+      builder: (context) => CustomBottomSheet(
+        iconPath: iconPath,
+        customIcon: customIcon,
+        title: title,
+        subtitle: subtitle,
+        primaryButtonText: primaryButtonText,
+        secondaryButtonText: secondaryButtonText,
+        onPrimaryPressed: onPrimaryPressed,
+        onSecondaryPressed: onSecondaryPressed,
+        primaryButtonColor: primaryButtonColor,
+        secondaryButtonColor: secondaryButtonColor,
+        primaryTextColor: primaryTextColor,
+        secondaryTextColor: secondaryTextColor,
+      ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: isDismissible,
       enableDrag: enableDrag,
-      builder:
-          (context) => CustomBottomSheet(
-            iconPath: iconPath,
-            customIcon: customIcon,
-            title: title,
-            subtitle: subtitle,
-            primaryButtonText: primaryButtonText,
-            secondaryButtonText: secondaryButtonText,
-            onPrimaryPressed: onPrimaryPressed,
-            onSecondaryPressed: onSecondaryPressed,
-            primaryButtonColor: primaryButtonColor,
-            secondaryButtonColor: secondaryButtonColor,
-            primaryTextColor: primaryTextColor,
-            secondaryTextColor: secondaryTextColor,
-          ),
     );
   }
 }

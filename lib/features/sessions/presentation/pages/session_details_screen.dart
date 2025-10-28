@@ -18,6 +18,7 @@ import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
+import '../../../../core/services/bottom_sheet_service.dart';
 import '../../../../di.dart';
 import '../../domain/entities/session_details_entity.dart';
 import '../bloc/session_details_bloc.dart';
@@ -645,17 +646,15 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _showCancelDialog(SessionDetailsEntity session) {
-    showModalBottomSheet(
-      context: context,
+    BottomSheetService.show(
+      builder: (bottomSheetContext) => BlocProvider.value(
+        value: context.read<SessionsBloc>(),
+        child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
+      ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-      builder:
-          (bottomSheetContext) => BlocProvider.value(
-            value: context.read<SessionsBloc>(),
-            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
-          ),
     );
   }
 
@@ -666,17 +665,15 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _onUnlockSummary() {
-    showModalBottomSheet(
-      context: context,
+    BottomSheetService.show(
+      builder: (bottomSheetContext) => MultiBlocProvider(
+        providers: [BlocProvider.value(value: context.read<PaymentBloc>()), BlocProvider.value(value: context.read<SessionDetailsBloc>())],
+        child: UnlockSummaryPaymentBottomSheet(sessionId: widget.sessionId),
+      ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: true,
       enableDrag: true,
-      builder:
-          (bottomSheetContext) => MultiBlocProvider(
-            providers: [BlocProvider.value(value: context.read<PaymentBloc>()), BlocProvider.value(value: context.read<SessionDetailsBloc>())],
-            child: UnlockSummaryPaymentBottomSheet(sessionId: widget.sessionId),
-          ),
     );
   }
 

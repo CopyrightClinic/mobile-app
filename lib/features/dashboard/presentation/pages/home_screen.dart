@@ -10,6 +10,7 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/translated_text.dart';
+import '../../../../core/services/bottom_sheet_service.dart';
 import '../../../../di.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
@@ -347,17 +348,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
-    showModalBottomSheet(
-      context: context,
+    BottomSheetService.show(
+      builder: (bottomSheetContext) => BlocProvider.value(
+        value: _sessionsBloc,
+        child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
+      ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-      builder:
-          (bottomSheetContext) => BlocProvider.value(
-            value: _sessionsBloc,
-            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
-          ),
     );
   }
 
