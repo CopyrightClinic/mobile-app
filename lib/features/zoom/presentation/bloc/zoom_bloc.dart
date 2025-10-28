@@ -11,7 +11,6 @@ import 'zoom_state.dart';
 class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   final ZoomService zoomService;
   final GetMeetingCredentialsUseCase getMeetingCredentialsUseCase;
-  StreamSubscription? _meetingStatusSubscription;
 
   ZoomBloc({required this.zoomService, required this.getMeetingCredentialsUseCase}) : super(const ZoomInitial()) {
     on<InitializeZoom>(_onInitializeZoom);
@@ -176,7 +175,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
   @override
   Future<void> close() {
-    _meetingStatusSubscription?.cancel();
     zoomService.dispose();
     return super.close();
   }

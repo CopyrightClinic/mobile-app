@@ -20,8 +20,8 @@ import '../../../payments/domain/entities/payment_method_entity.dart';
 import '../../../payments/presentation/bloc/payment_bloc.dart';
 import '../../../payments/presentation/bloc/payment_event.dart';
 import '../../../payments/presentation/bloc/payment_state.dart';
-import '../../../payments/presentation/widgets/payment_methods_list.dart';
-import '../../../payments/presentation/widgets/payment_methods_list_config.dart';
+import '../../../payments/presentation/widgets/payment_method_card.dart';
+import '../../../payments/presentation/widgets/payment_method_card_action.dart';
 import '../bloc/sessions_bloc.dart';
 import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
@@ -34,13 +34,7 @@ class ExtendSessionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => sl<SessionsBloc>()),
-        BlocProvider.value(value: context.read<PaymentBloc>()..add(const LoadPaymentMethods())),
-      ],
-      child: ExtendSessionView(sessionId: params.sessionId),
-    );
+    return ExtendSessionView(sessionId: params.sessionId);
   }
 }
 
@@ -56,10 +50,18 @@ class ExtendSessionView extends StatefulWidget {
 class _ExtendSessionViewState extends State<ExtendSessionView> {
   String? _selectedPaymentMethodId;
   PaymentMethodEntity? _selectedPaymentMethod;
+  late PaymentBloc _paymentBloc;
+  @override
+  void initState() {
+    super.initState();
+    _paymentBloc = context.read<PaymentBloc>();
+    _paymentBloc.add(const LoadPaymentMethods());
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<SessionsBloc, SessionsState>(
+      bloc: context.read<SessionsBloc>(),
       listener: (context, state) {
         if (state.hasSuccess && state.lastOperation == SessionsOperation.extendSession) {
           SnackBarUtils.showSuccess(context, state.successMessage ?? AppStrings.sessionExtendedSuccess);
@@ -87,25 +89,27 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
           bottom: false,
           child: Column(
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: DimensionConstants.gap24Px.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: DimensionConstants.gap24Px.h),
 
-                      _buildExtensionInfoSection(),
+                    _buildExtensionInfoSection(),
 
-                      SizedBox(height: DimensionConstants.gap24Px.h),
+                    SizedBox(height: DimensionConstants.gap24Px.h),
 
-                      _buildPaymentMethodSection(),
-
-                      SizedBox(height: DimensionConstants.gap24Px.h),
-                    ],
-                  ),
+                    TranslatedText(
+                      AppStrings.selectPaymentMethod,
+                      style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(height: DimensionConstants.gap16Px.h),
+                  ],
                 ),
               ),
+              Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w), child: _buildPaymentMethodsList())),
+              _buildAddPaymentMethodButton(),
               _buildActionButtons(),
             ],
           ),
@@ -198,32 +202,80 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
     );
   }
 
-  Widget _buildPaymentMethodSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TranslatedText(
-          AppStrings.selectPaymentMethod,
-          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: DimensionConstants.gap16Px.h),
-        SizedBox(
-          height: 300.h,
-          child: BlocBuilder<PaymentBloc, PaymentState>(
-            builder: (context, state) {
-              final isLoading = state is PaymentLoading;
-              final paymentMethods = state is PaymentMethodsLoaded ? state.paymentMethods : <PaymentMethodEntity>[];
+  Widget _buildPaymentMethodsList() {
+    return BlocBuilder<PaymentBloc, PaymentState>(
+      bloc: _paymentBloc,
+      builder: (context, state) {
+        final isLoading = state is PaymentLoading;
+        final paymentMethods = state is PaymentMethodsLoaded ? state.paymentMethods : <PaymentMethodEntity>[];
 
-              return PaymentMethodsList(
-                paymentMethods: paymentMethods,
-                isLoading: isLoading,
-                selectedPaymentMethodId: _selectedPaymentMethodId,
-                config: PaymentMethodsListConfig.forCheckout(onSelect: _onSelectPaymentMethod, onAddPaymentMethod: _onAddPaymentMethod),
-              );
-            },
-          ),
+        if (isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (paymentMethods.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GlobalImage(assetPath: ImageConstants.noPaymentMethods, width: 80.w, height: 80.h, fit: BoxFit.contain),
+                SizedBox(height: DimensionConstants.gap16Px.h),
+                TranslatedText(
+                  AppStrings.noPaymentMethodsAddOne,
+                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.center,
+                ),
+                TranslatedText(
+                  AppStrings.tapToAdd,
+                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: paymentMethods.length,
+          itemBuilder: (context, index) {
+            final paymentMethod = paymentMethods[index];
+            final isSelected = _selectedPaymentMethodId == paymentMethod.id;
+
+            return GestureDetector(
+              onTap: () => _onSelectPaymentMethod(paymentMethod),
+              child: PaymentMethodCard(
+                paymentMethod: paymentMethod,
+                action: SelectPaymentMethodAction(onSelect: () => _onSelectPaymentMethod(paymentMethod)),
+                isSelected: isSelected,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildAddPaymentMethodButton() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap16Px.h),
+      child: GestureDetector(
+        onTap: _onAddPaymentMethod,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 30.w,
+              height: 30.h,
+              decoration: BoxDecoration(color: context.primary, shape: BoxShape.circle),
+              child: Icon(Icons.add, color: context.white, size: DimensionConstants.icon24Px.f),
+            ),
+            SizedBox(width: DimensionConstants.gap16Px.w),
+            TranslatedText(
+              AppStrings.addAnotherPaymentMethod,
+              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -299,7 +351,9 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
 
   void _onAddPaymentMethod() {
     context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home}).then((value) {
-      context.read<PaymentBloc>().add(const LoadPaymentMethods());
+      if (value != null) {
+        _paymentBloc.add(const LoadPaymentMethods());
+      }
     });
   }
 
