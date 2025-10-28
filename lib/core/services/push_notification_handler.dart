@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../config/routes/app_router.dart';
 import '../../config/routes/app_routes.dart';
 import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
-import '../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import 'push_notification_payload.dart';
@@ -162,8 +161,8 @@ class PushNotificationHandler {
         break;
 
       case PushNotificationType.sessionExtensionPrompt:
-        Log.i(runtimeType, '🧭 → Navigating to Extend Session (ID: ${payload.sessionId})');
-        _navigateToExtendSession(context, payload.sessionId);
+        Log.i(runtimeType, '🧭 → Navigating to Extend Session');
+        _navigateToExtendSession(context);
         break;
 
       case PushNotificationType.refundIssued:
@@ -191,17 +190,12 @@ class PushNotificationHandler {
     }
   }
 
-  void _navigateToExtendSession(BuildContext context, String? sessionId) {
-    if (sessionId == null) {
-      Log.w(runtimeType, '⚠️ Session ID is null, cannot navigate to extend session');
-      return;
-    }
-
+  void _navigateToExtendSession(BuildContext context) {
     try {
       Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.extendSessionRouteName}');
-      Log.i(runtimeType, '✅ Session ID: $sessionId');
+      Log.i(runtimeType, '📝 Session ID will be fetched from active Zoom session');
 
-      context.push(AppRoutes.extendSessionRouteName, extra: ExtendSessionScreenParams(sessionId: sessionId));
+      context.push(AppRoutes.extendSessionRouteName);
 
       Log.i(runtimeType, '✅ Navigation to extend session completed successfully');
     } catch (e, stackTrace) {

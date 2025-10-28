@@ -453,5 +453,7 @@
   "extensionNote": "Extending your session will add 30 minutes to the current time and charge your selected payment method.",
   "payNow": "Pay Now",
   "sessionExtendedSuccess": "Session extended successfully!",
-  "sessionExtendError": "Failed to extend session. Please try again."
+  "sessionExtendError": "Failed to extend session. Please try again.",
+  "noActiveSessionError": "No Active Session Found",
+  "noActiveSessionDescription": "You can only extend a session while you're in an active Zoom meeting. Please join a session first."
 }

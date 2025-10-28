@@ -50,11 +50,12 @@ class ZoomJoining extends ZoomState {
 class ZoomMeetingActive extends ZoomState {
   final ZoomMeetingStatus status;
   final String? message;
+  final String? sessionId;
 
-  const ZoomMeetingActive({required this.status, this.message});
+  const ZoomMeetingActive({required this.status, this.message, this.sessionId});
 
   @override
-  List<Object?> get props => [status, message];
+  List<Object?> get props => [status, message, sessionId];
 
   bool get isWaiting => status.isWaiting;
   bool get isConnecting => status.isConnecting;

@@ -530,4 +530,6 @@ class AppStrings {
   static const payNow = 'payNow';
   static const sessionExtendedSuccess = 'sessionExtendedSuccess';
   static const sessionExtendError = 'sessionExtendError';
+  static const noActiveSessionError = 'noActiveSessionError';
+  static const noActiveSessionDescription = 'noActiveSessionDescription';
 }

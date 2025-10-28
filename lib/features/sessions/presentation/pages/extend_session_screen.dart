@@ -22,44 +22,74 @@ import '../../../payments/presentation/bloc/payment_event.dart';
 import '../../../payments/presentation/bloc/payment_state.dart';
 import '../../../payments/presentation/widgets/payment_method_card.dart';
 import '../../../payments/presentation/widgets/payment_method_card_action.dart';
+import '../../../zoom/presentation/bloc/zoom_bloc.dart';
 import '../bloc/sessions_bloc.dart';
 import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
-import 'params/extend_session_screen_params.dart';
 
-class ExtendSessionScreen extends StatelessWidget {
-  final ExtendSessionScreenParams params;
-
-  const ExtendSessionScreen({super.key, required this.params});
+class ExtendSessionScreen extends StatefulWidget {
+  const ExtendSessionScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ExtendSessionView(sessionId: params.sessionId);
-  }
+  State<ExtendSessionScreen> createState() => _ExtendSessionScreenState();
 }
 
-class ExtendSessionView extends StatefulWidget {
-  final String sessionId;
-
-  const ExtendSessionView({super.key, required this.sessionId});
-
-  @override
-  State<ExtendSessionView> createState() => _ExtendSessionViewState();
-}
-
-class _ExtendSessionViewState extends State<ExtendSessionView> {
+class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
   String? _selectedPaymentMethodId;
   PaymentMethodEntity? _selectedPaymentMethod;
   late PaymentBloc _paymentBloc;
+  String? _sessionId;
+
   @override
   void initState() {
     super.initState();
     _paymentBloc = context.read<PaymentBloc>();
     _paymentBloc.add(const LoadPaymentMethods());
+
+    final zoomBloc = sl<ZoomBloc>();
+    _sessionId = zoomBloc.currentSessionId;
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_sessionId == null) {
+      return CustomScaffold(
+        extendBodyBehindAppBar: true,
+        appBar: CustomAppBar(
+          leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
+          leading: const CustomBackButton(),
+          centerTitle: true,
+          title: TranslatedText(
+            AppStrings.extendSession,
+            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 60.w, color: context.orange),
+                SizedBox(height: DimensionConstants.gap16Px.h),
+                TranslatedText(
+                  AppStrings.noActiveSessionError,
+                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: DimensionConstants.gap8Px.h),
+                TranslatedText(
+                  AppStrings.noActiveSessionDescription,
+                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return BlocListener<SessionsBloc, SessionsState>(
       bloc: context.read<SessionsBloc>(),
       listener: (context, state) {
@@ -358,8 +388,8 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
   }
 
   void _onPayNow() {
-    if (_selectedPaymentMethod != null) {
-      context.read<SessionsBloc>().add(ExtendSession(sessionId: widget.sessionId, paymentMethodId: _selectedPaymentMethod!.stripePaymentMethodId));
+    if (_selectedPaymentMethod != null && _sessionId != null) {
+      context.read<SessionsBloc>().add(ExtendSession(sessionId: _sessionId!, paymentMethodId: _selectedPaymentMethod!.stripePaymentMethodId));
     }
   }
 }

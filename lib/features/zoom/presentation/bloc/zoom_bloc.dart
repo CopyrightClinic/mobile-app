@@ -11,6 +11,7 @@ import 'zoom_state.dart';
 class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   final ZoomService zoomService;
   final GetMeetingCredentialsUseCase getMeetingCredentialsUseCase;
+  String? _currentSessionId;
 
   ZoomBloc({required this.zoomService, required this.getMeetingCredentialsUseCase}) : super(const ZoomInitial()) {
     on<InitializeZoom>(_onInitializeZoom);
@@ -22,6 +23,8 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
     _listenToMeetingEvents();
   }
+
+  String? get currentSessionId => _currentSessionId;
 
   void _listenToMeetingEvents() {
     zoomService.listenToMeetingEvents(
@@ -101,11 +104,13 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
   Future<void> _onJoinMeetingWithId(JoinMeetingWithId event, Emitter<ZoomState> emit) async {
     emit(ZoomFetchingCredentials(meetingId: event.meetingId));
+    _currentSessionId = event.meetingId;
 
     final result = await getMeetingCredentialsUseCase(event.meetingId);
 
     await result.fold(
       (failure) async {
+        _currentSessionId = null;
         emit(ZoomMeetingFailed(message: failure.message ?? AppStrings.zoomErrorFetchCredentials));
       },
       (credentials) async {
@@ -138,8 +143,10 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
               }
           }
 
+          _currentSessionId = null;
           emit(ZoomMeetingFailed(message: errorMessage));
         } catch (e) {
+          _currentSessionId = null;
           emit(ZoomMeetingFailed(message: '${AppStrings.zoomErrorJoinFailed}: $e'));
         }
       },
@@ -149,9 +156,10 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   Future<void> _onLeaveMeetingRequested(LeaveMeetingRequested event, Emitter<ZoomState> emit) async {
     try {
       await zoomService.leaveMeeting();
+      _currentSessionId = null;
       emit(const ZoomMeetingEnded(message: null));
     } catch (e) {
-      // Silently handle error
+      _currentSessionId = null;
     }
   }
 
@@ -159,17 +167,20 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
     final status = ZoomMeetingStatus.fromString(event.status);
 
     if (status.isActive || status.isWaiting || status.isConnecting) {
-      emit(ZoomMeetingActive(status: status, message: event.message));
+      emit(ZoomMeetingActive(status: status, message: event.message, sessionId: _currentSessionId));
     } else if (status == ZoomMeetingStatus.disconnecting) {
       // Do nothing, wait for end state
     } else if (status.isError) {
+      _currentSessionId = null;
       emit(ZoomMeetingFailed(message: event.message ?? AppStrings.zoomStatusFailed));
     } else if (status.isFinished) {
+      _currentSessionId = null;
       emit(ZoomMeetingEnded(message: event.message));
     }
   }
 
   void _onResetZoomState(ResetZoomState event, Emitter<ZoomState> emit) {
+    _currentSessionId = null;
     emit(const ZoomInitial());
   }
 
