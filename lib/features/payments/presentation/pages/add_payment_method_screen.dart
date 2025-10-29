@@ -147,7 +147,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                             controller: _nameController,
                             focusNode: _nameFocusNode,
                             keyboardType: TextInputType.name,
-                            validator: _validateName,
+                            validator: (value) => validateFullName(value, tr),
                             onEditingComplete: () {
                               _cardFormController.focus();
                             },
@@ -221,22 +221,13 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
   }
 
   void _validateForm() {
-    final isNameValid = _nameController.text.isNotEmpty;
+    final isNameValid = validateFullName(_nameController.text.trim(), tr) == null;
     final isCardValid = _cardCompleteNotifier.value;
     final newFormValid = isNameValid && isCardValid;
 
     if (_formValidNotifier.value != newFormValid) {
       _formValidNotifier.value = newFormValid;
     }
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.cardholderNameIsRequired.tr();
-    } else if (value.trim().length > 100) {
-      return AppStrings.cardholderNameCannotExceed100Characters.tr();
-    }
-    return null;
   }
 
   void _onAddPaymentMethod() {
