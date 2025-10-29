@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../config/routes/app_router.dart';
 import '../../config/routes/app_routes.dart';
 import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
+import '../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import 'push_notification_payload.dart';
@@ -161,8 +162,8 @@ class PushNotificationHandler {
         break;
 
       case PushNotificationType.sessionExtensionPrompt:
-        Log.i(runtimeType, '🧭 → Navigating to Extend Session');
-        _navigateToExtendSession(context);
+        Log.i(runtimeType, '🧭 → Navigating to Extend Session (ID: ${payload.sessionId}, Fee: \$${payload.totalFee})');
+        _navigateToExtendSession(context, payload.sessionId, payload.totalFee);
         break;
 
       case PushNotificationType.refundIssued:
@@ -190,12 +191,23 @@ class PushNotificationHandler {
     }
   }
 
-  void _navigateToExtendSession(BuildContext context) {
+  void _navigateToExtendSession(BuildContext context, String? sessionId, double? totalFee) {
+    if (sessionId == null) {
+      Log.w(runtimeType, '⚠️ Session ID is null, cannot navigate to extend session');
+      return;
+    }
+
+    if (totalFee == null) {
+      Log.w(runtimeType, '⚠️ Total Fee is null, cannot navigate to extend session');
+      return;
+    }
+
     try {
       Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.extendSessionRouteName}');
-      Log.i(runtimeType, '📝 Session ID will be fetched from active Zoom session');
+      Log.i(runtimeType, '✅ Session ID from notification: $sessionId');
+      Log.i(runtimeType, '💰 Total Fee from notification: \$${totalFee.toStringAsFixed(2)}');
 
-      context.push(AppRoutes.extendSessionRouteName);
+      context.push(AppRoutes.extendSessionRouteName, extra: ExtendSessionScreenParams(sessionId: sessionId, totalFee: totalFee));
 
       Log.i(runtimeType, '✅ Navigation to extend session completed successfully');
     } catch (e, stackTrace) {

@@ -30,6 +30,7 @@ import '../../features/sessions/presentation/pages/params/session_details_screen
 import '../../features/sessions/presentation/pages/session_summary_screen.dart';
 import '../../features/sessions/presentation/pages/params/session_summary_screen_params.dart';
 import '../../features/sessions/presentation/pages/extend_session_screen.dart';
+import '../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -178,7 +179,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.extendSessionRouteName,
         name: AppRoutes.extendSessionRouteName,
-        builder: (context, state) => const ExtendSessionScreen(),
+        builder: (context, state) {
+          final params = state.extra as ExtendSessionScreenParams;
+          return ExtendSessionScreen(params: params);
+        },
       ),
       GoRoute(
         path: AppRoutes.editProfileRouteName,

@@ -16,35 +16,49 @@ import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
-import '../../../../di.dart';
 import '../../../payments/domain/entities/payment_method_entity.dart';
 import '../../../payments/presentation/bloc/payment_bloc.dart';
 import '../../../payments/presentation/bloc/payment_event.dart';
 import '../../../payments/presentation/bloc/payment_state.dart';
 import '../../../payments/presentation/widgets/payment_method_card.dart';
 import '../../../payments/presentation/widgets/payment_method_card_action.dart';
-import '../../../zoom/presentation/bloc/zoom_bloc.dart';
 import '../bloc/sessions_bloc.dart';
 import '../bloc/sessions_event.dart';
 import '../bloc/sessions_state.dart';
+import 'params/extend_session_screen_params.dart';
 
-class ExtendSessionScreen extends StatefulWidget {
-  const ExtendSessionScreen({super.key});
+class ExtendSessionScreen extends StatelessWidget {
+  final ExtendSessionScreenParams params;
+
+  const ExtendSessionScreen({super.key, required this.params});
 
   @override
-  State<ExtendSessionScreen> createState() => _ExtendSessionScreenState();
+  Widget build(BuildContext context) {
+    return ExtendSessionView(sessionId: params.sessionId, totalFee: params.totalFee);
+  }
 }
 
-class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
+class ExtendSessionView extends StatefulWidget {
+  final String sessionId;
+  final double totalFee;
+
+  const ExtendSessionView({super.key, required this.sessionId, required this.totalFee});
+
+  @override
+  State<ExtendSessionView> createState() => _ExtendSessionViewState();
+}
+
+class _ExtendSessionViewState extends State<ExtendSessionView> {
   String? _selectedPaymentMethodId;
   PaymentMethodEntity? _selectedPaymentMethod;
   late PaymentBloc _paymentBloc;
-  String? _sessionId;
 
   @override
   void initState() {
     super.initState();
     Log.i(runtimeType, '🚀 ExtendSessionScreen: initState started');
+    Log.i(runtimeType, '📋 ExtendSessionScreen: Session ID from params: ${widget.sessionId}');
+    Log.i(runtimeType, '💰 ExtendSessionScreen: Total Fee from params: \$${widget.totalFee.toStringAsFixed(2)}');
 
     _paymentBloc = context.read<PaymentBloc>();
     Log.i(runtimeType, '📦 ExtendSessionScreen: PaymentBloc obtained');
@@ -52,60 +66,12 @@ class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
     _paymentBloc.add(const LoadPaymentMethods());
     Log.i(runtimeType, '📋 ExtendSessionScreen: LoadPaymentMethods event dispatched');
 
-    final zoomBloc = sl<ZoomBloc>();
-    _sessionId = zoomBloc.currentSessionId;
-
-    if (_sessionId != null) {
-      Log.i(runtimeType, '✅ ExtendSessionScreen: Session ID retrieved from ZoomBloc: $_sessionId');
-    } else {
-      Log.w(runtimeType, '⚠️ ExtendSessionScreen: No active session found in ZoomBloc');
-    }
-
     Log.i(runtimeType, '✅ ExtendSessionScreen: initState completed');
   }
 
   @override
   Widget build(BuildContext context) {
-    Log.d(runtimeType, '🎨 ExtendSessionScreen: build() called, sessionId: $_sessionId');
-
-    if (_sessionId == null) {
-      Log.w(runtimeType, '⚠️ ExtendSessionScreen: Showing error screen - No active session');
-      return CustomScaffold(
-        extendBodyBehindAppBar: true,
-        appBar: CustomAppBar(
-          leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
-          leading: const CustomBackButton(),
-          centerTitle: true,
-          title: TranslatedText(
-            AppStrings.extendSession,
-            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
-          ),
-        ),
-        body: Center(
-          child: Padding(
-            padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 60.w, color: context.orange),
-                SizedBox(height: DimensionConstants.gap16Px.h),
-                TranslatedText(
-                  AppStrings.noActiveSessionError,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: DimensionConstants.gap8Px.h),
-                TranslatedText(
-                  AppStrings.noActiveSessionDescription,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
+    Log.d(runtimeType, '🎨 ExtendSessionScreen: build() called, sessionId: ${widget.sessionId}');
 
     return BlocListener<SessionsBloc, SessionsState>(
       bloc: context.read<SessionsBloc>(),
@@ -235,8 +201,8 @@ class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
                     style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                   ),
                   SizedBox(height: DimensionConstants.gap2Px.h),
-                  TranslatedText(
-                    AppStrings.extensionFeeDescription,
+                  Text(
+                    '\$${widget.totalFee.toStringAsFixed(2)}',
                     style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
                   ),
                 ],
@@ -433,27 +399,21 @@ class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
   void _onPayNow() {
     Log.i(runtimeType, '💰 ExtendSessionScreen: Pay Now button tapped');
     Log.i(runtimeType, '📋 ExtendSessionScreen: Validating data...');
-    Log.i(runtimeType, '   - Session ID: $_sessionId');
+    Log.i(runtimeType, '   - Session ID: ${widget.sessionId}');
     Log.i(runtimeType, '   - Selected Payment Method ID: $_selectedPaymentMethodId');
     Log.i(runtimeType, '   - Selected Payment Method: ${_selectedPaymentMethod?.stripePaymentMethodId}');
 
-    if (_selectedPaymentMethod != null && _sessionId != null) {
+    if (_selectedPaymentMethod != null) {
       Log.i(runtimeType, '✅ ExtendSessionScreen: Validation passed, dispatching ExtendSession event');
       Log.i(runtimeType, '📤 ExtendSessionScreen: Event details:');
-      Log.i(runtimeType, '   - sessionId: $_sessionId');
+      Log.i(runtimeType, '   - sessionId: ${widget.sessionId}');
       Log.i(runtimeType, '   - paymentMethodId: ${_selectedPaymentMethod!.stripePaymentMethodId}');
 
-      context.read<SessionsBloc>().add(ExtendSession(sessionId: _sessionId!, paymentMethodId: _selectedPaymentMethod!.stripePaymentMethodId));
+      context.read<SessionsBloc>().add(ExtendSession(sessionId: widget.sessionId, paymentMethodId: _selectedPaymentMethod!.stripePaymentMethodId));
 
       Log.i(runtimeType, '✅ ExtendSessionScreen: ExtendSession event dispatched to SessionsBloc');
     } else {
-      Log.w(runtimeType, '⚠️ ExtendSessionScreen: Validation failed!');
-      if (_selectedPaymentMethod == null) {
-        Log.w(runtimeType, '   - No payment method selected');
-      }
-      if (_sessionId == null) {
-        Log.w(runtimeType, '   - No session ID available');
-      }
+      Log.w(runtimeType, '⚠️ ExtendSessionScreen: Validation failed - No payment method selected');
     }
   }
 }

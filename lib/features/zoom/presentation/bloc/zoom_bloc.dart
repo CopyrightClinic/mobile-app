@@ -12,7 +12,6 @@ import 'zoom_state.dart';
 class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   final ZoomService zoomService;
   final GetMeetingCredentialsUseCase getMeetingCredentialsUseCase;
-  String? _currentSessionId;
 
   ZoomBloc({required this.zoomService, required this.getMeetingCredentialsUseCase}) : super(const ZoomInitial()) {
     on<InitializeZoom>(_onInitializeZoom);
@@ -24,8 +23,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
 
     _listenToMeetingEvents();
   }
-
-  String? get currentSessionId => _currentSessionId;
 
   void _listenToMeetingEvents() {
     zoomService.listenToMeetingEvents(
@@ -108,8 +105,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
     Log.i(runtimeType, '   - Meeting/Session ID: ${event.meetingId}');
 
     emit(ZoomFetchingCredentials(meetingId: event.meetingId));
-    _currentSessionId = event.meetingId;
-    Log.i(runtimeType, '✅ ZoomBloc: Current session ID stored: $_currentSessionId');
 
     final result = await getMeetingCredentialsUseCase(event.meetingId);
 
@@ -117,9 +112,6 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
       (failure) async {
         Log.e(runtimeType, '❌ ZoomBloc: Failed to get meeting credentials');
         Log.e(runtimeType, '   - Failure message: ${failure.message}');
-
-        _currentSessionId = null;
-        Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared due to failure');
 
         emit(ZoomMeetingFailed(message: failure.message ?? AppStrings.zoomErrorFetchCredentials));
       },
@@ -159,16 +151,10 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
           Log.e(runtimeType, '❌ ZoomBloc: Failed to join meeting');
           Log.e(runtimeType, '   - Error: $errorMessage');
 
-          _currentSessionId = null;
-          Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared due to join failure');
-
           emit(ZoomMeetingFailed(message: errorMessage));
         } catch (e) {
           Log.e(runtimeType, '❌ ZoomBloc: Unexpected error while joining meeting');
           Log.e(runtimeType, '   - Error: $e');
-
-          _currentSessionId = null;
-          Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared due to unexpected error');
 
           emit(ZoomMeetingFailed(message: '${AppStrings.zoomErrorJoinFailed}: $e'));
         }
@@ -179,10 +165,9 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   Future<void> _onLeaveMeetingRequested(LeaveMeetingRequested event, Emitter<ZoomState> emit) async {
     try {
       await zoomService.leaveMeeting();
-      _currentSessionId = null;
       emit(const ZoomMeetingEnded(message: null));
     } catch (e) {
-      _currentSessionId = null;
+      // Silently handle error
     }
   }
 
@@ -192,28 +177,22 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
     Log.d(runtimeType, '📡 ZoomBloc: Meeting status updated');
     Log.d(runtimeType, '   - Status: ${status.name}');
     Log.d(runtimeType, '   - Message: ${event.message}');
-    Log.d(runtimeType, '   - Current Session ID: $_currentSessionId');
 
     if (status.isActive || status.isWaiting || status.isConnecting) {
       Log.i(runtimeType, '✅ ZoomBloc: Meeting is active/waiting/connecting');
-      emit(ZoomMeetingActive(status: status, message: event.message, sessionId: _currentSessionId));
+      emit(ZoomMeetingActive(status: status, message: event.message));
     } else if (status == ZoomMeetingStatus.disconnecting) {
       Log.d(runtimeType, '🔄 ZoomBloc: Meeting is disconnecting, waiting for end state');
     } else if (status.isError) {
       Log.e(runtimeType, '❌ ZoomBloc: Meeting error status');
-      _currentSessionId = null;
-      Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared');
       emit(ZoomMeetingFailed(message: event.message ?? AppStrings.zoomStatusFailed));
     } else if (status.isFinished) {
       Log.i(runtimeType, '✅ ZoomBloc: Meeting finished');
-      _currentSessionId = null;
-      Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared');
       emit(ZoomMeetingEnded(message: event.message));
     }
   }
 
   void _onResetZoomState(ResetZoomState event, Emitter<ZoomState> emit) {
-    _currentSessionId = null;
     emit(const ZoomInitial());
   }
 
