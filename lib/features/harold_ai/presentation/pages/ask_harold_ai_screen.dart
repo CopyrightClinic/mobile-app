@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -211,6 +210,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                   ),
                 ),
               ),
+              SizedBox(height: DimensionConstants.gap8Px.h),
+              Align(alignment: Alignment.centerRight, child: _buildVoiceButton()),
             ],
           ),
         );
@@ -221,28 +222,22 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   Widget _buildBottomSection() {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-      child: Column(
-        children: [
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [_buildVoiceButton()]),
-          SizedBox(height: DimensionConstants.gap16Px.h),
-          BlocBuilder<HaroldAiBloc, HaroldAiState>(
-            builder: (context, state) {
-              final isLoading = state is HaroldAiLoading;
-              return ValueListenableBuilder<TextEditingValue>(
-                valueListenable: _textController,
-                builder: (context, value, child) {
-                  final isValid = _isValidInput();
-                  return AuthButton(
-                    text: AppStrings.submit,
-                    onPressed: isValid && !isLoading ? _onSubmit : null,
-                    isLoading: isLoading,
-                    isEnabled: isValid && !isLoading,
-                  );
-                },
+      child: BlocBuilder<HaroldAiBloc, HaroldAiState>(
+        builder: (context, state) {
+          final isLoading = state is HaroldAiLoading;
+          return ValueListenableBuilder<TextEditingValue>(
+            valueListenable: _textController,
+            builder: (context, value, child) {
+              final isValid = _isValidInput();
+              return AuthButton(
+                text: AppStrings.submit,
+                onPressed: isValid && !isLoading ? _onSubmit : null,
+                isLoading: isLoading,
+                isEnabled: isValid && !isLoading,
               );
             },
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -267,7 +262,10 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                       width: 48.w,
                       height: 48.h,
                       decoration: BoxDecoration(
-                        color: isListening ? context.primary : (isEnabled ? context.filledBgDark : context.filledBgDark.withValues(alpha: 0.5)),
+                        color:
+                            isListening
+                                ? context.primary
+                                : (isEnabled ? context.darkTextPrimary.withValues(alpha: 0.15) : context.darkTextPrimary.withValues(alpha: 0.08)),
                         shape: BoxShape.circle,
                         boxShadow: isListening ? [BoxShadow(color: context.primary.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 5)] : null,
                       ),
