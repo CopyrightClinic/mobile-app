@@ -8,6 +8,7 @@ import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -43,16 +44,32 @@ class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
   @override
   void initState() {
     super.initState();
+    Log.i(runtimeType, '🚀 ExtendSessionScreen: initState started');
+
     _paymentBloc = context.read<PaymentBloc>();
+    Log.i(runtimeType, '📦 ExtendSessionScreen: PaymentBloc obtained');
+
     _paymentBloc.add(const LoadPaymentMethods());
+    Log.i(runtimeType, '📋 ExtendSessionScreen: LoadPaymentMethods event dispatched');
 
     final zoomBloc = sl<ZoomBloc>();
     _sessionId = zoomBloc.currentSessionId;
+
+    if (_sessionId != null) {
+      Log.i(runtimeType, '✅ ExtendSessionScreen: Session ID retrieved from ZoomBloc: $_sessionId');
+    } else {
+      Log.w(runtimeType, '⚠️ ExtendSessionScreen: No active session found in ZoomBloc');
+    }
+
+    Log.i(runtimeType, '✅ ExtendSessionScreen: initState completed');
   }
 
   @override
   Widget build(BuildContext context) {
+    Log.d(runtimeType, '🎨 ExtendSessionScreen: build() called, sessionId: $_sessionId');
+
     if (_sessionId == null) {
+      Log.w(runtimeType, '⚠️ ExtendSessionScreen: Showing error screen - No active session');
       return CustomScaffold(
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
@@ -93,14 +110,27 @@ class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
     return BlocListener<SessionsBloc, SessionsState>(
       bloc: context.read<SessionsBloc>(),
       listener: (context, state) {
+        Log.d(runtimeType, '👂 ExtendSessionScreen: BlocListener triggered');
+        Log.d(runtimeType, '   - hasSuccess: ${state.hasSuccess}');
+        Log.d(runtimeType, '   - hasError: ${state.hasError}');
+        Log.d(runtimeType, '   - lastOperation: ${state.lastOperation}');
+        Log.d(runtimeType, '   - isProcessingExtension: ${state.isProcessingExtension}');
+
         if (state.hasSuccess && state.lastOperation == SessionsOperation.extendSession) {
+          Log.i(runtimeType, '✅ ExtendSessionScreen: Session extended successfully!');
+          Log.i(runtimeType, '   - Success message: ${state.successMessage}');
+
           SnackBarUtils.showSuccess(context, state.successMessage ?? AppStrings.sessionExtendedSuccess);
           Future.delayed(const Duration(milliseconds: 500), () {
             if (context.mounted) {
+              Log.i(runtimeType, '🔙 ExtendSessionScreen: Navigating back after success');
               context.pop();
             }
           });
         } else if (state.hasError && state.lastOperation == SessionsOperation.extendSession) {
+          Log.e(runtimeType, '❌ ExtendSessionScreen: Session extension failed!');
+          Log.e(runtimeType, '   - Error message: ${state.errorMessage}');
+
           SnackBarUtils.showError(context, state.errorMessage ?? AppStrings.sessionExtendError);
         }
       },
@@ -373,23 +403,57 @@ class _ExtendSessionScreenState extends State<ExtendSessionScreen> {
   }
 
   void _onSelectPaymentMethod(PaymentMethodEntity paymentMethod) {
+    Log.i(runtimeType, '💳 ExtendSessionScreen: Payment method selected');
+    Log.i(runtimeType, '   - Payment Method ID: ${paymentMethod.id}');
+    Log.i(runtimeType, '   - Stripe Payment Method ID: ${paymentMethod.stripePaymentMethodId}');
+
     setState(() {
       _selectedPaymentMethodId = paymentMethod.id;
       _selectedPaymentMethod = paymentMethod;
     });
+
+    Log.i(runtimeType, '✅ ExtendSessionScreen: Payment method state updated');
   }
 
   void _onAddPaymentMethod() {
+    Log.i(runtimeType, '➕ ExtendSessionScreen: Add payment method button tapped');
+    Log.i(runtimeType, '🧭 ExtendSessionScreen: Navigating to add payment method screen');
+
     context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home}).then((value) {
       if (value != null) {
+        Log.i(runtimeType, '✅ ExtendSessionScreen: Returned from add payment method screen with result');
+        Log.i(runtimeType, '📋 ExtendSessionScreen: Reloading payment methods');
         _paymentBloc.add(const LoadPaymentMethods());
+      } else {
+        Log.i(runtimeType, '↩️ ExtendSessionScreen: Returned from add payment method screen without result');
       }
     });
   }
 
   void _onPayNow() {
+    Log.i(runtimeType, '💰 ExtendSessionScreen: Pay Now button tapped');
+    Log.i(runtimeType, '📋 ExtendSessionScreen: Validating data...');
+    Log.i(runtimeType, '   - Session ID: $_sessionId');
+    Log.i(runtimeType, '   - Selected Payment Method ID: $_selectedPaymentMethodId');
+    Log.i(runtimeType, '   - Selected Payment Method: ${_selectedPaymentMethod?.stripePaymentMethodId}');
+
     if (_selectedPaymentMethod != null && _sessionId != null) {
+      Log.i(runtimeType, '✅ ExtendSessionScreen: Validation passed, dispatching ExtendSession event');
+      Log.i(runtimeType, '📤 ExtendSessionScreen: Event details:');
+      Log.i(runtimeType, '   - sessionId: $_sessionId');
+      Log.i(runtimeType, '   - paymentMethodId: ${_selectedPaymentMethod!.stripePaymentMethodId}');
+
       context.read<SessionsBloc>().add(ExtendSession(sessionId: _sessionId!, paymentMethodId: _selectedPaymentMethod!.stripePaymentMethodId));
+
+      Log.i(runtimeType, '✅ ExtendSessionScreen: ExtendSession event dispatched to SessionsBloc');
+    } else {
+      Log.w(runtimeType, '⚠️ ExtendSessionScreen: Validation failed!');
+      if (_selectedPaymentMethod == null) {
+        Log.w(runtimeType, '   - No payment method selected');
+      }
+      if (_sessionId == null) {
+        Log.w(runtimeType, '   - No session ID available');
+      }
     }
   }
 }

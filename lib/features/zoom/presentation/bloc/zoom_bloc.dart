@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/services/zoom_service.dart';
 import '../../../../core/utils/enumns/ui/zoom_meeting_status.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../../domain/usecases/get_meeting_credentials_usecase.dart';
 import 'zoom_event.dart';
 import 'zoom_state.dart';
@@ -103,17 +104,29 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   }
 
   Future<void> _onJoinMeetingWithId(JoinMeetingWithId event, Emitter<ZoomState> emit) async {
+    Log.i(runtimeType, '📥 ZoomBloc: JoinMeetingWithId event received');
+    Log.i(runtimeType, '   - Meeting/Session ID: ${event.meetingId}');
+
     emit(ZoomFetchingCredentials(meetingId: event.meetingId));
     _currentSessionId = event.meetingId;
+    Log.i(runtimeType, '✅ ZoomBloc: Current session ID stored: $_currentSessionId');
 
     final result = await getMeetingCredentialsUseCase(event.meetingId);
 
     await result.fold(
       (failure) async {
+        Log.e(runtimeType, '❌ ZoomBloc: Failed to get meeting credentials');
+        Log.e(runtimeType, '   - Failure message: ${failure.message}');
+
         _currentSessionId = null;
+        Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared due to failure');
+
         emit(ZoomMeetingFailed(message: failure.message ?? AppStrings.zoomErrorFetchCredentials));
       },
       (credentials) async {
+        Log.i(runtimeType, '✅ ZoomBloc: Meeting credentials retrieved successfully');
+        Log.i(runtimeType, '   - Meeting Number: ${credentials.meetingNumber}');
+
         emit(ZoomJoining(meetingNumber: credentials.meetingNumber));
 
         try {
@@ -143,10 +156,20 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
               }
           }
 
+          Log.e(runtimeType, '❌ ZoomBloc: Failed to join meeting');
+          Log.e(runtimeType, '   - Error: $errorMessage');
+
           _currentSessionId = null;
+          Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared due to join failure');
+
           emit(ZoomMeetingFailed(message: errorMessage));
         } catch (e) {
+          Log.e(runtimeType, '❌ ZoomBloc: Unexpected error while joining meeting');
+          Log.e(runtimeType, '   - Error: $e');
+
           _currentSessionId = null;
+          Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared due to unexpected error');
+
           emit(ZoomMeetingFailed(message: '${AppStrings.zoomErrorJoinFailed}: $e'));
         }
       },
@@ -166,15 +189,25 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
   void _onMeetingStatusUpdated(MeetingStatusUpdated event, Emitter<ZoomState> emit) {
     final status = ZoomMeetingStatus.fromString(event.status);
 
+    Log.d(runtimeType, '📡 ZoomBloc: Meeting status updated');
+    Log.d(runtimeType, '   - Status: ${status.name}');
+    Log.d(runtimeType, '   - Message: ${event.message}');
+    Log.d(runtimeType, '   - Current Session ID: $_currentSessionId');
+
     if (status.isActive || status.isWaiting || status.isConnecting) {
+      Log.i(runtimeType, '✅ ZoomBloc: Meeting is active/waiting/connecting');
       emit(ZoomMeetingActive(status: status, message: event.message, sessionId: _currentSessionId));
     } else if (status == ZoomMeetingStatus.disconnecting) {
-      // Do nothing, wait for end state
+      Log.d(runtimeType, '🔄 ZoomBloc: Meeting is disconnecting, waiting for end state');
     } else if (status.isError) {
+      Log.e(runtimeType, '❌ ZoomBloc: Meeting error status');
       _currentSessionId = null;
+      Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared');
       emit(ZoomMeetingFailed(message: event.message ?? AppStrings.zoomStatusFailed));
     } else if (status.isFinished) {
+      Log.i(runtimeType, '✅ ZoomBloc: Meeting finished');
       _currentSessionId = null;
+      Log.i(runtimeType, '🔄 ZoomBloc: Current session ID cleared');
       emit(ZoomMeetingEnded(message: event.message));
     }
   }

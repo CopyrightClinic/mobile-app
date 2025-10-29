@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
@@ -374,12 +375,21 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   }
 
   Future<void> _onExtendSession(ExtendSession event, Emitter<SessionsState> emit) async {
-    emit(state.copyWith(isProcessingExtension: true, clearError: true, clearSuccess: true));
+    Log.i(runtimeType, '📥 SessionsBloc: ExtendSession event received');
+    Log.i(runtimeType, '   - Session ID: ${event.sessionId}');
+    Log.i(runtimeType, '   - Payment Method ID: ${event.paymentMethodId}');
 
+    emit(state.copyWith(isProcessingExtension: true, clearError: true, clearSuccess: true));
+    Log.i(runtimeType, '🔄 SessionsBloc: State updated - isProcessingExtension: true');
+
+    Log.i(runtimeType, '🔌 SessionsBloc: Calling extendSessionUseCase...');
     final result = await extendSessionUseCase(ExtendSessionParams(sessionId: event.sessionId, paymentMethodId: event.paymentMethodId));
 
     result.fold(
       (failure) {
+        Log.e(runtimeType, '❌ SessionsBloc: ExtendSession failed');
+        Log.e(runtimeType, '   - Failure message: ${failure.message}');
+
         emit(
           state.copyWith(
             isProcessingExtension: false,
@@ -387,8 +397,13 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
             lastOperation: SessionsOperation.extendSession,
           ),
         );
+
+        Log.i(runtimeType, '🔄 SessionsBloc: State updated with error');
       },
       (response) {
+        Log.i(runtimeType, '✅ SessionsBloc: ExtendSession succeeded');
+        Log.i(runtimeType, '   - Response message: ${response.message}');
+
         emit(
           state.copyWith(
             isProcessingExtension: false,
@@ -396,7 +411,11 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
             lastOperation: SessionsOperation.extendSession,
           ),
         );
+
+        Log.i(runtimeType, '🔄 SessionsBloc: State updated with success');
       },
     );
+
+    Log.i(runtimeType, '✅ SessionsBloc: ExtendSession event processing completed');
   }
 }
