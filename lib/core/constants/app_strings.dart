@@ -237,6 +237,7 @@ class AppStrings {
   static const joiningSession = 'joiningSession';
   static const session = 'session';
   static const today = 'today';
+  static const yesterday = 'yesterday';
 
   // Schedule Session Screen
   static const bookSession = 'bookSession';
@@ -530,4 +531,5 @@ class AppStrings {
   static const payNow = 'payNow';
   static const sessionExtendedSuccess = 'sessionExtendedSuccess';
   static const sessionExtendError = 'sessionExtendError';
+  static const unableToOpenNotification = 'unableToOpenNotification';
 }

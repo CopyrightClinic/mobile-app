@@ -10,13 +10,14 @@ abstract class NotificationDataModel {
 
     switch (type) {
       case NotificationType.sessionAccepted:
-      case NotificationType.sessionCancelled:
       case NotificationType.sessionReminder:
       case NotificationType.sessionCompleted:
+      case NotificationType.sessionSummaryAvailable:
+      case NotificationType.sessionExtensionApproved:
+      case NotificationType.sessionExtensionDeclined:
+      case NotificationType.sessionExtensionPrompt:
         return SessionNotificationData.fromJson(json);
-      case NotificationType.paymentReleased:
-      case NotificationType.paymentReceived:
-      case NotificationType.paymentAuthorizationFailed:
+      case NotificationType.refundIssued:
         return PaymentNotificationData.fromJson(json);
     }
   }
@@ -46,6 +47,8 @@ class SessionNotificationData extends NotificationDataModel {
   final String? completedAt;
   final String? reason;
   final String? sessionRequestId;
+  final String? totalFee;
+  final String? extensionFee;
 
   const SessionNotificationData({
     this.sessionId,
@@ -64,9 +67,20 @@ class SessionNotificationData extends NotificationDataModel {
     this.completedAt,
     this.reason,
     this.sessionRequestId,
+    this.totalFee,
+    this.extensionFee,
   });
 
   factory SessionNotificationData.fromJson(Map<String, dynamic> json) {
+    String? totalFee;
+    String? extensionFee;
+
+    if (json['fees'] != null && json['fees'] is Map) {
+      final fees = json['fees'] as Map<String, dynamic>;
+      totalFee = fees['totalFee']?.toString();
+      extensionFee = fees['sessionFee']?.toString();
+    }
+
     return SessionNotificationData(
       sessionId: json['sessionId'] as String?,
       attorneyId: json['attorneyId'] as String?,
@@ -75,15 +89,17 @@ class SessionNotificationData extends NotificationDataModel {
       userName: json['userName'] as String?,
       scheduledDate: json['scheduledDate'] as String?,
       startTime: json['startTime'] as String?,
-      durationMinutes: json['durationMinutes'] as String?,
-      minutesUntilStart: json['minutesUntilStart'] as String?,
+      durationMinutes: json['durationMinutes']?.toString(),
+      minutesUntilStart: json['minutesUntilStart']?.toString(),
       zoomLink: json['zoomLink'] as String?,
-      zoomMeetingId: json['zoomMeetingId'] as String?,
+      zoomMeetingId: json['zoomMeetingId']?.toString(),
       zoomPassword: json['zoomPassword'] as String?,
       cancelledAt: json['cancelledAt'] as String?,
       completedAt: json['completedAt'] as String?,
       reason: json['reason'] as String?,
       sessionRequestId: json['sessionRequestId'] as String?,
+      totalFee: totalFee ?? json['totalFee']?.toString(),
+      extensionFee: extensionFee ?? json['extensionFee']?.toString(),
     );
   }
 
@@ -106,6 +122,8 @@ class SessionNotificationData extends NotificationDataModel {
       if (completedAt != null) 'completedAt': completedAt,
       if (reason != null) 'reason': reason,
       if (sessionRequestId != null) 'sessionRequestId': sessionRequestId,
+      if (totalFee != null) 'totalFee': totalFee,
+      if (extensionFee != null) 'extensionFee': extensionFee,
     };
   }
 }
@@ -147,8 +165,8 @@ class PaymentNotificationData extends NotificationDataModel {
       paymentId: json['paymentId'] as String?,
       paymentIntentId: json['paymentIntentId'] as String?,
       refundId: json['refundId'] as String?,
-      amount: json['amount'] as String?,
-      refundAmount: json['refundAmount'] as String?,
+      amount: json['amount']?.toString(),
+      refundAmount: json['refundAmount']?.toString(),
       currency: json['currency'] as String?,
       paymentMethodLast4: json['paymentMethodLast4'] as String?,
       failureReason: json['failureReason'] as String?,

@@ -210,6 +210,7 @@
   "joiningSession": "Joining session...",
   "session": "session",
   "today": "Today",
+  "yesterday": "Yesterday",
   "bookSession": "Book Session",
   "chooseTimeFor30MinSession": "Choose a time that works for you for 30 minutes session",
   "availableTimeSlots": "Available Time Slots",
@@ -453,5 +454,6 @@
   "extensionNote": "Extending your session will add 30 minutes to the current time and charge your selected payment method.",
   "payNow": "Pay Now",
   "sessionExtendedSuccess": "Session extended successfully!",
-  "sessionExtendError": "Failed to extend session. Please try again."
+  "sessionExtendError": "Failed to extend session. Please try again.",
+  "unableToOpenNotification": "Unable to open notification"
 }

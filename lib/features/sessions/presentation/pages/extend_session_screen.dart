@@ -409,7 +409,7 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
       Log.i(runtimeType, '   - sessionId: ${widget.sessionId}');
       Log.i(runtimeType, '   - paymentMethodId: ${_selectedPaymentMethod!.stripePaymentMethodId}');
 
-      context.read<SessionsBloc>().add(ExtendSession(sessionId: widget.sessionId, paymentMethodId: _selectedPaymentMethod!.stripePaymentMethodId));
+      context.read<SessionsBloc>().add(ExtendSession(sessionId: widget.sessionId, paymentMethodId: _selectedPaymentMethod!.id));
 
       Log.i(runtimeType, '✅ ExtendSessionScreen: ExtendSession event dispatched to SessionsBloc');
     } else {
