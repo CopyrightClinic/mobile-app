@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -33,6 +34,21 @@ class HaroldSuccessScreen extends StatelessWidget {
     context.push(AppRoutes.scheduleSessionRouteName, extra: ScheduleSessionScreenParams(query: params.query ?? ''));
   }
 
+  String _getFormattedPrice() {
+    if (params.fee != null) {
+      final currency = params.fee!.currency == 'USD' ? '\$' : params.fee!.currency;
+      return '$currency${params.fee!.totalFee.toStringAsFixed(2)}';
+    }
+    return '\$99';
+  }
+
+  String _getConsultationDescription(BuildContext context) {
+    if (params.fee != null) {
+      return tr(AppStrings.haroldConsultationDescriptionDynamic, namedArgs: {'totalFee': _getFormattedPrice()});
+    }
+    return tr(AppStrings.haroldConsultationDescription);
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -58,8 +74,8 @@ class HaroldSuccessScreen extends StatelessWidget {
 
               SizedBox(height: DimensionConstants.gap12Px.h),
 
-              TranslatedText(
-                AppStrings.haroldConsultationDescription,
+              Text(
+                _getConsultationDescription(context),
                 style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                 textAlign: TextAlign.center,
               ),
