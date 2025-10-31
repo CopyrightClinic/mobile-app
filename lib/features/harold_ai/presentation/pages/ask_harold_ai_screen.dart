@@ -198,7 +198,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                     fontWeight: FontWeight.w400,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppStrings.describe,
+                    hintText: AppStrings.describe.tr(),
                     hintStyle: TextStyle(
                       color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
                       fontSize: DimensionConstants.font16Px.f,

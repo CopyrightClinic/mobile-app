@@ -15,6 +15,7 @@ import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../bloc/profile_bloc.dart';
@@ -101,6 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
                             controller: _fullNameController,
                             focusNode: _fullNameFocusNode,
                             keyboardType: TextInputType.name,
+                            inputFormatters: [LengthLimitingTextInputFormatter(100)],
                             validator: (value) => validateFullName(value, tr),
                             onEditingComplete: () => _phoneFocusNode.requestFocus(),
                             onChanged: (value) => _onFieldChanged(),

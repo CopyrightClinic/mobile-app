@@ -1,5 +1,6 @@
 import 'package:copyright_clinic_flutter/di.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -147,6 +148,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                             controller: _nameController,
                             focusNode: _nameFocusNode,
                             keyboardType: TextInputType.name,
+                            inputFormatters: [LengthLimitingTextInputFormatter(100)],
                             validator: (value) => validateFullName(value, tr),
                             onEditingComplete: () {
                               _cardFormController.focus();
