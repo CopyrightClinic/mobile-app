@@ -74,7 +74,7 @@ mixin Validator {
       return tr(AppStrings.fullNameMustBeAtLeast2Characters);
     } else if (value.trim().length > 100) {
       return tr(AppStrings.fullNameCannotExceed100Characters);
-    } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value.trim())) {
+    } else if (!RegExp(r'^[a-zA-Z\s.]+$').hasMatch(value.trim())) {
       return tr(AppStrings.fullNameCanOnlyContainLetters);
     }
     return null;
