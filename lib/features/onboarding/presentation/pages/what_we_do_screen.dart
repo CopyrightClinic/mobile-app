@@ -98,10 +98,10 @@ class WhatWeDoScreen extends StatelessWidget {
                   Container(
                     width: DimensionConstants.gap48Px.w,
                     height: DimensionConstants.gap48Px.h,
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(24.r)),
+                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), shape: BoxShape.circle),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(24.r),
-                      child: GlobalImage(assetPath: imagePath, width: 48.w, height: 48.w, fit: BoxFit.cover, showLoading: false, showError: false),
+                      child: GlobalImage(assetPath: imagePath, width: 48.w, height: 48.w, fit: BoxFit.fill, showLoading: false, showError: false),
                     ),
                   ),
                   SizedBox(width: DimensionConstants.gap16Px.w),
