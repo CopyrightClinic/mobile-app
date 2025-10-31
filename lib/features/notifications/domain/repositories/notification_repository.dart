@@ -19,4 +19,6 @@ abstract class NotificationRepository {
   Future<Either<Failure, int>> markAllAsRead();
 
   Future<Either<Failure, void>> markNotificationAsRead({required String notificationId});
+
+  Future<Either<Failure, int>> clearAllNotifications();
 }

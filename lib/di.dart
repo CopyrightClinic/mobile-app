@@ -72,6 +72,7 @@ import 'features/notifications/domain/repositories/notification_repository.dart'
 import 'features/notifications/domain/usecases/get_notifications_usecase.dart';
 import 'features/notifications/domain/usecases/mark_all_notifications_as_read_usecase.dart';
 import 'features/notifications/domain/usecases/mark_notification_as_read_usecase.dart';
+import 'features/notifications/domain/usecases/clear_all_notifications_usecase.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'core/services/fcm_service.dart';
 
@@ -168,6 +169,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
   sl.registerLazySingleton(() => MarkAllNotificationsAsReadUseCase(repository: sl()));
   sl.registerLazySingleton(() => MarkNotificationAsReadUseCase(repository: sl()));
+  sl.registerLazySingleton(() => ClearAllNotificationsUseCase(repository: sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -219,6 +221,7 @@ Future<void> init() async {
       getNotificationsUseCase: sl(),
       markAllNotificationsAsReadUseCase: sl(),
       markNotificationAsReadUseCase: sl(),
+      clearAllNotificationsUseCase: sl(),
     ),
   );
 

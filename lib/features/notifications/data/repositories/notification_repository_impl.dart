@@ -52,4 +52,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, int>> clearAllNotifications() async {
+    try {
+      final response = await remoteDataSource.clearAllNotifications();
+      return Right(response.clearedCount);
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

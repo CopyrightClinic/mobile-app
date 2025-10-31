@@ -7,6 +7,7 @@ import '../../../../core/utils/typedefs/type_defs.dart';
 import '../models/device_token_model.dart';
 import '../models/notification_list_response_model.dart';
 import '../models/mark_all_as_read_response_model.dart';
+import '../models/clear_all_notifications_response_model.dart';
 
 abstract class NotificationRemoteDataSource {
   Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20, String? timezone});
@@ -14,6 +15,8 @@ abstract class NotificationRemoteDataSource {
   Future<MarkAllAsReadResponseModel> markAllAsRead();
 
   Future<void> markNotificationAsRead({required String notificationId});
+
+  Future<ClearAllNotificationsResponseModel> clearAllNotifications();
 
   Future<RegisterDeviceTokenResponseModel> registerDeviceToken(RegisterDeviceTokenRequestModel request);
 }
@@ -74,6 +77,24 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
         requiresAuthToken: true,
         converter: (ResponseModel<JSON> response) {},
       );
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
+
+  @override
+  Future<ClearAllNotificationsResponseModel> clearAllNotifications() async {
+    try {
+      final endpoint = '${ApiEndpoint.notifications}/clear-all';
+      final response = await apiService.deleteData<ClearAllNotificationsResponseModel>(
+        endpoint: endpoint,
+        requiresAuthToken: true,
+        converter: (ResponseModel<JSON> response) {
+          return ClearAllNotificationsResponseModel.fromJson(response.data);
+        },
+      );
+
+      return response;
     } catch (e) {
       throw CustomException.fromDioException(e as Exception);
     }

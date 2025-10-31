@@ -476,6 +476,12 @@ class AppStrings {
   static const noNotificationsDescription = 'noNotificationsDescription';
   static const markAllAsRead = 'markAllAsRead';
   static const allNotificationsMarkedAsRead = 'allNotificationsMarkedAsRead';
+  static const clearAll = 'clearAll';
+  static const confirmClearAllNotifications = 'confirmClearAllNotifications';
+  static const confirmClearAllNotificationsDescription = 'confirmClearAllNotificationsDescription';
+  static const failedToMarkAllAsRead = 'failedToMarkAllAsRead';
+  static const failedToClearNotifications = 'failedToClearNotifications';
+  static const unknownError = 'unknownError';
   // Session Details Screen
   static const sessionDetailsTitle = 'sessionDetailsTitle';
   static const yourRatingAndReview = 'yourRatingAndReview';

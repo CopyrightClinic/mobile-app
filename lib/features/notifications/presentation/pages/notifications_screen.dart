@@ -201,6 +201,40 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  void _showClearAllConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: TranslatedText(
+            AppStrings.confirmClearAllNotifications,
+            style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600),
+          ),
+          content: TranslatedText(AppStrings.confirmClearAllNotificationsDescription, style: TextStyle(fontSize: DimensionConstants.font14Px.f)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: TranslatedText(
+                AppStrings.cancel,
+                style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                _notificationBloc.add(const ClearAllNotifications());
+              },
+              child: TranslatedText(
+                AppStrings.clearAll,
+                style: TextStyle(color: context.red, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -220,6 +254,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           AppStrings.notifications,
           style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
         ),
+        actions: [
+          BlocSelector<NotificationBloc, NotificationState, bool>(
+            selector: (state) => state is NotificationLoaded && state.notifications.isNotEmpty,
+            builder: (context, hasNotifications) {
+              if (!hasNotifications) return const SizedBox.shrink();
+
+              return Padding(
+                padding: EdgeInsets.only(right: DimensionConstants.gap14Px.w),
+                child: TextButton(
+                  onPressed: _showClearAllConfirmationDialog,
+                  child: TranslatedText(
+                    AppStrings.clearAll,
+                    style: TextStyle(color: context.red, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: BlocConsumer<NotificationBloc, NotificationState>(
