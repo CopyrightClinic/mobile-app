@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/extensions/extensions.dart';
 import '../../../../core/utils/storage/user_storage.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
@@ -12,6 +13,7 @@ import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
+import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/utils/enumns/api/notifications_enums.dart';
 import '../../../sessions/presentation/pages/params/session_details_screen_params.dart';
@@ -202,35 +204,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _showClearAllConfirmationDialog() {
-    showDialog(
+    CustomBottomSheet.show(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: TranslatedText(
-            AppStrings.confirmClearAllNotifications,
-            style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600),
-          ),
-          content: TranslatedText(AppStrings.confirmClearAllNotificationsDescription, style: TextStyle(fontSize: DimensionConstants.font14Px.f)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: TranslatedText(
-                AppStrings.cancel,
-                style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                _notificationBloc.add(const ClearAllNotifications());
-              },
-              child: TranslatedText(
-                AppStrings.clearAll,
-                style: TextStyle(color: context.red, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        );
+      iconPath: ImageConstants.warning,
+      title: AppStrings.confirmClearAllNotifications,
+      subtitle: AppStrings.confirmClearAllNotificationsDescription,
+      primaryButtonText: AppStrings.clearAll,
+      secondaryButtonText: AppStrings.cancel,
+      primaryButtonColor: context.red,
+      onPrimaryPressed: () {
+        context.pop();
+        _notificationBloc.add(const ClearAllNotifications());
+      },
+      onSecondaryPressed: () {
+        context.pop();
       },
     );
   }
