@@ -288,7 +288,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: ElevatedButton(
         onPressed: _handleLogout,
         style: ElevatedButton.styleFrom(
-          backgroundColor: context.primary,
+          backgroundColor: context.buttonSecondary,
           foregroundColor: Colors.white,
           padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
