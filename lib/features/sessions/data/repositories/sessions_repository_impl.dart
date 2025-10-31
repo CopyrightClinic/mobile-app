@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/exception/custom_exception.dart';
-import '../../../../core/utils/logger/logger.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_details_entity.dart';
 import '../../domain/entities/submit_feedback_response_entity.dart';
@@ -192,41 +191,19 @@ class SessionsRepositoryImpl implements SessionsRepository {
 
   @override
   Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({required String sessionId, required String paymentMethodId}) async {
-    Log.i(runtimeType, '📡 SessionsRepository: extendSession called');
-    Log.i(runtimeType, '   - Session ID: $sessionId');
-    Log.i(runtimeType, '   - Payment Method ID: $paymentMethodId');
-
     try {
-      Log.i(runtimeType, '🌐 SessionsRepository: Calling remote data source...');
       final response = await remoteDataSource.extendSession(sessionId: sessionId, paymentMethodId: paymentMethodId);
-
-      Log.i(runtimeType, '✅ SessionsRepository: API call succeeded');
-      Log.i(runtimeType, '   - Response message: ${response.message}');
-
       return Right(response.toEntity());
     } on CustomException catch (e) {
-      Log.e(runtimeType, '❌ SessionsRepository: CustomException caught');
-      Log.e(runtimeType, '   - Error message: ${e.message}');
-
       return Left(ServerFailure(e.message));
     } on DioException catch (e) {
-      Log.e(runtimeType, '❌ SessionsRepository: DioException caught');
-      Log.e(runtimeType, '   - Status code: ${e.response?.statusCode}');
-      Log.e(runtimeType, '   - Response data: ${e.response?.data}');
-
       String errorMessage = AppStrings.sessionExtendError;
       if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
         errorMessage = responseData['message'] ?? errorMessage;
-        Log.e(runtimeType, '   - Extracted error message: $errorMessage');
       }
-
       return Left(ServerFailure(errorMessage));
-    } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ SessionsRepository: Unexpected error');
-      Log.e(runtimeType, '   - Error: $e');
-      Log.e(runtimeType, '   - StackTrace: $stackTrace');
-
+    } catch (e) {
       return Left(ServerFailure(AppStrings.sessionExtendError));
     }
   }
