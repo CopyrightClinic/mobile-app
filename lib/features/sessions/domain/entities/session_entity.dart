@@ -110,15 +110,32 @@ class SessionEntity extends Equatable {
   }
 
   String get formattedDuration {
-    final hours = durationMinutes ~/ 60;
-    final minutes = durationMinutes % 60;
+    try {
+      final start = DateTime.parse('${scheduledDate}T$startTime');
+      final end = DateTime.parse('${scheduledDate}T$endTime');
+      final durationInMinutes = end.difference(start).inMinutes;
+      
+      final hours = durationInMinutes ~/ 60;
+      final minutes = durationInMinutes % 60;
 
-    if (hours > 0 && minutes > 0) {
-      return '${hours}h ${minutes}m';
-    } else if (hours > 0) {
-      return '${hours}h';
-    } else {
-      return '${minutes}m';
+      if (hours > 0 && minutes > 0) {
+        return '$hours ${hours == 1 ? 'hour' : 'hours'} $minutes ${minutes == 1 ? 'minute' : 'minutes'}';
+      } else if (hours > 0) {
+        return '$hours ${hours == 1 ? 'hour' : 'hours'}';
+      } else {
+        return '$minutes ${minutes == 1 ? 'minute' : 'minutes'}';
+      }
+    } catch (e) {
+      final hours = durationMinutes ~/ 60;
+      final minutes = durationMinutes % 60;
+
+      if (hours > 0 && minutes > 0) {
+        return '$hours ${hours == 1 ? 'hour' : 'hours'} $minutes ${minutes == 1 ? 'minute' : 'minutes'}';
+      } else if (hours > 0) {
+        return '$hours ${hours == 1 ? 'hour' : 'hours'}';
+      } else {
+        return '$minutes ${minutes == 1 ? 'minute' : 'minutes'}';
+      }
     }
   }
 
