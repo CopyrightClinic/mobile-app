@@ -144,6 +144,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
     _lastTapTime = DateTime.now();
 
+    if (!notification.isRead) {
+      _notificationBloc.add(MarkNotificationAsRead(notificationId: notification.id));
+    }
+
     switch (notification.type) {
       case NotificationType.sessionAccepted:
       case NotificationType.sessionReminder:

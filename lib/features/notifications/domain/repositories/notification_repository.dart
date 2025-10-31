@@ -17,4 +17,6 @@ abstract class NotificationRepository {
   Future<Either<Failure, NotificationListResult>> getNotifications({required String userId, int page = 1, int limit = 20, String? timezone});
 
   Future<Either<Failure, int>> markAllAsRead();
+
+  Future<Either<Failure, void>> markNotificationAsRead({required String notificationId});
 }

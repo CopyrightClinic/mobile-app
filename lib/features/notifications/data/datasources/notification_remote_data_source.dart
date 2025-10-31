@@ -13,6 +13,8 @@ abstract class NotificationRemoteDataSource {
 
   Future<MarkAllAsReadResponseModel> markAllAsRead();
 
+  Future<void> markNotificationAsRead({required String notificationId});
+
   Future<RegisterDeviceTokenResponseModel> registerDeviceToken(RegisterDeviceTokenRequestModel request);
 }
 
@@ -57,6 +59,21 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       );
 
       return response;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
+
+  @override
+  Future<void> markNotificationAsRead({required String notificationId}) async {
+    try {
+      final endpoint = '${ApiEndpoint.notifications}/$notificationId/mark-read';
+      await apiService.patchData<void>(
+        endpoint: endpoint,
+        data: {},
+        requiresAuthToken: true,
+        converter: (ResponseModel<JSON> response) {},
+      );
     } catch (e) {
       throw CustomException.fromDioException(e as Exception);
     }

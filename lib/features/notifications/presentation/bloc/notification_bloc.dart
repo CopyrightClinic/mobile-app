@@ -2,18 +2,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/timezone_helper.dart';
 import '../../domain/usecases/get_notifications_usecase.dart';
 import '../../domain/usecases/mark_all_notifications_as_read_usecase.dart';
+import '../../domain/usecases/mark_notification_as_read_usecase.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final GetNotificationsUseCase getNotificationsUseCase;
   final MarkAllNotificationsAsReadUseCase markAllNotificationsAsReadUseCase;
+  final MarkNotificationAsReadUseCase markNotificationAsReadUseCase;
 
-  NotificationBloc({required this.getNotificationsUseCase, required this.markAllNotificationsAsReadUseCase}) : super(const NotificationInitial()) {
+  NotificationBloc({
+    required this.getNotificationsUseCase,
+    required this.markAllNotificationsAsReadUseCase,
+    required this.markNotificationAsReadUseCase,
+  }) : super(const NotificationInitial()) {
     on<LoadNotifications>(_onLoadNotifications);
     on<RefreshNotifications>(_onRefreshNotifications);
     on<LoadMoreNotifications>(_onLoadMoreNotifications);
     on<MarkAllNotificationsAsRead>(_onMarkAllNotificationsAsRead);
+    on<MarkNotificationAsRead>(_onMarkNotificationAsRead);
   }
 
   Future<void> _onLoadNotifications(LoadNotifications event, Emitter<NotificationState> emit) async {
@@ -103,5 +110,21 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         emit(latestState.copyWith(notifications: optimisticNotifications));
       },
     );
+  }
+
+  Future<void> _onMarkNotificationAsRead(MarkNotificationAsRead event, Emitter<NotificationState> emit) async {
+    if (state is! NotificationLoaded) return;
+
+    final currentState = state as NotificationLoaded;
+    final notificationIndex = currentState.notifications.indexWhere((n) => n.id == event.notificationId);
+
+    if (notificationIndex == -1) return;
+
+    final updatedNotifications = List.of(currentState.notifications);
+    updatedNotifications[notificationIndex] = updatedNotifications[notificationIndex].copyWith(isRead: true);
+
+    emit(currentState.copyWith(notifications: updatedNotifications));
+
+    markNotificationAsReadUseCase(event.notificationId);
   }
 }

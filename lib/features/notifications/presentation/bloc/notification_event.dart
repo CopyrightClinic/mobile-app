@@ -42,3 +42,12 @@ class MarkAllNotificationsAsRead extends NotificationEvent {
   @override
   List<Object> get props => [];
 }
+
+class MarkNotificationAsRead extends NotificationEvent {
+  final String notificationId;
+
+  const MarkNotificationAsRead({required this.notificationId});
+
+  @override
+  List<Object> get props => [notificationId];
+}
