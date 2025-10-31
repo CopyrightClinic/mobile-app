@@ -46,10 +46,19 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
 
   @override
   void dispose() {
+    _clearPendingResultIfLoggedOut();
     _textController.dispose();
     _animationController.dispose();
     _isListeningNotifier.dispose();
     super.dispose();
+  }
+
+  Future<void> _clearPendingResultIfLoggedOut() async {
+    final isAuthenticated = await HaroldNavigationService.isUserAuthenticated();
+    if (!isAuthenticated) {
+      final service = HaroldNavigationService();
+      service.getPendingResultAndQuery();
+    }
   }
 
   bool _isValidInput() {
@@ -301,7 +310,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   void _onSubmit() {
     if (_isValidInput()) {
       FocusScope.of(context).unfocus();
-      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim(), isUserAuthenticated: false));
+      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim()));
     }
   }
 }
