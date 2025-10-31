@@ -32,7 +32,7 @@ class TimeSlotEntity {
       final period = hour >= 12 ? 'PM' : 'AM';
       final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
       final displayMinute = minute.toString().padLeft(2, '0');
-      return '$displayHour:$displayMinute $period';
+      return '$displayHour:$displayMinute$period';
     }
 
     return '${formatTime(startHour, startMinute)} - ${formatTime(endHour, endMinute)}';
