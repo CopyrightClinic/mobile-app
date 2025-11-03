@@ -64,6 +64,12 @@ final class ZoomBridge: NSObject {
         case "getSdkVersion":
             result("6.6.0")
 
+        case "minimizeMeeting":
+            minimizeMeeting(result: result)
+
+        case "showMeeting":
+            showMeeting(result: result)
+
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -319,6 +325,58 @@ final class ZoomBridge: NSObject {
         default:
             return "Auth error code: \(error.rawValue)"
         }
+    }
+
+    private func minimizeMeeting(result: @escaping FlutterResult) {
+        guard let meetingService = MobileRTC.shared().getMeetingService() else {
+            NSLog("[ZoomBridge] Failed to get meeting service")
+            result(
+                FlutterError(
+                    code: "NO_MEETING_SERVICE", message: "Failed to get meeting service",
+                    details: nil))
+            return
+        }
+
+        let meetingState = meetingService.getMeetingState()
+        if meetingState == .idle {
+            NSLog("[ZoomBridge] Not in a meeting")
+            result(
+                FlutterError(
+                    code: "NOT_IN_MEETING", message: "Not currently in a meeting", details: nil))
+            return
+        }
+
+        NSLog("[ZoomBridge] Minimizing meeting (hiding meeting view)")
+        meetingService.hideMobileRTCMeeting {
+            NSLog("[ZoomBridge] Meeting view hidden successfully")
+        }
+        result(["success": true, "message": "Meeting minimized"])
+    }
+
+    private func showMeeting(result: @escaping FlutterResult) {
+        guard let meetingService = MobileRTC.shared().getMeetingService() else {
+            NSLog("[ZoomBridge] Failed to get meeting service")
+            result(
+                FlutterError(
+                    code: "NO_MEETING_SERVICE", message: "Failed to get meeting service",
+                    details: nil))
+            return
+        }
+
+        let meetingState = meetingService.getMeetingState()
+        if meetingState == .idle {
+            NSLog("[ZoomBridge] Not in a meeting")
+            result(
+                FlutterError(
+                    code: "NOT_IN_MEETING", message: "Not currently in a meeting", details: nil))
+            return
+        }
+
+        NSLog("[ZoomBridge] Showing meeting")
+        meetingService.showMobileRTCMeeting {
+            NSLog("[ZoomBridge] Meeting view shown successfully")
+        }
+        result(["success": true, "message": "Meeting view shown"])
     }
 }
 

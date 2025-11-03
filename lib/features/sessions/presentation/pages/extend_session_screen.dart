@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/services/zoom_service.dart';
 import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
@@ -15,6 +17,7 @@ import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
+import '../../../../di.dart';
 import '../../../payments/domain/entities/payment_method_entity.dart';
 import '../../../payments/presentation/bloc/payment_bloc.dart';
 import '../../../payments/presentation/bloc/payment_event.dart';
@@ -66,6 +69,9 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
       listener: (context, state) {
         if (state.hasSuccess && state.lastOperation == SessionsOperation.extendSession) {
           SnackBarUtils.showSuccess(context, state.successMessage ?? AppStrings.sessionExtendedSuccess);
+
+          _restoreZoomMeeting();
+
           Future.delayed(const Duration(milliseconds: 500), () {
             if (context.mounted) {
               context.pop();
@@ -79,7 +85,7 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
           leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
-          leading: const CustomBackButton(),
+          leading: CustomBackButton(onPressed: _handleBackPress),
           centerTitle: true,
           title: TranslatedText(
             AppStrings.extendSession,
@@ -362,5 +368,26 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
     if (_selectedPaymentMethod != null) {
       context.read<SessionsBloc>().add(ExtendSession(sessionId: widget.sessionId, paymentMethodId: _selectedPaymentMethod!.id));
     }
+  }
+
+  void _restoreZoomMeeting() {
+    try {
+      final zoomService = sl<ZoomService>();
+      zoomService
+          .showMeeting()
+          .then((_) {
+            Log.i(runtimeType, '✅ Zoom meeting restored successfully');
+          })
+          .catchError((e) {
+            Log.w(runtimeType, '⚠️ Could not restore Zoom meeting: $e');
+          });
+    } catch (e) {
+      Log.w(runtimeType, '⚠️ Error restoring Zoom meeting: $e');
+    }
+  }
+
+  void _handleBackPress() {
+    _restoreZoomMeeting();
+    context.pop();
   }
 }

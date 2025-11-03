@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/routes/app_router.dart';
 import '../../config/routes/app_routes.dart';
+import '../../di.dart';
 import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import 'push_notification_payload.dart';
 import 'pending_navigation_service.dart';
+import 'zoom_service.dart';
 
 class PushNotificationHandler {
   static final PushNotificationHandler _instance = PushNotificationHandler._internal();
@@ -151,7 +153,6 @@ class PushNotificationHandler {
       Log.w(runtimeType, '⚠️ Context is no longer mounted, aborting navigation');
       return;
     }
-
     switch (payload.type) {
       case PushNotificationType.sessionAccepted:
       case PushNotificationType.sessionReminder:
@@ -191,7 +192,7 @@ class PushNotificationHandler {
     }
   }
 
-  void _navigateToExtendSession(BuildContext context, String? sessionId, double? totalFee) {
+  void _navigateToExtendSession(BuildContext context, String? sessionId, double? totalFee) async {
     if (sessionId == null) {
       Log.w(runtimeType, '⚠️ Session ID is null, cannot navigate to extend session');
       return;
@@ -203,6 +204,18 @@ class PushNotificationHandler {
     }
 
     try {
+      final zoomService = sl<ZoomService>();
+
+      try {
+        Log.i(runtimeType, '📱 Attempting to minimize Zoom meeting...');
+        await zoomService.minimizeMeeting();
+        Log.i(runtimeType, '✅ Zoom meeting minimized successfully');
+
+        await Future.delayed(const Duration(milliseconds: 300));
+      } catch (e) {
+        Log.w(runtimeType, '⚠️ Could not minimize Zoom meeting (might not be in a meeting): $e');
+      }
+
       Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.extendSessionRouteName}');
       Log.i(runtimeType, '✅ Session ID from notification: $sessionId');
       Log.i(runtimeType, '💰 Total Fee from notification: \$${totalFee.toStringAsFixed(2)}');
