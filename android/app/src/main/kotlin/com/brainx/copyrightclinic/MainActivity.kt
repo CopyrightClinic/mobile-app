@@ -1,4 +1,4 @@
-package com.example.copyrightClinicFlutter
+package com.brainx.copyrightclinic
 
 import android.Manifest
 import android.app.Activity
@@ -10,14 +10,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 class MainActivity : FlutterFragmentActivity() {
-    private val CHANNEL = "com.example.speech"
+    private val SPEECH_CHANNEL = "com.example.speech"
+    private val ZOOM_CHANNEL = "com.example.zoom"
+    private val ZOOM_EVENT_CHANNEL = "com.example.zoom/events"
+
     private var methodResult: MethodChannel.Result? = null
     private lateinit var speechLauncher: ActivityResultLauncher<Intent>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
+
+    private var zoomBridge: ZoomBridge? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -44,32 +50,40 @@ class MainActivity : FlutterFragmentActivity() {
                     }
                 }
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
-                call,
-                result ->
-            when (call.method) {
-                "startSpeech" -> {
-                    methodResult = result
-                    val prompt = call.argument<String>("prompt")
-                    val locale = call.argument<String>("locale")
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SPEECH_CHANNEL)
+                .setMethodCallHandler { call, result ->
+                    when (call.method) {
+                        "startSpeech" -> {
+                            methodResult = result
+                            val prompt = call.argument<String>("prompt")
+                            val locale = call.argument<String>("locale")
 
-                    // Check microphone permission
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
-                                    PackageManager.PERMISSION_GRANTED
-                    ) {
-                        startSpeechRecognition(prompt, locale)
-                    } else {
-                        // Request permission
-                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            if (ContextCompat.checkSelfPermission(
+                                            this,
+                                            Manifest.permission.RECORD_AUDIO
+                                    ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                startSpeechRecognition(prompt, locale)
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                            }
+                        }
+                        "stopSpeech" -> {
+                            result.success(null)
+                        }
+                        else -> result.notImplemented()
                     }
                 }
-                "stopSpeech" -> {
-                    // For Android, we'll return null since the speech recognition dialog handles
-                    // its own lifecycle
-                    result.success(null)
-                }
-                else -> result.notImplemented()
-            }
+
+        val zoomMethodChannel =
+                MethodChannel(flutterEngine.dartExecutor.binaryMessenger, ZOOM_CHANNEL)
+        val zoomEventChannel =
+                EventChannel(flutterEngine.dartExecutor.binaryMessenger, ZOOM_EVENT_CHANNEL)
+
+        zoomBridge = ZoomBridge(this, zoomMethodChannel, zoomEventChannel)
+
+        zoomMethodChannel.setMethodCallHandler { call, result ->
+            zoomBridge?.handleMethodCall(call, result)
         }
     }
 

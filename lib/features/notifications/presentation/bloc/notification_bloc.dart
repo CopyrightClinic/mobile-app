@@ -1,0 +1,158 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/timezone_helper.dart';
+import '../../domain/usecases/get_notifications_usecase.dart';
+import '../../domain/usecases/mark_all_notifications_as_read_usecase.dart';
+import '../../domain/usecases/mark_notification_as_read_usecase.dart';
+import '../../domain/usecases/clear_all_notifications_usecase.dart';
+import 'notification_event.dart';
+import 'notification_state.dart';
+
+class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
+  final GetNotificationsUseCase getNotificationsUseCase;
+  final MarkAllNotificationsAsReadUseCase markAllNotificationsAsReadUseCase;
+  final MarkNotificationAsReadUseCase markNotificationAsReadUseCase;
+  final ClearAllNotificationsUseCase clearAllNotificationsUseCase;
+
+  NotificationBloc({
+    required this.getNotificationsUseCase,
+    required this.markAllNotificationsAsReadUseCase,
+    required this.markNotificationAsReadUseCase,
+    required this.clearAllNotificationsUseCase,
+  }) : super(const NotificationInitial()) {
+    on<LoadNotifications>(_onLoadNotifications);
+    on<RefreshNotifications>(_onRefreshNotifications);
+    on<LoadMoreNotifications>(_onLoadMoreNotifications);
+    on<MarkAllNotificationsAsRead>(_onMarkAllNotificationsAsRead);
+    on<MarkNotificationAsRead>(_onMarkNotificationAsRead);
+    on<ClearAllNotifications>(_onClearAllNotifications);
+  }
+
+  Future<void> _onLoadNotifications(LoadNotifications event, Emitter<NotificationState> emit) async {
+    emit(const NotificationLoading());
+
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final result = await getNotificationsUseCase(
+      GetNotificationsParams(userId: event.userId, page: event.page, limit: event.limit, timezone: timezone),
+    );
+
+    result.fold((failure) => emit(NotificationError(failure.message ?? AppStrings.unknownError)), (notificationResult) {
+      emit(
+        NotificationLoaded(
+          notifications: notificationResult.notifications,
+          total: notificationResult.total,
+          currentPage: notificationResult.page,
+          hasMore: notificationResult.hasMore,
+        ),
+      );
+    });
+  }
+
+  Future<void> _onRefreshNotifications(RefreshNotifications event, Emitter<NotificationState> emit) async {
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final result = await getNotificationsUseCase(GetNotificationsParams(userId: event.userId, page: 1, limit: 20, timezone: timezone));
+
+    result.fold((failure) => emit(NotificationError(failure.message ?? AppStrings.unknownError)), (notificationResult) {
+      emit(
+        NotificationLoaded(
+          notifications: notificationResult.notifications,
+          total: notificationResult.total,
+          currentPage: notificationResult.page,
+          hasMore: notificationResult.hasMore,
+        ),
+      );
+    });
+  }
+
+  Future<void> _onLoadMoreNotifications(LoadMoreNotifications event, Emitter<NotificationState> emit) async {
+    if (state is! NotificationLoaded) return;
+
+    final currentState = state as NotificationLoaded;
+    if (!currentState.hasMore || currentState.isLoadingMore) return;
+
+    emit(currentState.copyWith(isLoadingMore: true));
+
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final result = await getNotificationsUseCase(
+      GetNotificationsParams(userId: event.userId, page: currentState.currentPage + 1, limit: 20, timezone: timezone),
+    );
+
+    result.fold((failure) => emit(currentState.copyWith(isLoadingMore: false)), (notificationResult) {
+      final updatedNotifications = List.of(currentState.notifications)..addAll(notificationResult.notifications);
+      emit(
+        NotificationLoaded(
+          notifications: updatedNotifications,
+          total: notificationResult.total,
+          currentPage: notificationResult.page,
+          hasMore: notificationResult.hasMore,
+          isLoadingMore: false,
+        ),
+      );
+    });
+  }
+
+  Future<void> _onMarkAllNotificationsAsRead(MarkAllNotificationsAsRead event, Emitter<NotificationState> emit) async {
+    if (state is! NotificationLoaded) return;
+
+    final currentState = state as NotificationLoaded;
+    final originalNotifications = currentState.notifications;
+
+    final optimisticNotifications = currentState.notifications.map((notification) => notification.copyWith(isRead: true)).toList();
+
+    emit(currentState.copyWith(notifications: optimisticNotifications));
+
+    final result = await markAllNotificationsAsReadUseCase();
+
+    result.fold(
+      (failure) {
+        emit(currentState.copyWith(notifications: originalNotifications));
+        emit(NotificationError(failure.message ?? AppStrings.failedToMarkAllAsRead));
+        emit(currentState);
+      },
+      (markedCount) {
+        if (state is! NotificationLoaded) return;
+        final latestState = state as NotificationLoaded;
+        emit(latestState.copyWith(notifications: optimisticNotifications));
+      },
+    );
+  }
+
+  Future<void> _onMarkNotificationAsRead(MarkNotificationAsRead event, Emitter<NotificationState> emit) async {
+    if (state is! NotificationLoaded) return;
+
+    final currentState = state as NotificationLoaded;
+    final notificationIndex = currentState.notifications.indexWhere((n) => n.id == event.notificationId);
+
+    if (notificationIndex == -1) return;
+
+    final updatedNotifications = List.of(currentState.notifications);
+    updatedNotifications[notificationIndex] = updatedNotifications[notificationIndex].copyWith(isRead: true);
+
+    emit(currentState.copyWith(notifications: updatedNotifications));
+
+    markNotificationAsReadUseCase(event.notificationId);
+  }
+
+  Future<void> _onClearAllNotifications(ClearAllNotifications event, Emitter<NotificationState> emit) async {
+    if (state is! NotificationLoaded) return;
+
+    final currentState = state as NotificationLoaded;
+    final originalNotifications = currentState.notifications;
+
+    emit(currentState.copyWith(notifications: []));
+
+    final result = await clearAllNotificationsUseCase();
+
+    result.fold(
+      (failure) {
+        emit(currentState.copyWith(notifications: originalNotifications));
+        emit(NotificationError(failure.message ?? AppStrings.failedToClearNotifications));
+        emit(currentState);
+      },
+      (clearedCount) {
+        if (state is! NotificationLoaded) return;
+        emit(const NotificationLoaded(notifications: [], total: 0, currentPage: 1, hasMore: false));
+      },
+    );
+  }
+}

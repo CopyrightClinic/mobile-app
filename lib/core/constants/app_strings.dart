@@ -4,6 +4,7 @@ class AppStrings {
 
   // Welcome Screen
   static const welcomeTo = 'welcomeTo';
+  static const welcome = 'welcome';
   static const copyrightClinic = 'copyrightClinic';
   static const whatWeDo = 'whatWeDo';
   static const askHaroldAI = 'askHaroldAI';
@@ -117,6 +118,7 @@ class AppStrings {
   static const completeYourProfile = 'completeYourProfile';
   static const fullName = 'fullName';
   static const phoneNumber = 'phoneNumber';
+  static const phone = 'phone';
   static const address = 'address';
   static const enterYourFullName = 'enterYourFullName';
   static const enterYourPhoneNumber = 'enterYourPhoneNumber';
@@ -220,6 +222,10 @@ class AppStrings {
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
   static const joinSession = 'joinSession';
+  static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
+  static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
+  static const youCanRequestUntil = 'youCanRequestUntil';
+  static const summaryRequestExpired = 'summaryRequestExpired';
   static const charged = 'charged';
   static const holdAmountChargedAfterSession = 'holdAmountChargedAfterSession';
   static const youCanCancelTill = 'youCanCancelTill';
@@ -231,6 +237,7 @@ class AppStrings {
   static const joiningSession = 'joiningSession';
   static const session = 'session';
   static const today = 'today';
+  static const yesterday = 'yesterday';
 
   // Schedule Session Screen
   static const bookSession = 'bookSession';
@@ -261,12 +268,14 @@ class AppStrings {
 
   // Harold AI Screen
   static const describeYourCopyrightIssue = 'describeYourCopyrightIssue';
+  static const haroldWillHelpYou = 'haroldWillHelpYou';
   static const describe = 'describe';
   static const submit = 'submit';
   static const haroldAiHasResponseForYou = 'haroldAiHasResponseForYou';
   static const pleaseSignUpOrLogInToViewIt = 'pleaseSignUpOrLogInToViewIt';
   static const haroldCanConnectYou = 'haroldCanConnectYou';
   static const haroldConsultationDescription = 'haroldConsultationDescription';
+  static const haroldConsultationDescriptionDynamic = 'haroldConsultationDescriptionDynamic';
   static const scheduleAppointment = 'scheduleAppointment';
   static const yourMatterFallsOutsideScope = 'yourMatterFallsOutsideScope';
   static const goToHome = 'goToHome';
@@ -308,6 +317,13 @@ class AppStrings {
   static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
   static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
 
+  // Profile Screen Additional Strings
+  static const other = 'other';
+  static const privacyPolicy = 'privacyPolicy';
+  static const termsAndConditions = 'termsAndConditions';
+  static const deleteAccount = 'deleteAccount';
+  static const changePassword = 'changePassword';
+  static const delete = 'delete';
   // Phone Field
   static const searchCountry = 'searchCountry';
 
@@ -359,4 +375,168 @@ class AppStrings {
   static const failedToReceive = 'failedToReceive';
   static const errorUnrecognized = 'errorUnrecognized';
   static const failedToParseNetworkResponse = 'failedToParseNetworkResponse';
+  static const personalInformation = 'personalInformation';
+
+  // Edit Profile Screen
+  static const editPersonalInformation = 'editPersonalInformation';
+  static const saveChanges = 'saveChanges';
+  static const updateProfileFailed = 'updateProfileFailed';
+  static const profileUpdatedSuccessfully = 'profileUpdatedSuccessfully';
+  static const failedToLoadProfile = 'failedToLoadProfile';
+  static const userNotFound = 'userNotFound';
+
+  // Change Password Screen
+  static const currentPassword = 'currentPassword';
+  static const enterYourCurrentPassword = 'enterYourCurrentPassword';
+  static const newPasswordMustBeDifferent = 'newPasswordMustBeDifferent';
+  static const changePasswordFailed = 'changePasswordFailed';
+
+  // Delete Account Bottom Sheet
+  static const deleteAccountTitle = 'deleteAccountTitle';
+  static const deleteAccountSubtitle = 'deleteAccountSubtitle';
+  static const deleteAccountConfirm = 'deleteAccountConfirm';
+  static const deleteAccountFailed = 'deleteAccountFailed';
+
+  // Profile Repository Error Messages
+  static const failedToUpdateProfileGeneric = 'failedToUpdateProfileGeneric';
+  static const failedToChangePasswordGeneric = 'failedToChangePasswordGeneric';
+  static const failedToDeleteAccountGeneric = 'failedToDeleteAccountGeneric';
+
+  // Zoom Meeting
+  static const joinMeeting = 'joinMeeting';
+  static const leaveMeeting = 'leaveMeeting';
+  static const meetingNumber = 'meetingNumber';
+  static const meetingPasscode = 'meetingPasscode';
+  static const enterMeetingNumber = 'enterMeetingNumber';
+  static const enterMeetingPasscode = 'enterMeetingPasscode';
+  static const displayName = 'displayName';
+  static const enterDisplayName = 'enterDisplayName';
+  static const joinCall = 'joinCall';
+  static const leaveCall = 'leaveCall';
+  static const cameraPermission = 'cameraPermission';
+  static const microphonePermission = 'microphonePermission';
+  static const bluetoothPermission = 'bluetoothPermission';
+  static const notificationsPermission = 'notificationsPermission';
+  static const permissionRequired = 'permissionRequired';
+  static const permissionDenied = 'permissionDenied';
+  static const pleaseGrantPermissions = 'pleaseGrantPermissions';
+  static const openSettings = 'openSettings';
+  static const grantPermissions = 'grantPermissions';
+  static const permissionsNeeded = 'permissionsNeeded';
+  static const cameraAndMicrophoneRequired = 'cameraAndMicrophoneRequired';
+
+  // Zoom Status
+  static const zoomStatusIdle = 'zoomStatusIdle';
+  static const zoomStatusConnecting = 'zoomStatusConnecting';
+  static const zoomStatusWaitingForHost = 'zoomStatusWaitingForHost';
+  static const zoomStatusInWaitingRoom = 'zoomStatusInWaitingRoom';
+  static const zoomStatusInMeeting = 'zoomStatusInMeeting';
+  static const zoomStatusDisconnecting = 'zoomStatusDisconnecting';
+  static const zoomStatusReconnecting = 'zoomStatusReconnecting';
+  static const zoomStatusFailed = 'zoomStatusFailed';
+  static const zoomStatusEnded = 'zoomStatusEnded';
+  static const zoomStatusLocked = 'zoomStatusLocked';
+  static const zoomStatusUnlocked = 'zoomStatusUnlocked';
+  static const zoomStatusAuthExpired = 'zoomStatusAuthExpired';
+  static const zoomStatusUnknown = 'zoomStatusUnknown';
+  static const loadingMeetingDetails = 'loadingMeetingDetails';
+  static const zoomInitializing = 'zoomInitializing';
+  static const connectingToMeeting = 'connectingToMeeting';
+  static const pleaseWait = 'pleaseWait';
+  static const areYouSureYouWantToLeaveMeeting = 'areYouSureYouWantToLeaveMeeting';
+  static const leave = 'leave';
+
+  // Zoom Error Messages
+  static const zoomErrorFetchJwt = 'zoomErrorFetchJwt';
+  static const zoomErrorFetchCredentials = 'zoomErrorFetchCredentials';
+  static const zoomErrorAlreadyInitializing = 'zoomErrorAlreadyInitializing';
+  static const zoomErrorPlatformNotSupported = 'zoomErrorPlatformNotSupported';
+  static const zoomErrorInvalidMeetingNumber = 'zoomErrorInvalidMeetingNumber';
+  static const zoomErrorNetworkUnavailable = 'zoomErrorNetworkUnavailable';
+  static const zoomErrorJwtInvalid = 'zoomErrorJwtInvalid';
+  static const zoomErrorInitFailed = 'zoomErrorInitFailed';
+  static const zoomErrorJoinFailed = 'zoomErrorJoinFailed';
+  static const zoomMeetingNotStarted = 'zoomMeetingNotStarted';
+  static const zoomWrongPasscode = 'zoomWrongPasscode';
+  static const zoomMeetingLocked = 'zoomMeetingLocked';
+  static const zoomMeetingEnded = 'zoomMeetingEnded';
+  static const zoomTryAgain = 'zoomTryAgain';
+  static const zoomExit = 'zoomExit';
+  static const zoomWaitingMessage = 'zoomWaitingMessage';
+  static const zoomAdmittedSoon = 'zoomAdmittedSoon';
+  static const zoomConnectingMessage = 'zoomConnectingMessage';
+  // Notifications
+  static const notifications = 'notifications';
+  static const yourSessionSummaryIsReady = 'yourSessionSummaryIsReady';
+  static const sessionSummaryDescription = 'sessionSummaryDescription';
+  static const yourSessionStartsIn1Hour = 'yourSessionStartsIn1Hour';
+  static const sessionStartsDescription = 'sessionStartsDescription';
+  static const justNow = 'justNow';
+  static const oneHourAgo = 'oneHourAgo';
+  static const noNotifications = 'noNotifications';
+  static const noNotificationsDescription = 'noNotificationsDescription';
+  static const markAllAsRead = 'markAllAsRead';
+  static const allNotificationsMarkedAsRead = 'allNotificationsMarkedAsRead';
+  static const clearAll = 'clearAll';
+  static const confirmClearAllNotifications = 'confirmClearAllNotifications';
+  static const confirmClearAllNotificationsDescription = 'confirmClearAllNotificationsDescription';
+  static const failedToMarkAllAsRead = 'failedToMarkAllAsRead';
+  static const failedToClearNotifications = 'failedToClearNotifications';
+  static const unknownError = 'unknownError';
+  // Session Details Screen
+  static const sessionDetailsTitle = 'sessionDetailsTitle';
+  static const yourRatingAndReview = 'yourRatingAndReview';
+  static const unlockWrittenSummary = 'unlockWrittenSummary';
+  static const unlockSummaryFor = 'unlockSummaryFor';
+  static const payToRequestSummary = 'payToRequestSummary';
+  static const requestSummaryDeadline = 'requestSummaryDeadline';
+  static const summaryReviewInProgress = 'summaryReviewInProgress';
+  static const adminReviewInProgressDescription = 'adminReviewInProgressDescription';
+  static const attorneyReviewInProgressDescription = 'attorneyReviewInProgressDescription';
+  static const yourSummaryIsReady = 'yourSummaryIsReady';
+  static const viewSummary = 'viewSummary';
+  static const downloadPDF = 'downloadPDF';
+  static const failedToGeneratePDF = 'failedToGeneratePDF';
+  static const noRating = 'noRating';
+  static const noReviewProvided = 'noReviewProvided';
+  static const summaryUnlockRequested = 'summaryUnlockRequested';
+
+  // Speech Recognition Error Messages
+  static const failedToInitializeSpeechRecognition = 'failedToInitializeSpeechRecognition';
+  static const failedToStartSpeechRecognition = 'failedToStartSpeechRecognition';
+  static const failedToStopSpeechRecognition = 'failedToStopSpeechRecognition';
+  static const failedToPauseSpeechRecognition = 'failedToPauseSpeechRecognition';
+  static const failedToResumeSpeechRecognition = 'failedToResumeSpeechRecognition';
+  static const speechRecognitionErrorOccurred = 'speechRecognitionErrorOccurred';
+  static const describeYourCopyrightIssuePrompt = 'describeYourCopyrightIssuePrompt';
+  static const addYourRatingAndReview = 'addYourRatingAndReview';
+  static const addACommentOptional = 'addACommentOptional';
+  static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
+  static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
+  static const failedToSubmitFeedback = 'failedToSubmitFeedback';
+
+  static const loadingMore = 'loadingMore';
+  static const failedToLoadMoreSessions = 'failedToLoadMoreSessions';
+  static const confirmPurchase = 'confirmPurchase';
+  static const professionallyReviewedSummaryDescription = 'professionallyReviewedSummaryDescription';
+  static const forSessionSummary = 'forSessionSummary';
+  static const selectPaymentMethod = 'selectPaymentMethod';
+  static const confirmAndPay = 'confirmAndPay';
+  static const failedToUnlockSessionSummary = 'failedToUnlockSessionSummary';
+
+  static const sessionSummary = 'sessionSummary';
+  static const sessionId = 'sessionId';
+  static const pageOf = 'pageOf';
+  static const sessionSummaryFilename = 'sessionSummaryFilename';
+
+  static const extendSession = 'extendSession';
+  static const extensionDuration = 'extensionDuration';
+  static const extensionDurationValue = 'extensionDurationValue';
+  static const extensionFee = 'extensionFee';
+  static const extensionFeeDescription = 'extensionFeeDescription';
+  static const extensionNote = 'extensionNote';
+  static const payNow = 'payNow';
+  static const sessionExtendedSuccess = 'sessionExtendedSuccess';
+  static const sessionExtendError = 'sessionExtendError';
+  static const unableToOpenNotification = 'unableToOpenNotification';
 }

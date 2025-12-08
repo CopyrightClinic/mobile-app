@@ -61,11 +61,9 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
       body: SafeArea(
         child: BlocBuilder<SessionsBloc, SessionsState>(
           builder: (context, state) {
-            if (state is! ScheduleSessionState) {
+            if (!state.isScheduling) {
               return const Center(child: CircularProgressIndicator());
             }
-
-            final scheduleState = state;
 
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
@@ -82,8 +80,8 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                   SizedBox(height: DimensionConstants.gap20Px.h),
 
                   DaySelectorWidget(
-                    selectedDate: scheduleState.selectedDate,
-                    availableDays: scheduleState.availableDays,
+                    selectedDate: state.selectedDate!,
+                    availableDays: state.availableDays,
                     onDateSelected: (date) {
                       if (!_sessionsBloc.isClosed) {
                         _sessionsBloc.add(DateSelected(selectedDate: date));
@@ -102,9 +100,9 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
 
                   Expanded(
                     child:
-                        scheduleState.isLoadingAvailability
+                        state.isLoadingAvailability
                             ? const TimeSlotGridShimmer()
-                            : scheduleState.errorMessage != null
+                            : state.errorMessage != null
                             ? Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -112,7 +110,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                   Icon(Icons.error_outline, size: 48.w, color: context.red),
                                   SizedBox(height: DimensionConstants.gap16Px.h),
                                   Text(
-                                    scheduleState.errorMessage!,
+                                    state.errorMessage!,
                                     style: TextStyle(color: context.red, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w500),
                                     textAlign: TextAlign.center,
                                   ),
@@ -131,7 +129,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                 ],
                               ),
                             )
-                            : scheduleState.availableTimeSlotsForSelectedDate.isEmpty
+                            : state.availableTimeSlotsForSelectedDate.isEmpty
                             ? EmptyStateWidget(
                               title: AppStrings.noTimeSlotsAvailable,
                               subtitle: AppStrings.trySelectingDifferentDate,
@@ -145,11 +143,11 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
                                 crossAxisSpacing: 12,
                                 mainAxisSpacing: 12,
                               ),
-                              itemCount: scheduleState.availableTimeSlotsForSelectedDate.length,
+                              itemCount: state.availableTimeSlotsForSelectedDate.length,
                               itemBuilder: (context, index) {
-                                final timeSlot = scheduleState.availableTimeSlotsForSelectedDate[index];
+                                final timeSlot = state.availableTimeSlotsForSelectedDate[index];
                                 final timeSlotKey = SessionDateTimeUtils.createTimeSlotKey(timeSlot.start, timeSlot.end);
-                                final isSelected = scheduleState.selectedTimeSlot == timeSlotKey;
+                                final isSelected = state.selectedTimeSlot == timeSlotKey;
 
                                 return TimeSlotWidget(
                                   timeText: timeSlot.formattedTime,
@@ -166,13 +164,13 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
 
                   BlocBuilder<SessionsBloc, SessionsState>(
                     builder: (context, buttonState) {
-                      final isLoading = buttonState is SessionScheduleLoading;
+                      final isLoading = buttonState.isProcessingSchedule;
 
                       return AuthButton(
                         text: AppStrings.continueToPayment,
-                        onPressed: scheduleState.canContinueToPayment ? () => _onContinueToPayment(scheduleState) : null,
+                        onPressed: buttonState.canContinueToPayment ? () => _onContinueToPayment(buttonState) : null,
                         isLoading: isLoading,
-                        isEnabled: scheduleState.canContinueToPayment,
+                        isEnabled: buttonState.canContinueToPayment,
                       );
                     },
                   ),
@@ -185,14 +183,15 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
     );
   }
 
-  void _onContinueToPayment(ScheduleSessionState scheduleState) {
-    if (scheduleState.selectedTimeSlot != null) {
+  void _onContinueToPayment(SessionsState scheduleState) {
+    if (scheduleState.selectedTimeSlot != null && scheduleState.availability?.fee != null) {
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
         extra: SelectPaymentMethodScreenParams(
-          sessionDate: scheduleState.selectedDate,
+          sessionDate: scheduleState.selectedDate!,
           timeSlot: scheduleState.selectedTimeSlot!,
           query: widget.params.query,
+          fee: scheduleState.availability!.fee,
         ),
       );
     }

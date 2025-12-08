@@ -33,8 +33,7 @@ class PaymentMethodsListConfig {
   factory PaymentMethodsListConfig.forProfile({required Function(PaymentMethodEntity) onDelete, required VoidCallback onAddPaymentMethod}) {
     return PaymentMethodsListConfig(
       title: AppStrings.paymentMethods,
-      subtitle: AppStrings.savedPaymentMethods,
-      emptyStateMessage: AppStrings.noPaymentMethodsYet,
+      emptyStateMessage: AppStrings.noPaymentMethodsAddOne,
       showAddButton: true,
       wrapWithGestureDetector: false,
       onAddPaymentMethod: onAddPaymentMethod,
@@ -48,6 +47,19 @@ class PaymentMethodsListConfig {
     return PaymentMethodsListConfig(
       title: AppStrings.paymentMethod,
       subtitle: AppStrings.selectPreferredPaymentCard,
+      emptyStateMessage: AppStrings.noPaymentMethodsAddOne,
+      showAddButton: true,
+      wrapWithGestureDetector: true,
+      onAddPaymentMethod: onAddPaymentMethod,
+      onPaymentMethodTap: onSelect,
+      onPaymentMethodSelect: onSelect,
+    );
+  }
+
+  /// Factory constructor for unlock summary bottom sheet configuration
+  /// Shows payment methods with selection functionality and add button
+  factory PaymentMethodsListConfig.forUnlockSummary({required Function(PaymentMethodEntity) onSelect, required VoidCallback onAddPaymentMethod}) {
+    return PaymentMethodsListConfig(
       emptyStateMessage: AppStrings.noPaymentMethodsAddOne,
       showAddButton: true,
       wrapWithGestureDetector: true,

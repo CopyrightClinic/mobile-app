@@ -52,8 +52,40 @@ class ApiEndpoint {
   /// Sessions endpoints
   ///
   /// Provides session operations:
-  static String sessions(String path) {
-    return '/sessions$path';
+  static String sessions(SessionsEndpoint endpoint, {String? sessionId}) {
+    switch (endpoint) {
+      case SessionsEndpoint.USER_SESSIONS:
+        return '/user/sessions';
+      case SessionsEndpoint.SESSION_DETAILS:
+        return '/user/session-details';
+      case SessionsEndpoint.SESSION_FEEDBACK:
+        return '/user/session/feedback';
+      case SessionsEndpoint.SESSIONS_AVAILABILITY:
+        return '/sessions-availability';
+      case SessionsEndpoint.BOOK_SESSION:
+        return '/session-requests/book-session';
+      case SessionsEndpoint.SESSION_SUMMARY:
+        return '/session-summary';
+      case SessionsEndpoint.CANCEL_SESSION:
+        return '/sessions/${sessionId ?? ''}/cancel';
+      case SessionsEndpoint.EXTEND_SESSION:
+        return '/sessions/${sessionId ?? ''}/request-extension';
+    }
+  }
+
+  /// Profile endpoints
+  ///
+  /// Provides profile operations:
+  static String profile(ProfileEndpoint endpoint) {
+    const path = '/user';
+    switch (endpoint) {
+      case ProfileEndpoint.CHANGE_PASSWORD:
+        return '$path/password';
+      case ProfileEndpoint.UPDATE_PROFILE:
+        return '$path/profile';
+      case ProfileEndpoint.DELETE_PROFILE:
+        return path;
+    }
   }
 
   static String harold(HaroldEndpoint endpoint) {
@@ -61,6 +93,30 @@ class ApiEndpoint {
     switch (endpoint) {
       case HaroldEndpoint.EVALUATE:
         return '$path/evaluate';
+    }
+  }
+
+  /// Notifications endpoints
+  ///
+  /// Provides notification operations:
+  static const String notifications = '/notifications';
+
+  /// User endpoints
+  ///
+  /// Provides user-related operations:
+  static String user(UserEndpoint endpoint) {
+    const path = '/user';
+    switch (endpoint) {
+      case UserEndpoint.DEVICE_TOKEN:
+        return '$path/device-token';
+    }
+  }
+
+  static String zoom(ZoomEndpoint endpoint) {
+    const path = '/zoom/mobile';
+    switch (endpoint) {
+      case ZoomEndpoint.SDK_TOKEN:
+        return '$path/sdk-token';
     }
   }
 }

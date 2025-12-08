@@ -4,7 +4,7 @@ import '../constants/app_strings.dart';
 class SessionDateTimeUtils {
   SessionDateTimeUtils._();
 
-  static const String timeFormat = 'h:mm A';
+  static const String timeFormat = 'h:mm a';
   static const String monthDay = 'MMM d';
   static const String dayName = 'EEEE';
   static const String dayMonthDay = 'EEEE, MMM d';
@@ -17,13 +17,17 @@ class SessionDateTimeUtils {
 
   static const int sessionDurationMinutes = 30;
 
+  static String _formatTime(DateTime dateTime) {
+    return DateFormat(timeFormat).format(dateTime).toUpperCase();
+  }
+
   static String formatSessionDate(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final sessionDate = DateTime(date.year, date.month, date.day);
 
-    final startTime = DateFormat(timeFormat).format(date);
-    final endTime = DateFormat(timeFormat).format(date.add(const Duration(minutes: sessionDurationMinutes)));
+    final startTime = _formatTime(date);
+    final endTime = _formatTime(date.add(const Duration(minutes: sessionDurationMinutes)));
     final timeRange = '$startTime ${AppStrings.to.tr()} $endTime';
 
     if (sessionDate == today) {
@@ -46,8 +50,23 @@ class SessionDateTimeUtils {
   static String formatCancellationDeadline(DateTime sessionDate) {
     final deadline = sessionDate.subtract(const Duration(hours: 24));
     final dateStr = DateFormat(dayMonthYear).format(deadline);
-    final timeStr = DateFormat(timeFormat).format(deadline);
+    final timeStr = _formatTime(deadline);
     return '$dateStr, $timeStr';
+  }
+
+  static String formatCancelTime(String? cancelTime) {
+    if (cancelTime == null || cancelTime.isEmpty) {
+      return 'null';
+    }
+
+    try {
+      final DateTime parsedDate = DateTime.parse(cancelTime);
+      final dateStr = DateFormat(dayMonthYear).format(parsedDate);
+      final timeStr = _formatTime(parsedDate);
+      return '$dateStr, $timeStr';
+    } catch (e) {
+      return cancelTime;
+    }
   }
 
   static String formatDateToIso(DateTime date) {
@@ -83,8 +102,8 @@ class SessionDateTimeUtils {
         final startDateTime = DateTime.parse(isoMatch.group(1)!);
         final endDateTime = DateTime.parse(isoMatch.group(2)!);
 
-        final startTime = DateFormat(timeFormat).format(startDateTime);
-        final endTime = DateFormat(timeFormat).format(endDateTime);
+        final startTime = _formatTime(startDateTime);
+        final endTime = _formatTime(endDateTime);
         return '$startTime ${AppStrings.to.tr()} $endTime';
       }
     } catch (e) {}
@@ -104,8 +123,8 @@ class SessionDateTimeUtils {
           final startDateTime = DateTime.parse(isoMatch.group(1)!);
           final endDateTime = DateTime.parse(isoMatch.group(2)!);
 
-          final startTime = DateFormat(timeFormat).format(startDateTime);
-          final endTime = DateFormat(timeFormat).format(endDateTime);
+          final startTime = _formatTime(startDateTime);
+          final endTime = _formatTime(endDateTime);
           return '$startTime ${AppStrings.to.tr()} $endTime';
         }
       } catch (e) {}
@@ -115,9 +134,46 @@ class SessionDateTimeUtils {
   }
 
   static String _formatDefaultTimeRange(DateTime date) {
-    final startTime = DateFormat(timeFormat).format(date);
-    final endTime = DateFormat(timeFormat).format(date.add(const Duration(minutes: sessionDurationMinutes)));
+    final startTime = _formatTime(date);
+    final endTime = _formatTime(date.add(const Duration(minutes: sessionDurationMinutes)));
     return '$startTime ${AppStrings.to.tr()} $endTime';
+  }
+
+  static DateTime parseUtcDateTime(String date, String time) {
+    return DateTime.parse('${date}T${time}Z');
+  }
+
+  static String formatNotificationDateTime(String utcDate, String utcTime) {
+    try {
+      final utcDateTime = parseUtcDateTime(utcDate, utcTime);
+      final localDateTime = utcDateTime.toLocal();
+
+      final dateFormat = DateFormat('yyyy-MM-dd');
+      final timeFormat = DateFormat('hh:mm a');
+
+      final formattedDate = dateFormat.format(localDateTime);
+      final formattedTime = timeFormat.format(localDateTime);
+
+      return '$formattedDate at $formattedTime';
+    } catch (e) {
+      return '$utcDate at $utcTime';
+    }
+  }
+
+  static String convertNotificationBodyToLocalTime(String originalBody, String utcDate, String utcTime) {
+    try {
+      final formattedDateTime = formatNotificationDateTime(utcDate, utcTime);
+
+      final localizedBody = originalBody.replaceAllMapped(RegExp(r'\d{4}-\d{2}-\d{2}\s+at\s+\d{2}:\d{2}:\d{2}'), (match) => formattedDateTime);
+
+      if (localizedBody == originalBody) {
+        return 'Session Booked Successfully $formattedDateTime';
+      }
+
+      return localizedBody;
+    } catch (e) {
+      return originalBody;
+    }
   }
 }
 

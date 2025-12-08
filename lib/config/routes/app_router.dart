@@ -12,6 +12,7 @@ import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/complete_profile_screen.dart';
 import '../../features/auth/presentation/unified_verification_screen.dart';
 import '../../features/payments/presentation/pages/add_payment_method_screen.dart';
+import '../../features/payments/presentation/pages/payment_methods_screen.dart';
 import '../../features/sessions/presentation/pages/params/schedule_session_screen_params.dart';
 import '../../features/sessions/presentation/pages/select_payment_method_screen.dart';
 import '../../features/sessions/presentation/pages/confirm_booking_screen.dart';
@@ -24,17 +25,31 @@ import '../../features/harold_ai/presentation/pages/params/harold_success_screen
 import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
+import '../../features/sessions/presentation/pages/session_details_screen.dart';
+import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
+import '../../features/sessions/presentation/pages/session_summary_screen.dart';
+import '../../features/sessions/presentation/pages/params/session_summary_screen_params.dart';
+import '../../features/sessions/presentation/pages/extend_session_screen.dart';
+import '../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
 import '../../features/dashboard/presentation/pages/profile_screen.dart';
 import '../../features/sessions/presentation/pages/schedule_session_screen.dart';
+import '../../features/profile/presentation/pages/edit_profile_screen.dart';
+import '../../features/profile/presentation/pages/change_password_screen.dart';
+import '../../features/auth/domain/entities/user_entity.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import '../../core/utils/enumns/ui/payment_method.dart';
+import '../../features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:flutter/material.dart';
 import 'app_routes.dart';
 
 class AppRouter {
+  static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
   static final GoRouter router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.splashRouteName,
     debugLogDiagnostics: true,
     routes: [
@@ -145,6 +160,48 @@ class AppRouter {
         name: AppRoutes.bookingRequestSentRouteName,
         builder: (context, state) => const BookingRequestSentScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.sessionDetailsRouteName,
+        name: AppRoutes.sessionDetailsRouteName,
+        builder: (context, state) {
+          final params = state.extra as SessionDetailsScreenParams;
+          return SessionDetailsScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.sessionSummaryRouteName,
+        name: AppRoutes.sessionSummaryRouteName,
+        builder: (context, state) {
+          final params = state.extra as SessionSummaryScreenParams;
+          return SessionSummaryScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.extendSessionRouteName,
+        name: AppRoutes.extendSessionRouteName,
+        builder: (context, state) {
+          final params = state.extra as ExtendSessionScreenParams;
+          return ExtendSessionScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.editProfileRouteName,
+        name: AppRoutes.editProfileRouteName,
+        builder: (context, state) {
+          final user = state.extra as UserEntity;
+          return EditProfileScreen(user: user);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.changePasswordRouteName,
+        name: AppRoutes.changePasswordRouteName,
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.paymentMethodsRouteName,
+        name: AppRoutes.paymentMethodsRouteName,
+        builder: (context, state) => const PaymentMethodsScreen(),
+      ),
       GoRoute(path: AppRoutes.askHaroldAiRouteName, name: AppRoutes.askHaroldAiRouteName, builder: (context, state) => const AskHaroldAiScreen()),
       GoRoute(path: AppRoutes.haroldSignupRouteName, name: AppRoutes.haroldSignupRouteName, builder: (context, state) => const HaroldSignupScreen()),
       GoRoute(
@@ -162,6 +219,11 @@ class AppRouter {
           final params = state.extra as HaroldFailedScreenParams;
           return HaroldFailedScreen(params: params);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.notificationsRouteName,
+        name: AppRoutes.notificationsRouteName,
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
   );

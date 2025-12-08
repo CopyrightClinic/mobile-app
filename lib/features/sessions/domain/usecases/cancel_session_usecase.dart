@@ -2,15 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
+import '../entities/cancel_session_response_entity.dart';
 import '../repositories/sessions_repository.dart';
 
-class CancelSessionUseCase implements UseCase<String, CancelSessionParams> {
+class CancelSessionUseCase implements UseCase<CancelSessionResponseEntity, CancelSessionParams> {
   final SessionsRepository repository;
 
   CancelSessionUseCase(this.repository);
 
   @override
-  Future<Either<Failure, String>> call(CancelSessionParams params) async {
+  Future<Either<Failure, CancelSessionResponseEntity>> call(CancelSessionParams params) async {
     return await repository.cancelSession(params.sessionId, params.reason);
   }
 }

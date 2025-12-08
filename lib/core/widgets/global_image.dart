@@ -431,6 +431,7 @@ class GlobalImage extends StatelessWidget {
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
               width: (loadingSize ?? 24.0).f,
@@ -441,13 +442,6 @@ class GlobalImage extends StatelessWidget {
                 value: progress?.expectedTotalBytes != null ? progress!.cumulativeBytesLoaded / progress.expectedTotalBytes! : null,
               ),
             ),
-            if (progress != null && progress.expectedTotalBytes != null) ...[
-              SizedBox(height: 8.0.h),
-              Text(
-                '${((progress.cumulativeBytesLoaded / progress.expectedTotalBytes!) * 100).toStringAsFixed(0)}%',
-                style: TextStyle(fontSize: 12.0.f, color: AppTheme.textBodyLight),
-              ),
-            ],
           ],
         ),
       ),

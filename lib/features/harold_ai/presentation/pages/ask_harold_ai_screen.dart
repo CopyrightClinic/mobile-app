@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -47,10 +46,19 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
 
   @override
   void dispose() {
+    _clearPendingResultIfLoggedOut();
     _textController.dispose();
     _animationController.dispose();
     _isListeningNotifier.dispose();
     super.dispose();
+  }
+
+  Future<void> _clearPendingResultIfLoggedOut() async {
+    final isAuthenticated = await HaroldNavigationService.isUserAuthenticated();
+    if (!isAuthenticated) {
+      final service = HaroldNavigationService();
+      service.getPendingResultAndQuery();
+    }
   }
 
   bool _isValidInput() {
@@ -69,7 +77,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     _isListeningNotifier.value = true;
 
     try {
-      final result = await SystemSpeech.startSpeech(prompt: 'Describe your copyright issue', locale: 'en-US', maxSeconds: 120);
+      final result = await SystemSpeech.startSpeech(prompt: AppStrings.describeYourCopyrightIssuePrompt.tr(), locale: 'en-US', maxSeconds: 120);
 
       if (result != null && result.isNotEmpty) {
         final existingText = _textController.text;
@@ -125,6 +133,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
             isSuccess: true,
             isUserAuthenticated: state.isUserAuthenticated,
             query: state.query,
+            fee: state.fee,
           );
         } else if (state is HaroldAiFailure) {
           HaroldNavigationService.handleHaroldResult(
@@ -198,7 +207,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                     fontWeight: FontWeight.w400,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppStrings.describe,
+                    hintText: AppStrings.describe.tr(),
                     hintStyle: TextStyle(
                       color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
                       fontSize: DimensionConstants.font16Px.f,
@@ -211,6 +220,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                   ),
                 ),
               ),
+              SizedBox(height: DimensionConstants.gap8Px.h),
+              Align(alignment: Alignment.centerRight, child: _buildVoiceButton()),
             ],
           ),
         );
@@ -221,28 +232,22 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   Widget _buildBottomSection() {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-      child: Column(
-        children: [
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [_buildVoiceButton()]),
-          SizedBox(height: DimensionConstants.gap16Px.h),
-          BlocBuilder<HaroldAiBloc, HaroldAiState>(
-            builder: (context, state) {
-              final isLoading = state is HaroldAiLoading;
-              return ValueListenableBuilder<TextEditingValue>(
-                valueListenable: _textController,
-                builder: (context, value, child) {
-                  final isValid = _isValidInput();
-                  return AuthButton(
-                    text: AppStrings.submit,
-                    onPressed: isValid && !isLoading ? _onSubmit : null,
-                    isLoading: isLoading,
-                    isEnabled: isValid && !isLoading,
-                  );
-                },
+      child: BlocBuilder<HaroldAiBloc, HaroldAiState>(
+        builder: (context, state) {
+          final isLoading = state is HaroldAiLoading;
+          return ValueListenableBuilder<TextEditingValue>(
+            valueListenable: _textController,
+            builder: (context, value, child) {
+              final isValid = _isValidInput();
+              return AuthButton(
+                text: AppStrings.submit,
+                onPressed: isValid && !isLoading ? _onSubmit : null,
+                isLoading: isLoading,
+                isEnabled: isValid && !isLoading,
               );
             },
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -267,7 +272,10 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                       width: 48.w,
                       height: 48.h,
                       decoration: BoxDecoration(
-                        color: isListening ? context.primary : (isEnabled ? context.filledBgDark : context.filledBgDark.withValues(alpha: 0.5)),
+                        color:
+                            isListening
+                                ? context.primary
+                                : (isEnabled ? context.darkTextPrimary.withValues(alpha: 0.15) : context.darkTextPrimary.withValues(alpha: 0.08)),
                         shape: BoxShape.circle,
                         boxShadow: isListening ? [BoxShadow(color: context.primary.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 5)] : null,
                       ),
@@ -302,7 +310,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   void _onSubmit() {
     if (_isValidInput()) {
       FocusScope.of(context).unfocus();
-      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim(), isUserAuthenticated: false));
+      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim()));
     }
   }
 }

@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
 
+import '../../domain/entities/consultation_fee.dart';
+
 abstract class HaroldAiState extends Equatable {
   const HaroldAiState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class HaroldAiInitial extends HaroldAiState {
@@ -18,11 +20,12 @@ class HaroldAiLoading extends HaroldAiState {
 class HaroldAiSuccess extends HaroldAiState {
   final bool isUserAuthenticated;
   final String query;
+  final ConsultationFee? fee;
 
-  const HaroldAiSuccess({required this.isUserAuthenticated, required this.query});
+  const HaroldAiSuccess({required this.isUserAuthenticated, required this.query, this.fee});
 
   @override
-  List<Object> get props => [isUserAuthenticated, query];
+  List<Object?> get props => [isUserAuthenticated, query, fee];
 }
 
 class HaroldAiFailure extends HaroldAiState {

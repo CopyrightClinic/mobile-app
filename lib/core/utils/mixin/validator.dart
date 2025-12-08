@@ -2,11 +2,12 @@ import '../../constants/app_strings.dart';
 
 mixin Validator {
   String? validateEmail(String? value, String Function(String) tr) {
-    if (value == null || value.isEmpty) {
+    final trimmedValue = value?.trim();
+    if (trimmedValue == null || trimmedValue.isEmpty) {
       return tr(AppStrings.emailIsRequired);
     } else if (!RegExp(
       "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)\$",
-    ).hasMatch(value)) {
+    ).hasMatch(trimmedValue)) {
       return tr(AppStrings.pleaseEnterAValidEmail);
     }
     return null;
@@ -17,16 +18,16 @@ mixin Validator {
       return tr(AppStrings.passwordIsRequired);
     }
 
+    if (value.contains(' ')) {
+      return tr(AppStrings.passwordNoSpaces);
+    }
+
     if (isLogin) {
       return null;
     }
 
     if (value.length < 8) {
       return tr(AppStrings.passwordMustBeAtLeastXCharacters).replaceAll('{X}', '8');
-    }
-
-    if (value.contains(' ')) {
-      return tr(AppStrings.passwordNoSpaces);
     }
 
     if (!value.contains(RegExp(r'[A-Z]'))) {
@@ -73,7 +74,7 @@ mixin Validator {
       return tr(AppStrings.fullNameMustBeAtLeast2Characters);
     } else if (value.trim().length > 100) {
       return tr(AppStrings.fullNameCannotExceed100Characters);
-    } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value.trim())) {
+    } else if (!RegExp(r'^[a-zA-Z\s.]+$').hasMatch(value.trim())) {
       return tr(AppStrings.fullNameCanOnlyContainLetters);
     }
     return null;
