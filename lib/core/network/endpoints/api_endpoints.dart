@@ -8,7 +8,7 @@ import '../../utils/enumns/api/export.dart';
 class ApiEndpoint {
   const ApiEndpoint._();
 
-  static const baseUrl = Config.baseUrl;
+  static String get baseUrl => Config.baseUrl;
 
   /// Authentication endpoints
   ///

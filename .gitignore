@@ -46,8 +46,7 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
-# Documentation files
-*.md
+.env
 
 # Platform-specific folders
 macos/

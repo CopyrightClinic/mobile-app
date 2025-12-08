@@ -41,7 +41,7 @@ dependencies:
 
   # Localization
   easy_localization: ^3.0.7+1
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   # Path Provider
   path_provider: ^2.1.5
@@ -63,6 +63,9 @@ dependencies:
   # Speech Recognition
   manual_speech_to_text: ^1.0.4
   permission_handler: ^11.3.1
+  
+  # Environment Variables
+  flutter_dotenv: ^5.2.1
   
   # PDF Generation
   pdf: ^3.11.1
@@ -88,6 +91,8 @@ flutter:
     - assets/images/png/clients/
 
     - assets/translations/
+    
+    - .env
     
   fonts:
     - family: urbanist
