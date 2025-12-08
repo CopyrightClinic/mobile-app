@@ -1,6 +1,7 @@
 import '../../../../core/network/api_service/api_service.dart';
 import '../../../../core/network/endpoints/api_endpoints.dart';
 import '../../../../core/utils/enumns/api/sessions_enums.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../models/session_model.dart';
 import '../models/session_details_model.dart';
 import '../models/session_availability_model.dart';
@@ -12,6 +13,8 @@ import '../models/paginated_sessions_model.dart';
 import '../models/unlock_summary_request_model.dart';
 import '../models/unlock_summary_response_model.dart';
 import '../models/cancel_session_response_model.dart';
+import '../models/extend_session_request_model.dart';
+import '../models/extend_session_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
@@ -33,6 +36,7 @@ abstract class SessionsRemoteDataSource {
     required String timezone,
   });
   Future<UnlockSummaryResponseModel> unlockSessionSummary({required String sessionId, required String paymentMethodId, required double summaryFee});
+  Future<ExtendSessionResponseModel> extendSession({required String sessionId, required String paymentMethodId});
 }
 
 class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
@@ -168,5 +172,37 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       data: request.toJson(),
       converter: (json) => UnlockSummaryResponseModel.fromJson(json.data),
     );
+  }
+
+  @override
+  Future<ExtendSessionResponseModel> extendSession({required String sessionId, required String paymentMethodId}) async {
+    Log.i(runtimeType, '🌐 SessionsDataSource: extendSession API call started');
+    Log.i(runtimeType, '   - Session ID: $sessionId');
+    Log.i(runtimeType, '   - Payment Method ID: $paymentMethodId');
+
+    final request = ExtendSessionRequestModel(paymentMethodId: paymentMethodId);
+    final endpoint = ApiEndpoint.sessions(SessionsEndpoint.EXTEND_SESSION, sessionId: sessionId);
+
+    Log.i(runtimeType, '   - Endpoint: $endpoint');
+    Log.i(runtimeType, '   - Request data: ${request.toJson()}');
+    Log.i(runtimeType, '🚀 SessionsDataSource: Making POST request...');
+
+    try {
+      final response = await apiService.postData<ExtendSessionResponseModel>(
+        endpoint: endpoint,
+        data: request.toJson(),
+        converter: (json) => ExtendSessionResponseModel.fromJson(json.data),
+      );
+
+      Log.i(runtimeType, '✅ SessionsDataSource: API call successful');
+      Log.i(runtimeType, '   - Response: ${response.message}');
+
+      return response;
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ SessionsDataSource: API call failed');
+      Log.e(runtimeType, '   - Error: $e');
+      Log.e(runtimeType, '   - StackTrace: $stackTrace');
+      rethrow;
+    }
   }
 }

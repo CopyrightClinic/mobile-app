@@ -7,11 +7,16 @@ import '../../../../core/utils/typedefs/type_defs.dart';
 import '../models/device_token_model.dart';
 import '../models/notification_list_response_model.dart';
 import '../models/mark_all_as_read_response_model.dart';
+import '../models/clear_all_notifications_response_model.dart';
 
 abstract class NotificationRemoteDataSource {
-  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20});
+  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20, String? timezone});
 
   Future<MarkAllAsReadResponseModel> markAllAsRead();
+
+  Future<void> markNotificationAsRead({required String notificationId});
+
+  Future<ClearAllNotificationsResponseModel> clearAllNotifications();
 
   Future<RegisterDeviceTokenResponseModel> registerDeviceToken(RegisterDeviceTokenRequestModel request);
 }
@@ -22,14 +27,21 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   NotificationRemoteDataSourceImpl({required this.apiService});
 
   @override
-  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20}) async {
+  Future<NotificationListResponseModel> getNotifications({required String userId, int page = 1, int limit = 20, String? timezone}) async {
     try {
+      final Map<String, dynamic> headers = {};
+      if (timezone != null) headers['timezone'] = timezone;
+
+      final endpoint = '${ApiEndpoint.notifications}/user/$userId';
+
       final response = await apiService.getData<NotificationListResponseModel>(
-        endpoint: '${ApiEndpoint.notifications}/user/$userId',
+        endpoint: endpoint,
         queryParams: {'page': page, 'limit': limit},
+        headers: headers.isNotEmpty ? headers : null,
         requiresAuthToken: true,
         converter: (JSON json) => NotificationListResponseModel.fromJson(json),
       );
+
       return response;
     } catch (e) {
       throw CustomException.fromDioException(e as Exception);
@@ -39,14 +51,49 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   @override
   Future<MarkAllAsReadResponseModel> markAllAsRead() async {
     try {
+      final endpoint = '${ApiEndpoint.notifications}/mark-all-read';
       final response = await apiService.patchData<MarkAllAsReadResponseModel>(
-        endpoint: '${ApiEndpoint.notifications}/mark-all-read',
+        endpoint: endpoint,
         data: {},
         requiresAuthToken: true,
         converter: (ResponseModel<JSON> response) {
           return MarkAllAsReadResponseModel.fromJson(response.data);
         },
       );
+
+      return response;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
+
+  @override
+  Future<void> markNotificationAsRead({required String notificationId}) async {
+    try {
+      final endpoint = '${ApiEndpoint.notifications}/$notificationId/mark-read';
+      await apiService.patchData<void>(
+        endpoint: endpoint,
+        data: {},
+        requiresAuthToken: true,
+        converter: (ResponseModel<JSON> response) {},
+      );
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
+
+  @override
+  Future<ClearAllNotificationsResponseModel> clearAllNotifications() async {
+    try {
+      final endpoint = '${ApiEndpoint.notifications}/clear-all';
+      final response = await apiService.deleteData<ClearAllNotificationsResponseModel>(
+        endpoint: endpoint,
+        requiresAuthToken: true,
+        converter: (ResponseModel<JSON> response) {
+          return ClearAllNotificationsResponseModel.fromJson(response.data);
+        },
+      );
+
       return response;
     } catch (e) {
       throw CustomException.fromDioException(e as Exception);
@@ -56,14 +103,17 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   @override
   Future<RegisterDeviceTokenResponseModel> registerDeviceToken(RegisterDeviceTokenRequestModel request) async {
     try {
+      final endpoint = ApiEndpoint.user(UserEndpoint.DEVICE_TOKEN);
+
       final response = await apiService.postData<RegisterDeviceTokenResponseModel>(
-        endpoint: ApiEndpoint.user(UserEndpoint.DEVICE_TOKEN),
+        endpoint: endpoint,
         data: request.toJson(),
         requiresAuthToken: true,
         converter: (ResponseModel<JSON> response) {
           return RegisterDeviceTokenResponseModel.fromJson(response.data);
         },
       );
+
       return response;
     } catch (e) {
       throw CustomException.fromDioException(e as Exception);

@@ -13,17 +13,10 @@ class NotificationTypeMapper {
 
       switch (pushType) {
         case PushNotificationType.sessionAccepted:
-        case PushNotificationType.sessionBookedSuccessfully:
-        case PushNotificationType.aiAcceptsCase:
           result = NotificationType.sessionAccepted;
           break;
 
-        case PushNotificationType.sessionCancelledByUser:
-        case PushNotificationType.sessionCancelledByAttorney:
-          result = NotificationType.sessionCancelled;
-          break;
-
-        case PushNotificationType.sessionReminderPreStart:
+        case PushNotificationType.sessionReminder:
           result = NotificationType.sessionReminder;
           break;
 
@@ -31,25 +24,9 @@ class NotificationTypeMapper {
           result = NotificationType.sessionCompleted;
           break;
 
-        case PushNotificationType.paymentReleasedToAttorney:
-          result = NotificationType.paymentReleased;
-          break;
-
-        case PushNotificationType.paymentAuthorizationFailed:
-          result = NotificationType.paymentAuthorizationFailed;
-          break;
-
-        case PushNotificationType.paymentHoldCreated:
-        case PushNotificationType.refundIssued:
-        case PushNotificationType.joinSessionActivated:
         case PushNotificationType.sessionSummaryAvailable:
-        case PushNotificationType.summarySubmittedForReview:
-        case PushNotificationType.summaryApproved:
-        case PushNotificationType.accountDeletedSuccessfully:
-        case PushNotificationType.attorneyAccountStatusChanged:
-        case PushNotificationType.systemErrorAlert:
-        case PushNotificationType.userFeedbackReceived:
-        case PushNotificationType.attorneySelfReportedSession:
+        case PushNotificationType.refundIssued:
+        case PushNotificationType.sessionExtensionPrompt:
           result = null;
           break;
       }

@@ -23,13 +23,14 @@ import '../../features/harold_ai/presentation/pages/harold_success_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_failed_screen.dart';
 import '../../features/harold_ai/presentation/pages/params/harold_success_screen_params.dart';
 import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
-import '../../features/zoom/presentation/pages/join_meeting_page.dart';
 import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/sessions/presentation/pages/session_details_screen.dart';
 import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
 import '../../features/sessions/presentation/pages/session_summary_screen.dart';
 import '../../features/sessions/presentation/pages/params/session_summary_screen_params.dart';
+import '../../features/sessions/presentation/pages/extend_session_screen.dart';
+import '../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../../features/dashboard/presentation/pages/dashboard_shell_screen.dart';
 import '../../features/dashboard/presentation/pages/home_screen.dart';
 import '../../features/dashboard/presentation/pages/sessions_screen.dart';
@@ -41,10 +42,14 @@ import '../../features/auth/domain/entities/user_entity.dart';
 import '../../core/utils/enumns/ui/verification_type.dart';
 import '../../core/utils/enumns/ui/payment_method.dart';
 import '../../features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:flutter/material.dart';
 import 'app_routes.dart';
 
 class AppRouter {
+  static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
   static final GoRouter router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.splashRouteName,
     debugLogDiagnostics: true,
     routes: [
@@ -172,6 +177,14 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.extendSessionRouteName,
+        name: AppRoutes.extendSessionRouteName,
+        builder: (context, state) {
+          final params = state.extra as ExtendSessionScreenParams;
+          return ExtendSessionScreen(params: params);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.editProfileRouteName,
         name: AppRoutes.editProfileRouteName,
         builder: (context, state) {
@@ -211,15 +224,6 @@ class AppRouter {
         path: AppRoutes.notificationsRouteName,
         name: AppRoutes.notificationsRouteName,
         builder: (context, state) => const NotificationsScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.joinMeetingRouteName,
-        name: AppRoutes.joinMeetingRouteName,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, String>;
-          final meetingId = extra['meetingId']!;
-          return JoinMeetingPage(meetingId: meetingId);
-        },
       ),
     ],
   );

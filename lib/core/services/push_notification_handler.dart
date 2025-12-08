@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../config/routes/app_router.dart';
 import '../../config/routes/app_routes.dart';
 import '../../features/sessions/presentation/pages/params/session_details_screen_params.dart';
+import '../../features/sessions/presentation/pages/params/extend_session_screen_params.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import 'push_notification_payload.dart';
@@ -100,8 +101,18 @@ class PushNotificationHandler {
         Log.i(runtimeType, '🏠 Navigating to Home first (replaces splash in stack)');
         context.go(AppRoutes.homeRouteName);
 
-        Log.i(runtimeType, '🎯 Now handling notification navigation on top of Home');
-        await handleNotificationTap(pendingMessage, isFromPending: true);
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        final payload = PushNotificationPayload.fromRemoteMessage(pendingMessage);
+
+        if (payload.type.requiresNavigation) {
+          Log.i(runtimeType, '🎯 Now handling notification navigation on top of Home');
+          await handleNotificationTap(pendingMessage, isFromPending: true);
+        } else {
+          Log.i(runtimeType, '✅ Notification does not require navigation (${payload.type.toApiString()})');
+          Log.i(runtimeType, '✅ Staying on Home screen');
+          _pendingNavService.markAsHandled();
+        }
       } else {
         Log.e(runtimeType, '❌ Context not available for pending navigation');
       }
@@ -109,6 +120,13 @@ class PushNotificationHandler {
   }
 
   Future<void> _navigateBasedOnType(PushNotificationPayload payload) async {
+    Log.i(runtimeType, '🧭 Determining navigation for type: ${payload.type.toApiString()}');
+
+    if (!payload.type.requiresNavigation) {
+      Log.i(runtimeType, '📋 Type ${payload.type.toApiString()} does not require navigation');
+      return;
+    }
+
     BuildContext? context = AppRouter.router.routerDelegate.navigatorKey.currentContext;
 
     if (context == null) {
@@ -134,61 +152,29 @@ class PushNotificationHandler {
       return;
     }
 
-    Log.i(runtimeType, '🧭 Determining navigation for type: ${payload.type.toApiString()}');
-
     switch (payload.type) {
-      case PushNotificationType.aiAcceptsCase:
-        Log.i(runtimeType, '🧭 → Navigating to Booking Request Sent');
-        _navigateToBookingRequestSent(context);
-        break;
-
       case PushNotificationType.sessionAccepted:
-      case PushNotificationType.sessionBookedSuccessfully:
-      case PushNotificationType.sessionReminderPreStart:
-      case PushNotificationType.joinSessionActivated:
+      case PushNotificationType.sessionReminder:
       case PushNotificationType.sessionCompleted:
       case PushNotificationType.sessionSummaryAvailable:
-      case PushNotificationType.paymentHoldCreated:
-      case PushNotificationType.summaryApproved:
         Log.i(runtimeType, '🧭 → Navigating to Session Details (ID: ${payload.sessionId})');
         _navigateToSessionDetails(context, payload.sessionId);
         break;
 
-      case PushNotificationType.sessionCancelledByUser:
-      case PushNotificationType.sessionCancelledByAttorney:
-        Log.i(runtimeType, '🧭 → Navigating to Sessions List (session cancelled)');
-        _navigateToSessions(context);
+      case PushNotificationType.sessionExtensionPrompt:
+        Log.i(runtimeType, '🧭 → Navigating to Extend Session (ID: ${payload.sessionId}, Fee: \$${payload.totalFee})');
+        _navigateToExtendSession(context, payload.sessionId, payload.totalFee);
         break;
 
-      case PushNotificationType.paymentReleasedToAttorney:
       case PushNotificationType.refundIssued:
-        Log.i(runtimeType, '🧭 → Navigating to Sessions List (payment update)');
-        _navigateToSessions(context);
-        break;
-
-      case PushNotificationType.paymentAuthorizationFailed:
-        Log.i(runtimeType, '🧭 → Navigating to Payment Methods (payment failed)');
-        _navigateToPaymentMethods(context);
-        break;
-
-      case PushNotificationType.summarySubmittedForReview:
-      case PushNotificationType.systemErrorAlert:
-      case PushNotificationType.userFeedbackReceived:
-      case PushNotificationType.attorneySelfReportedSession:
-        Log.i(runtimeType, '📋 Admin-only notification, no user navigation');
-        break;
-
-      case PushNotificationType.attorneyAccountStatusChanged:
-      case PushNotificationType.accountDeletedSuccessfully:
-        Log.i(runtimeType, '📋 Account notification, no navigation');
+        Log.i(runtimeType, '📋 Refund notification, no navigation (handled by requiresNavigation check)');
         break;
     }
   }
 
   void _navigateToSessionDetails(BuildContext context, String? sessionId) {
     if (sessionId == null) {
-      Log.w(runtimeType, '⚠️ Session ID is null, falling back to sessions list');
-      _navigateToSessions(context);
+      Log.w(runtimeType, '⚠️ Session ID is null, cannot navigate to session details');
       return;
     }
 
@@ -205,35 +191,27 @@ class PushNotificationHandler {
     }
   }
 
-  void _navigateToSessions(BuildContext context) {
-    try {
-      Log.i(runtimeType, '✅ Using GoRouter.go to: ${AppRoutes.sessionsRouteName}');
-      context.go(AppRoutes.sessionsRouteName);
-      Log.i(runtimeType, '✅ Navigation completed successfully');
-    } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Navigation failed: $e');
-      Log.e(runtimeType, 'Stack trace: $stackTrace');
+  void _navigateToExtendSession(BuildContext context, String? sessionId, double? totalFee) {
+    if (sessionId == null) {
+      Log.w(runtimeType, '⚠️ Session ID is null, cannot navigate to extend session');
+      return;
     }
-  }
 
-  void _navigateToBookingRequestSent(BuildContext context) {
-    try {
-      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.bookingRequestSentRouteName}');
-      context.push(AppRoutes.bookingRequestSentRouteName);
-      Log.i(runtimeType, '✅ Navigation completed successfully');
-    } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Navigation failed: $e');
-      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    if (totalFee == null) {
+      Log.w(runtimeType, '⚠️ Total Fee is null, cannot navigate to extend session');
+      return;
     }
-  }
 
-  void _navigateToPaymentMethods(BuildContext context) {
     try {
-      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.paymentMethodsRouteName}');
-      context.push(AppRoutes.paymentMethodsRouteName);
-      Log.i(runtimeType, '✅ Navigation completed successfully');
+      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.extendSessionRouteName}');
+      Log.i(runtimeType, '✅ Session ID from notification: $sessionId');
+      Log.i(runtimeType, '💰 Total Fee from notification: \$${totalFee.toStringAsFixed(2)}');
+
+      context.push(AppRoutes.extendSessionRouteName, extra: ExtendSessionScreenParams(sessionId: sessionId, totalFee: totalFee));
+
+      Log.i(runtimeType, '✅ Navigation to extend session completed successfully');
     } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Navigation failed: $e');
+      Log.e(runtimeType, '❌ Navigation to extend session failed: $e');
       Log.e(runtimeType, 'Stack trace: $stackTrace');
     }
   }

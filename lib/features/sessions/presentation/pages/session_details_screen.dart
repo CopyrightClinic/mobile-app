@@ -18,6 +18,7 @@ import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
+import '../../../../core/services/bottom_sheet_service.dart';
 import '../../../../di.dart';
 import '../../domain/entities/session_details_entity.dart';
 import '../bloc/session_details_bloc.dart';
@@ -32,6 +33,8 @@ import '../widgets/cancel_session_bottom_sheet.dart';
 import 'params/session_details_screen_params.dart';
 import 'params/session_summary_screen_params.dart';
 import '../../../payments/presentation/bloc/payment_bloc.dart';
+import '../../../zoom/presentation/bloc/zoom_bloc.dart';
+import '../../../zoom/presentation/widgets/zoom_connection_dialog.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
   final SessionDetailsScreenParams params;
@@ -65,6 +68,12 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   void initState() {
     super.initState();
     _isRatingExpanded = ValueNotifier<bool>(false);
+  }
+
+  @override
+  void dispose() {
+    _isRatingExpanded.dispose();
+    super.dispose();
   }
 
   @override
@@ -637,37 +646,34 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   void _showCancelDialog(SessionDetailsEntity session) {
-    showModalBottomSheet(
-      context: context,
+    BottomSheetService.show(
+      builder: (bottomSheetContext) => BlocProvider.value(
+        value: context.read<SessionsBloc>(),
+        child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
+      ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-      builder:
-          (bottomSheetContext) => BlocProvider.value(
-            value: context.read<SessionsBloc>(),
-            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
-          ),
     );
   }
 
   void _onJoinSession() {
     final sessionId = widget.sessionId;
-    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
+    final zoomBloc = sl<ZoomBloc>();
+    ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }
 
   void _onUnlockSummary() {
-    showModalBottomSheet(
-      context: context,
+    BottomSheetService.show(
+      builder: (bottomSheetContext) => MultiBlocProvider(
+        providers: [BlocProvider.value(value: context.read<PaymentBloc>()), BlocProvider.value(value: context.read<SessionDetailsBloc>())],
+        child: UnlockSummaryPaymentBottomSheet(sessionId: widget.sessionId),
+      ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: true,
       enableDrag: true,
-      builder:
-          (bottomSheetContext) => MultiBlocProvider(
-            providers: [BlocProvider.value(value: context.read<PaymentBloc>()), BlocProvider.value(value: context.read<SessionDetailsBloc>())],
-            child: UnlockSummaryPaymentBottomSheet(sessionId: widget.sessionId),
-          ),
     );
   }
 
@@ -686,11 +692,5 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         SubmitSessionFeedback(sessionId: sessionId, rating: _currentRating, review: _currentReview.isNotEmpty ? _currentReview : null),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _isRatingExpanded.dispose();
-    super.dispose();
   }
 }

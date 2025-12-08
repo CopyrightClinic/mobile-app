@@ -13,6 +13,7 @@ import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
+import '../../../../core/utils/storage/user_storage.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
@@ -101,14 +102,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     Spacer(),
-                    BlocBuilder<AuthBloc, AuthState>(
+                    BlocBuilder<ProfileBloc, ProfileState>(
+                      bloc: _profileBloc,
                       builder: (context, state) {
                         return InkWell(
                           onTap: () async {
-                            print('state: $state');
-                            if (state is AuthAuthenticated) {
-                              print('state.user: ${state.user}');
-                              await context.push(AppRoutes.editProfileRouteName, extra: state.user);
+                            if (state is ProfileLoaded) {
+                              final user = await UserStorage.getUser();
+                              if (user != null) {
+                                await context.push(AppRoutes.editProfileRouteName, extra: user);
+                              }
                             }
                           },
                           child: GlobalImage(
@@ -173,7 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               _buildInfoRow(context, iconPath: ImageConstants.name, label: AppStrings.fullName, value: userName),
               _buildInfoRow(context, iconPath: ImageConstants.email, label: AppStrings.email, value: userEmail),
-              _buildInfoRow(context, iconPath: ImageConstants.phone, label: AppStrings.phoneNumber, value: userPhone),
+              _buildInfoRow(context, iconPath: ImageConstants.phone, label: AppStrings.phone, value: userPhone),
               _buildInfoRow(context, iconPath: ImageConstants.address, label: AppStrings.address, value: userAddress, isLast: true),
             ],
           );

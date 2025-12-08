@@ -12,6 +12,8 @@ import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/translated_text.dart';
+import '../../../../core/services/bottom_sheet_service.dart';
+import '../../../../di.dart';
 import '../../../sessions/presentation/bloc/sessions_bloc.dart';
 import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
@@ -19,6 +21,8 @@ import '../../../sessions/presentation/widgets/sessions_tab_selector.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
+import '../../../zoom/presentation/bloc/zoom_bloc.dart';
+import '../../../zoom/presentation/widgets/zoom_connection_dialog.dart';
 
 class SessionsScreen extends StatefulWidget {
   const SessionsScreen({super.key});
@@ -72,7 +76,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
             height: DimensionConstants.gap40Px.w,
             decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                context.pushNamed(AppRoutes.notificationsRouteName);
+              },
               borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
               child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w)),
             ),
@@ -175,7 +181,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 return SessionCard(
                   session: session,
                   onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
-                  onJoin: session.isUpcoming ? () => _joinSession(context, session.id) : null,
+                  onJoin: session.isUpcoming ? () => _joinSessionDirectly(context, session.id) : null,
                 );
               },
             );
@@ -246,21 +252,20 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
-    showModalBottomSheet(
-      context: context,
+    BottomSheetService.show(
+      builder: (bottomSheetContext) => BlocProvider.value(
+        value: _sessionsBloc,
+        child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
+      ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-      builder:
-          (bottomSheetContext) => BlocProvider.value(
-            value: _sessionsBloc,
-            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
-          ),
     );
   }
 
-  void _joinSession(BuildContext context, String sessionId) {
-    context.pushNamed(AppRoutes.joinMeetingRouteName, extra: {'meetingId': sessionId});
+  void _joinSessionDirectly(BuildContext context, String sessionId) {
+    final zoomBloc = sl<ZoomBloc>();
+    ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }
 }

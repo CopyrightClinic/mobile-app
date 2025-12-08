@@ -28,14 +28,15 @@ android {
 
     defaultConfig {
         applicationId = "com.brainx.copyrightclinic"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
         
         ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
+            abiFilters.add("arm64-v8a")
+            // abiFilters.add("armeabi-v7a")
         }
     }
 
@@ -52,14 +53,28 @@ android {
             )
         }
     }
+    
+    bundle {
+        abi {
+            enableSplit = true
+        }
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = true
+        }
+    }
 }
 
 dependencies {
-    // Explicit Compose versions for Zoom SDK 6.5.10 compatibility
-    implementation("androidx.compose.runtime:runtime:1.7.3")
-    implementation("androidx.compose.ui:ui:1.7.3")
-    implementation("androidx.compose.foundation:foundation:1.7.3")
-    implementation("androidx.compose.material3:material3:1.3.1")
+    // Downgraded Compose stack for Zoom SDK 6.5.10 video effects compatibility
+    // Foundation 1.6.8 has compatible HorizontalPager API
+    // Material3 1.2.1 has compatible SheetState API
+    implementation("androidx.compose.runtime:runtime:1.6.8")
+    implementation("androidx.compose.ui:ui:1.6.8")
+    implementation("androidx.compose.foundation:foundation:1.6.8")
+    implementation("androidx.compose.material3:material3:1.2.1")
     
     // Coil image loading library (required by Zoom SDK for waiting room UI)
     implementation("io.coil-kt:coil-compose:2.5.0")

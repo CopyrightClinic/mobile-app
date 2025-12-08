@@ -7,9 +7,7 @@ import 'package:copyright_clinic_flutter/core/widgets/custom_text_field.dart';
 import 'package:copyright_clinic_flutter/core/widgets/custom_button.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/utils/ui/snackbar_utils.dart';
-import 'package:copyright_clinic_flutter/core/utils/mixin/validator.dart';
 import 'package:copyright_clinic_flutter/core/utils/password_strength.dart';
-import 'package:copyright_clinic_flutter/core/widgets/password_strength_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +27,7 @@ class ResetPasswordScreen extends StatefulWidget {
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validator {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -40,10 +38,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
   void Function(void Function())? _passwordState;
   void Function(void Function())? _confirmPasswordState;
 
+  String? _passwordError;
+  String? _confirmPasswordError;
   PasswordStrengthResult? _passwordStrength;
+  PasswordStrengthResult? _confirmPasswordStrength;
+
+  @override
+  void initState() {
+    super.initState();
+    _newPasswordFocusNode.addListener(_onPasswordFocusChange);
+    _confirmPasswordFocusNode.addListener(_onConfirmPasswordFocusChange);
+  }
 
   @override
   void dispose() {
+    _newPasswordFocusNode.removeListener(_onPasswordFocusChange);
+    _confirmPasswordFocusNode.removeListener(_onConfirmPasswordFocusChange);
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     _newPasswordFocusNode.dispose();
@@ -55,54 +65,82 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
     final newPassword = _newPasswordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    final passwordValidation = validatePassword(newPassword, tr, isLogin: false);
-    final confirmPasswordValidation = _validateConfirmPassword(newPassword, confirmPassword, tr);
+    if (newPassword.isEmpty || confirmPassword.isEmpty) return false;
 
-    return passwordValidation == null && confirmPasswordValidation == null;
+    final strength = PasswordStrengthHelper.evaluatePasswordStrength(newPassword);
+
+    return strength.strength != PasswordStrengthEnum.weak && newPassword == confirmPassword;
   }
 
-  void _onFieldChanged() {
-    _buttonSetState?.call(() {});
-  }
-
-  void _handleResetPassword() {
-    if (_formKey.currentState!.validate()) {
-      final newPassword = _newPasswordController.text.trim();
-      final confirmPassword = _confirmPasswordController.text.trim();
-
-      context.read<AuthBloc>().add(
-        ResetPasswordRequested(email: widget.email, otp: widget.otp, newPassword: newPassword, confirmPassword: confirmPassword),
-      );
-
-      _confirmPasswordFocusNode.unfocus();
+  void _onPasswordFocusChange() {
+    if (!_newPasswordFocusNode.hasFocus) {
+      _validatePassword();
     }
   }
 
-  String? _validateConfirmPassword(String? password, String? confirmPassword, String Function(String) tr) {
-    if (confirmPassword == null || confirmPassword.isEmpty) {
-      return tr(AppStrings.confirmPasswordIsRequired);
-    } else if (password != confirmPassword) {
-      return tr(AppStrings.passwordsDoNotMatch);
+  void _onConfirmPasswordFocusChange() {
+    if (!_confirmPasswordFocusNode.hasFocus) {
+      _validateConfirmPassword();
     }
-    return null;
+  }
+
+  void _validatePassword() {
+    if (_newPasswordController.text.isEmpty) return;
+
+    if (_newPasswordController.text.contains(' ')) {
+      _passwordState?.call(() {
+        _passwordStrength = PasswordStrengthResult(strength: PasswordStrengthEnum.weak, message: tr(AppStrings.passwordNoSpaces));
+        _passwordError = tr(AppStrings.passwordNoSpaces);
+      });
+    } else {
+      final strength = PasswordStrengthHelper.evaluatePasswordStrength(_newPasswordController.text);
+      _passwordState?.call(() {
+        _passwordStrength = strength;
+        _passwordError = strength.strength == PasswordStrengthEnum.weak ? tr(AppStrings.passwordIsRequired) : null;
+      });
+    }
+  }
+
+  void _validateConfirmPassword() {
+    if (_confirmPasswordController.text.isEmpty) return;
+
+    if (_confirmPasswordController.text != _newPasswordController.text) {
+      _confirmPasswordState?.call(() {
+        _confirmPasswordError = tr(AppStrings.passwordsDoNotMatch);
+        _confirmPasswordStrength = null;
+      });
+    } else {
+      _confirmPasswordState?.call(() {
+        _confirmPasswordError = null;
+        _confirmPasswordStrength = PasswordStrengthResult(strength: PasswordStrengthEnum.matched, message: tr('matchPassword'));
+      });
+    }
   }
 
   void _handlePasswordChange(String value) {
     if (value.isEmpty) {
+      _passwordError = null;
       _passwordStrength = null;
       _buttonSetState?.call(() {});
       _passwordState?.call(() {});
     } else {
       if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text != value) {
-        _confirmPasswordState?.call(() {});
+        _confirmPasswordState?.call(() {
+          _confirmPasswordError = tr(AppStrings.passwordsDoNotMatch);
+          _confirmPasswordStrength = null;
+        });
         _buttonSetState?.call(() {});
       }
       if (_confirmPasswordController.text.isNotEmpty && _confirmPasswordController.text == value) {
-        _confirmPasswordState?.call(() {});
+        _confirmPasswordState?.call(() {
+          _confirmPasswordError = null;
+          _confirmPasswordStrength = PasswordStrengthResult(strength: PasswordStrengthEnum.matched, message: tr('matchPassword'));
+        });
         _buttonSetState?.call(() {});
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        _passwordError = null;
         _passwordStrength = PasswordStrengthHelper.evaluatePasswordStrength(value);
         _buttonSetState?.call(() {});
         _passwordState?.call(() {});
@@ -111,13 +149,86 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
   }
 
   void _handleConfirmPasswordChange(String value) {
-    if (value.isNotEmpty && _newPasswordController.text.isNotEmpty) {
-      if (_newPasswordController.text == value) {
+    if (value.isEmpty) {
+      _confirmPasswordError = null;
+      _confirmPasswordStrength = null;
+      _buttonSetState?.call(() {});
+      _confirmPasswordState?.call(() {});
+    } else if (value != _newPasswordController.text) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _confirmPasswordError = tr(AppStrings.passwordsDoNotMatch);
+        _confirmPasswordStrength = null;
         _buttonSetState?.call(() {});
-      } else {
+        _confirmPasswordState?.call(() {});
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _confirmPasswordError = null;
+        _confirmPasswordStrength = PasswordStrengthResult(strength: PasswordStrengthEnum.matched, message: tr('matchPassword'));
         _buttonSetState?.call(() {});
-      }
+        _confirmPasswordState?.call(() {});
+      });
     }
+  }
+
+  Color _getPasswordBorderColor() {
+    if (_passwordError != null || _passwordStrength?.strength == PasswordStrengthEnum.weak) {
+      return context.red;
+    }
+    if (_passwordStrength?.strength == PasswordStrengthEnum.medium) {
+      return _passwordStrength!.strength.color;
+    }
+    if (_passwordStrength?.strength == PasswordStrengthEnum.strong) {
+      return _passwordStrength!.strength.color;
+    }
+    return context.primaryColor;
+  }
+
+  Color _getConfirmPasswordBorderColor() {
+    if (_confirmPasswordError != null) {
+      return context.red;
+    }
+    if (_confirmPasswordStrength?.strength == PasswordStrengthEnum.matched) {
+      return _confirmPasswordStrength!.strength.color;
+    }
+    return context.primaryColor;
+  }
+
+  void _handleResetPassword() {
+    final newPassword = _newPasswordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (newPassword.isEmpty) {
+      _passwordState?.call(() {
+        _passwordError = tr(AppStrings.passwordIsRequired);
+        _passwordStrength = PasswordStrengthResult(strength: PasswordStrengthEnum.weak, message: tr(AppStrings.passwordIsRequired));
+      });
+      return;
+    }
+
+    if (PasswordStrengthHelper.evaluatePasswordStrength(newPassword).strength == PasswordStrengthEnum.weak) {
+      return;
+    }
+
+    if (confirmPassword != newPassword) {
+      _confirmPasswordState?.call(() {
+        _confirmPasswordError = tr(AppStrings.passwordsDoNotMatch);
+      });
+      return;
+    }
+
+    if (confirmPassword.isEmpty) {
+      _confirmPasswordState?.call(() {
+        _confirmPasswordError = tr(AppStrings.confirmPasswordIsRequired);
+      });
+      return;
+    }
+
+    context.read<AuthBloc>().add(
+      ResetPasswordRequested(email: widget.email, otp: widget.otp, newPassword: newPassword, confirmPassword: confirmPassword),
+    );
+
+    _confirmPasswordFocusNode.unfocus();
   }
 
   @override
@@ -169,24 +280,18 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
                           StatefulBuilder(
                             builder: (context, state) {
                               _passwordState = state;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomTextField(
-                                    label: AppStrings.newPassword,
-                                    placeholder: AppStrings.enterNewPassword,
-                                    controller: _newPasswordController,
-                                    focusNode: _newPasswordFocusNode,
-                                    isPassword: true,
-                                    validator: (value) => validatePassword(value, tr, isLogin: false),
-                                    onEditingComplete: () => _confirmPasswordFocusNode.requestFocus(),
-                                    onChanged: (value) {
-                                      _onFieldChanged();
-                                      _handlePasswordChange(value);
-                                    },
-                                  ),
-                                  PasswordStrengthIndicator(passwordStrength: _passwordStrength, isVisible: _newPasswordController.text.isNotEmpty),
-                                ],
+                              return CustomTextField(
+                                label: AppStrings.newPassword,
+                                placeholder: AppStrings.enterNewPassword,
+                                controller: _newPasswordController,
+                                focusNode: _newPasswordFocusNode,
+                                isPassword: true,
+                                passwordStrength: _passwordStrength,
+                                errorText: _passwordError,
+                                focusedBorderColor: _getPasswordBorderColor(),
+                                onEditingComplete: () => _confirmPasswordFocusNode.requestFocus(),
+                                onChanged: _handlePasswordChange,
+                                autovalidateMode: AutovalidateMode.disabled,
                               );
                             },
                           ),
@@ -200,12 +305,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with Validato
                                 controller: _confirmPasswordController,
                                 focusNode: _confirmPasswordFocusNode,
                                 isPassword: true,
-                                validator: (value) => _validateConfirmPassword(_newPasswordController.text, value, tr),
+                                passwordStrength: _confirmPasswordStrength,
+                                errorText: _confirmPasswordError,
+                                focusedBorderColor: _getConfirmPasswordBorderColor(),
                                 onEditingComplete: () => _confirmPasswordFocusNode.unfocus(),
-                                onChanged: (value) {
-                                  _onFieldChanged();
-                                  _handleConfirmPasswordChange(value);
-                                },
+                                onChanged: _handleConfirmPasswordChange,
+                                autovalidateMode: AutovalidateMode.disabled,
                               );
                             },
                           ),

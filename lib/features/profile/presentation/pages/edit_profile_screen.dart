@@ -123,19 +123,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
                             placeholder: AppStrings.enterYourPhoneNumber,
                             controller: _phoneController,
                             focusNode: _phoneFocusNode,
-                            validator: (value) {
-                              if (_phoneNumber == null || _phoneNumber!.phoneNumber == null || _phoneNumber!.phoneNumber!.isEmpty) {
-                                return tr(AppStrings.phoneNumberRequired);
-                              }
-                              final isValid = _phoneFieldKey.currentState?.isPhoneValid ?? false;
-                              if (!isValid) {
-                                return tr(AppStrings.invalidPhoneNumber);
-                              }
-                              return null;
-                            },
                             onEditingComplete: () => _addressFocusNode.requestFocus(),
                             onChanged: (PhoneNumber phoneNumber) {
                               _phoneNumber = phoneNumber;
+                              _onFieldChanged();
+                            },
+                            onValidationChanged: (bool isValid) {
                               _onFieldChanged();
                             },
                             initialValue: PhoneNumberUtils.getLocalPhoneNumber(widget.user.phoneNumber),
@@ -151,7 +144,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> with Validator {
                             keyboardType: TextInputType.streetAddress,
                             maxLines: 3,
                             validator: (value) => validateAddress(value, tr),
-                            onEditingComplete: _handleSave,
+                            onEditingComplete: () => _addressFocusNode.unfocus(),
                             onChanged: (value) => _onFieldChanged(),
                           ),
                         ],

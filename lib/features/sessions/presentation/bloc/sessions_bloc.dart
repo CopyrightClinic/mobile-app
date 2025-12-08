@@ -2,10 +2,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
+import '../../../../core/utils/logger/logger.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
 import '../../domain/usecases/book_session_usecase.dart';
+import '../../domain/usecases/extend_session_usecase.dart';
 import 'sessions_event.dart';
 import 'sessions_state.dart';
 
@@ -14,12 +16,14 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   final CancelSessionUseCase cancelSessionUseCase;
   final GetSessionAvailabilityUseCase getSessionAvailabilityUseCase;
   final BookSessionUseCase bookSessionUseCase;
+  final ExtendSessionUseCase extendSessionUseCase;
 
   SessionsBloc({
     required this.getUserSessionsUseCase,
     required this.cancelSessionUseCase,
     required this.getSessionAvailabilityUseCase,
     required this.bookSessionUseCase,
+    required this.extendSessionUseCase,
   }) : super(const SessionsState()) {
     on<LoadUserSessions>(_onLoadUserSessions);
     on<RefreshSessions>(_onRefreshSessions);
@@ -33,6 +37,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<TimeSlotSelected>(_onTimeSlotSelected);
     on<LoadSessionAvailability>(_onLoadSessionAvailability);
     on<BookSessionRequested>(_onBookSessionRequested);
+    on<ExtendSession>(_onExtendSession);
   }
 
   Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
@@ -367,5 +372,50 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         );
       },
     );
+  }
+
+  Future<void> _onExtendSession(ExtendSession event, Emitter<SessionsState> emit) async {
+    Log.i(runtimeType, '📥 SessionsBloc: ExtendSession event received');
+    Log.i(runtimeType, '   - Session ID: ${event.sessionId}');
+    Log.i(runtimeType, '   - Payment Method ID: ${event.paymentMethodId}');
+
+    emit(state.copyWith(isProcessingExtension: true, clearError: true, clearSuccess: true));
+    Log.i(runtimeType, '🔄 SessionsBloc: State updated - isProcessingExtension: true');
+
+    Log.i(runtimeType, '🔌 SessionsBloc: Calling extendSessionUseCase...');
+    final result = await extendSessionUseCase(ExtendSessionParams(sessionId: event.sessionId, paymentMethodId: event.paymentMethodId));
+
+    result.fold(
+      (failure) {
+        Log.e(runtimeType, '❌ SessionsBloc: ExtendSession failed');
+        Log.e(runtimeType, '   - Failure message: ${failure.message}');
+
+        emit(
+          state.copyWith(
+            isProcessingExtension: false,
+            errorMessage: failure.message ?? AppStrings.sessionExtendError,
+            lastOperation: SessionsOperation.extendSession,
+          ),
+        );
+
+        Log.i(runtimeType, '🔄 SessionsBloc: State updated with error');
+      },
+      (response) {
+        Log.i(runtimeType, '✅ SessionsBloc: ExtendSession succeeded');
+        Log.i(runtimeType, '   - Response message: ${response.message}');
+
+        emit(
+          state.copyWith(
+            isProcessingExtension: false,
+            successMessage: response.message ?? AppStrings.sessionExtendedSuccess,
+            lastOperation: SessionsOperation.extendSession,
+          ),
+        );
+
+        Log.i(runtimeType, '🔄 SessionsBloc: State updated with success');
+      },
+    );
+
+    Log.i(runtimeType, '✅ SessionsBloc: ExtendSession event processing completed');
   }
 }

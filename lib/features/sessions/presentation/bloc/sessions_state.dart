@@ -4,7 +4,7 @@ import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 
-enum SessionsOperation { loadSessions, cancelSession, joinSession, scheduleSession, bookSession, loadAvailability }
+enum SessionsOperation { loadSessions, cancelSession, joinSession, scheduleSession, bookSession, loadAvailability, extendSession }
 
 class SessionsState extends Equatable {
   final List<SessionEntity>? upcomingSessions;
@@ -23,6 +23,7 @@ class SessionsState extends Equatable {
   final String? joiningSessionId;
   final bool isProcessingSchedule;
   final bool isProcessingBook;
+  final bool isProcessingExtension;
   final DateTime? selectedDate;
   final String? selectedTimeSlot;
   final SessionAvailabilityEntity? availability;
@@ -49,6 +50,7 @@ class SessionsState extends Equatable {
     this.joiningSessionId,
     this.isProcessingSchedule = false,
     this.isProcessingBook = false,
+    this.isProcessingExtension = false,
     this.selectedDate,
     this.selectedTimeSlot,
     this.availability,
@@ -66,6 +68,14 @@ class SessionsState extends Equatable {
   bool get hasSuccess => successMessage != null;
   bool get isScheduling => selectedDate != null;
   bool get canContinueToPayment => selectedTimeSlot != null;
+  bool get isLoading =>
+      isLoadingSessions ||
+      isProcessingCancel ||
+      isProcessingJoin ||
+      isProcessingSchedule ||
+      isProcessingBook ||
+      isLoadingAvailability ||
+      isProcessingExtension;
 
   List<SessionEntity> get currentSessions {
     if (currentTab == SessionsTab.upcoming) {
@@ -105,6 +115,7 @@ class SessionsState extends Equatable {
     String? joiningSessionId,
     bool? isProcessingSchedule,
     bool? isProcessingBook,
+    bool? isProcessingExtension,
     DateTime? selectedDate,
     String? selectedTimeSlot,
     SessionAvailabilityEntity? availability,
@@ -137,6 +148,7 @@ class SessionsState extends Equatable {
       joiningSessionId: clearJoiningSessionId ? null : (joiningSessionId ?? this.joiningSessionId),
       isProcessingSchedule: isProcessingSchedule ?? this.isProcessingSchedule,
       isProcessingBook: isProcessingBook ?? this.isProcessingBook,
+      isProcessingExtension: isProcessingExtension ?? this.isProcessingExtension,
       selectedDate: selectedDate ?? this.selectedDate,
       selectedTimeSlot: clearTimeSlot ? null : (selectedTimeSlot ?? this.selectedTimeSlot),
       availability: availability ?? this.availability,
@@ -166,6 +178,7 @@ class SessionsState extends Equatable {
     joiningSessionId,
     isProcessingSchedule,
     isProcessingBook,
+    isProcessingExtension,
     selectedDate,
     selectedTimeSlot,
     availability,

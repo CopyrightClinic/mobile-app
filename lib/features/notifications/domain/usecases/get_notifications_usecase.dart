@@ -8,11 +8,12 @@ class GetNotificationsParams extends Equatable {
   final String userId;
   final int page;
   final int limit;
+  final String? timezone;
 
-  const GetNotificationsParams({required this.userId, this.page = 1, this.limit = 20});
+  const GetNotificationsParams({required this.userId, this.page = 1, this.limit = 20, this.timezone});
 
   @override
-  List<Object?> get props => [userId, page, limit];
+  List<Object?> get props => [userId, page, limit, timezone];
 }
 
 class GetNotificationsUseCase implements UseCase<NotificationListResult, GetNotificationsParams> {
@@ -22,6 +23,6 @@ class GetNotificationsUseCase implements UseCase<NotificationListResult, GetNoti
 
   @override
   Future<Either<Failure, NotificationListResult>> call(GetNotificationsParams params) async {
-    return await repository.getNotifications(userId: params.userId, page: params.page, limit: params.limit);
+    return await repository.getNotifications(userId: params.userId, page: params.page, limit: params.limit, timezone: params.timezone);
   }
 }

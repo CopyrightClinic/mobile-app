@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import '../constants/app_strings.dart';
 import '../network/api_service/api_service.dart';
 import '../utils/enumns/ui/zoom_meeting_status.dart';
-import '../utils/logger/logger.dart';
 
 class ZoomService {
   static const MethodChannel _methodChannel = MethodChannel('com.example.zoom');
@@ -38,11 +37,8 @@ class ZoomService {
   Future<String> _fetchJwtFromBackend() async {
     try {
       if (_cachedJwt != null && _jwtFetchTime != null && DateTime.now().difference(_jwtFetchTime!) < _jwtCacheDuration) {
-        Log.d('ZoomService', 'Using cached JWT');
         return _cachedJwt!;
       }
-
-      Log.d('ZoomService', 'Fetching fresh JWT from backend');
 
       final response = await _apiService.getData<Map<String, dynamic>>(endpoint: '/zoom/native-jwt', converter: (json) => json);
 
@@ -53,17 +49,14 @@ class ZoomService {
       _cachedJwt = response['jwt'].toString();
       _jwtFetchTime = DateTime.now();
 
-      Log.d('ZoomService', 'JWT fetched successfully');
       return _cachedJwt!;
     } catch (e) {
-      Log.e('ZoomService', 'Failed to fetch JWT: $e');
       throw Exception('${AppStrings.zoomErrorFetchJwt}: $e');
     }
   }
 
   Future<Map<String, dynamic>> initZoom({bool forceRefresh = false}) async {
     if (_isInitialized && !forceRefresh) {
-      Log.d('ZoomService', 'Already initialized');
       return {'success': true, 'message': 'Already initialized'};
     }
 
@@ -87,7 +80,6 @@ class ZoomService {
         final resultMap = Map<String, dynamic>.from(result);
         if (resultMap['success'] == true) {
           _isInitialized = true;
-          Log.i('ZoomService', 'Zoom SDK initialized successfully');
         }
         return resultMap;
       }
@@ -95,10 +87,7 @@ class ZoomService {
       _isInitialized = true;
       return {'success': true, 'message': 'Initialized'};
     } on PlatformException catch (e) {
-      Log.e('ZoomService', 'Platform exception during init: ${e.code} - ${e.message}');
-
       if (e.code == 'JWT_INVALID' && !forceRefresh) {
-        Log.d('ZoomService', 'JWT invalid, retrying with fresh token');
         _cachedJwt = null;
         _jwtFetchTime = null;
         _isInitializing = false;
@@ -107,7 +96,6 @@ class ZoomService {
 
       rethrow;
     } catch (e) {
-      Log.e('ZoomService', 'Error during init: $e');
       rethrow;
     } finally {
       _isInitializing = false;
@@ -116,7 +104,6 @@ class ZoomService {
 
   Future<Map<String, dynamic>> initZoomWithJwt(String jwt) async {
     if (_isInitialized) {
-      Log.d('ZoomService', 'Already initialized, reinitializing with new JWT');
       _isInitialized = false;
     }
 
@@ -133,18 +120,13 @@ class ZoomService {
         final resultMap = Map<String, dynamic>.from(result);
         if (resultMap['success'] == true) {
           _isInitialized = true;
-          Log.i('ZoomService', 'Zoom SDK initialized successfully with provided JWT');
         }
         return resultMap;
       }
 
       _isInitialized = true;
       return {'success': true, 'message': 'Initialized'};
-    } on PlatformException catch (e) {
-      Log.e('ZoomService', 'Platform exception during init with JWT: ${e.code} - ${e.message}');
-      rethrow;
-    } catch (e) {
-      Log.e('ZoomService', 'Error during init with JWT: $e');
+    } on PlatformException {
       rethrow;
     } finally {
       _isInitializing = false;
@@ -153,7 +135,6 @@ class ZoomService {
 
   Future<Map<String, dynamic>> joinMeeting({required String meetingNumber, required String passcode, required String displayName}) async {
     if (!_isInitialized) {
-      Log.d('ZoomService', 'Not initialized, initializing first');
       await initZoom();
     }
 
@@ -170,10 +151,7 @@ class ZoomService {
 
       return {'success': true, 'message': 'Join request sent'};
     } on PlatformException catch (e) {
-      Log.e('ZoomService', 'Platform exception during join: ${e.code} - ${e.message}');
-
       if (e.code == 'NOT_INITIALIZED') {
-        Log.d('ZoomService', 'SDK not initialized, reinitializing');
         _isInitialized = false;
         await initZoom();
         return await joinMeeting(meetingNumber: meetingNumber, passcode: passcode, displayName: displayName);
@@ -181,7 +159,6 @@ class ZoomService {
 
       rethrow;
     } catch (e) {
-      Log.e('ZoomService', 'Error during join: $e');
       rethrow;
     }
   }
@@ -196,7 +173,6 @@ class ZoomService {
 
       return {'success': true, 'message': 'Left meeting'};
     } catch (e) {
-      Log.e('ZoomService', 'Error during leave: $e');
       rethrow;
     }
   }
@@ -206,7 +182,6 @@ class ZoomService {
       final version = await _methodChannel.invokeMethod('getSdkVersion');
       return version?.toString();
     } catch (e) {
-      Log.e('ZoomService', 'Error getting SDK version: $e');
       return null;
     }
   }
@@ -220,11 +195,10 @@ class ZoomService {
         final status = ZoomMeetingStatus.fromString(statusString);
         final message = event['message']?.toString();
 
-        Log.d('ZoomService', 'Meeting status: $statusString, message: $message');
         onStatusChanged(status, message);
       },
       onError: (error) {
-        Log.e('ZoomService', 'Event stream error: $error');
+        // Silently handle error
       },
     );
   }

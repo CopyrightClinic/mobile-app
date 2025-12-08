@@ -36,6 +36,7 @@ import 'features/sessions/domain/usecases/submit_session_feedback_usecase.dart';
 import 'features/sessions/domain/usecases/unlock_session_summary_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/domain/usecases/book_session_usecase.dart';
+import 'features/sessions/domain/usecases/extend_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
 import 'features/sessions/presentation/bloc/session_details_bloc.dart';
 import 'features/profile/data/datasources/profile_remote_data_source.dart';
@@ -70,6 +71,8 @@ import 'features/notifications/data/repositories/notification_repository_impl.da
 import 'features/notifications/domain/repositories/notification_repository.dart';
 import 'features/notifications/domain/usecases/get_notifications_usecase.dart';
 import 'features/notifications/domain/usecases/mark_all_notifications_as_read_usecase.dart';
+import 'features/notifications/domain/usecases/mark_notification_as_read_usecase.dart';
+import 'features/notifications/domain/usecases/clear_all_notifications_usecase.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'core/services/fcm_service.dart';
 
@@ -152,6 +155,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SubmitSessionFeedbackUseCase(sl()));
   sl.registerLazySingleton(() => UnlockSessionSummaryUseCase(sl()));
   sl.registerLazySingleton(() => BookSessionUseCase(sl()));
+  sl.registerLazySingleton(() => ExtendSessionUseCase(sl()));
   sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
@@ -164,6 +168,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
   sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
   sl.registerLazySingleton(() => MarkAllNotificationsAsReadUseCase(repository: sl()));
+  sl.registerLazySingleton(() => MarkNotificationAsReadUseCase(repository: sl()));
+  sl.registerLazySingleton(() => ClearAllNotificationsUseCase(repository: sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -184,7 +190,13 @@ Future<void> init() async {
 
   // Sessions Bloc
   sl.registerLazySingleton(
-    () => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl(), bookSessionUseCase: sl()),
+    () => SessionsBloc(
+      getUserSessionsUseCase: sl(),
+      cancelSessionUseCase: sl(),
+      getSessionAvailabilityUseCase: sl(),
+      bookSessionUseCase: sl(),
+      extendSessionUseCase: sl(),
+    ),
   );
 
   // Session Details Bloc
@@ -204,7 +216,14 @@ Future<void> init() async {
   // Zoom Bloc
   sl.registerFactory(() => ZoomBloc(zoomService: sl(), getMeetingCredentialsUseCase: sl()));
   // Notification Bloc
-  sl.registerLazySingleton(() => NotificationBloc(getNotificationsUseCase: sl(), markAllNotificationsAsReadUseCase: sl()));
+  sl.registerLazySingleton(
+    () => NotificationBloc(
+      getNotificationsUseCase: sl(),
+      markAllNotificationsAsReadUseCase: sl(),
+      markNotificationAsReadUseCase: sl(),
+      clearAllNotificationsUseCase: sl(),
+    ),
+  );
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

@@ -17,6 +17,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../config/routes/app_routes.dart';
+import '../../profile/presentation/bloc/profile_bloc.dart';
+import '../../profile/presentation/bloc/profile_event.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
@@ -89,6 +91,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
         listener: (context, state) {
           if (state is CompleteProfileSuccess) {
             SnackBarUtils.showSuccess(context, state.message);
+            context.read<ProfileBloc>().add(const GetProfileRequested());
             context.go(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.auth});
           } else if (state is CompleteProfileError) {
             SnackBarUtils.showError(context, state.message);

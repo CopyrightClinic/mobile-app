@@ -3,6 +3,7 @@ import '../../config/theme/app_theme.dart';
 import '../constants/dimensions.dart';
 import '../utils/extensions/responsive_extensions.dart';
 import '../utils/extensions/theme_extensions.dart';
+import '../services/bottom_sheet_service.dart';
 import 'global_image.dart';
 import 'translated_text.dart';
 import 'custom_button.dart';
@@ -182,12 +183,7 @@ class CustomBottomSheet extends StatelessWidget {
     bool isDismissible = true,
     bool enableDrag = true,
   }) {
-    return showModalBottomSheet<T>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      isDismissible: isDismissible,
-      enableDrag: enableDrag,
+    return BottomSheetService.show<T>(
       builder:
           (context) => CustomBottomSheet(
             iconPath: iconPath,
@@ -203,6 +199,10 @@ class CustomBottomSheet extends StatelessWidget {
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
           ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: isDismissible,
+      enableDrag: enableDrag,
     );
   }
 }

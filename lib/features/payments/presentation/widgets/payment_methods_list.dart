@@ -36,15 +36,11 @@ class PaymentMethodsList extends StatelessWidget {
           const Center(child: CircularProgressIndicator())
         else if (paymentMethods.isEmpty)
           _buildEmptyState(context)
-        else
+        else ...[
           Expanded(
             child: ListView.builder(
-              itemCount: paymentMethods.length + (config.showAddButton ? 1 : 0),
+              itemCount: paymentMethods.length,
               itemBuilder: (context, index) {
-                if (config.showAddButton && index == paymentMethods.length) {
-                  return _buildAddPaymentMethodButton2(context);
-                }
-
                 final paymentMethod = paymentMethods[index];
                 final isSelected = selectedPaymentMethodId == paymentMethod.id;
 
@@ -65,6 +61,12 @@ class PaymentMethodsList extends StatelessWidget {
               },
             ),
           ),
+          if (config.showAddButton) ...[
+            SizedBox(height: DimensionConstants.gap16Px.h),
+            _buildAddPaymentMethodButton2(context),
+            SizedBox(height: DimensionConstants.gap16Px.h),
+          ],
+        ],
       ],
     );
   }
@@ -80,6 +82,7 @@ class PaymentMethodsList extends StatelessWidget {
             TranslatedText(
               config.emptyStateMessage ?? AppStrings.noPaymentMethods,
               style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w700),
+              textAlign: TextAlign.center,
             ),
             TranslatedText(
               AppStrings.tapToAdd,

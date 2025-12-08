@@ -118,6 +118,7 @@ class AppStrings {
   static const completeYourProfile = 'completeYourProfile';
   static const fullName = 'fullName';
   static const phoneNumber = 'phoneNumber';
+  static const phone = 'phone';
   static const address = 'address';
   static const enterYourFullName = 'enterYourFullName';
   static const enterYourPhoneNumber = 'enterYourPhoneNumber';
@@ -236,6 +237,7 @@ class AppStrings {
   static const joiningSession = 'joiningSession';
   static const session = 'session';
   static const today = 'today';
+  static const yesterday = 'yesterday';
 
   // Schedule Session Screen
   static const bookSession = 'bookSession';
@@ -474,6 +476,12 @@ class AppStrings {
   static const noNotificationsDescription = 'noNotificationsDescription';
   static const markAllAsRead = 'markAllAsRead';
   static const allNotificationsMarkedAsRead = 'allNotificationsMarkedAsRead';
+  static const clearAll = 'clearAll';
+  static const confirmClearAllNotifications = 'confirmClearAllNotifications';
+  static const confirmClearAllNotificationsDescription = 'confirmClearAllNotificationsDescription';
+  static const failedToMarkAllAsRead = 'failedToMarkAllAsRead';
+  static const failedToClearNotifications = 'failedToClearNotifications';
+  static const unknownError = 'unknownError';
   // Session Details Screen
   static const sessionDetailsTitle = 'sessionDetailsTitle';
   static const yourRatingAndReview = 'yourRatingAndReview';
@@ -519,4 +527,15 @@ class AppStrings {
   static const sessionId = 'sessionId';
   static const pageOf = 'pageOf';
   static const sessionSummaryFilename = 'sessionSummaryFilename';
+
+  static const extendSession = 'extendSession';
+  static const extensionDuration = 'extensionDuration';
+  static const extensionDurationValue = 'extensionDurationValue';
+  static const extensionFee = 'extensionFee';
+  static const extensionFeeDescription = 'extensionFeeDescription';
+  static const extensionNote = 'extensionNote';
+  static const payNow = 'payNow';
+  static const sessionExtendedSuccess = 'sessionExtendedSuccess';
+  static const sessionExtendError = 'sessionExtendError';
+  static const unableToOpenNotification = 'unableToOpenNotification';
 }

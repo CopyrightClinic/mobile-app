@@ -8,6 +8,7 @@ import '../entities/cancel_session_response_entity.dart';
 import '../entities/session_availability_entity.dart';
 import '../entities/book_session_response_entity.dart';
 import '../entities/unlock_summary_response_entity.dart';
+import '../entities/extend_session_response_entity.dart';
 
 abstract class SessionsRepository {
   Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({String? status, String? timezone, int? page, int? limit});
@@ -32,4 +33,5 @@ abstract class SessionsRepository {
     required String paymentMethodId,
     required double summaryFee,
   });
+  Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({required String sessionId, required String paymentMethodId});
 }

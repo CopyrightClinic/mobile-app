@@ -8,4 +8,5 @@ enum SessionsEndpoint {
   BOOK_SESSION, // POST /session-requests/book-session
   SESSION_SUMMARY, // POST /session-summary
   CANCEL_SESSION, // POST /sessions/{sessionId}/cancel
+  EXTEND_SESSION, // POST /sessions/{sessionId}/request-extension
 }
