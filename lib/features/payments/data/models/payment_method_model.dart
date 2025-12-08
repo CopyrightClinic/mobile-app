@@ -30,6 +30,7 @@ class PaymentMethodModel {
   PaymentMethodEntity toEntity() => PaymentMethodEntity(
     id: id,
     customerId: userId,
+    stripePaymentMethodId: stripePaymentMethodId,
     type: paymentMethodDetail.type,
     card: paymentMethodDetail.card.toEntity(),
     createdAt: createdAt,

@@ -1,0 +1,13 @@
+# Flutter Development Rules
+
+## Localization
+- All user-facing strings MUST be localized using the app's localization system
+- Never hardcode strings directly in widgets or UI components
+- Use AppStrings constants or localization keys for all text content
+- Add new strings to the appropriate translation files (e.g., assets/translations/en-US.json)
+- Update AppStrings constants when adding new localized content
+
+## Code Style
+- Never add comments to code
+- Write self-documenting code with clear variable and function names
+- Keep code clean and readable without explanatory comments

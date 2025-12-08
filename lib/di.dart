@@ -31,9 +31,21 @@ import 'features/sessions/data/repositories/sessions_repository_impl.dart';
 import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
+import 'features/sessions/domain/usecases/get_session_details_usecase.dart';
+import 'features/sessions/domain/usecases/submit_session_feedback_usecase.dart';
+import 'features/sessions/domain/usecases/unlock_session_summary_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/domain/usecases/book_session_usecase.dart';
+import 'features/sessions/domain/usecases/extend_session_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
+import 'features/sessions/presentation/bloc/session_details_bloc.dart';
+import 'features/profile/data/datasources/profile_remote_data_source.dart';
+import 'features/profile/data/repositories/profile_repository_impl.dart';
+import 'features/profile/domain/repositories/profile_repository.dart';
+import 'features/profile/domain/usecases/update_profile_usecase.dart';
+import 'features/profile/domain/usecases/change_password_usecase.dart';
+import 'features/profile/domain/usecases/delete_account_usecase.dart';
+import 'features/profile/presentation/bloc/profile_bloc.dart';
 import 'features/speech_to_text/data/datasources/speech_to_text_local_data_source.dart';
 import 'features/speech_to_text/data/repositories/speech_to_text_repository_impl.dart';
 import 'features/speech_to_text/domain/repositories/speech_to_text_repository.dart';
@@ -48,6 +60,21 @@ import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
 import 'features/harold_ai/domain/repositories/harold_repository.dart';
 import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
+import 'core/services/zoom_service.dart';
+import 'features/zoom/data/datasources/zoom_remote_data_source.dart';
+import 'features/zoom/data/repositories/zoom_repository_impl.dart';
+import 'features/zoom/domain/repositories/zoom_repository.dart';
+import 'features/zoom/domain/usecases/get_meeting_credentials_usecase.dart';
+import 'features/zoom/presentation/bloc/zoom_bloc.dart';
+import 'features/notifications/data/datasources/notification_remote_data_source.dart';
+import 'features/notifications/data/repositories/notification_repository_impl.dart';
+import 'features/notifications/domain/repositories/notification_repository.dart';
+import 'features/notifications/domain/usecases/get_notifications_usecase.dart';
+import 'features/notifications/domain/usecases/mark_all_notifications_as_read_usecase.dart';
+import 'features/notifications/domain/usecases/mark_notification_as_read_usecase.dart';
+import 'features/notifications/domain/usecases/clear_all_notifications_usecase.dart';
+import 'features/notifications/presentation/bloc/notification_bloc.dart';
+import 'core/services/fcm_service.dart';
 
 final sl = GetIt.instance;
 
@@ -78,19 +105,38 @@ Future<void> init() async {
   /// Register API Service as a singleton
   sl.registerLazySingleton<ApiService>(() => ApiService(sl<DioService>()));
 
+  /// Register Zoom Service as a singleton
+  sl.registerLazySingleton(() => ZoomService(sl<ApiService>()));
+
+  // Zoom Data Sources
+  sl.registerLazySingleton<ZoomRemoteDataSource>(() => ZoomRemoteDataSourceImpl(apiService: sl()));
+
+  // Zoom Repository
+  sl.registerLazySingleton<ZoomRepository>(() => ZoomRepositoryImpl(remoteDataSource: sl()));
+
+  // Zoom Use Cases
+  sl.registerLazySingleton(() => GetMeetingCredentialsUseCase(sl()));
+
+  /// Register FCM Service as a singleton
+  sl.registerLazySingleton<FCMService>(() => FCMService(remoteDataSource: sl()));
+
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>(), dioService: sl<DioService>()));
+  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(apiService: sl<ApiService>()));
   sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
   sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(apiService: sl<ApiService>()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SessionsRepository>(() => SessionsRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<SpeechToTextRepository>(() => SpeechToTextRepositoryImpl(localDataSource: sl()));
   sl.registerLazySingleton<HaroldRepository>(() => HaroldRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(remoteDataSource: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -105,7 +151,11 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => GetSessionDetailsUseCase(sl()));
+  sl.registerLazySingleton(() => SubmitSessionFeedbackUseCase(sl()));
+  sl.registerLazySingleton(() => UnlockSessionSummaryUseCase(sl()));
   sl.registerLazySingleton(() => BookSessionUseCase(sl()));
+  sl.registerLazySingleton(() => ExtendSessionUseCase(sl()));
   sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
@@ -113,6 +163,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
+  sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
+  sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
+  sl.registerLazySingleton(() => MarkAllNotificationsAsReadUseCase(repository: sl()));
+  sl.registerLazySingleton(() => MarkNotificationAsReadUseCase(repository: sl()));
+  sl.registerLazySingleton(() => ClearAllNotificationsUseCase(repository: sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -133,8 +190,17 @@ Future<void> init() async {
 
   // Sessions Bloc
   sl.registerLazySingleton(
-    () => SessionsBloc(getUserSessionsUseCase: sl(), cancelSessionUseCase: sl(), getSessionAvailabilityUseCase: sl(), bookSessionUseCase: sl()),
+    () => SessionsBloc(
+      getUserSessionsUseCase: sl(),
+      cancelSessionUseCase: sl(),
+      getSessionAvailabilityUseCase: sl(),
+      bookSessionUseCase: sl(),
+      extendSessionUseCase: sl(),
+    ),
   );
+
+  // Session Details Bloc
+  sl.registerFactory(() => SessionDetailsBloc(getSessionDetailsUseCase: sl(), submitSessionFeedbackUseCase: sl(), unlockSessionSummaryUseCase: sl()));
 
   // Speech to Text Bloc
   sl.registerFactory(
@@ -143,6 +209,21 @@ Future<void> init() async {
 
   // Harold AI Bloc
   sl.registerLazySingleton(() => HaroldAiBloc(evaluateQueryUseCase: sl()));
+
+  // Profile Bloc
+  sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
+
+  // Zoom Bloc
+  sl.registerFactory(() => ZoomBloc(zoomService: sl(), getMeetingCredentialsUseCase: sl()));
+  // Notification Bloc
+  sl.registerLazySingleton(
+    () => NotificationBloc(
+      getNotificationsUseCase: sl(),
+      markAllNotificationsAsReadUseCase: sl(),
+      markNotificationAsReadUseCase: sl(),
+      clearAllNotificationsUseCase: sl(),
+    ),
+  );
 
   // Cubit
   sl.registerFactory(() => ResendOtpCubit());

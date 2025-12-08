@@ -9,12 +9,11 @@ abstract class HaroldAiEvent extends Equatable {
 
 class SubmitHaroldQuery extends HaroldAiEvent {
   final String query;
-  final bool isUserAuthenticated;
 
-  const SubmitHaroldQuery({required this.query, required this.isUserAuthenticated});
+  const SubmitHaroldQuery({required this.query});
 
   @override
-  List<Object> get props => [query, isUserAuthenticated];
+  List<Object> get props => [query];
 }
 
 class ResetHaroldState extends HaroldAiEvent {

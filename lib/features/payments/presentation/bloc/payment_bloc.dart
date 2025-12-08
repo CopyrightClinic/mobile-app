@@ -58,7 +58,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   Future<void> _onDeletePaymentMethodRequested(DeletePaymentMethodRequested event, Emitter<PaymentState> emit) async {
     emit(const PaymentLoading());
 
-    final result = await deletePaymentMethodUseCase(DeletePaymentMethodParams(paymentMethodId: event.paymentMethodId));
+    final result = await deletePaymentMethodUseCase(DeletePaymentMethodParams(stripePaymentMethodId: event.paymentMethodId));
 
     result.fold(
       (failure) => emit(PaymentError(failure.message ?? AppStrings.failedToDeletePaymentMethod)),

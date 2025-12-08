@@ -40,13 +40,16 @@ class WhatWeDoScreen extends StatelessWidget {
                 ),
                 SizedBox(height: DimensionConstants.gap20Px.h),
                 Expanded(
-                  child: ListView.separated(
-                    itemCount: 5,
-                    padding: EdgeInsets.zero,
-                    separatorBuilder: (context, index) => SizedBox(height: DimensionConstants.gap6Px.h),
-                    itemBuilder: (context, index) {
-                      return _buildServiceCardByIndex(index);
-                    },
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        for (int index = 0; index < 5; index++) ...[
+                          _buildServiceCardByIndex(index),
+                          if (index < 4) SizedBox(height: DimensionConstants.gap6Px.h),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -95,10 +98,10 @@ class WhatWeDoScreen extends StatelessWidget {
                   Container(
                     width: DimensionConstants.gap48Px.w,
                     height: DimensionConstants.gap48Px.h,
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(24.r)),
+                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), shape: BoxShape.circle),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(24.r),
-                      child: GlobalImage(assetPath: imagePath, width: 48.w, height: 48.w, fit: BoxFit.cover, showLoading: false, showError: false),
+                      child: GlobalImage(assetPath: imagePath, width: 48.w, height: 48.w, fit: BoxFit.fill, showLoading: false, showError: false),
                     ),
                   ),
                   SizedBox(width: DimensionConstants.gap16Px.w),

@@ -38,12 +38,10 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
-  Future<Either<Failure, String>> deletePaymentMethod(String paymentMethodId) async {
+  Future<Either<Failure, String>> deletePaymentMethod(String stripePaymentMethodId) async {
     try {
-      // TODO: Implement delete payment method API call
-      // For now, return a mock success response
-      await Future.delayed(const Duration(seconds: 1));
-      return const Right(AppStrings.paymentMethodDeletedSuccessfully);
+      final message = await remoteDataSource.deletePaymentMethod(stripePaymentMethodId);
+      return Right(message);
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {

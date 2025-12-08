@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class DimensionConstants {
   // FontSize
   static const double font2Px = 2.0;

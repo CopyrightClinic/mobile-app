@@ -1,20 +1,29 @@
-import 'package:dio/dio.dart';
 import '../../../../core/network/api_service/api_service.dart';
-import '../../../../core/network/dio_service.dart';
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/utils/typedefs/type_defs.dart';
+import '../../../../core/network/endpoints/api_endpoints.dart';
+import '../../../../core/utils/enumns/api/sessions_enums.dart';
 import '../models/session_model.dart';
+import '../models/session_details_model.dart';
 import '../models/session_availability_model.dart';
 import '../models/book_session_request_model.dart';
 import '../models/book_session_response_model.dart';
+import '../models/submit_feedback_request_model.dart';
+import '../models/submit_feedback_response_model.dart';
+import '../models/paginated_sessions_model.dart';
+import '../models/unlock_summary_request_model.dart';
+import '../models/unlock_summary_response_model.dart';
+import '../models/cancel_session_response_model.dart';
+import '../models/extend_session_request_model.dart';
+import '../models/extend_session_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
-  Future<List<SessionModel>> getUserSessions();
+  Future<PaginatedSessionsModel> getUserSessions({String? status, String? timezone, int? page, int? limit});
   Future<List<SessionModel>> getUpcomingSessions();
   Future<List<SessionModel>> getCompletedSessions();
   Future<SessionModel> getSessionById(String sessionId);
-  Future<String> cancelSession(String sessionId, String reason);
+  Future<SessionDetailsModel> getSessionDetails({required String sessionId, String? timezone});
+  Future<SubmitFeedbackResponseModel> submitSessionFeedback({required String sessionId, required double rating, String? review});
+  Future<CancelSessionResponseModel> cancelSession(String sessionId, String reason);
   Future<SessionModel> joinSession(String sessionId);
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone);
   Future<BookSessionResponseModel> bookSession({
@@ -25,18 +34,31 @@ abstract class SessionsRemoteDataSource {
     required String summary,
     required String timezone,
   });
+  Future<UnlockSummaryResponseModel> unlockSessionSummary({required String sessionId, required String paymentMethodId, required double summaryFee});
+  Future<ExtendSessionResponseModel> extendSession({required String sessionId, required String paymentMethodId});
 }
 
 class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   final ApiService apiService;
-  final DioService dioService;
 
-  SessionsRemoteDataSourceImpl({required this.apiService, required this.dioService});
+  SessionsRemoteDataSourceImpl({required this.apiService});
 
   @override
-  Future<List<SessionModel>> getUserSessions() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return SessionsMockDataSource.getMockSessions();
+  Future<PaginatedSessionsModel> getUserSessions({String? status, String? timezone, int? page, int? limit}) async {
+    final Map<String, dynamic> queryParams = {};
+    if (status != null) queryParams['status'] = status;
+    if (page != null) queryParams['page'] = page.toString();
+    if (limit != null) queryParams['limit'] = limit.toString();
+
+    final Map<String, dynamic> headers = {};
+    if (timezone != null) headers['timezone'] = timezone;
+
+    return await apiService.getData<PaginatedSessionsModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.USER_SESSIONS),
+      queryParams: queryParams.isNotEmpty ? queryParams : null,
+      headers: headers.isNotEmpty ? headers : null,
+      converter: (json) => PaginatedSessionsModel.fromJson(json),
+    );
   }
 
   @override
@@ -62,9 +84,38 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   }
 
   @override
-  Future<String> cancelSession(String sessionId, String reason) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return AppStrings.sessionCancelledSuccessfully;
+  Future<SessionDetailsModel> getSessionDetails({required String sessionId, String? timezone}) async {
+    final Map<String, dynamic> queryParams = {'sessionId': sessionId};
+    final Map<String, dynamic> headers = {};
+    if (timezone != null) headers['timezone'] = timezone;
+
+    return await apiService.getData<SessionDetailsModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSION_DETAILS),
+      queryParams: queryParams,
+      headers: headers.isNotEmpty ? headers : null,
+      converter: (json) => SessionDetailsModel.fromJson(json),
+    );
+  }
+
+  @override
+  Future<SubmitFeedbackResponseModel> submitSessionFeedback({required String sessionId, required double rating, String? review}) async {
+    final request = SubmitFeedbackRequestModel(rating: rating, review: review);
+    final endpoint = '${ApiEndpoint.sessions(SessionsEndpoint.SESSION_FEEDBACK)}?sessionId=$sessionId';
+
+    return await apiService.patchData<SubmitFeedbackResponseModel>(
+      endpoint: endpoint,
+      data: request.toJson(),
+      converter: (response) => SubmitFeedbackResponseModel.fromJson(response.data),
+    );
+  }
+
+  @override
+  Future<CancelSessionResponseModel> cancelSession(String sessionId, String reason) async {
+    return await apiService.postData<CancelSessionResponseModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.CANCEL_SESSION, sessionId: sessionId),
+      data: {},
+      converter: (json) => CancelSessionResponseModel.fromJson(json.data),
+    );
   }
 
   @override
@@ -78,7 +129,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   @override
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone) async {
     return await apiService.getData<SessionAvailabilityModel>(
-      endpoint: '/sessions-availability',
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSIONS_AVAILABILITY),
       headers: {'Timezone': timezone},
       converter: (json) => SessionAvailabilityModel.fromJson(json),
     );
@@ -99,16 +150,38 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       slot: BookSessionSlotModel(start: startTime, end: endTime),
       summary: summary,
     );
-    try {
-      final response = await dioService.post<JSON>(
-        endpoint: '/session-requests/book-session',
-        data: request.toJson(),
-        options: Options(headers: {'timezone': timezone}, extra: {'requiresAuthToken': true}),
-      );
+    return await apiService.postData<BookSessionResponseModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.BOOK_SESSION),
+      headers: {'Timezone': timezone},
+      data: request.toJson(),
+      converter: (json) => BookSessionResponseModel.fromJson(json.data),
+    );
+  }
 
-      return BookSessionResponseModel.fromJson(response.data);
-    } catch (e) {
-      rethrow;
-    }
+  @override
+  Future<UnlockSummaryResponseModel> unlockSessionSummary({
+    required String sessionId,
+    required String paymentMethodId,
+    required double summaryFee,
+  }) async {
+    final request = UnlockSummaryRequestModel(sessionId: sessionId, paymentMethodId: paymentMethodId, summaryFee: summaryFee);
+
+    return await apiService.postData<UnlockSummaryResponseModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.SESSION_SUMMARY),
+      data: request.toJson(),
+      converter: (json) => UnlockSummaryResponseModel.fromJson(json.data),
+    );
+  }
+
+  @override
+  Future<ExtendSessionResponseModel> extendSession({required String sessionId, required String paymentMethodId}) async {
+    final request = ExtendSessionRequestModel(paymentMethodId: paymentMethodId);
+    final endpoint = ApiEndpoint.sessions(SessionsEndpoint.EXTEND_SESSION, sessionId: sessionId);
+
+    return await apiService.postData<ExtendSessionResponseModel>(
+      endpoint: endpoint,
+      data: request.toJson(),
+      converter: (json) => ExtendSessionResponseModel.fromJson(json.data),
+    );
   }
 }
