@@ -80,3 +80,38 @@
 -keep class io.flutter.**  { *; }
 -keep class io.flutter.plugins.**  { *; }
 -keep class io.flutter.embedding.** { *; }
+
+# Zoom SDK rules
+-keep class us.zoom.** { *; }
+-keep class com.zipow.** { *; }
+-keep class us.zipow.** { *; }
+-keep class org.webrtc.** { *; }
+-dontwarn us.zoom.**
+-dontwarn com.zipow.**
+-dontwarn us.zipow.**
+
+# Jetpack Compose rules (required by Zoom SDK)
+-keep class androidx.compose.** { *; }
+-keep interface androidx.compose.** { *; }
+-keep enum androidx.compose.** { *; }
+-keepclassmembers class androidx.compose.** { *; }
+-keepclasseswithmembers class androidx.compose.** { *; }
+-dontwarn androidx.compose.**
+
+# Specific Compose UI modules
+-keep class androidx.compose.ui.input.** { *; }
+-keep interface androidx.compose.ui.input.** { *; }
+-keep class androidx.compose.ui.input.pointer.** { *; }
+-keep interface androidx.compose.ui.input.pointer.** { *; }
+
+# Coil image loading (required by Zoom SDK)
+-keep class coil.** { *; }
+-keep interface coil.** { *; }
+-keepclassmembers class coil.** { *; }
+-dontwarn coil.**
+
+# Kotlin metadata and reflection (required by Compose)
+-keep class kotlin.Metadata { *; }
+-keepclassmembers class kotlin.Metadata { *; }
+-keep class kotlin.reflect.** { *; }
+-dontwarn kotlin.reflect.**

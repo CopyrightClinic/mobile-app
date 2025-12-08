@@ -8,13 +8,14 @@ import '../models/book_session_request_model.dart';
 import '../models/book_session_response_model.dart';
 import '../models/submit_feedback_request_model.dart';
 import '../models/submit_feedback_response_model.dart';
+import '../models/paginated_sessions_model.dart';
 import '../models/unlock_summary_request_model.dart';
 import '../models/unlock_summary_response_model.dart';
 import '../models/cancel_session_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
-  Future<List<SessionModel>> getUserSessions({String? status, String? timezone});
+  Future<PaginatedSessionsModel> getUserSessions({String? status, String? timezone, int? page, int? limit});
   Future<List<SessionModel>> getUpcomingSessions();
   Future<List<SessionModel>> getCompletedSessions();
   Future<SessionModel> getSessionById(String sessionId);
@@ -40,18 +41,20 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   SessionsRemoteDataSourceImpl({required this.apiService});
 
   @override
-  Future<List<SessionModel>> getUserSessions({String? status, String? timezone}) async {
+  Future<PaginatedSessionsModel> getUserSessions({String? status, String? timezone, int? page, int? limit}) async {
     final Map<String, dynamic> queryParams = {};
     if (status != null) queryParams['status'] = status;
+    if (page != null) queryParams['page'] = page.toString();
+    if (limit != null) queryParams['limit'] = limit.toString();
 
     final Map<String, dynamic> headers = {};
     if (timezone != null) headers['timezone'] = timezone;
 
-    return await apiService.getCollectionData<SessionModel>(
+    return await apiService.getData<PaginatedSessionsModel>(
       endpoint: ApiEndpoint.sessions(SessionsEndpoint.USER_SESSIONS),
       queryParams: queryParams.isNotEmpty ? queryParams : null,
       headers: headers.isNotEmpty ? headers : null,
-      converter: (json) => SessionModel.fromJson(json),
+      converter: (json) => PaginatedSessionsModel.fromJson(json),
     );
   }
 

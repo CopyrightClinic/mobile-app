@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
+import 'session_availability_entity.dart';
 
 class AttorneyEntity extends Equatable {
   final String id;
@@ -25,6 +26,7 @@ class SessionEntity extends Equatable {
   final String? cancelTime;
   final bool? cancelTimeExpired;
   final AttorneyEntity attorney;
+  final SessionFeeEntity? sessionFee;
   final DateTime createdAt;
   final DateTime updatedAt;
   final double? holdAmount;
@@ -43,6 +45,7 @@ class SessionEntity extends Equatable {
     this.cancelTime,
     this.cancelTimeExpired,
     required this.attorney,
+    this.sessionFee,
     required this.createdAt,
     required this.updatedAt,
     this.holdAmount,
@@ -63,6 +66,7 @@ class SessionEntity extends Equatable {
     cancelTime,
     cancelTimeExpired,
     attorney,
+    sessionFee,
     createdAt,
     updatedAt,
     holdAmount,

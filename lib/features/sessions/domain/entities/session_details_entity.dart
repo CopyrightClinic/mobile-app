@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
 import '../../../../core/utils/enumns/ui/summary_approval_status.dart';
+import 'session_availability_entity.dart';
 
 class SessionDetailsAttorneyEntity extends Equatable {
   final String id;
@@ -8,7 +9,7 @@ class SessionDetailsAttorneyEntity extends Equatable {
   final String email;
   final String? profileUrl;
 
-  const SessionDetailsAttorneyEntity({required this.id, required this.name, required this.email, this.profileUrl});
+  const SessionDetailsAttorneyEntity({required this.id, this.name, required this.email, this.profileUrl});
 
   @override
   List<Object?> get props => [id, name, email, profileUrl];
@@ -53,6 +54,7 @@ class SessionDetailsEntity extends Equatable {
   final SessionDetailsAttorneyEntity attorney;
   final SessionDetailsUserEntity user;
   final SessionRequestEntity sessionRequest;
+  final SessionFeeEntity? sessionFee;
   final DateTime createdAt;
   final DateTime updatedAt;
   final double? holdAmount;
@@ -76,6 +78,7 @@ class SessionDetailsEntity extends Equatable {
     required this.attorney,
     required this.user,
     required this.sessionRequest,
+    this.sessionFee,
     required this.createdAt,
     required this.updatedAt,
     this.holdAmount,
@@ -101,6 +104,7 @@ class SessionDetailsEntity extends Equatable {
     attorney,
     user,
     sessionRequest,
+    sessionFee,
     createdAt,
     updatedAt,
     holdAmount,

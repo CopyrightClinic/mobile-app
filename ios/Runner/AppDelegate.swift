@@ -17,6 +17,8 @@ import UIKit
   private var lastRecognitionResult: String = ""
   private var accumulatedRecognitionResult: String = ""
 
+  private var zoomBridge: ZoomBridge?
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -26,6 +28,7 @@ import UIKit
     GeneratedPluginRegistrant.register(with: self)
 
     let controller = window?.rootViewController as! FlutterViewController
+
     let speechChannel = FlutterMethodChannel(
       name: "com.example.speech", binaryMessenger: controller.binaryMessenger)
 
@@ -41,6 +44,17 @@ import UIKit
       }
     }
 
+    let zoomMethodChannel = FlutterMethodChannel(
+      name: "com.example.zoom", binaryMessenger: controller.binaryMessenger)
+    let zoomEventChannel = FlutterEventChannel(
+      name: "com.example.zoom/events", binaryMessenger: controller.binaryMessenger)
+
+    zoomBridge = ZoomBridge(methodChannel: zoomMethodChannel, eventChannel: zoomEventChannel)
+
+    zoomMethodChannel.setMethodCallHandler {
+      [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
+      self?.zoomBridge?.handleMethodCall(call, result: result)
+    }
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self
     }

@@ -33,6 +33,12 @@ SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
   cancelTime: json['cancelTime'] as String?,
   cancelTimeExpired: json['cancelTimeExpired'] as bool?,
   attorney: AttorneyModel.fromJson(json['attorney'] as Map<String, dynamic>),
+  sessionFee:
+      json['session_fee'] == null
+          ? null
+          : SessionFeeModel.fromJson(
+            json['session_fee'] as Map<String, dynamic>,
+          ),
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
@@ -51,6 +57,7 @@ Map<String, dynamic> _$SessionModelToJson(SessionModel instance) =>
       'cancelTime': instance.cancelTime,
       'cancelTimeExpired': instance.cancelTimeExpired,
       'attorney': instance.attorney,
+      'session_fee': instance.sessionFee,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };
