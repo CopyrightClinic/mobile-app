@@ -186,6 +186,34 @@ class ZoomService {
     }
   }
 
+  Future<Map<String, dynamic>> minimizeMeeting() async {
+    try {
+      final result = await _methodChannel.invokeMethod('minimizeMeeting');
+
+      if (result is Map) {
+        return Map<String, dynamic>.from(result);
+      }
+
+      return {'success': true, 'message': 'Meeting minimized'};
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> showMeeting() async {
+    try {
+      final result = await _methodChannel.invokeMethod('showMeeting');
+
+      if (result is Map) {
+        return Map<String, dynamic>.from(result);
+      }
+
+      return {'success': true, 'message': 'Meeting shown'};
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void listenToMeetingEvents({required Function(ZoomMeetingStatus status, String? message) onStatusChanged}) {
     _eventSubscription?.cancel();
 

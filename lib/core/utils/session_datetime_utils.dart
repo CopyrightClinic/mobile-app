@@ -138,6 +138,43 @@ class SessionDateTimeUtils {
     final endTime = _formatTime(date.add(const Duration(minutes: sessionDurationMinutes)));
     return '$startTime ${AppStrings.to.tr()} $endTime';
   }
+
+  static DateTime parseUtcDateTime(String date, String time) {
+    return DateTime.parse('${date}T${time}Z');
+  }
+
+  static String formatNotificationDateTime(String utcDate, String utcTime) {
+    try {
+      final utcDateTime = parseUtcDateTime(utcDate, utcTime);
+      final localDateTime = utcDateTime.toLocal();
+
+      final dateFormat = DateFormat('yyyy-MM-dd');
+      final timeFormat = DateFormat('hh:mm a');
+
+      final formattedDate = dateFormat.format(localDateTime);
+      final formattedTime = timeFormat.format(localDateTime);
+
+      return '$formattedDate at $formattedTime';
+    } catch (e) {
+      return '$utcDate at $utcTime';
+    }
+  }
+
+  static String convertNotificationBodyToLocalTime(String originalBody, String utcDate, String utcTime) {
+    try {
+      final formattedDateTime = formatNotificationDateTime(utcDate, utcTime);
+
+      final localizedBody = originalBody.replaceAllMapped(RegExp(r'\d{4}-\d{2}-\d{2}\s+at\s+\d{2}:\d{2}:\d{2}'), (match) => formattedDateTime);
+
+      if (localizedBody == originalBody) {
+        return 'Session Booked Successfully $formattedDateTime';
+      }
+
+      return localizedBody;
+    } catch (e) {
+      return originalBody;
+    }
+  }
 }
 
 class TimeSlotParsed {

@@ -55,43 +55,18 @@ class _SignUpScreenState extends State<SignUpScreen> with Validator {
     }
   }
 
-  String _formatApiMessage(String message) {
-    if (message.toLowerCase().contains('successful')) {
-      return '🎉 $message';
-    } else if (message.toLowerCase().contains('welcome')) {
-      return '👋 $message';
-    } else if (message.toLowerCase().contains('created')) {
-      return '✅ $message';
-    }
-    return message;
-  }
-
-  String _formatErrorMessage(String message) {
-    if (message.toLowerCase().contains('invalid')) {
-      return '❌ $message';
-    } else if (message.toLowerCase().contains('required')) {
-      return '⚠️ $message';
-    } else if (message.toLowerCase().contains('already exists')) {
-      return '🚫 $message';
-    } else if (message.toLowerCase().contains('network') || message.toLowerCase().contains('connection')) {
-      return '🌐 $message';
-    }
-    return message;
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is SendEmailVerificationSuccess) {
-          final message = _formatApiMessage(state.message);
-          SnackBarUtils.showSuccess(context, message);
+          SnackBarUtils.showSuccess(context, state.message);
           context.push(
             AppRoutes.verifyCodeRouteName,
             extra: {'email': _emailController.text.trim(), 'verificationType': VerificationType.emailVerification},
           );
         } else if (state is SendEmailVerificationError) {
-          SnackBarUtils.showError(context, _formatErrorMessage(state.message));
+          SnackBarUtils.showError(context, state.message);
         }
       },
       child: CustomScaffold(

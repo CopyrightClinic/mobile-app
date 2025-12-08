@@ -86,6 +86,12 @@ class ZoomBridge(
                     result.error("ERROR", "Failed to get SDK version: ${e.message}", null)
                 }
             }
+            "minimizeMeeting" -> {
+                minimizeMeeting(result)
+            }
+            "showMeeting" -> {
+                showMeeting(result)
+            }
             else -> {
                 result.notImplemented()
             }
@@ -447,6 +453,62 @@ class ZoomBridge(
             MeetingError.MEETING_ERROR_EXIT_WHEN_WAITING_HOST_START ->
                     "Exited while waiting for host"
             else -> "Meeting error code: $errorCode"
+        }
+    }
+
+    private fun minimizeMeeting(result: MethodChannel.Result) {
+        try {
+            val meetingService = zoomSDK.meetingService
+            if (meetingService == null) {
+                result.error("NO_SERVICE", "Meeting service unavailable", null)
+                return
+            }
+
+            val meetingStatus = meetingService.meetingStatus
+            if (meetingStatus == null || meetingStatus == MeetingStatus.MEETING_STATUS_IDLE) {
+                result.error("NOT_IN_MEETING", "Not currently in a meeting", null)
+                return
+            }
+
+            Log.d(TAG, "Minimizing meeting - bringing Flutter app to front")
+            val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            if (intent != null) {
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                context.startActivity(intent)
+                result.success(mapOf("success" to true, "message" to "Meeting minimized"))
+            } else {
+                result.error("ERROR", "Could not get launch intent", null)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error minimizing meeting: ${e.message}", e)
+            result.error("ERROR", "Failed to minimize meeting: ${e.message}", null)
+        }
+    }
+
+    private fun showMeeting(result: MethodChannel.Result) {
+        try {
+            val meetingService = zoomSDK.meetingService
+            if (meetingService == null) {
+                result.error("NO_SERVICE", "Meeting service unavailable", null)
+                return
+            }
+
+            val meetingStatus = meetingService.meetingStatus
+            if (meetingStatus == null || meetingStatus == MeetingStatus.MEETING_STATUS_IDLE) {
+                result.error("NOT_IN_MEETING", "Not currently in a meeting", null)
+                return
+            }
+
+            Log.d(TAG, "Showing meeting - moving app to background to reveal Zoom")
+            if (context is android.app.Activity) {
+                (context as android.app.Activity).moveTaskToBack(true)
+                result.success(mapOf("success" to true, "message" to "Meeting view shown"))
+            } else {
+                result.error("ERROR", "Context is not an Activity", null)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error showing meeting: ${e.message}", e)
+            result.error("ERROR", "Failed to show meeting: ${e.message}", null)
         }
     }
 }

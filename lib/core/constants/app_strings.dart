@@ -275,6 +275,7 @@ class AppStrings {
   static const pleaseSignUpOrLogInToViewIt = 'pleaseSignUpOrLogInToViewIt';
   static const haroldCanConnectYou = 'haroldCanConnectYou';
   static const haroldConsultationDescription = 'haroldConsultationDescription';
+  static const haroldConsultationDescriptionDynamic = 'haroldConsultationDescriptionDynamic';
   static const scheduleAppointment = 'scheduleAppointment';
   static const yourMatterFallsOutsideScope = 'yourMatterFallsOutsideScope';
   static const goToHome = 'goToHome';

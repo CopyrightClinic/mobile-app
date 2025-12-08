@@ -46,10 +46,19 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
 
   @override
   void dispose() {
+    _clearPendingResultIfLoggedOut();
     _textController.dispose();
     _animationController.dispose();
     _isListeningNotifier.dispose();
     super.dispose();
+  }
+
+  Future<void> _clearPendingResultIfLoggedOut() async {
+    final isAuthenticated = await HaroldNavigationService.isUserAuthenticated();
+    if (!isAuthenticated) {
+      final service = HaroldNavigationService();
+      service.getPendingResultAndQuery();
+    }
   }
 
   bool _isValidInput() {
@@ -124,6 +133,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
             isSuccess: true,
             isUserAuthenticated: state.isUserAuthenticated,
             query: state.query,
+            fee: state.fee,
           );
         } else if (state is HaroldAiFailure) {
           HaroldNavigationService.handleHaroldResult(
@@ -197,7 +207,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                     fontWeight: FontWeight.w400,
                   ),
                   decoration: InputDecoration(
-                    hintText: AppStrings.describe,
+                    hintText: AppStrings.describe.tr(),
                     hintStyle: TextStyle(
                       color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
                       fontSize: DimensionConstants.font16Px.f,
@@ -300,7 +310,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   void _onSubmit() {
     if (_isValidInput()) {
       FocusScope.of(context).unfocus();
-      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim(), isUserAuthenticated: false));
+      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim()));
     }
   }
 }

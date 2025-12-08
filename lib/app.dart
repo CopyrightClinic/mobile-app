@@ -57,10 +57,10 @@ class _MyAppState extends State<MyApp> {
             builder: (context, theme) {
               return KeyboardDismissWrapper(
                 child: MaterialApp.router(
-                  themeMode: theme.themeMode,
+                  themeMode: ThemeMode.dark,
                   debugShowCheckedModeBanner: false,
                   title: tr(AppStrings.appName),
-                  theme: AppTheme().light,
+                  theme: AppTheme().dark,
                   darkTheme: AppTheme().dark,
                   routerConfig: AppRouter.router,
                   locale: context.locale,

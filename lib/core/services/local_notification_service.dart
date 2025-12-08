@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
+import '../utils/session_datetime_utils.dart';
 import 'push_notification_handler.dart';
 
 class LocalNotificationService {
@@ -74,7 +75,10 @@ class LocalNotificationService {
       final notificationType = _getNotificationType(data);
       Log.i(runtimeType, '🔔 Notification Type: ${notificationType?.toApiString() ?? "Unknown"}');
       Log.i(runtimeType, '🔔 Title: ${notification.title}');
-      Log.i(runtimeType, '🔔 Body: ${notification.body}');
+      Log.i(runtimeType, '🔔 Body (Original): ${notification.body}');
+
+      final localizedBody = await _getLocalizedNotificationBody(notification.body, data, notificationType);
+      Log.i(runtimeType, '🔔 Body (Localized): $localizedBody');
 
       final androidDetails = _getAndroidNotificationDetails(notificationType);
       final iosDetails = _getIOSNotificationDetails(notificationType);
@@ -86,7 +90,7 @@ class LocalNotificationService {
       await _flutterLocalNotificationsPlugin.show(
         message.hashCode,
         notification.title ?? 'Copyright Clinic',
-        notification.body,
+        localizedBody,
         NotificationDetails(android: androidDetails, iOS: iosDetails),
         payload: jsonEncode(data),
       );
@@ -200,5 +204,46 @@ class LocalNotificationService {
   Future<int?> getActiveNotificationCount() async {
     final activeNotifications = await _flutterLocalNotificationsPlugin.getActiveNotifications();
     return activeNotifications.length;
+  }
+
+  Future<String> _getLocalizedNotificationBody(String? originalBody, Map<String, dynamic> data, PushNotificationType? notificationType) async {
+    if (originalBody == null || originalBody.isEmpty) {
+      return '';
+    }
+
+    if (notificationType != PushNotificationType.sessionAccepted) {
+      Log.i(runtimeType, '⚠️ Notification type is not SESSION_ACCEPTED, skipping datetime conversion');
+      return originalBody;
+    }
+
+    try {
+      final scheduledDate = data['scheduledDate'] as String?;
+      final startTime = data['startTime'] as String?;
+
+      if (scheduledDate == null || startTime == null) {
+        Log.i(runtimeType, '⚠️ No scheduledDate or startTime in data, using original body');
+        return originalBody;
+      }
+
+      Log.i(runtimeType, '🕐 Converting UTC time to local timezone for SESSION_ACCEPTED');
+      Log.i(runtimeType, '🕐 UTC Date: $scheduledDate');
+      Log.i(runtimeType, '🕐 UTC Time: $startTime');
+
+      final utcDateTime = SessionDateTimeUtils.parseUtcDateTime(scheduledDate, startTime);
+      Log.i(runtimeType, '🕐 Parsed UTC DateTime: $utcDateTime');
+
+      final localDateTime = utcDateTime.toLocal();
+      Log.i(runtimeType, '🕐 Local DateTime: $localDateTime');
+
+      final localizedBody = SessionDateTimeUtils.convertNotificationBodyToLocalTime(originalBody, scheduledDate, startTime);
+
+      Log.i(runtimeType, '🕐 Localized notification body created');
+
+      return localizedBody;
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Error converting time to local timezone: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+      return originalBody;
+    }
   }
 }
