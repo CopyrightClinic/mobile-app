@@ -11,15 +11,15 @@ class DeletePaymentMethodUseCase implements UseCase<String, DeletePaymentMethodP
 
   @override
   Future<Either<Failure, String>> call(DeletePaymentMethodParams params) async {
-    return await repository.deletePaymentMethod(params.paymentMethodId);
+    return await repository.deletePaymentMethod(params.stripePaymentMethodId);
   }
 }
 
 class DeletePaymentMethodParams extends Equatable {
-  final String paymentMethodId;
+  final String stripePaymentMethodId;
 
-  const DeletePaymentMethodParams({required this.paymentMethodId});
+  const DeletePaymentMethodParams({required this.stripePaymentMethodId});
 
   @override
-  List<Object> get props => [paymentMethodId];
+  List<Object> get props => [stripePaymentMethodId];
 }

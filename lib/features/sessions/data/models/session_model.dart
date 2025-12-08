@@ -1,71 +1,143 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../../../core/utils/enumns/ui/session_status.dart';
 import '../../domain/entities/session_entity.dart';
+import 'session_availability_model.dart';
 
 part 'session_model.g.dart';
+
+double? _ratingFromJson(dynamic value) {
+  if (value == null) return null;
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) {
+    final parsed = double.tryParse(value);
+    return parsed;
+  }
+  return null;
+}
+
+dynamic _ratingToJson(double? value) => value;
+
+@JsonSerializable()
+class AttorneyModel {
+  final String id;
+  final String? name;
+  final String email;
+
+  const AttorneyModel({required this.id, this.name, required this.email});
+
+  factory AttorneyModel.fromJson(Map<String, dynamic> json) => _$AttorneyModelFromJson(json);
+  Map<String, dynamic> toJson() => _$AttorneyModelToJson(this);
+
+  AttorneyEntity toEntity() {
+    return AttorneyEntity(id: id, name: name, email: email);
+  }
+}
 
 @JsonSerializable()
 class SessionModel {
   final String id;
-  final String title;
-  @JsonKey(name: 'scheduled_date')
-  final DateTime scheduledDate;
-  @JsonKey(name: 'duration_minutes')
+  @JsonKey(name: 'scheduledDate')
+  final String scheduledDate;
+  @JsonKey(name: 'startTime')
+  final String startTime;
+  @JsonKey(name: 'endTime')
+  final String endTime;
+  @JsonKey(name: 'durationMinutes')
   final int durationMinutes;
-  final double price;
   final String status;
-  final String? description;
-  @JsonKey(name: 'created_at')
+  final String? summary;
+  @JsonKey(fromJson: _ratingFromJson, toJson: _ratingToJson)
+  final double? rating;
+  final String? review;
+  @JsonKey(name: 'cancelTime')
+  final String? cancelTime;
+  @JsonKey(name: 'cancelTimeExpired')
+  final bool? cancelTimeExpired;
+  final AttorneyModel attorney;
+  @JsonKey(name: 'session_fee')
+  final SessionFeeModel? sessionFee;
+  @JsonKey(name: 'createdAt')
   final DateTime createdAt;
-  @JsonKey(name: 'cancelled_at')
-  final DateTime? cancelledAt;
-  @JsonKey(name: 'cancellation_reason')
-  final String? cancellationReason;
+  @JsonKey(name: 'updatedAt')
+  final DateTime updatedAt;
 
   const SessionModel({
     required this.id,
-    required this.title,
     required this.scheduledDate,
+    required this.startTime,
+    required this.endTime,
     required this.durationMinutes,
-    required this.price,
     required this.status,
-    this.description,
+    this.summary,
+    this.rating,
+    this.review,
+    this.cancelTime,
+    this.cancelTimeExpired,
+    required this.attorney,
+    this.sessionFee,
     required this.createdAt,
-    this.cancelledAt,
-    this.cancellationReason,
+    required this.updatedAt,
   });
 
   factory SessionModel.fromJson(Map<String, dynamic> json) => _$SessionModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$SessionModelToJson(this);
 
-  SessionEntity toEntity() {
+  SessionEntity toEntity({SessionFeeModel? sharedSessionFee}) {
+    final effectiveFee = sessionFee ?? sharedSessionFee;
+    final holdAmount = effectiveFee?.sessionFee.toDouble() ?? 50.0;
+    final canCancel =
+        cancelTimeExpired != null
+            ? !cancelTimeExpired!
+            : (status == 'upcoming' && DateTime.parse('${scheduledDate}T$startTime').difference(DateTime.now()).inHours > 24);
+
     return SessionEntity(
       id: id,
-      title: title,
       scheduledDate: scheduledDate,
-      duration: Duration(minutes: durationMinutes),
-      price: price,
+      startTime: startTime,
+      endTime: endTime,
+      durationMinutes: durationMinutes,
       status: SessionStatus.fromString(status),
-      description: description,
+      summary: summary,
+      rating: rating,
+      review: review,
+      cancelTime: cancelTime,
+      cancelTimeExpired: cancelTimeExpired,
+      attorney: attorney.toEntity(),
+      sessionFee: effectiveFee?.toEntity(),
       createdAt: createdAt,
-      cancelledAt: cancelledAt,
-      cancellationReason: cancellationReason,
+      updatedAt: updatedAt,
+      holdAmount: holdAmount,
+      canCancel: canCancel,
     );
   }
 
   factory SessionModel.fromEntity(SessionEntity entity) {
     return SessionModel(
       id: entity.id,
-      title: entity.title,
       scheduledDate: entity.scheduledDate,
-      durationMinutes: entity.duration.inMinutes,
-      price: entity.price,
+      startTime: entity.startTime,
+      endTime: entity.endTime,
+      durationMinutes: entity.durationMinutes,
       status: entity.status.apiValue,
-      description: entity.description,
+      summary: entity.summary,
+      rating: entity.rating,
+      review: entity.review,
+      cancelTime: null,
+      cancelTimeExpired: !entity.canCancel,
+      attorney: AttorneyModel(id: entity.attorney.id, name: entity.attorney.name, email: entity.attorney.email),
+      sessionFee:
+          entity.sessionFee != null
+              ? SessionFeeModel(
+                sessionFee: entity.sessionFee!.sessionFee,
+                processingFee: entity.sessionFee!.processingFee,
+                totalFee: entity.sessionFee!.totalFee,
+                currency: entity.sessionFee!.currency,
+              )
+              : null,
       createdAt: entity.createdAt,
-      cancelledAt: entity.cancelledAt,
-      cancellationReason: entity.cancellationReason,
+      updatedAt: entity.updatedAt,
     );
   }
 }

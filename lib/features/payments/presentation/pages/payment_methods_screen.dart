@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
+import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
@@ -44,8 +46,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     return BlocListener<PaymentBloc, PaymentState>(
       listener: (context, state) {
         if (state is PaymentMethodDeleted) {
-          SnackBarUtils.showSuccess(context, AppStrings.paymentMethodDeleted);
-          _paymentBloc.add(const LoadPaymentMethods()); // Refresh list
+          SnackBarUtils.showSuccess(context, state.message);
+          _paymentBloc.add(const LoadPaymentMethods());
         } else if (state is PaymentError) {
           SnackBarUtils.showError(context, state.message);
         }
@@ -83,44 +85,28 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   void _onDeletePaymentMethod(PaymentMethodEntity paymentMethod) {
-    // Show confirmation dialog
-    showDialog(
+    CustomBottomSheet.show(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: context.filledBgDark,
-            title: TranslatedText(
-              AppStrings.deletePaymentMethod,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w600),
-            ),
-            content: TranslatedText(
-              AppStrings.confirmDelete,
-              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => context.pop(),
-                child: TranslatedText(
-                  AppStrings.cancel,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  context.pop();
-                  _paymentBloc.add(DeletePaymentMethodRequested(paymentMethodId: paymentMethod.id));
-                },
-                child: TranslatedText(
-                  AppStrings.deletePaymentMethod,
-                  style: TextStyle(color: context.red, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w500),
-                ),
-              ),
-            ],
-          ),
+      iconPath: ImageConstants.delete,
+      title: AppStrings.deletePaymentMethod,
+      subtitle: AppStrings.confirmDelete,
+      primaryButtonText: AppStrings.delete,
+      secondaryButtonText: AppStrings.cancel,
+      onPrimaryPressed: () {
+        context.pop();
+        _paymentBloc.add(DeletePaymentMethodRequested(paymentMethodId: paymentMethod.stripePaymentMethodId));
+      },
+      onSecondaryPressed: () {
+        context.pop();
+      },
     );
   }
 
   void _onAddPaymentMethod() {
-    context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home});
+    context.push(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.home}).then((value) {
+      if (value != null) {
+        _paymentBloc.add(const LoadPaymentMethods());
+      }
+    });
   }
 }

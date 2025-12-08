@@ -1,5 +1,6 @@
 import 'package:copyright_clinic_flutter/di.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -147,7 +148,8 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                             controller: _nameController,
                             focusNode: _nameFocusNode,
                             keyboardType: TextInputType.name,
-                            validator: _validateName,
+                            inputFormatters: [LengthLimitingTextInputFormatter(100)],
+                            validator: (value) => validateFullName(value, tr),
                             onEditingComplete: () {
                               _cardFormController.focus();
                             },
@@ -221,22 +223,13 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
   }
 
   void _validateForm() {
-    final isNameValid = _nameController.text.isNotEmpty;
+    final isNameValid = validateFullName(_nameController.text.trim(), tr) == null;
     final isCardValid = _cardCompleteNotifier.value;
     final newFormValid = isNameValid && isCardValid;
 
     if (_formValidNotifier.value != newFormValid) {
       _formValidNotifier.value = newFormValid;
     }
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.cardholderNameIsRequired.tr();
-    } else if (value.trim().length > 100) {
-      return AppStrings.cardholderNameCannotExceed100Characters.tr();
-    }
-    return null;
   }
 
   void _onAddPaymentMethod() {

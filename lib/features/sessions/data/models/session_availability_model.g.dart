@@ -16,6 +16,7 @@ SessionAvailabilityModel _$SessionAvailabilityModelFromJson(
       (json['days'] as List<dynamic>)
           .map((e) => AvailabilityDayModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+  fee: SessionFeeModel.fromJson(json['session_fee'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$SessionAvailabilityModelToJson(
@@ -25,6 +26,7 @@ Map<String, dynamic> _$SessionAvailabilityModelToJson(
   'end_date': instance.endDate,
   'slot_minutes': instance.slotMinutes,
   'days': instance.days,
+  'session_fee': instance.fee,
 };
 
 AvailabilityDayModel _$AvailabilityDayModelFromJson(
@@ -51,3 +53,19 @@ TimeSlotModel _$TimeSlotModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$TimeSlotModelToJson(TimeSlotModel instance) =>
     <String, dynamic>{'start': instance.start, 'end': instance.end};
+
+SessionFeeModel _$SessionFeeModelFromJson(Map<String, dynamic> json) =>
+    SessionFeeModel(
+      sessionFee: json['sessionFee'] as num,
+      processingFee: json['processingFee'] as num,
+      totalFee: json['totalFee'] as num,
+      currency: json['currency'] as String,
+    );
+
+Map<String, dynamic> _$SessionFeeModelToJson(SessionFeeModel instance) =>
+    <String, dynamic>{
+      'sessionFee': instance.sessionFee,
+      'processingFee': instance.processingFee,
+      'totalFee': instance.totalFee,
+      'currency': instance.currency,
+    };

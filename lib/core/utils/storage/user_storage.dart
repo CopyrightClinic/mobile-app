@@ -1,6 +1,7 @@
 import '../../../features/auth/domain/entities/user_entity.dart';
 import '../../../features/auth/data/models/user_model.dart';
 import '../../constants/pref_constants.dart';
+import '../logger/logger.dart';
 import 'shared_pref_service.dart';
 
 class UserStorage {
@@ -25,6 +26,7 @@ class UserStorage {
   static Future<UserEntity?> getUser() async {
     try {
       final userData = await _sharedPrefService.read(SharedPrefConstants.userDataKey);
+      Log.d('userData', userData.toString());
       if (userData != null) {
         return UserModel.fromJson(userData).toEntity();
       }

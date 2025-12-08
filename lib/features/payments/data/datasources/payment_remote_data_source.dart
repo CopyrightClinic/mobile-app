@@ -11,6 +11,7 @@ import '../models/payment_response_model.dart';
 abstract class PaymentRemoteDataSource {
   Future<CreatePaymentMethodResponseModel> createPaymentMethod(CreatePaymentMethodRequestModel request);
   Future<GetPaymentMethodsResponseModel> getPaymentMethods();
+  Future<String> deletePaymentMethod(String stripePaymentMethodId);
 }
 
 class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
@@ -50,6 +51,27 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
           try {
             final getPaymentMethodsResponse = GetPaymentMethodsResponseModel.fromJson(response);
             return getPaymentMethodsResponse;
+          } catch (e) {
+            throw CustomException.fromParsingException(e as Exception);
+          }
+        },
+      );
+      return response;
+    } catch (e) {
+      throw CustomException.fromDioException(e as Exception);
+    }
+  }
+
+  @override
+  Future<String> deletePaymentMethod(String stripePaymentMethodId) async {
+    try {
+      final response = await apiService.deleteData<String>(
+        endpoint: ApiEndpoint.payment(PaymentEndpoint.PAYMENT_METHODS),
+        data: {'stripePaymentMethodId': stripePaymentMethodId},
+        requiresAuthToken: true,
+        converter: (ResponseModel<JSON> response) {
+          try {
+            return response.data['message'] as String;
           } catch (e) {
             throw CustomException.fromParsingException(e as Exception);
           }

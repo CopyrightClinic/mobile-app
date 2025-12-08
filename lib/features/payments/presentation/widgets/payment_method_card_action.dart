@@ -1,5 +1,7 @@
+import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/dimensions.dart';
+import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../domain/entities/payment_method_entity.dart';
@@ -17,11 +19,15 @@ class DeletePaymentMethodAction extends PaymentMethodCardAction {
 
   @override
   Widget buildActionWidget(BuildContext context, PaymentMethodEntity paymentMethod, bool isSelected) {
-    return IconButton(
-      onPressed: onDelete,
-      icon: Icon(Icons.delete_outline, color: context.red, size: DimensionConstants.icon24Px.f),
-      padding: EdgeInsets.all(DimensionConstants.gap8Px.w),
-      constraints: const BoxConstraints(),
+    return GestureDetector(
+      onTap: onDelete,
+      child: GlobalImage(
+        assetPath: ImageConstants.delete,
+        width: DimensionConstants.icon24Px.w,
+        height: DimensionConstants.icon24Px.h,
+        color: context.red,
+        loadingSize: DimensionConstants.font20Px,
+      ),
     );
   }
 }

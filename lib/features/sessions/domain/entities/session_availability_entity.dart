@@ -3,8 +3,9 @@ class SessionAvailabilityEntity {
   final DateTime endDate;
   final int slotMinutes;
   final List<AvailabilityDayEntity> days;
+  final SessionFeeEntity fee;
 
-  const SessionAvailabilityEntity({required this.startDate, required this.endDate, required this.slotMinutes, required this.days});
+  const SessionAvailabilityEntity({required this.startDate, required this.endDate, required this.slotMinutes, required this.days, required this.fee});
 }
 
 class AvailabilityDayEntity {
@@ -31,9 +32,22 @@ class TimeSlotEntity {
       final period = hour >= 12 ? 'PM' : 'AM';
       final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
       final displayMinute = minute.toString().padLeft(2, '0');
-      return '$displayHour:$displayMinute $period';
+      return '$displayHour:$displayMinute$period';
     }
 
     return '${formatTime(startHour, startMinute)} - ${formatTime(endHour, endMinute)}';
   }
+}
+
+class SessionFeeEntity {
+  final num sessionFee;
+  final num processingFee;
+  final num totalFee;
+  final String currency;
+
+  const SessionFeeEntity({required this.sessionFee, required this.processingFee, required this.totalFee, required this.currency});
+
+  String get formattedSessionFee => '\$${sessionFee.toStringAsFixed(2)}';
+  String get formattedProcessingFee => '\$${processingFee.toStringAsFixed(2)}';
+  String get formattedTotalFee => '\$${totalFee.toStringAsFixed(2)}';
 }

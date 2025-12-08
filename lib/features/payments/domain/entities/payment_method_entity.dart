@@ -3,14 +3,22 @@ import 'package:equatable/equatable.dart';
 class PaymentMethodEntity extends Equatable {
   final String id;
   final String customerId;
+  final String stripePaymentMethodId;
   final String type;
   final CardEntity card;
   final DateTime createdAt;
 
-  const PaymentMethodEntity({required this.id, required this.customerId, required this.type, required this.card, required this.createdAt});
+  const PaymentMethodEntity({
+    required this.id,
+    required this.customerId,
+    required this.stripePaymentMethodId,
+    required this.type,
+    required this.card,
+    required this.createdAt,
+  });
 
   @override
-  List<Object?> get props => [id, customerId, type, card, createdAt];
+  List<Object?> get props => [id, customerId, stripePaymentMethodId, type, card, createdAt];
 }
 
 class CardEntity extends Equatable {

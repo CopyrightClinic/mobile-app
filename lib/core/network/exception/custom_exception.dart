@@ -91,7 +91,7 @@ class CustomException implements Exception {
             return CustomException(
               exceptionType: _ExceptionType.SocketException,
               statusCode: error.response?.statusCode,
-              message: 'Connection error',
+              message: 'No Internet Connection!',
             );
           case DioExceptionType.unknown:
             if (error.message != null && error.message!.contains(_ExceptionType.SocketException.name)) {
