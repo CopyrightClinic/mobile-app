@@ -93,7 +93,7 @@ class AppTheme {
         titleTextStyle: TextStyle(color: textPrimary, fontSize: 18.0, fontWeight: FontWeight.w600, fontFamily: fontFamily),
         iconTheme: IconThemeData(color: textPrimary),
       ),
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelColor: primary,
         unselectedLabelColor: textBodyLight,
         labelStyle: TextStyle(fontWeight: FontWeight.w600, fontFamily: fontFamily),
@@ -126,7 +126,7 @@ class AppTheme {
           textStyle: WidgetStateProperty.all<TextStyle>(const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily)),
         ),
       ),
-      cardTheme: CardTheme(color: Colors.white, elevation: 2.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMedium))),
+      cardTheme: CardThemeData(color: Colors.white, elevation: 2.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMedium))),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: primary,
@@ -196,7 +196,7 @@ class AppTheme {
         titleTextStyle: TextStyle(color: darkTextPrimary, fontSize: 18.0, fontWeight: FontWeight.w600, fontFamily: fontFamily),
         iconTheme: IconThemeData(color: darkTextPrimary),
       ),
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelColor: primary,
         unselectedLabelColor: darkTextSecondary,
         labelStyle: TextStyle(fontWeight: FontWeight.w600, fontFamily: fontFamily),
@@ -229,7 +229,7 @@ class AppTheme {
           textStyle: WidgetStateProperty.all<TextStyle>(const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500, fontFamily: fontFamily)),
         ),
       ),
-      cardTheme: CardTheme(color: filledBgDark, elevation: 2.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMedium))),
+      cardTheme: CardThemeData(color: filledBgDark, elevation: 2.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMedium))),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: filledBgDark,
         selectedItemColor: primary,
