@@ -37,7 +37,7 @@ Copyright Clinic is a mobile platform designed for creators, artists, musicians,
 - **Processing Fees**: Transparent non-refundable processing fees ($5)
 
 ### Video Consultations
-- **Zoom SDK Integration**: Native Zoom support for iOS and Android (see [Zoom SDK Integration Guide](docs/ZOOM_SDK_INTEGRATION.md))
+- **Zoom SDK Integration**: Native Zoom support for iOS and Android (see [Zoom SDK Integration Guide](ZOOM_SDK_INTEGRATION.md))
 - **Permission Management**: Camera, microphone, and Bluetooth permissions handling
 - **Meeting Status**: Real-time connection status and waiting room support
 - **In-Meeting Controls**: Join, leave, and manage video call settings
@@ -274,7 +274,7 @@ For a complete list, see `pubspec.yaml`.
    - Open `ios/Runner.xcworkspace` in Xcode
    - Link all frameworks with "Embed & Sign" option
    
-   **See the [Zoom SDK Integration Guide](docs/ZOOM_SDK_INTEGRATION.md) for complete setup instructions.**
+   **See the [Zoom SDK Integration Guide](ZOOM_SDK_INTEGRATION.md) for complete setup instructions.**
 
 7. **Run code generation** (for JSON serialization)
    ```bash
@@ -434,7 +434,7 @@ For licensing inquiries, please contact [your-email@example.com](mailto:your-ema
 - [GoRouter Documentation](https://pub.dev/packages/go_router)
 
 ### Project-Specific Documentation
-- [Zoom SDK Integration Guide](docs/ZOOM_SDK_INTEGRATION.md) - Complete guide for setting up Zoom video calls
+- [Zoom SDK Integration Guide](ZOOM_SDK_INTEGRATION.md) - Complete guide for setting up Zoom video calls
 - [Project Architecture](PROJECT_KNOWLEDGE_PROMPT.md) - Detailed architecture documentation
 - Check `docs/` folder for additional documentation
 
