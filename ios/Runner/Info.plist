@@ -11,7 +11,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.brainx.copyrightclinic</string>
+	<string>com.cassius.copyrightclinic</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>CFBundleName</key>
@@ -40,7 +40,8 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Copyright Clinic needs access to your photo library to attach relevant documents and images to your copyright case.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Copyright Clinic uses speech recognition to convert your voice to text for describing copyright issues.</string>
+	<string>Copyright Clinic uses speech recognition to convert your voice to text for
+			describing copyright issues.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
