@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -208,8 +209,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context.push(AppRoutes.paymentMethodsRouteName);
             },
           ),
-          _buildOptionRow(context, iconPath: ImageConstants.privacyPolicy, title: AppStrings.privacyPolicy, onTap: () {}),
-          _buildOptionRow(context, iconPath: ImageConstants.termsAndConditions, title: AppStrings.termsAndConditions, onTap: () {}, isLast: true),
+          _buildOptionRow(
+            context,
+            iconPath: ImageConstants.privacyPolicy,
+            title: AppStrings.privacyPolicy,
+            onTap: () {
+              _launchPrivacyPolicy();
+            },
+          ),
+          _buildOptionRow(
+            context,
+            iconPath: ImageConstants.termsAndConditions,
+            title: AppStrings.termsAndConditions,
+            onTap: () {
+              _launchTermsAndConditions();
+            },
+            isLast: true,
+          ),
           SizedBox(height: DimensionConstants.gap8Px.h),
         ],
       ),
@@ -350,5 +366,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context.pop();
       },
     );
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    final Uri url = Uri.parse('https://copyrightclinic.com/privacy');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.inAppWebView);
+    } else {
+      if (mounted) {
+        SnackBarUtils.showError(context, AppStrings.unableToOpenPrivacyPolicy.tr());
+      }
+    }
+  }
+
+  Future<void> _launchTermsAndConditions() async {
+    final Uri url = Uri.parse('https://copyrightclinic.com/terms');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.inAppWebView);
+    } else {
+      if (mounted) {
+        SnackBarUtils.showError(context, AppStrings.unableToOpenTermsAndConditions.tr());
+      }
+    }
   }
 }

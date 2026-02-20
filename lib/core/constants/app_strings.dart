@@ -539,4 +539,6 @@ class AppStrings {
   static const sessionExtendedSuccess = 'sessionExtendedSuccess';
   static const sessionExtendError = 'sessionExtendError';
   static const unableToOpenNotification = 'unableToOpenNotification';
+  static const unableToOpenPrivacyPolicy = 'unableToOpenPrivacyPolicy';
+  static const unableToOpenTermsAndConditions = 'unableToOpenTermsAndConditions';
 }

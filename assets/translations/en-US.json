@@ -462,5 +462,7 @@
   "payNow": "Pay Now",
   "sessionExtendedSuccess": "Session extended successfully!",
   "sessionExtendError": "Failed to extend session. Please try again.",
-  "unableToOpenNotification": "Unable to open notification"
+  "unableToOpenNotification": "Unable to open notification",
+  "unableToOpenPrivacyPolicy": "Unable to open privacy policy",
+  "unableToOpenTermsAndConditions": "Unable to open terms and conditions"
 }
