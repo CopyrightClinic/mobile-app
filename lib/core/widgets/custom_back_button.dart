@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:go_router/go_router.dart';
 import '../utils/extensions/responsive_extensions.dart';
 
@@ -22,15 +23,24 @@ class CustomBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: size.w,
-      height: size.w,
-      decoration: BoxDecoration(color: backgroundColor.withValues(alpha: 0.6), shape: BoxShape.circle),
-      child: InkWell(
-        onTap: onPressed ?? () => context.pop(),
-        borderRadius: BorderRadius.circular((size / 2).w),
-        child: Center(child: Icon(Icons.arrow_back, color: iconColor, size: (size * 0.5).w)),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final desiredSize = size.w;
+        final maxWidth = constraints.maxWidth.isFinite ? constraints.maxWidth : desiredSize;
+        final maxHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : desiredSize;
+        final effectiveSize = math.min(desiredSize, math.min(maxWidth, maxHeight));
+
+        return Container(
+          width: effectiveSize,
+          height: effectiveSize,
+          decoration: BoxDecoration(color: backgroundColor.withValues(alpha: 0.6), shape: BoxShape.circle),
+          child: InkWell(
+            onTap: onPressed ?? () => context.pop(),
+            borderRadius: BorderRadius.circular(effectiveSize / 2),
+            child: Center(child: Icon(Icons.arrow_back, color: iconColor, size: effectiveSize * 0.5)),
+          ),
+        );
+      },
     );
   }
 }

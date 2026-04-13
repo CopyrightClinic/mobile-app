@@ -23,8 +23,8 @@ class RatingWidget extends StatelessWidget {
           onTap: isInteractive ? () => onRatingChanged?.call(starIndex.toDouble()) : null,
           child: GlobalImage(
             assetPath: isFilled ? ImageConstants.starFilled : ImageConstants.starUnfilled,
-            width: size.w,
-            height: size.w,
+            width: size.d,
+            height: size.d,
             fit: BoxFit.contain,
             showLoading: false,
             showError: false,

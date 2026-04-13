@@ -76,23 +76,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           automaticallyImplyLeading: false,
           actions: [
             Container(
-              width: DimensionConstants.gap40Px.w,
-              height: DimensionConstants.gap40Px.w,
+              width: DimensionConstants.gap40Px.d,
+              height: DimensionConstants.gap40Px.d,
               decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
               child: InkWell(
                 onTap: () {
                   context.pushNamed(AppRoutes.notificationsRouteName);
                 },
-                borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
-                child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w)),
+                borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.d / 2).d),
+                child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).d)),
               ),
             ),
-            SizedBox(width: DimensionConstants.gap16Px.w),
+            SizedBox(width: DimensionConstants.gap16Px),
           ],
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap8Px.h),
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px, vertical: DimensionConstants.gap8Px.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -117,9 +117,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                           child: GlobalImage(
                             assetPath: ImageConstants.edit,
-                            width: DimensionConstants.gap20Px.w,
-                            height: DimensionConstants.gap20Px.w,
-                            loadingSize: DimensionConstants.gap20Px.w,
+                            width: DimensionConstants.gap20Px.d,
+                            height: DimensionConstants.gap20Px.d,
+                            loadingSize: DimensionConstants.gap20Px.d,
                           ),
                         );
                       },
@@ -239,9 +239,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           GlobalImage(
             assetPath: iconPath,
-            width: DimensionConstants.gap20Px.w,
-            height: DimensionConstants.gap20Px.w,
-            loadingSize: DimensionConstants.gap20Px.w,
+            width: DimensionConstants.gap20Px.d,
+            height: DimensionConstants.gap20Px.d,
+            loadingSize: DimensionConstants.gap20Px.d,
           ),
           SizedBox(width: DimensionConstants.gap8Px.w),
           Expanded(
@@ -278,9 +278,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             GlobalImage(
               assetPath: iconPath,
-              width: DimensionConstants.gap20Px.w,
-              height: DimensionConstants.gap20Px.w,
-              loadingSize: DimensionConstants.gap20Px.w,
+              width: DimensionConstants.gap20Px.d,
+              height: DimensionConstants.gap20Px.d,
+              loadingSize: DimensionConstants.gap20Px.d,
             ),
             SizedBox(width: DimensionConstants.gap10Px.w),
             Expanded(
@@ -291,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 maxLines: 1,
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: DimensionConstants.gap16Px.w, color: context.darkTextPrimary),
+            Icon(Icons.arrow_forward_ios, size: DimensionConstants.gap16Px.d, color: context.darkTextPrimary),
           ],
         ),
       ),

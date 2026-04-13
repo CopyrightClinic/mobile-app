@@ -44,11 +44,16 @@ SessionRequestModel _$SessionRequestModelFromJson(Map<String, dynamic> json) =>
     SessionRequestModel(
       id: json['id'] as String,
       summary: json['summary'] as String,
+      couponId: json['couponId'] as String?,
     );
 
 Map<String, dynamic> _$SessionRequestModelToJson(
   SessionRequestModel instance,
-) => <String, dynamic>{'id': instance.id, 'summary': instance.summary};
+) => <String, dynamic>{
+  'id': instance.id,
+  'summary': instance.summary,
+  'couponId': instance.couponId,
+};
 
 SessionDetailsModel _$SessionDetailsModelFromJson(Map<String, dynamic> json) =>
     SessionDetailsModel(

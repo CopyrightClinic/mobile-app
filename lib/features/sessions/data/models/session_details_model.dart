@@ -56,14 +56,16 @@ class SessionDetailsUserModel {
 class SessionRequestModel {
   final String id;
   final String summary;
+  @JsonKey(name: 'couponId')
+  final String? couponId;
 
-  const SessionRequestModel({required this.id, required this.summary});
+  const SessionRequestModel({required this.id, required this.summary, this.couponId});
 
   factory SessionRequestModel.fromJson(Map<String, dynamic> json) => _$SessionRequestModelFromJson(json);
   Map<String, dynamic> toJson() => _$SessionRequestModelToJson(this);
 
   SessionRequestEntity toEntity() {
-    return SessionRequestEntity(id: id, summary: summary);
+    return SessionRequestEntity(id: id, summary: summary, couponId: couponId);
   }
 }
 

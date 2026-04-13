@@ -21,6 +21,7 @@ BookSessionRequestModel _$BookSessionRequestModelFromJson(
   Map<String, dynamic> json,
 ) => BookSessionRequestModel(
   stripePaymentMethodId: json['stripePaymentMethodId'] as String,
+  couponCode: json['couponCode'] as String?,
   date: json['date'] as String,
   slot: BookSessionSlotModel.fromJson(json['slot'] as Map<String, dynamic>),
   summary: json['summary'] as String,
@@ -30,6 +31,7 @@ Map<String, dynamic> _$BookSessionRequestModelToJson(
   BookSessionRequestModel instance,
 ) => <String, dynamic>{
   'stripePaymentMethodId': instance.stripePaymentMethodId,
+  'couponCode': instance.couponCode,
   'date': instance.date,
   'slot': instance.slot,
   'summary': instance.summary,

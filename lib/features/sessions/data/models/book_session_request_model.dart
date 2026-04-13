@@ -9,7 +9,8 @@ class BookSessionSlotModel {
 
   const BookSessionSlotModel({required this.start, required this.end});
 
-  factory BookSessionSlotModel.fromJson(Map<String, dynamic> json) => _$BookSessionSlotModelFromJson(json);
+  factory BookSessionSlotModel.fromJson(Map<String, dynamic> json) =>
+      _$BookSessionSlotModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$BookSessionSlotModelToJson(this);
 }
@@ -17,13 +18,21 @@ class BookSessionSlotModel {
 @JsonSerializable()
 class BookSessionRequestModel {
   final String stripePaymentMethodId;
+  final String? couponCode;
   final String date;
   final BookSessionSlotModel slot;
   final String summary;
 
-  const BookSessionRequestModel({required this.stripePaymentMethodId, required this.date, required this.slot, required this.summary});
+  const BookSessionRequestModel({
+    required this.stripePaymentMethodId,
+    this.couponCode,
+    required this.date,
+    required this.slot,
+    required this.summary,
+  });
 
-  factory BookSessionRequestModel.fromJson(Map<String, dynamic> json) => _$BookSessionRequestModelFromJson(json);
+  factory BookSessionRequestModel.fromJson(Map<String, dynamic> json) =>
+      _$BookSessionRequestModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$BookSessionRequestModelToJson(this);
 }
