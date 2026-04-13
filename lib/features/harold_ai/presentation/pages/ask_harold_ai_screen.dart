@@ -269,8 +269,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                   return Transform.scale(
                     scale: isListening ? _scaleAnimation.value : 1.0,
                     child: Container(
-                      width: 48.w,
-                      height: 48.h,
+                      width: 48.d,
+                      height: 48.d,
                       decoration: BoxDecoration(
                         color:
                             isListening
@@ -284,15 +284,15 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                         children: [
                           if (isListening)
                             Container(
-                              width: 24.w,
-                              height: 24.h,
+                              width: 24.d,
+                              height: 24.d,
                               decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
                             ),
                           Icon(
                             isListening ? Icons.stop : Icons.mic,
                             color:
                                 isListening ? Colors.white : (isEnabled ? context.darkTextPrimary : context.darkTextPrimary.withValues(alpha: 0.5)),
-                            size: 24.w,
+                            size: 24.d,
                           ),
                         ],
                       ),

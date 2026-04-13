@@ -39,6 +39,7 @@ SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
           : SessionFeeModel.fromJson(
             json['session_fee'] as Map<String, dynamic>,
           ),
+  sessionRequest: json['sessionRequest'] as Map<String, dynamic>?,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
@@ -58,6 +59,7 @@ Map<String, dynamic> _$SessionModelToJson(SessionModel instance) =>
       'cancelTimeExpired': instance.cancelTimeExpired,
       'attorney': instance.attorney,
       'session_fee': instance.sessionFee,
+      'sessionRequest': instance.sessionRequest,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

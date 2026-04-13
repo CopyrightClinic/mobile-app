@@ -21,9 +21,19 @@ class SessionsRepositoryImpl implements SessionsRepository {
   SessionsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({String? status, String? timezone, int? page, int? limit}) async {
+  Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({
+    String? status,
+    String? timezone,
+    int? page,
+    int? limit,
+  }) async {
     try {
-      final paginatedSessions = await remoteDataSource.getUserSessions(status: status, timezone: timezone, page: page, limit: limit);
+      final paginatedSessions = await remoteDataSource.getUserSessions(
+        status: status,
+        timezone: timezone,
+        page: page,
+        limit: limit,
+      );
       return Right(paginatedSessions.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
@@ -40,7 +50,9 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('${AppStrings.failedToFetchUpcomingSessions}: $e'));
+      return Left(
+        ServerFailure('${AppStrings.failedToFetchUpcomingSessions}: $e'),
+      );
     }
   }
 
@@ -52,12 +64,16 @@ class SessionsRepositoryImpl implements SessionsRepository {
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('${AppStrings.failedToFetchCompletedSessions}: $e'));
+      return Left(
+        ServerFailure('${AppStrings.failedToFetchCompletedSessions}: $e'),
+      );
     }
   }
 
   @override
-  Future<Either<Failure, SessionEntity>> getSessionById(String sessionId) async {
+  Future<Either<Failure, SessionEntity>> getSessionById(
+    String sessionId,
+  ) async {
     try {
       final session = await remoteDataSource.getSessionById(sessionId);
       return Right(session.toEntity());
@@ -69,9 +85,15 @@ class SessionsRepositoryImpl implements SessionsRepository {
   }
 
   @override
-  Future<Either<Failure, SessionDetailsEntity>> getSessionDetails({required String sessionId, String? timezone}) async {
+  Future<Either<Failure, SessionDetailsEntity>> getSessionDetails({
+    required String sessionId,
+    String? timezone,
+  }) async {
     try {
-      final sessionDetails = await remoteDataSource.getSessionDetails(sessionId: sessionId, timezone: timezone);
+      final sessionDetails = await remoteDataSource.getSessionDetails(
+        sessionId: sessionId,
+        timezone: timezone,
+      );
       return Right(sessionDetails.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
@@ -87,7 +109,11 @@ class SessionsRepositoryImpl implements SessionsRepository {
     String? review,
   }) async {
     try {
-      final response = await remoteDataSource.submitSessionFeedback(sessionId: sessionId, rating: rating, review: review);
+      final response = await remoteDataSource.submitSessionFeedback(
+        sessionId: sessionId,
+        rating: rating,
+        review: review,
+      );
       return Right(response.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
@@ -97,14 +123,19 @@ class SessionsRepositoryImpl implements SessionsRepository {
   }
 
   @override
-  Future<Either<Failure, CancelSessionResponseEntity>> cancelSession(String sessionId, String reason) async {
+  Future<Either<Failure, CancelSessionResponseEntity>> cancelSession(
+    String sessionId,
+    String reason,
+  ) async {
     try {
       final response = await remoteDataSource.cancelSession(sessionId, reason);
       return Right(response.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('${AppStrings.failedToCancelSessionGeneric}: $e'));
+      return Left(
+        ServerFailure('${AppStrings.failedToCancelSessionGeneric}: $e'),
+      );
     }
   }
 
@@ -121,20 +152,27 @@ class SessionsRepositoryImpl implements SessionsRepository {
   }
 
   @override
-  Future<Either<Failure, SessionAvailabilityEntity>> getSessionAvailability(String timezone) async {
+  Future<Either<Failure, SessionAvailabilityEntity>> getSessionAvailability(
+    String timezone,
+  ) async {
     try {
-      final availability = await remoteDataSource.getSessionAvailability(timezone);
+      final availability = await remoteDataSource.getSessionAvailability(
+        timezone,
+      );
       return Right(availability.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('${AppStrings.failedToFetchSessionAvailability}: $e'));
+      return Left(
+        ServerFailure('${AppStrings.failedToFetchSessionAvailability}: $e'),
+      );
     }
   }
 
   @override
   Future<Either<Failure, BookSessionResponseEntity>> bookSession({
     required String stripePaymentMethodId,
+    String? couponCode,
     required String date,
     required String startTime,
     required String endTime,
@@ -144,6 +182,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     try {
       final response = await remoteDataSource.bookSession(
         stripePaymentMethodId: stripePaymentMethodId,
+        couponCode: couponCode,
         date: date,
         startTime: startTime,
         endTime: endTime,
@@ -155,7 +194,8 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(e.message));
     } on DioException catch (e) {
       String errorMessage = AppStrings.failedToBookSession;
-      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
         errorMessage = responseData['message'] ?? errorMessage;
       }
@@ -173,32 +213,46 @@ class SessionsRepositoryImpl implements SessionsRepository {
     required double summaryFee,
   }) async {
     try {
-      final response = await remoteDataSource.unlockSessionSummary(sessionId: sessionId, paymentMethodId: paymentMethodId, summaryFee: summaryFee);
+      final response = await remoteDataSource.unlockSessionSummary(
+        sessionId: sessionId,
+        paymentMethodId: paymentMethodId,
+        summaryFee: summaryFee,
+      );
       return Right(response.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } on DioException catch (e) {
       String errorMessage = AppStrings.failedToLoadPaymentMethods;
-      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
         errorMessage = responseData['message'] ?? errorMessage;
       }
       return Left(ServerFailure(errorMessage));
     } catch (e) {
-      return Left(ServerFailure('${AppStrings.failedToUnlockSessionSummary}: $e'));
+      return Left(
+        ServerFailure('${AppStrings.failedToUnlockSessionSummary}: $e'),
+      );
     }
   }
 
   @override
-  Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({required String sessionId, required String paymentMethodId}) async {
+  Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({
+    required String sessionId,
+    required String paymentMethodId,
+  }) async {
     try {
-      final response = await remoteDataSource.extendSession(sessionId: sessionId, paymentMethodId: paymentMethodId);
+      final response = await remoteDataSource.extendSession(
+        sessionId: sessionId,
+        paymentMethodId: paymentMethodId,
+      );
       return Right(response.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } on DioException catch (e) {
       String errorMessage = AppStrings.sessionExtendError;
-      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
         final responseData = e.response!.data as Map<String, dynamic>;
         errorMessage = responseData['message'] ?? errorMessage;
       }

@@ -27,6 +27,7 @@ class SessionEntity extends Equatable {
   final bool? cancelTimeExpired;
   final AttorneyEntity attorney;
   final SessionFeeEntity? sessionFee;
+  final Map<String, dynamic>? sessionRequest;
   final DateTime createdAt;
   final DateTime updatedAt;
   final double? holdAmount;
@@ -46,6 +47,7 @@ class SessionEntity extends Equatable {
     this.cancelTimeExpired,
     required this.attorney,
     this.sessionFee,
+    this.sessionRequest,
     required this.createdAt,
     required this.updatedAt,
     this.holdAmount,
@@ -67,6 +69,7 @@ class SessionEntity extends Equatable {
     cancelTimeExpired,
     attorney,
     sessionFee,
+    sessionRequest,
     createdAt,
     updatedAt,
     holdAmount,

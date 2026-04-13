@@ -4,7 +4,7 @@ abstract class SessionsEvent extends Equatable {
   const SessionsEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadUserSessions extends SessionsEvent {
@@ -50,7 +50,10 @@ class ScheduleSessionRequested extends SessionsEvent {
   final DateTime selectedDate;
   final String selectedTimeSlot;
 
-  const ScheduleSessionRequested({required this.selectedDate, required this.selectedTimeSlot});
+  const ScheduleSessionRequested({
+    required this.selectedDate,
+    required this.selectedTimeSlot,
+  });
 
   @override
   List<Object> get props => [selectedDate, selectedTimeSlot];
@@ -89,6 +92,7 @@ class LoadSessionAvailability extends SessionsEvent {
 
 class BookSessionRequested extends SessionsEvent {
   final String stripePaymentMethodId;
+  final String? couponCode;
   final String date;
   final String startTime;
   final String endTime;
@@ -97,6 +101,7 @@ class BookSessionRequested extends SessionsEvent {
 
   const BookSessionRequested({
     required this.stripePaymentMethodId,
+    this.couponCode,
     required this.date,
     required this.startTime,
     required this.endTime,
@@ -105,7 +110,15 @@ class BookSessionRequested extends SessionsEvent {
   });
 
   @override
-  List<Object> get props => [stripePaymentMethodId, date, startTime, endTime, summary, timezone];
+  List<Object?> get props => [
+    stripePaymentMethodId,
+    couponCode,
+    date,
+    startTime,
+    endTime,
+    summary,
+    timezone,
+  ];
 }
 
 class ExtendSession extends SessionsEvent {

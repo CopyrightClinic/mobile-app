@@ -39,12 +39,35 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<ExtendSession>(_onExtendSession);
   }
 
-  Future<void> _onLoadUserSessions(LoadUserSessions event, Emitter<SessionsState> emit) async {
-    emit(state.copyWith(isLoadingSessions: true, clearError: true, clearSuccess: true));
+  Future<void> _onLoadUserSessions(
+    LoadUserSessions event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isLoadingSessions: true,
+        clearError: true,
+        clearSuccess: true,
+      ),
+    );
 
     final String timezone = await TimezoneHelper.getUserTimezone();
-    final upcomingResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming', page: 1, limit: 10));
-    final completedResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed', page: 1, limit: 10));
+    final upcomingResult = await getUserSessionsUseCase(
+      GetUserSessionsParams(
+        timezone: timezone,
+        status: 'upcoming',
+        page: 1,
+        limit: 10,
+      ),
+    );
+    final completedResult = await getUserSessionsUseCase(
+      GetUserSessionsParams(
+        timezone: timezone,
+        status: 'completed',
+        page: 1,
+        limit: 10,
+      ),
+    );
 
     await upcomingResult.fold(
       (failure) async => emit(
@@ -84,19 +107,44 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     );
   }
 
-  Future<void> _onRefreshSessions(RefreshSessions event, Emitter<SessionsState> emit) async {
+  Future<void> _onRefreshSessions(
+    RefreshSessions event,
+    Emitter<SessionsState> emit,
+  ) async {
     if (state.hasData) {
       final String timezone = await TimezoneHelper.getUserTimezone();
-      final upcomingResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'upcoming', page: 1, limit: 10));
-      final completedResult = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed', page: 1, limit: 10));
+      final upcomingResult = await getUserSessionsUseCase(
+        GetUserSessionsParams(
+          timezone: timezone,
+          status: 'upcoming',
+          page: 1,
+          limit: 10,
+        ),
+      );
+      final completedResult = await getUserSessionsUseCase(
+        GetUserSessionsParams(
+          timezone: timezone,
+          status: 'completed',
+          page: 1,
+          limit: 10,
+        ),
+      );
 
       await upcomingResult.fold(
-        (failure) async =>
-            emit(state.copyWith(errorMessage: failure.message ?? AppStrings.failedToRefreshSessions, lastOperation: SessionsOperation.loadSessions)),
+        (failure) async => emit(
+          state.copyWith(
+            errorMessage: failure.message ?? AppStrings.failedToRefreshSessions,
+            lastOperation: SessionsOperation.loadSessions,
+          ),
+        ),
         (upcomingPaginated) async {
           await completedResult.fold(
             (failure) async => emit(
-              state.copyWith(errorMessage: failure.message ?? AppStrings.failedToRefreshSessions, lastOperation: SessionsOperation.loadSessions),
+              state.copyWith(
+                errorMessage:
+                    failure.message ?? AppStrings.failedToRefreshSessions,
+                lastOperation: SessionsOperation.loadSessions,
+              ),
             ),
             (completedPaginated) async {
               emit(
@@ -120,16 +168,27 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     }
   }
 
-  Future<void> _onLoadMoreSessions(LoadMoreSessions event, Emitter<SessionsState> emit) async {
+  Future<void> _onLoadMoreSessions(
+    LoadMoreSessions event,
+    Emitter<SessionsState> emit,
+  ) async {
     if (!state.hasData) return;
 
     final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
-    final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
-    final isAlreadyLoading = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
+    final hasMore =
+        isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
+    final isAlreadyLoading =
+        isUpcomingTab
+            ? state.isLoadingMoreUpcoming
+            : state.isLoadingMoreCompleted;
 
     if (!hasMore || isAlreadyLoading) return;
 
-    final nextPage = (isUpcomingTab ? state.currentUpcomingPage : state.currentCompletedPage) + 1;
+    final nextPage =
+        (isUpcomingTab
+            ? state.currentUpcomingPage
+            : state.currentCompletedPage) +
+        1;
 
     if (isUpcomingTab) {
       emit(state.copyWith(isLoadingMoreUpcoming: true, clearError: true));
@@ -139,7 +198,14 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
     final String timezone = await TimezoneHelper.getUserTimezone();
     final status = isUpcomingTab ? 'upcoming' : 'completed';
-    final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: status, page: nextPage, limit: 10));
+    final result = await getUserSessionsUseCase(
+      GetUserSessionsParams(
+        timezone: timezone,
+        status: status,
+        page: nextPage,
+        limit: 10,
+      ),
+    );
 
     result.fold(
       (failure) {
@@ -147,7 +213,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
           emit(
             state.copyWith(
               isLoadingMoreUpcoming: false,
-              errorMessage: failure.message ?? AppStrings.failedToLoadMoreSessions,
+              errorMessage:
+                  failure.message ?? AppStrings.failedToLoadMoreSessions,
               lastOperation: SessionsOperation.loadSessions,
             ),
           );
@@ -155,7 +222,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
           emit(
             state.copyWith(
               isLoadingMoreCompleted: false,
-              errorMessage: failure.message ?? AppStrings.failedToLoadMoreSessions,
+              errorMessage:
+                  failure.message ?? AppStrings.failedToLoadMoreSessions,
               lastOperation: SessionsOperation.loadSessions,
             ),
           );
@@ -163,7 +231,10 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       },
       (paginatedSessions) {
         if (isUpcomingTab) {
-          final updatedSessions = [...state.upcomingSessions!, ...paginatedSessions.sessions];
+          final updatedSessions = [
+            ...state.upcomingSessions!,
+            ...paginatedSessions.sessions,
+          ];
           emit(
             state.copyWith(
               upcomingSessions: updatedSessions,
@@ -174,7 +245,10 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
             ),
           );
         } else {
-          final updatedSessions = [...state.completedSessions!, ...paginatedSessions.sessions];
+          final updatedSessions = [
+            ...state.completedSessions!,
+            ...paginatedSessions.sessions,
+          ];
           emit(
             state.copyWith(
               completedSessions: updatedSessions,
@@ -189,18 +263,31 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     );
   }
 
-  void _onSwitchToUpcoming(SwitchToUpcoming event, Emitter<SessionsState> emit) {
+  void _onSwitchToUpcoming(
+    SwitchToUpcoming event,
+    Emitter<SessionsState> emit,
+  ) {
     emit(state.copyWith(currentTab: SessionsTab.upcoming));
   }
 
-  Future<void> _onSwitchToCompleted(SwitchToCompleted event, Emitter<SessionsState> emit) async {
+  Future<void> _onSwitchToCompleted(
+    SwitchToCompleted event,
+    Emitter<SessionsState> emit,
+  ) async {
     emit(state.copyWith(currentTab: SessionsTab.completed));
 
     if (!state.hasCompletedData) {
       emit(state.copyWith(isLoadingSessions: true, clearError: true));
 
       final String timezone = await TimezoneHelper.getUserTimezone();
-      final result = await getUserSessionsUseCase(GetUserSessionsParams(timezone: timezone, status: 'completed', page: 1, limit: 10));
+      final result = await getUserSessionsUseCase(
+        GetUserSessionsParams(
+          timezone: timezone,
+          status: 'completed',
+          page: 1,
+          limit: 10,
+        ),
+      );
 
       result.fold(
         (failure) => emit(
@@ -226,10 +313,22 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     }
   }
 
-  Future<void> _onCancelSessionRequested(CancelSessionRequested event, Emitter<SessionsState> emit) async {
-    emit(state.copyWith(isProcessingCancel: true, cancellingSessionId: event.sessionId, clearError: true, clearSuccess: true));
+  Future<void> _onCancelSessionRequested(
+    CancelSessionRequested event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isProcessingCancel: true,
+        cancellingSessionId: event.sessionId,
+        clearError: true,
+        clearSuccess: true,
+      ),
+    );
 
-    final result = await cancelSessionUseCase(CancelSessionParams(sessionId: event.sessionId, reason: event.reason));
+    final result = await cancelSessionUseCase(
+      CancelSessionParams(sessionId: event.sessionId, reason: event.reason),
+    );
 
     await result.fold(
       (failure) async => emit(
@@ -254,8 +353,17 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     );
   }
 
-  Future<void> _onScheduleSessionRequested(ScheduleSessionRequested event, Emitter<SessionsState> emit) async {
-    emit(state.copyWith(isProcessingSchedule: true, clearError: true, clearSuccess: true));
+  Future<void> _onScheduleSessionRequested(
+    ScheduleSessionRequested event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isProcessingSchedule: true,
+        clearError: true,
+        clearSuccess: true,
+      ),
+    );
 
     try {
       await Future.delayed(const Duration(seconds: 1));
@@ -271,34 +379,57 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       emit(
         state.copyWith(
           isProcessingSchedule: false,
-          errorMessage: '${AppStrings.failedToScheduleSessionGeneric}: ${e.toString()}',
+          errorMessage:
+              '${AppStrings.failedToScheduleSessionGeneric}: ${e.toString()}',
           lastOperation: SessionsOperation.scheduleSession,
         ),
       );
     }
   }
 
-  Future<void> _onInitializeScheduleSession(InitializeScheduleSession event, Emitter<SessionsState> emit) async {
+  Future<void> _onInitializeScheduleSession(
+    InitializeScheduleSession event,
+    Emitter<SessionsState> emit,
+  ) async {
     final now = DateTime.now();
-    emit(state.copyWith(selectedDate: now, isLoadingAvailability: true, clearError: true, clearSuccess: true, clearTimeSlot: true));
+    emit(
+      state.copyWith(
+        selectedDate: now,
+        isLoadingAvailability: true,
+        clearError: true,
+        clearSuccess: true,
+        clearTimeSlot: true,
+      ),
+    );
 
     final String currentTimeZone = await TimezoneHelper.getUserTimezone();
-    await _onLoadSessionAvailability(LoadSessionAvailability(timezone: currentTimeZone), emit);
+    await _onLoadSessionAvailability(
+      LoadSessionAvailability(timezone: currentTimeZone),
+      emit,
+    );
   }
 
   void _onDateSelected(DateSelected event, Emitter<SessionsState> emit) {
     if (state.isScheduling) {
-      emit(state.copyWith(selectedDate: event.selectedDate, clearTimeSlot: true));
+      emit(
+        state.copyWith(selectedDate: event.selectedDate, clearTimeSlot: true),
+      );
     }
   }
 
-  void _onTimeSlotSelected(TimeSlotSelected event, Emitter<SessionsState> emit) {
+  void _onTimeSlotSelected(
+    TimeSlotSelected event,
+    Emitter<SessionsState> emit,
+  ) {
     if (state.isScheduling) {
       emit(state.copyWith(selectedTimeSlot: event.selectedTimeSlot));
     }
   }
 
-  Future<void> _onLoadSessionAvailability(LoadSessionAvailability event, Emitter<SessionsState> emit) async {
+  Future<void> _onLoadSessionAvailability(
+    LoadSessionAvailability event,
+    Emitter<SessionsState> emit,
+  ) async {
     if (!state.isScheduling) return;
 
     emit(state.copyWith(isLoadingAvailability: true));
@@ -310,7 +441,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         emit(
           state.copyWith(
             isLoadingAvailability: false,
-            errorMessage: failure.message ?? AppStrings.failedToLoadSessionAvailability,
+            errorMessage:
+                failure.message ?? AppStrings.failedToLoadSessionAvailability,
             lastOperation: SessionsOperation.loadAvailability,
           ),
         );
@@ -318,7 +450,10 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       (availability) {
         DateTime selectedDate = state.selectedDate!;
         if (availability.days.isNotEmpty) {
-          final availableDate = availability.days.firstWhere((day) => day.slots.isNotEmpty, orElse: () => availability.days.first);
+          final availableDate = availability.days.firstWhere(
+            (day) => day.slots.isNotEmpty,
+            orElse: () => availability.days.first,
+          );
           selectedDate = availableDate.date;
         }
 
@@ -336,12 +471,22 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     );
   }
 
-  Future<void> _onBookSessionRequested(BookSessionRequested event, Emitter<SessionsState> emit) async {
-    emit(state.copyWith(isProcessingBook: true, clearError: true, clearSuccess: true));
+  Future<void> _onBookSessionRequested(
+    BookSessionRequested event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isProcessingBook: true,
+        clearError: true,
+        clearSuccess: true,
+      ),
+    );
 
     final result = await bookSessionUseCase(
       BookSessionParams(
         stripePaymentMethodId: event.stripePaymentMethodId,
+        couponCode: event.couponCode,
         date: event.date,
         startTime: event.startTime,
         endTime: event.endTime,
@@ -373,10 +518,24 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     );
   }
 
-  Future<void> _onExtendSession(ExtendSession event, Emitter<SessionsState> emit) async {
-    emit(state.copyWith(isProcessingExtension: true, clearError: true, clearSuccess: true));
+  Future<void> _onExtendSession(
+    ExtendSession event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isProcessingExtension: true,
+        clearError: true,
+        clearSuccess: true,
+      ),
+    );
 
-    final result = await extendSessionUseCase(ExtendSessionParams(sessionId: event.sessionId, paymentMethodId: event.paymentMethodId));
+    final result = await extendSessionUseCase(
+      ExtendSessionParams(
+        sessionId: event.sessionId,
+        paymentMethodId: event.paymentMethodId,
+      ),
+    );
 
     result.fold(
       (failure) {
@@ -392,7 +551,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         emit(
           state.copyWith(
             isProcessingExtension: false,
-            successMessage: response.message ?? AppStrings.sessionExtendedSuccess,
+            successMessage:
+                response.message ?? AppStrings.sessionExtendedSuccess,
             lastOperation: SessionsOperation.extendSession,
           ),
         );

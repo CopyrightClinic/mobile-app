@@ -23,6 +23,8 @@ class SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final holdAmountText = session.sessionRequest?['couponId'] != null ? '\$0.00' : session.formattedHoldAmount;
+
     return GestureDetector(
       onTap: () => _navigateToSessionDetails(context),
       child: Container(
@@ -81,7 +83,7 @@ class SessionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      session.formattedHoldAmount,
+                      holdAmountText,
                       style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     SizedBox(height: DimensionConstants.gap2Px.h),
@@ -105,7 +107,7 @@ class SessionCard extends StatelessWidget {
                       disabledBackgroundColor: context.buttonDisabled,
                       textColor: context.darkTextPrimary,
                       borderRadius: DimensionConstants.radius52Px.r,
-                      padding: DimensionConstants.gap12Px.w,
+                      padding: DimensionConstants.gap12Px.d,
                       child: TranslatedText(
                         AppStrings.cancelSession,
                         style: TextStyle(
@@ -124,7 +126,7 @@ class SessionCard extends StatelessWidget {
                       disabledBackgroundColor: context.buttonDisabled,
                       textColor: Colors.white,
                       borderRadius: DimensionConstants.radius52Px.r,
-                      padding: DimensionConstants.gap12Px.w,
+                      padding: DimensionConstants.gap12Px.d,
                       child: TranslatedText(
                         AppStrings.joinSession,
                         style: TextStyle(

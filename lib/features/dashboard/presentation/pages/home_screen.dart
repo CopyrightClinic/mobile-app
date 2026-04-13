@@ -107,16 +107,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       SizedBox(width: DimensionConstants.gap8Px.w),
                       Container(
-                        width: DimensionConstants.gap40Px.w,
-                        height: DimensionConstants.gap40Px.w,
+                        width: DimensionConstants.gap40Px.d,
+                        height: DimensionConstants.gap40Px.d,
                         decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
                         child: InkWell(
                           onTap: () {
                             context.push(AppRoutes.notificationsRouteName);
                           },
-                          borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
+                          borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.d / 2).w),
                           child: Center(
-                            child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w),
+                            child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).d),
                           ),
                         ),
                       ),

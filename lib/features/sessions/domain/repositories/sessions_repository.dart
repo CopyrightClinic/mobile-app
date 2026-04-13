@@ -11,17 +11,35 @@ import '../entities/unlock_summary_response_entity.dart';
 import '../entities/extend_session_response_entity.dart';
 
 abstract class SessionsRepository {
-  Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({String? status, String? timezone, int? page, int? limit});
+  Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({
+    String? status,
+    String? timezone,
+    int? page,
+    int? limit,
+  });
   Future<Either<Failure, List<SessionEntity>>> getUpcomingSessions();
   Future<Either<Failure, List<SessionEntity>>> getCompletedSessions();
   Future<Either<Failure, SessionEntity>> getSessionById(String sessionId);
-  Future<Either<Failure, SessionDetailsEntity>> getSessionDetails({required String sessionId, String? timezone});
-  Future<Either<Failure, SubmitFeedbackResponseEntity>> submitSessionFeedback({required String sessionId, required double rating, String? review});
-  Future<Either<Failure, CancelSessionResponseEntity>> cancelSession(String sessionId, String reason);
+  Future<Either<Failure, SessionDetailsEntity>> getSessionDetails({
+    required String sessionId,
+    String? timezone,
+  });
+  Future<Either<Failure, SubmitFeedbackResponseEntity>> submitSessionFeedback({
+    required String sessionId,
+    required double rating,
+    String? review,
+  });
+  Future<Either<Failure, CancelSessionResponseEntity>> cancelSession(
+    String sessionId,
+    String reason,
+  );
   Future<Either<Failure, SessionEntity>> joinSession(String sessionId);
-  Future<Either<Failure, SessionAvailabilityEntity>> getSessionAvailability(String timezone);
+  Future<Either<Failure, SessionAvailabilityEntity>> getSessionAvailability(
+    String timezone,
+  );
   Future<Either<Failure, BookSessionResponseEntity>> bookSession({
     required String stripePaymentMethodId,
+    String? couponCode,
     required String date,
     required String startTime,
     required String endTime,
@@ -33,5 +51,8 @@ abstract class SessionsRepository {
     required String paymentMethodId,
     required double summaryFee,
   });
-  Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({required String sessionId, required String paymentMethodId});
+  Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({
+    required String sessionId,
+    required String paymentMethodId,
+  });
 }
