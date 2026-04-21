@@ -178,6 +178,9 @@ class SessionsRepositoryImpl implements SessionsRepository {
     required String endTime,
     required String summary,
     required String timezone,
+    String? eligibilityCategory,
+    String? eligibilitySummary,
+    bool? eligibilityIsLegitimate,
   }) async {
     try {
       final response = await remoteDataSource.bookSession(
@@ -188,6 +191,9 @@ class SessionsRepositoryImpl implements SessionsRepository {
         endTime: endTime,
         summary: summary,
         timezone: timezone,
+        eligibilityCategory: eligibilityCategory,
+        eligibilitySummary: eligibilitySummary,
+        eligibilityIsLegitimate: eligibilityIsLegitimate,
       );
       return Right(response.toEntity());
     } on CustomException catch (e) {

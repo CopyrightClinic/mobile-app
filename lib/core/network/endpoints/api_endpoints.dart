@@ -96,6 +96,8 @@ class ApiEndpoint {
     }
   }
 
+  static String haroldEligibilityCheck(String evaluationId) => '/copyright-evaluation/$evaluationId/eligibility-check';
+
   /// Notifications endpoints
   ///
   /// Provides notification operations:

@@ -13,6 +13,9 @@ class BookSessionParams extends Equatable {
   final String endTime;
   final String summary;
   final String timezone;
+  final String? eligibilityCategory;
+  final String? eligibilitySummary;
+  final bool? eligibilityIsLegitimate;
 
   const BookSessionParams({
     required this.stripePaymentMethodId,
@@ -22,6 +25,9 @@ class BookSessionParams extends Equatable {
     required this.endTime,
     required this.summary,
     required this.timezone,
+    this.eligibilityCategory,
+    this.eligibilitySummary,
+    this.eligibilityIsLegitimate,
   });
 
   @override
@@ -33,6 +39,9 @@ class BookSessionParams extends Equatable {
     endTime,
     summary,
     timezone,
+    eligibilityCategory,
+    eligibilitySummary,
+    eligibilityIsLegitimate,
   ];
 }
 
@@ -54,6 +63,9 @@ class BookSessionUseCase
       endTime: params.endTime,
       summary: params.summary,
       timezone: params.timezone,
+      eligibilityCategory: params.eligibilityCategory,
+      eligibilitySummary: params.eligibilitySummary,
+      eligibilityIsLegitimate: params.eligibilityIsLegitimate,
     );
   }
 }

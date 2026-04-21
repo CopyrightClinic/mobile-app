@@ -22,6 +22,12 @@ class BookSessionRequestModel {
   final String date;
   final BookSessionSlotModel slot;
   final String summary;
+  @JsonKey(includeIfNull: false)
+  final String? eligibilityCategory;
+  @JsonKey(includeIfNull: false)
+  final String? eligibilitySummary;
+  @JsonKey(includeIfNull: false)
+  final bool? eligibilityIsLegitimate;
 
   const BookSessionRequestModel({
     required this.stripePaymentMethodId,
@@ -29,6 +35,9 @@ class BookSessionRequestModel {
     required this.date,
     required this.slot,
     required this.summary,
+    this.eligibilityCategory,
+    this.eligibilitySummary,
+    this.eligibilityIsLegitimate,
   });
 
   factory BookSessionRequestModel.fromJson(Map<String, dynamic> json) =>

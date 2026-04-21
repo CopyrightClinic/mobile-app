@@ -9,6 +9,9 @@ class ConfirmBookingScreenParams {
   final String? couponCode;
   final String query;
   final SessionFeeEntity fee;
+  final String? eligibilityCategory;
+  final String? eligibilitySummary;
+  final bool? eligibilityIsLegitimate;
 
   const ConfirmBookingScreenParams({
     required this.sessionDate,
@@ -18,5 +21,8 @@ class ConfirmBookingScreenParams {
     this.couponCode,
     required this.query,
     required this.fee,
+    this.eligibilityCategory,
+    this.eligibilitySummary,
+    this.eligibilityIsLegitimate,
   });
 }

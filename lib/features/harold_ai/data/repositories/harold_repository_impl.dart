@@ -5,6 +5,7 @@ import '../../../../core/network/exception/custom_exception.dart';
 
 import '../datasources/harold_remote_data_source.dart';
 import '../models/harold_request_model.dart';
+import '../../domain/entities/harold_eligibility_result.dart';
 import '../../domain/entities/harold_evaluation_result.dart';
 import '../../domain/repositories/harold_repository.dart';
 
@@ -24,6 +25,21 @@ class HaroldRepositoryImpl implements HaroldRepository {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(ServerFailure('${AppStrings.unexpectedErrorOccurredWhileEvaluatingQuery}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, HaroldEligibilityResult>> checkEligibility({
+    required String evaluationId,
+    required Map<String, dynamic> answersPayload,
+  }) async {
+    try {
+      final response = await remoteDataSource.checkEligibility(evaluationId: evaluationId, answersPayload: answersPayload);
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.unexpectedErrorOccurred}: $e'));
     }
   }
 }

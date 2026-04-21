@@ -183,6 +183,9 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
         couponCode: _appliedCouponCode,
         query: widget.params.query,
         fee: _sessionFee,
+        eligibilityCategory: widget.params.eligibilityCategory,
+        eligibilitySummary: widget.params.eligibilitySummary,
+        eligibilityIsLegitimate: widget.params.eligibilityIsLegitimate,
       ),
     );
   }

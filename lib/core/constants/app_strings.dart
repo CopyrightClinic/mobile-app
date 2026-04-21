@@ -147,6 +147,10 @@ class AppStrings {
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
   static const errorMessage = 'errorMessage';
+  static const yes = 'yes';
+  static const no = 'no';
+  static const notSure = 'notSure';
+  static const next = 'next';
 
   // What We Do Screen
   static const whatWeDoDescription = 'whatWeDoDescription';
@@ -301,6 +305,7 @@ class AppStrings {
   static const haroldConsultationDescription = 'haroldConsultationDescription';
   static const haroldConsultationDescriptionDynamic =
       'haroldConsultationDescriptionDynamic';
+  static const haroldSuccessOriginalInputLabel = 'haroldSuccessOriginalInputLabel';
   static const scheduleAppointment = 'scheduleAppointment';
   static const yourMatterFallsOutsideScope = 'yourMatterFallsOutsideScope';
   static const goToHome = 'goToHome';
@@ -310,6 +315,23 @@ class AppStrings {
   static const unexpectedErrorOccurred = 'unexpectedErrorOccurred';
   static const unexpectedErrorOccurredWhileEvaluatingQuery =
       'unexpectedErrorOccurredWhileEvaluatingQuery';
+  static const haroldIntakeQ1Prompt = 'haroldIntakeQ1Prompt';
+  static const haroldIntakeQ2Prompt = 'haroldIntakeQ2Prompt';
+  static const haroldIntakeQ2OptionCreator = 'haroldIntakeQ2OptionCreator';
+  static const haroldIntakeQ2OptionAccused = 'haroldIntakeQ2OptionAccused';
+  static const haroldIntakeQ2OptionUnsure = 'haroldIntakeQ2OptionUnsure';
+  static const haroldIntakeQ3Prompt = 'haroldIntakeQ3Prompt';
+  static const haroldIntakeQ4CreatorPrompt = 'haroldIntakeQ4CreatorPrompt';
+  static const haroldIntakeQ4AccusedPrompt = 'haroldIntakeQ4AccusedPrompt';
+  static const haroldIntakeQ4UnsurePrompt = 'haroldIntakeQ4UnsurePrompt';
+  static const haroldIntakeQ4UnsureOptionUsedMyWork = 'haroldIntakeQ4UnsureOptionUsedMyWork';
+  static const haroldIntakeQ4UnsureOptionRaisedConcern = 'haroldIntakeQ4UnsureOptionRaisedConcern';
+  static const haroldIntakeQ4Prompt = 'haroldIntakeQ4Prompt';
+  static const haroldIntakeQ5Prompt = 'haroldIntakeQ5Prompt';
+  static const haroldIntakeQ6Prompt = 'haroldIntakeQ6Prompt';
+  static const haroldIntakeTerminationNotCopyright = 'haroldIntakeTerminationNotCopyright';
+  static const haroldEligibilityCategoryBMessage = 'haroldEligibilityCategoryBMessage';
+  static const haroldEvaluationIdMissing = 'haroldEvaluationIdMissing';
   static const speechRecognitionError = 'speechRecognitionError';
   static const speechRecognitionNetworkError = 'speechRecognitionNetworkError';
   static const speechRecognitionDisabledError =

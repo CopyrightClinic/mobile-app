@@ -366,6 +366,9 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         endTime: parsedTimeSlot.endTimeIso,
         summary: summary,
         timezone: timezone,
+        eligibilityCategory: widget.params.eligibilityCategory,
+        eligibilitySummary: widget.params.eligibilitySummary,
+        eligibilityIsLegitimate: widget.params.eligibilityIsLegitimate,
       ),
     );
   }

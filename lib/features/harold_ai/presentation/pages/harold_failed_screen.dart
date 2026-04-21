@@ -21,11 +21,7 @@ class HaroldFailedScreen extends StatelessWidget {
   const HaroldFailedScreen({super.key, required this.params});
 
   void _handleBackPress(BuildContext context) {
-    if (params.fromAuthFlow) {
-      context.go(AppRoutes.homeRouteName);
-    } else {
-      context.pop();
-    }
+    context.go(AppRoutes.homeRouteName);
   }
 
   @override
@@ -45,7 +41,7 @@ class HaroldFailedScreen extends StatelessWidget {
               GlobalImage(assetPath: ImageConstants.haroldFailed, width: 157.w, height: 380.h, fit: BoxFit.contain),
               SizedBox(height: DimensionConstants.gap26Px.h),
               TranslatedText(
-                AppStrings.yourMatterFallsOutsideScope,
+                params.overrideMessageKey ?? AppStrings.yourMatterFallsOutsideScope,
                 style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
                 textAlign: TextAlign.center,
               ),

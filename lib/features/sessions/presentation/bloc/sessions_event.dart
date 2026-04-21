@@ -98,6 +98,9 @@ class BookSessionRequested extends SessionsEvent {
   final String endTime;
   final String summary;
   final String timezone;
+  final String? eligibilityCategory;
+  final String? eligibilitySummary;
+  final bool? eligibilityIsLegitimate;
 
   const BookSessionRequested({
     required this.stripePaymentMethodId,
@@ -107,6 +110,9 @@ class BookSessionRequested extends SessionsEvent {
     required this.endTime,
     required this.summary,
     required this.timezone,
+    this.eligibilityCategory,
+    this.eligibilitySummary,
+    this.eligibilityIsLegitimate,
   });
 
   @override
@@ -118,6 +124,9 @@ class BookSessionRequested extends SessionsEvent {
     endTime,
     summary,
     timezone,
+    eligibilityCategory,
+    eligibilitySummary,
+    eligibilityIsLegitimate,
   ];
 }
 

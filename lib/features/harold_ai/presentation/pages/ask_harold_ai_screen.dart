@@ -134,6 +134,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
             isUserAuthenticated: state.isUserAuthenticated,
             query: state.query,
             fee: state.fee,
+            userType: state.userType,
+            evaluationId: state.evaluationId,
           );
         } else if (state is HaroldAiFailure) {
           HaroldNavigationService.handleHaroldResult(
