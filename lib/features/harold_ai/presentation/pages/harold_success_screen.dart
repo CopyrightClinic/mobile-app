@@ -23,15 +23,14 @@ class HaroldSuccessScreen extends StatelessWidget {
   const HaroldSuccessScreen({super.key, required this.params});
 
   void _handleBackPress(BuildContext context) {
-    if (params.fromAuthFlow) {
-      context.go(AppRoutes.homeRouteName);
-    } else {
-      context.pop();
-    }
+    context.go(AppRoutes.homeRouteName);
   }
 
   void _handleScheduleAppointment(BuildContext context) {
-    context.push(AppRoutes.scheduleSessionRouteName, extra: ScheduleSessionScreenParams(query: params.query ?? ''));
+    context.push(
+      AppRoutes.scheduleSessionRouteName,
+      extra: ScheduleSessionScreenParams(query: params.query ?? '', eligibilitySummary: params.eligibility?.summary),
+    );
   }
 
   String _getFormattedPrice() {
@@ -58,37 +57,37 @@ class HaroldSuccessScreen extends StatelessWidget {
         leading: CustomBackButton(onPressed: () => _handleBackPress(context)),
       ),
       body: SafeArea(
-        child: Container(
+        child: Padding(
           padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-          width: double.infinity,
           child: Column(
             children: [
-              GlobalImage(assetPath: ImageConstants.haroldSuccess, width: 200.w, height: 330.h, fit: BoxFit.contain),
-              SizedBox(height: DimensionConstants.gap26Px.h),
-
-              TranslatedText(
-                AppStrings.haroldCanConnectYou,
-                style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
-                textAlign: TextAlign.center,
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      GlobalImage(assetPath: ImageConstants.haroldSuccess, width: 200.w, height: 330.h, fit: BoxFit.contain),
+                      SizedBox(height: DimensionConstants.gap26Px.h),
+                      TranslatedText(
+                        AppStrings.haroldCanConnectYou,
+                        style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: DimensionConstants.gap12Px.h),
+                      Text(
+                        _getConsultationDescription(context),
+                        style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-
-              SizedBox(height: DimensionConstants.gap12Px.h),
-
-              Text(
-                _getConsultationDescription(context),
-                style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
-                textAlign: TextAlign.center,
-              ),
-
-              const Spacer(),
-
               AuthButton(
                 text: AppStrings.scheduleAppointment,
                 onPressed: () => _handleScheduleAppointment(context),
                 isLoading: false,
                 isEnabled: true,
               ),
-
               SizedBox(height: DimensionConstants.gap10Px.h),
             ],
           ),
