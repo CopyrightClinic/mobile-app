@@ -354,7 +354,12 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
     final formattedDate = SessionDateTimeUtils.formatDateToIso(
       widget.params.sessionDate,
     );
-    final summary = widget.params.query;
+    final summary = widget.params.eligibilitySummary?.trim() ?? '';
+    if (summary.isEmpty) {
+      SnackBarUtils.showError(context, AppStrings.unexpectedErrorOccurred.tr());
+      return;
+    }
+
     final String timezone = await TimezoneHelper.getUserTimezone();
 
     _sessionsBloc.add(

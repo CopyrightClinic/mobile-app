@@ -58,6 +58,7 @@ import 'features/speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
 import 'features/harold_ai/data/datasources/harold_remote_data_source.dart';
 import 'features/harold_ai/data/repositories/harold_repository_impl.dart';
 import 'features/harold_ai/domain/repositories/harold_repository.dart';
+import 'features/harold_ai/domain/usecases/check_harold_eligibility_usecase.dart';
 import 'features/harold_ai/domain/usecases/evaluate_query_usecase.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
 import 'core/services/zoom_service.dart';
@@ -162,6 +163,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PauseSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
+  sl.registerLazySingleton(() => CheckHaroldEligibilityUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
   sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
   sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
