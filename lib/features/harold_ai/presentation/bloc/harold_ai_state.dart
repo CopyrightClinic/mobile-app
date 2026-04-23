@@ -24,13 +24,7 @@ class HaroldAiSuccess extends HaroldAiState {
   final String? userType;
   final String? evaluationId;
 
-  const HaroldAiSuccess({
-    required this.isUserAuthenticated,
-    required this.query,
-    this.fee,
-    this.userType,
-    this.evaluationId,
-  });
+  const HaroldAiSuccess({required this.isUserAuthenticated, required this.query, this.fee, this.userType, this.evaluationId});
 
   @override
   List<Object?> get props => [isUserAuthenticated, query, fee, userType, evaluationId];

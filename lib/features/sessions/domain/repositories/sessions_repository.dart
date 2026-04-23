@@ -45,9 +45,6 @@ abstract class SessionsRepository {
     required String endTime,
     required String summary,
     required String timezone,
-    String? eligibilityCategory,
-    String? eligibilitySummary,
-    bool? eligibilityIsLegitimate,
   });
   Future<Either<Failure, UnlockSummaryResponseEntity>> unlockSessionSummary({
     required String sessionId,

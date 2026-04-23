@@ -8,19 +8,17 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
-import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_back_button.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/translated_text.dart';
-import '../../../../di.dart';
-import '../../domain/usecases/check_harold_eligibility_usecase.dart';
 import '../cubit/harold_intake_cubit.dart' show HaroldIntakeCubit, HaroldIntakeOptionIds;
 import '../cubit/harold_intake_state.dart';
+import '../harold_intake_qa_formatter.dart';
 import 'params/harold_failed_screen_params.dart';
 import 'params/harold_intake_questions_screen_params.dart';
-import 'params/harold_success_screen_params.dart';
+import 'params/harold_intake_review_screen_params.dart';
 
 class HaroldIntakeQuestionsScreen extends StatefulWidget {
   final HaroldIntakeQuestionsScreenParams params;
@@ -34,7 +32,6 @@ class HaroldIntakeQuestionsScreen extends StatefulWidget {
 class _HaroldIntakeQuestionsScreenState extends State<HaroldIntakeQuestionsScreen> {
   late final HaroldIntakeCubit _cubit;
   final TextEditingController _textController = TextEditingController();
-  bool _eligibilityInFlight = false;
   int _previousIndexForAnimation = -1;
   bool _stepAnimationForward = true;
 
@@ -67,10 +64,6 @@ class _HaroldIntakeQuestionsScreenState extends State<HaroldIntakeQuestionsScree
               ),
             );
             return;
-          }
-
-          if (state.isComplete && state.result != null) {
-            _runEligibilityCheck(context, state);
           }
         },
         builder: (context, state) {
@@ -132,7 +125,7 @@ class _HaroldIntakeQuestionsScreenState extends State<HaroldIntakeQuestionsScree
 
   Widget _buildAnimatedStepBody({required BuildContext context, required HaroldIntakeStep step, required HaroldIntakeState state}) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 320),
+      duration: const Duration(milliseconds: 500),
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
       layoutBuilder: (currentChild, previousChildren) {
@@ -294,7 +287,7 @@ class _HaroldIntakeQuestionsScreenState extends State<HaroldIntakeQuestionsScree
                 ? state.answerFor(step.id) != null
                 : (state.answerFor(step.id) == HaroldIntakeOptionIds.notSure || _textController.text.trim().isNotEmpty));
     final bool isLastStep = step == null ? false : (state.currentIndex == state.steps.length - 1);
-    final String buttonTextKey = isLastStep ? AppStrings.submit : AppStrings.next;
+    final String buttonTextKey = isLastStep ? AppStrings.haroldIntakeReview : AppStrings.next;
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
@@ -303,11 +296,23 @@ class _HaroldIntakeQuestionsScreenState extends State<HaroldIntakeQuestionsScree
         onPressed:
             !canContinue
                 ? null
-                : () {
-                  if (isTextStep) {
-                    context.read<HaroldIntakeCubit>().next(textAnswer: _textController.text.trim());
+                : () async {
+                  final cubit = context.read<HaroldIntakeCubit>();
+                  if (isLastStep) {
+                    if (isTextStep) {
+                      cubit.next(textAnswer: _textController.text.trim(), forReview: true);
+                    } else {
+                      cubit.next(forReview: true);
+                    }
+                    if (!cubit.state.isTerminated) {
+                      await _openReview(context, cubit.state);
+                    }
                   } else {
-                    context.read<HaroldIntakeCubit>().next();
+                    if (isTextStep) {
+                      cubit.next(textAnswer: _textController.text.trim());
+                    } else {
+                      cubit.next();
+                    }
                   }
                 },
         isLoading: false,
@@ -316,85 +321,24 @@ class _HaroldIntakeQuestionsScreenState extends State<HaroldIntakeQuestionsScree
     );
   }
 
-  Future<void> _runEligibilityCheck(BuildContext context, HaroldIntakeState state) async {
-    if (_eligibilityInFlight) return;
-    _eligibilityInFlight = true;
-    try {
-      final evalId = widget.params.evaluationId;
-      if (evalId == null || evalId.isEmpty) {
-        if (!context.mounted) return;
-        SnackBarUtils.showError(context, AppStrings.haroldEvaluationIdMissing.tr());
-        _cubit.clearCompletion();
-        return;
-      }
-
-      final payload = _buildEligibilityPayload(state);
-      final result = await sl<CheckHaroldEligibilityUseCase>()(
-        CheckHaroldEligibilityParams(evaluationId: evalId, answersPayload: payload),
-      );
-
-      if (!context.mounted) return;
-
-      result.fold(
-        (failure) {
-          SnackBarUtils.showError(context, failure.message ?? AppStrings.unexpectedErrorOccurred.tr());
-          _cubit.clearCompletion();
-        },
-        (eligibility) {
-          final cat = eligibility.category.trim().toUpperCase();
-          if (cat == 'B') {
-            context.go(
-              AppRoutes.haroldFailedRouteName,
-              extra: HaroldFailedScreenParams(
-                fromAuthFlow: widget.params.fromAuthFlow,
-                query: widget.params.query,
-                overrideMessageKey: AppStrings.haroldEligibilityCategoryBMessage,
-              ),
-            );
-          } else if (cat == 'A' || cat == 'C') {
-            context.pushReplacement(
-              AppRoutes.haroldSuccessRouteName,
-              extra: HaroldSuccessScreenParams(
-                fromAuthFlow: widget.params.fromAuthFlow,
-                query: widget.params.query,
-                fee: widget.params.fee,
-                eligibility: eligibility,
-              ),
-            );
-          } else {
-            SnackBarUtils.showError(context, AppStrings.unexpectedErrorOccurred.tr());
-            _cubit.clearCompletion();
-          }
-        },
-      );
-    } finally {
-      _eligibilityInFlight = false;
+  Future<void> _openReview(BuildContext context, HaroldIntakeState state) async {
+    final rows = HaroldIntakeQaFormatter.buildReviewRows(state, tr);
+    final payload = HaroldIntakeQaFormatter.buildEligibilityPayload(state, tr);
+    final result = await context.push<String?>(
+      AppRoutes.haroldIntakeReviewRouteName,
+      extra: HaroldIntakeReviewScreenParams(
+        fromAuthFlow: widget.params.fromAuthFlow,
+        query: widget.params.query,
+        fee: widget.params.fee,
+        evaluationId: widget.params.evaluationId,
+        rows: rows,
+        eligibilityPayload: payload,
+      ),
+    );
+    if (!context.mounted) return;
+    if (result == kHaroldIntakeReviewPopEditFromStart) {
+      _cubit.goToFirstQuestion();
     }
-  }
-
-  Map<String, dynamic> _buildEligibilityPayload(HaroldIntakeState state) {
-    final out = <String, dynamic>{};
-    final steps = state.steps;
-    for (var i = 0; i < steps.length; i++) {
-      final step = steps[i];
-      final answerRaw = state.answersById[step.id] ?? '';
-      final question = tr(step.promptKey);
-      final answer = _formatEligibilityAnswer(step, answerRaw);
-      out['q${i + 1}'] = {'question': question, 'answer': answer};
-    }
-    return out;
-  }
-
-  String _formatEligibilityAnswer(HaroldIntakeStep step, String raw) {
-    if (step.type == HaroldIntakeQuestionType.singleChoice) {
-      if (raw == HaroldIntakeOptionIds.notSure) return AppStrings.notSure.tr();
-      for (final option in step.options) {
-        if (option.id == raw) return tr(option.labelKey);
-      }
-      return raw;
-    }
-    if (raw == HaroldIntakeOptionIds.notSure) return AppStrings.notSure.tr();
-    return raw;
   }
 
   void _syncTextController({required HaroldIntakeStep step, required HaroldIntakeState state}) {

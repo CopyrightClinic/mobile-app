@@ -88,15 +88,15 @@ class ApiEndpoint {
     }
   }
 
-  static String harold(HaroldEndpoint endpoint) {
+  static String harold(HaroldEndpoint endpoint, {String? evaluationId}) {
     const path = '/copyright-evaluation';
     switch (endpoint) {
       case HaroldEndpoint.EVALUATE:
         return '$path/evaluate';
+      case HaroldEndpoint.ELIGIBILITY_CHECK:
+        return '$path/${evaluationId ?? ''}/eligibility-check';
     }
   }
-
-  static String haroldEligibilityCheck(String evaluationId) => '/copyright-evaluation/$evaluationId/eligibility-check';
 
   /// Notifications endpoints
   ///

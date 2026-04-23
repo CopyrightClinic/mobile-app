@@ -22,9 +22,11 @@ import '../../features/harold_ai/presentation/pages/harold_signup.dart';
 import '../../features/harold_ai/presentation/pages/harold_success_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_failed_screen.dart';
 import '../../features/harold_ai/presentation/pages/harold_intake_questions_screen.dart';
+import '../../features/harold_ai/presentation/pages/harold_intake_review_screen.dart';
 import '../../features/harold_ai/presentation/pages/params/harold_success_screen_params.dart';
 import '../../features/harold_ai/presentation/pages/params/harold_failed_screen_params.dart';
 import '../../features/harold_ai/presentation/pages/params/harold_intake_questions_screen_params.dart';
+import '../../features/harold_ai/presentation/pages/params/harold_intake_review_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/select_payment_method_screen_params.dart';
 import '../../features/sessions/presentation/pages/params/confirm_booking_screen_params.dart';
 import '../../features/sessions/presentation/pages/session_details_screen.dart';
@@ -212,6 +214,14 @@ class AppRouter {
         builder: (context, state) {
           final params = state.extra as HaroldIntakeQuestionsScreenParams;
           return HaroldIntakeQuestionsScreen(params: params);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.haroldIntakeReviewRouteName,
+        name: AppRoutes.haroldIntakeReviewRouteName,
+        builder: (context, state) {
+          final params = state.extra as HaroldIntakeReviewScreenParams;
+          return HaroldIntakeReviewScreen(params: params);
         },
       ),
       GoRoute(

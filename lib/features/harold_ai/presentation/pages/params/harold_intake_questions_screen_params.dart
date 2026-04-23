@@ -7,12 +7,5 @@ class HaroldIntakeQuestionsScreenParams {
   final String? userType;
   final String? evaluationId;
 
-  const HaroldIntakeQuestionsScreenParams({
-    this.fromAuthFlow = false,
-    required this.query,
-    this.fee,
-    this.userType,
-    this.evaluationId,
-  });
+  const HaroldIntakeQuestionsScreenParams({this.fromAuthFlow = false, required this.query, this.fee, this.userType, this.evaluationId});
 }
-

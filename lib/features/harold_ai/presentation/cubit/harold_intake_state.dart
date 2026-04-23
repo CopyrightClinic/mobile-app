@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import '../../domain/entities/harold_intake_result.dart';
-
 enum HaroldIntakeQuestionType { singleChoice, text }
 
 class HaroldIntakeOption extends Equatable {
@@ -39,8 +37,6 @@ class HaroldIntakeState extends Equatable {
   final Map<String, String> answersById;
   final bool isTerminated;
   final String? terminationMessageKey;
-  final bool isComplete;
-  final HaroldIntakeResult? result;
 
   const HaroldIntakeState({
     required this.steps,
@@ -48,8 +44,6 @@ class HaroldIntakeState extends Equatable {
     required this.answersById,
     required this.isTerminated,
     required this.terminationMessageKey,
-    required this.isComplete,
-    required this.result,
   });
 
   factory HaroldIntakeState.initial() {
@@ -59,8 +53,6 @@ class HaroldIntakeState extends Equatable {
       answersById: {},
       isTerminated: false,
       terminationMessageKey: null,
-      isComplete: false,
-      result: null,
     );
   }
 
@@ -70,8 +62,6 @@ class HaroldIntakeState extends Equatable {
     Map<String, String>? answersById,
     bool? isTerminated,
     String? terminationMessageKey,
-    bool? isComplete,
-    HaroldIntakeResult? result,
   }) {
     return HaroldIntakeState(
       steps: steps ?? this.steps,
@@ -79,8 +69,6 @@ class HaroldIntakeState extends Equatable {
       answersById: answersById ?? this.answersById,
       isTerminated: isTerminated ?? this.isTerminated,
       terminationMessageKey: terminationMessageKey ?? this.terminationMessageKey,
-      isComplete: isComplete ?? this.isComplete,
-      result: result ?? this.result,
     );
   }
 
@@ -89,6 +77,5 @@ class HaroldIntakeState extends Equatable {
   String? answerFor(String stepId) => answersById[stepId];
 
   @override
-  List<Object?> get props => [steps, currentIndex, answersById, isTerminated, terminationMessageKey, isComplete, result];
+  List<Object?> get props => [steps, currentIndex, answersById, isTerminated, terminationMessageKey];
 }
-

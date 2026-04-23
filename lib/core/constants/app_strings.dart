@@ -329,6 +329,11 @@ class AppStrings {
   static const haroldIntakeQ4Prompt = 'haroldIntakeQ4Prompt';
   static const haroldIntakeQ5Prompt = 'haroldIntakeQ5Prompt';
   static const haroldIntakeQ6Prompt = 'haroldIntakeQ6Prompt';
+  static const haroldIntakeReview = 'haroldIntakeReview';
+  static const haroldIntakeReviewTitle = 'haroldIntakeReviewTitle';
+  static const haroldIntakeReviewAnswersHeading = 'haroldIntakeReviewAnswersHeading';
+  static const haroldIntakeReviewSubtitle = 'haroldIntakeReviewSubtitle';
+  static const haroldIntakeEdit = 'haroldIntakeEdit';
   static const haroldIntakeTerminationNotCopyright = 'haroldIntakeTerminationNotCopyright';
   static const haroldEligibilityCategoryBMessage = 'haroldEligibilityCategoryBMessage';
   static const haroldEvaluationIdMissing = 'haroldEvaluationIdMissing';

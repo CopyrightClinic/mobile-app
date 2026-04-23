@@ -49,9 +49,6 @@ abstract class SessionsRemoteDataSource {
     required String endTime,
     required String summary,
     required String timezone,
-    String? eligibilityCategory,
-    String? eligibilitySummary,
-    bool? eligibilityIsLegitimate,
   });
   Future<UnlockSummaryResponseModel> unlockSessionSummary({
     required String sessionId,
@@ -200,9 +197,6 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
     required String endTime,
     required String summary,
     required String timezone,
-    String? eligibilityCategory,
-    String? eligibilitySummary,
-    bool? eligibilityIsLegitimate,
   }) async {
     final request = BookSessionRequestModel(
       stripePaymentMethodId: stripePaymentMethodId,
@@ -210,9 +204,6 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       date: date,
       slot: BookSessionSlotModel(start: startTime, end: endTime),
       summary: summary,
-      eligibilityCategory: eligibilityCategory,
-      eligibilitySummary: eligibilitySummary,
-      eligibilityIsLegitimate: eligibilityIsLegitimate,
     );
     return await apiService.postData<BookSessionResponseModel>(
       endpoint: ApiEndpoint.sessions(SessionsEndpoint.BOOK_SESSION),

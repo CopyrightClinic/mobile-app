@@ -192,9 +192,7 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
           timeSlot: scheduleState.selectedTimeSlot!,
           query: widget.params.query,
           fee: scheduleState.availability!.fee,
-          eligibilityCategory: widget.params.eligibilityCategory,
           eligibilitySummary: widget.params.eligibilitySummary,
-          eligibilityIsLegitimate: widget.params.eligibilityIsLegitimate,
         ),
       );
     }

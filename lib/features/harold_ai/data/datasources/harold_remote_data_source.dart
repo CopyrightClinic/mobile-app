@@ -47,7 +47,7 @@ class HaroldRemoteDataSourceImpl implements HaroldRemoteDataSource {
   Future<HaroldEligibilityResponseModel> checkEligibility({required String evaluationId, required JSON answersPayload}) async {
     try {
       final response = await apiService.postData<HaroldEligibilityResponseModel>(
-        endpoint: ApiEndpoint.haroldEligibilityCheck(evaluationId),
+        endpoint: ApiEndpoint.harold(HaroldEndpoint.ELIGIBILITY_CHECK, evaluationId: evaluationId),
         data: answersPayload,
         requiresAuthToken: false,
         converter: (ResponseModel<JSON> response) {

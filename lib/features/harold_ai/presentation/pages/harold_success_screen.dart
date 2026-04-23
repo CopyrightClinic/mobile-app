@@ -29,12 +29,7 @@ class HaroldSuccessScreen extends StatelessWidget {
   void _handleScheduleAppointment(BuildContext context) {
     context.push(
       AppRoutes.scheduleSessionRouteName,
-      extra: ScheduleSessionScreenParams(
-        query: params.query ?? '',
-        eligibilityCategory: params.eligibility?.category,
-        eligibilitySummary: params.eligibility?.summary,
-        eligibilityIsLegitimate: params.eligibility?.isLegitimate,
-      ),
+      extra: ScheduleSessionScreenParams(query: params.query ?? '', eligibilitySummary: params.eligibility?.summary),
     );
   }
 
@@ -74,55 +69,15 @@ class HaroldSuccessScreen extends StatelessWidget {
                       SizedBox(height: DimensionConstants.gap26Px.h),
                       TranslatedText(
                         AppStrings.haroldCanConnectYou,
-                        style: TextStyle(
-                          color: context.darkTextPrimary,
-                          fontSize: DimensionConstants.font24Px.f,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: DimensionConstants.gap12Px.h),
                       Text(
                         _getConsultationDescription(context),
-                        style: TextStyle(
-                          color: context.darkTextPrimary,
-                          fontSize: DimensionConstants.font14Px.f,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                         textAlign: TextAlign.center,
                       ),
-                      if ((params.query ?? '').trim().isNotEmpty) ...[
-                        SizedBox(height: DimensionConstants.gap20Px.h),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TranslatedText(
-                            AppStrings.haroldSuccessOriginalInputLabel,
-                            style: TextStyle(
-                              color: context.darkTextSecondary,
-                              fontSize: DimensionConstants.font12Px.f,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: DimensionConstants.gap8Px.h),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(DimensionConstants.gap14Px.w),
-                          decoration: BoxDecoration(
-                            color: context.filledBgDark,
-                            borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
-                          ),
-                          child: Text(
-                            params.query!.trim(),
-                            style: TextStyle(
-                              color: context.darkTextPrimary,
-                              fontSize: DimensionConstants.font14Px.f,
-                              fontWeight: FontWeight.w400,
-                              height: 1.35,
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),

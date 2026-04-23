@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_strings.dart';
-import '../../domain/entities/harold_intake_result.dart';
 import 'harold_intake_state.dart';
 
 enum HaroldUserType { creator, accused, unsure, unknown }
@@ -56,7 +55,7 @@ class HaroldIntakeCubit extends Cubit<HaroldIntakeState> {
     emit(state.copyWith(answersById: nextAnswers));
   }
 
-  void next({String? textAnswer}) {
+  void next({String? textAnswer, bool forReview = false}) {
     final step = state.currentStep;
     if (step == null) return;
 
@@ -81,37 +80,53 @@ class HaroldIntakeCubit extends Cubit<HaroldIntakeState> {
     final terminationMessageKey = _terminationMessageKeyFor(nextAnswers);
     if (terminationMessageKey != null) {
       emit(
-        state.copyWith(answersById: nextAnswers, isTerminated: true, terminationMessageKey: terminationMessageKey, isComplete: false, result: null),
+        state.copyWith(answersById: nextAnswers, isTerminated: true, terminationMessageKey: terminationMessageKey),
       );
       return;
     }
 
     final steps = _buildSteps(nextAnswers);
     final nextIndex = (state.currentIndex + 1).clamp(0, steps.isEmpty ? 0 : steps.length - 1);
+    final wouldComplete = state.currentIndex + 1 >= steps.length;
 
-    final isComplete = state.currentIndex + 1 >= steps.length;
+    if (wouldComplete && forReview) {
+      emit(
+        state.copyWith(
+          answersById: nextAnswers,
+          steps: steps,
+          currentIndex: state.currentIndex,
+          isTerminated: false,
+          terminationMessageKey: null,
+        ),
+      );
+      return;
+    }
+
+    if (wouldComplete && !forReview) {
+      return;
+    }
+
     emit(
       state.copyWith(
         answersById: nextAnswers,
         steps: steps,
-        currentIndex: isComplete ? steps.length : nextIndex,
+        currentIndex: nextIndex,
         isTerminated: false,
         terminationMessageKey: null,
-        isComplete: isComplete,
-        result: isComplete ? HaroldIntakeResult(answersById: nextAnswers) : null,
       ),
     );
   }
 
   void goBack() {
-    if (state.isTerminated || state.isComplete) return;
+    if (state.isTerminated) return;
     if (state.currentIndex <= 0) return;
     emit(state.copyWith(currentIndex: state.currentIndex - 1));
   }
 
-  void clearCompletion() {
-    if (!state.isComplete || state.steps.isEmpty) return;
-    emit(state.copyWith(isComplete: false, result: null, currentIndex: state.steps.length - 1));
+  void goToFirstQuestion() {
+    if (state.isTerminated) return;
+    if (state.steps.isEmpty) return;
+    emit(state.copyWith(currentIndex: 0));
   }
 
   void _rebuildStepsAndEmit({required bool initial}) {

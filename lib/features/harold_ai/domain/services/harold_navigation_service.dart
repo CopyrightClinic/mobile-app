@@ -99,13 +99,7 @@ class HaroldNavigationService {
       if (isSuccess) {
         context.push(
           AppRoutes.haroldIntakeRouteName,
-          extra: HaroldIntakeQuestionsScreenParams(
-            fromAuthFlow: false,
-            query: query,
-            fee: fee,
-            userType: userType,
-            evaluationId: evaluationId,
-          ),
+          extra: HaroldIntakeQuestionsScreenParams(fromAuthFlow: false, query: query, fee: fee, userType: userType, evaluationId: evaluationId),
         );
       } else {
         context.push(AppRoutes.haroldFailedRouteName, extra: HaroldFailedScreenParams(fromAuthFlow: false, query: query));

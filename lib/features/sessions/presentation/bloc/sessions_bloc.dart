@@ -492,9 +492,6 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         endTime: event.endTime,
         summary: event.summary,
         timezone: event.timezone,
-        eligibilityCategory: event.eligibilityCategory,
-        eligibilitySummary: event.eligibilitySummary,
-        eligibilityIsLegitimate: event.eligibilityIsLegitimate,
       ),
     );
 
