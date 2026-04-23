@@ -1,35 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/enumns/api/harold_enums.dart';
+import '../constants/harold_intake_constants.dart';
 import 'harold_intake_state.dart';
-
-enum HaroldUserType { creator, accused, unsure, unknown }
-
-extension HaroldUserTypeParsing on HaroldUserType {
-  static HaroldUserType fromApi(String? raw) {
-    final normalized = (raw ?? '').trim().toLowerCase();
-    switch (normalized) {
-      case 'creator':
-        return HaroldUserType.creator;
-      case 'accused':
-        return HaroldUserType.accused;
-      case 'unsure':
-      case 'unknown':
-        return HaroldUserType.unsure;
-      default:
-        return HaroldUserType.unknown;
-    }
-  }
-}
-
-class HaroldIntakeQuestionIds {
-  static const q1CreativeExpression = 'q1_creative_expression';
-  static const q2Situation = 'q2_situation';
-  static const q3IpBoundary = 'q3_ip_boundary';
-  static const q4Conditional = 'q4_conditional';
-  static const q4OthersInvolved = 'q4_others_involved';
-  static const q6Impact = 'q6_impact';
-}
 
 class HaroldIntakeCubit extends Cubit<HaroldIntakeState> {
   final HaroldUserType _userType;
@@ -232,17 +206,4 @@ class HaroldIntakeCubit extends Cubit<HaroldIntakeState> {
         );
     }
   }
-}
-
-class HaroldIntakeOptionIds {
-  static const yes = 'yes';
-  static const no = 'no';
-  static const notSure = 'not_sure';
-
-  static const situationCreator = 'situation_creator';
-  static const situationAccused = 'situation_accused';
-  static const situationUnsure = 'situation_unsure';
-
-  static const concernUsedMyWork = 'concern_used_my_work';
-  static const concernRaisedAboutMyUse = 'concern_raised_about_my_use';
 }

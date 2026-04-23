@@ -1,5 +1,5 @@
 import '../../../../core/constants/app_strings.dart';
-import 'cubit/harold_intake_cubit.dart' show HaroldIntakeOptionIds;
+import 'constants/harold_intake_constants.dart';
 import 'cubit/harold_intake_state.dart';
 import 'pages/params/harold_intake_review_screen_params.dart';
 
