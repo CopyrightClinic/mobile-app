@@ -5,6 +5,13 @@ class SelectPaymentMethodScreenParams {
   final String timeSlot;
   final String query;
   final SessionFeeEntity fee;
+  final String? eligibilitySummary;
 
-  const SelectPaymentMethodScreenParams({required this.query, required this.sessionDate, required this.timeSlot, required this.fee});
+  const SelectPaymentMethodScreenParams({
+    required this.query,
+    required this.sessionDate,
+    required this.timeSlot,
+    required this.fee,
+    this.eligibilitySummary,
+  });
 }

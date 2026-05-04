@@ -29,11 +29,12 @@ class SessionDetailsUserEntity extends Equatable {
 class SessionRequestEntity extends Equatable {
   final String id;
   final String summary;
+  final String? couponId;
 
-  const SessionRequestEntity({required this.id, required this.summary});
+  const SessionRequestEntity({required this.id, required this.summary, this.couponId});
 
   @override
-  List<Object?> get props => [id, summary];
+  List<Object?> get props => [id, summary, couponId];
 }
 
 class SessionDetailsEntity extends Equatable {

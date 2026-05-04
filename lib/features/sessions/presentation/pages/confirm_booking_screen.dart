@@ -46,14 +46,22 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   Widget build(BuildContext context) {
     return BlocListener<SessionsBloc, SessionsState>(
       listener: (context, state) {
-        if (state.hasSuccess && state.lastOperation == SessionsOperation.scheduleSession) {
+        if (state.hasSuccess &&
+            state.lastOperation == SessionsOperation.scheduleSession) {
           context.go(AppRoutes.bookingRequestSentRouteName);
-        } else if (state.hasError && state.lastOperation == SessionsOperation.scheduleSession) {
+        } else if (state.hasError &&
+            state.lastOperation == SessionsOperation.scheduleSession) {
           SnackBarUtils.showError(context, state.errorMessage!);
-        } else if (state.hasSuccess && state.lastOperation == SessionsOperation.bookSession && state.bookSessionResponse != null) {
-          SnackBarUtils.showSuccess(context, AppStrings.sessionBookedSuccessfully.tr());
+        } else if (state.hasSuccess &&
+            state.lastOperation == SessionsOperation.bookSession &&
+            state.bookSessionResponse != null) {
+          SnackBarUtils.showSuccess(
+            context,
+            AppStrings.sessionBookedSuccessfully.tr(),
+          );
           context.go(AppRoutes.bookingRequestSentRouteName);
-        } else if (state.hasError && state.lastOperation == SessionsOperation.bookSession) {
+        } else if (state.hasError &&
+            state.lastOperation == SessionsOperation.bookSession) {
           SnackBarUtils.showError(context, state.errorMessage!);
         }
       },
@@ -65,7 +73,11 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           centerTitle: true,
           title: TranslatedText(
             AppStrings.confirmYourBooking,
-            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              color: context.darkTextPrimary,
+              fontSize: DimensionConstants.font18Px.f,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         body: SafeArea(
@@ -74,7 +86,9 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: DimensionConstants.gap16Px.w,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -105,7 +119,11 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       alignment: Alignment.center,
       child: TranslatedText(
         AppStrings.pleaseReviewSessionDetails,
-        style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+        style: TextStyle(
+          color: context.darkTextSecondary,
+          fontSize: DimensionConstants.font14Px.f,
+          fontWeight: FontWeight.w400,
+        ),
       ),
     );
   }
@@ -116,24 +134,43 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       children: [
         TranslatedText(
           AppStrings.sessionDetails,
-          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.darkTextPrimary,
+            fontSize: DimensionConstants.font20Px.f,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
-        SessionDetailsCard(sessionDate: widget.params.sessionDate, timeSlot: widget.params.timeSlot),
+        SessionDetailsCard(
+          sessionDate: widget.params.sessionDate,
+          timeSlot: widget.params.timeSlot,
+        ),
       ],
     );
   }
 
   Widget _buildPaymentMethodSection() {
+    if (widget.params.paymentMethod == null) {
+      return SizedBox(height: DimensionConstants.gap24Px.h);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TranslatedText(
           AppStrings.paymentMethod,
-          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.darkTextPrimary,
+            fontSize: DimensionConstants.font20Px.f,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
-        PaymentMethodCard(paymentMethod: widget.params.paymentMethod, action: NoPaymentMethodAction(), isSelected: false),
+        PaymentMethodCard(
+          paymentMethod: widget.params.paymentMethod!,
+          action: NoPaymentMethodAction(),
+          isSelected: false,
+        ),
         SizedBox(height: DimensionConstants.gap24Px.h),
       ],
     );
@@ -146,30 +183,56 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       children: [
         TranslatedText(
           AppStrings.paymentSummary,
-          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font20Px.f, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.darkTextPrimary,
+            fontSize: DimensionConstants.font20Px.f,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: DimensionConstants.gap16Px.h),
         Container(
           padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-          decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
+          decoration: BoxDecoration(
+            color: context.filledBgDark,
+            borderRadius: BorderRadius.circular(
+              DimensionConstants.radius12Px.r,
+            ),
+          ),
           child: Column(
             children: [
-              _buildPaymentSummaryItem(fee.formattedSessionFee, AppStrings.holdAmountDescription),
+              _buildPaymentSummaryItem(
+                fee.formattedSessionFee,
+                AppStrings.holdAmountDescription,
+              ),
               SizedBox(height: DimensionConstants.gap16Px.h),
-              _buildPaymentSummaryItem(fee.formattedProcessingFee, AppStrings.processingFeeNonRefundable),
+              _buildPaymentSummaryItem(
+                fee.formattedProcessingFee,
+                AppStrings.processingFeeNonRefundable,
+              ),
               SizedBox(height: DimensionConstants.gap16Px.h),
-              Container(height: 1.h, color: context.darkTextSecondary.withOpacity(0.2)),
+              Container(
+                height: 1.h,
+                color: context.darkTextSecondary.withOpacity(0.2),
+              ),
               SizedBox(height: DimensionConstants.gap16Px.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TranslatedText(
                     AppStrings.totalAmountLabel,
-                    style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
+                    style: TextStyle(
+                      fontSize: DimensionConstants.font18Px.f,
+                      fontWeight: FontWeight.w700,
+                      color: context.darkTextPrimary,
+                    ),
                   ),
                   Text(
                     fee.formattedTotalFee,
-                    style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700, color: context.darkTextPrimary),
+                    style: TextStyle(
+                      fontSize: DimensionConstants.font18Px.f,
+                      fontWeight: FontWeight.w700,
+                      color: context.darkTextPrimary,
+                    ),
                   ),
                 ],
               ),
@@ -192,10 +255,20 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
             children: [
               Text(
                 amountLabel,
-                style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+                style: TextStyle(
+                  fontSize: DimensionConstants.font16Px.f,
+                  fontWeight: FontWeight.w600,
+                  color: context.darkTextPrimary,
+                ),
               ),
               SizedBox(height: DimensionConstants.gap2Px.h),
-              TranslatedText(descriptionKey, style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary)),
+              TranslatedText(
+                descriptionKey,
+                style: TextStyle(
+                  fontSize: DimensionConstants.font14Px.f,
+                  color: context.darkTextSecondary,
+                ),
+              ),
             ],
           ),
         ),
@@ -206,11 +279,18 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   Widget _buildNoteSection() {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
+      decoration: BoxDecoration(
+        color: context.filledBgDark,
+        borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline, color: context.orange, size: DimensionConstants.gap20Px.w),
+          Icon(
+            Icons.info_outline,
+            color: context.orange,
+            size: DimensionConstants.gap20Px.w,
+          ),
           SizedBox(width: DimensionConstants.gap12Px.w),
           Expanded(
             child: Column(
@@ -218,12 +298,20 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
               children: [
                 TranslatedText(
                   AppStrings.note,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: context.darkTextPrimary,
+                    fontSize: DimensionConstants.font16Px.f,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 SizedBox(height: DimensionConstants.gap8Px.h),
                 TranslatedText(
                   AppStrings.paymentSecurityNote,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+                  style: TextStyle(
+                    color: context.darkTextSecondary,
+                    fontSize: DimensionConstants.font14Px.f,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ],
             ),
@@ -235,29 +323,49 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
 
   Widget _buildConfirmButton() {
     return Container(
-      padding: EdgeInsets.only(left: DimensionConstants.gap16Px.w, right: DimensionConstants.gap16Px.w, top: DimensionConstants.gap10Px.h),
+      padding: EdgeInsets.only(
+        left: DimensionConstants.gap16Px.w,
+        right: DimensionConstants.gap16Px.w,
+        top: DimensionConstants.gap10Px.h,
+      ),
       child: BlocBuilder<SessionsBloc, SessionsState>(
         builder: (context, state) {
-          final isLoading = state.isProcessingSchedule || state.isProcessingBook;
-          return AuthButton(text: AppStrings.confirmAndBookSession, onPressed: _onConfirmBooking, isLoading: isLoading, isEnabled: true);
+          final isLoading =
+              state.isProcessingSchedule || state.isProcessingBook;
+          return AuthButton(
+            text: AppStrings.confirmAndBookSession,
+            onPressed: _onConfirmBooking,
+            isLoading: isLoading,
+            isEnabled: true,
+          );
         },
       ),
     );
   }
 
   void _onConfirmBooking() async {
-    final parsedTimeSlot = SessionDateTimeUtils.parseTimeSlot(widget.params.timeSlot);
+    final parsedTimeSlot = SessionDateTimeUtils.parseTimeSlot(
+      widget.params.timeSlot,
+    );
     if (parsedTimeSlot == null) {
       return;
     }
 
-    final formattedDate = SessionDateTimeUtils.formatDateToIso(widget.params.sessionDate);
-    final summary = widget.params.query;
+    final formattedDate = SessionDateTimeUtils.formatDateToIso(
+      widget.params.sessionDate,
+    );
+    final summary = widget.params.eligibilitySummary?.trim() ?? '';
+    if (summary.isEmpty) {
+      SnackBarUtils.showError(context, AppStrings.unexpectedErrorOccurred.tr());
+      return;
+    }
+
     final String timezone = await TimezoneHelper.getUserTimezone();
 
     _sessionsBloc.add(
       BookSessionRequested(
-        stripePaymentMethodId: widget.params.paymentMethod.id,
+        stripePaymentMethodId: widget.params.stripePaymentMethodId,
+        couponCode: widget.params.couponCode,
         date: formattedDate,
         startTime: parsedTimeSlot.startTimeIso,
         endTime: parsedTimeSlot.endTimeIso,

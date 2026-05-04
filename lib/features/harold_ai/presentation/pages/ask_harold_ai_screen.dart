@@ -27,6 +27,8 @@ class AskHaroldAiScreen extends StatefulWidget {
 }
 
 class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProviderStateMixin {
+  static const int _maxQueryLength = 500;
+
   final TextEditingController _textController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -62,7 +64,22 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   }
 
   bool _isValidInput() {
-    return _textController.text.trim().length > 1;
+    final t = _textController.text.trim();
+    return t.length > 1 && t.length <= _maxQueryLength;
+  }
+
+  void _appendVoiceText(String addition) {
+    if (addition.isEmpty) return;
+    final existingText = _textController.text;
+    final separator = existingText.isNotEmpty ? ' ' : '';
+    var combined = existingText + separator + addition;
+    if (combined.length > _maxQueryLength) {
+      combined = combined.substring(0, _maxQueryLength);
+    }
+    _textController.value = TextEditingValue(
+      text: combined,
+      selection: TextSelection.collapsed(offset: combined.length),
+    );
   }
 
   void _toggleVoiceInput() async {
@@ -80,11 +97,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
       final result = await SystemSpeech.startSpeech(prompt: AppStrings.describeYourCopyrightIssuePrompt.tr(), locale: 'en-US', maxSeconds: 120);
 
       if (result != null && result.isNotEmpty) {
-        final existingText = _textController.text;
-        final separator = existingText.isNotEmpty ? ' ' : '';
-        final combinedText = existingText + separator + result;
-        _textController.text = combinedText;
-        _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
+        _appendVoiceText(result);
       }
     } catch (e) {
       String errorMessage = tr(AppStrings.speechRecognitionGenericError, namedArgs: {'error': e.toString()});
@@ -110,11 +123,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
       final result = await SystemSpeech.stopSpeech();
 
       if (result != null && result.isNotEmpty) {
-        final existingText = _textController.text;
-        final separator = existingText.isNotEmpty ? ' ' : '';
-        final combinedText = existingText + separator + result;
-        _textController.text = combinedText;
-        _textController.selection = TextSelection.fromPosition(TextPosition(offset: _textController.text.length));
+        _appendVoiceText(result);
       }
     } catch (e) {
     } finally {
@@ -134,6 +143,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
             isUserAuthenticated: state.isUserAuthenticated,
             query: state.query,
             fee: state.fee,
+            userType: state.userType,
+            evaluationId: state.evaluationId,
           );
         } else if (state is HaroldAiFailure) {
           HaroldNavigationService.handleHaroldResult(
@@ -198,6 +209,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                 child: TextField(
                   controller: _textController,
                   enabled: !isLoading,
+                  maxLength: _maxQueryLength,
                   maxLines: null,
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
@@ -217,11 +229,35 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
+                    counterText: '',
                   ),
                 ),
               ),
               SizedBox(height: DimensionConstants.gap8Px.h),
-              Align(alignment: Alignment.centerRight, child: _buildVoiceButton()),
+              ValueListenableBuilder<TextEditingValue>(
+                valueListenable: _textController,
+                builder: (context, value, _) {
+                  final atLimit = value.text.length >= _maxQueryLength;
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: DimensionConstants.gap8Px.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${value.text.length}/$_maxQueryLength',
+                          style: TextStyle(
+                            color: atLimit ? context.red : context.darkTextSecondary,
+                            fontSize: DimensionConstants.font12Px.f,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        _buildVoiceButton(),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         );
@@ -269,8 +305,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                   return Transform.scale(
                     scale: isListening ? _scaleAnimation.value : 1.0,
                     child: Container(
-                      width: 48.w,
-                      height: 48.h,
+                      width: 48.d,
+                      height: 48.d,
                       decoration: BoxDecoration(
                         color:
                             isListening
@@ -284,15 +320,15 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
                         children: [
                           if (isListening)
                             Container(
-                              width: 24.w,
-                              height: 24.h,
+                              width: 24.d,
+                              height: 24.d,
                               decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
                             ),
                           Icon(
                             isListening ? Icons.stop : Icons.mic,
                             color:
                                 isListening ? Colors.white : (isEnabled ? context.darkTextPrimary : context.darkTextPrimary.withValues(alpha: 0.5)),
-                            size: 24.w,
+                            size: 24.d,
                           ),
                         ],
                       ),

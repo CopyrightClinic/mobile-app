@@ -50,8 +50,8 @@ class DashboardBottomNavigation extends StatelessWidget {
             SizedBox(height: 12.h),
             GlobalImage(
               assetPath: isSelected ? activeIconPath : iconPath,
-              width: DimensionConstants.gap24Px.w,
-              height: DimensionConstants.gap24Px.w,
+              width: DimensionConstants.gap24Px.d,
+              height: DimensionConstants.gap24Px.d,
               fit: BoxFit.contain,
               showLoading: false,
               showError: false,

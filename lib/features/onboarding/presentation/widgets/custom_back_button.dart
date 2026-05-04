@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:go_router/go_router.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
 import 'gradient_border_painter.dart';
@@ -23,20 +24,29 @@ class OnboardingCustomBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size.w,
-      height: size.w,
-      child: CustomPaint(
-        painter: GradientBorderPainter(backgroundColor: backgroundColor, borderColor: borderColor, borderWidth: borderWidth),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onPressed ?? () => context.pop(),
-            borderRadius: BorderRadius.circular((size / 2).w),
-            child: Center(child: Icon(Icons.arrow_back, color: iconColor, size: (size * 0.5).w)),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final desiredSize = size.w;
+        final maxWidth = constraints.maxWidth.isFinite ? constraints.maxWidth : desiredSize;
+        final maxHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : desiredSize;
+        final effectiveSize = math.min(desiredSize, math.min(maxWidth, maxHeight));
+
+        return SizedBox(
+          width: effectiveSize,
+          height: effectiveSize,
+          child: CustomPaint(
+            painter: GradientBorderPainter(backgroundColor: backgroundColor, borderColor: borderColor, borderWidth: borderWidth),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onPressed ?? () => context.pop(),
+                borderRadius: BorderRadius.circular(effectiveSize / 2),
+                child: Center(child: Icon(Icons.arrow_back, color: iconColor, size: effectiveSize * 0.5)),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

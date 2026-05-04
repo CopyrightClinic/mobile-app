@@ -71,8 +71,8 @@ class AboutUsScreen extends StatelessWidget {
                     width: 99.w,
                     height: 99.w,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40.r),
-                      image: const DecorationImage(image: AssetImage(ImageConstants.client1), fit: BoxFit.cover),
+                      shape: BoxShape.circle,
+                      image: const DecorationImage(image: AssetImage(ImageConstants.casius), fit: BoxFit.cover),
                     ),
                   ),
                   SizedBox(height: DimensionConstants.gap10Px.h),
@@ -129,15 +129,15 @@ class AboutUsScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: DimensionConstants.gap8Px.h),
-        TranslatedText(
-          member['name'] ?? '',
-          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w600),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: DimensionConstants.gap2Px.h),
+        // TranslatedText(
+        //   member['name'] ?? '',
+        //   style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w600),
+        //   textAlign: TextAlign.center,
+        // ),
+        // SizedBox(height: DimensionConstants.gap2Px.h),
         TranslatedText(
           member['title'] ?? '',
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w400),
+          style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         ),
       ],

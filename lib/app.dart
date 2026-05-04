@@ -57,6 +57,11 @@ class _MyAppState extends State<MyApp> {
             builder: (context, theme) {
               return KeyboardDismissWrapper(
                 child: MaterialApp.router(
+                  builder: (context, child) {
+                    final mediaQuery = MediaQuery.of(context);
+                    final scaleFactor = mediaQuery.textScaler.scale(1.0).clamp(1.0, 1.2);
+                    return MediaQuery(data: mediaQuery.copyWith(textScaler: TextScaler.linear(scaleFactor)), child: child!);
+                  },
                   themeMode: ThemeMode.dark,
                   debugShowCheckedModeBanner: false,
                   title: tr(AppStrings.appName),

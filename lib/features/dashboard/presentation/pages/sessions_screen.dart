@@ -72,18 +72,18 @@ class _SessionsScreenState extends State<SessionsScreen> {
         automaticallyImplyLeading: false,
         actions: [
           Container(
-            width: DimensionConstants.gap40Px.w,
-            height: DimensionConstants.gap40Px.w,
+            width: DimensionConstants.gap40Px.d,
+            height: DimensionConstants.gap40Px.d,
             decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
             child: InkWell(
               onTap: () {
                 context.pushNamed(AppRoutes.notificationsRouteName);
               },
-              borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.w / 2).w),
-              child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).w)),
+              borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.d / 2).d),
+              child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).d)),
             ),
           ),
-          SizedBox(width: DimensionConstants.gap16Px.w),
+          SizedBox(width: DimensionConstants.gap16Px),
         ],
       ),
       body: BlocConsumer<SessionsBloc, SessionsState>(
@@ -96,7 +96,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
         },
         builder: (context, state) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w, vertical: DimensionConstants.gap12Px.h),
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px, vertical: DimensionConstants.gap12Px.h),
             child: Column(
               children: [
                 if (state.hasUpcomingData) ...[
@@ -253,10 +253,11 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
     BottomSheetService.show(
-      builder: (bottomSheetContext) => BlocProvider.value(
-        value: _sessionsBloc,
-        child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
-      ),
+      builder:
+          (bottomSheetContext) => BlocProvider.value(
+            value: _sessionsBloc,
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
+          ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,

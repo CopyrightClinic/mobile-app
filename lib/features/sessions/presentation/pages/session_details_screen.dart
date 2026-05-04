@@ -241,6 +241,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   Widget _buildSessionDetailsSection(SessionDetailsEntity session) {
+    final holdAmountText = session.sessionRequest.couponId != null ? '\$0.00' : session.formattedHoldAmount;
+
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
       decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
@@ -293,7 +295,7 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    session.formattedHoldAmount,
+                    holdAmountText,
                     style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                   ),
                   SizedBox(height: DimensionConstants.gap2Px.h),

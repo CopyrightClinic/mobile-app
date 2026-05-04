@@ -7,6 +7,7 @@ import '../repositories/sessions_repository.dart';
 
 class BookSessionParams extends Equatable {
   final String stripePaymentMethodId;
+  final String? couponCode;
   final String date;
   final String startTime;
   final String endTime;
@@ -15,6 +16,7 @@ class BookSessionParams extends Equatable {
 
   const BookSessionParams({
     required this.stripePaymentMethodId,
+    this.couponCode,
     required this.date,
     required this.startTime,
     required this.endTime,
@@ -23,18 +25,30 @@ class BookSessionParams extends Equatable {
   });
 
   @override
-  List<Object> get props => [stripePaymentMethodId, date, startTime, endTime, summary, timezone];
+  List<Object?> get props => [
+    stripePaymentMethodId,
+    couponCode,
+    date,
+    startTime,
+    endTime,
+    summary,
+    timezone,
+  ];
 }
 
-class BookSessionUseCase implements UseCase<BookSessionResponseEntity, BookSessionParams> {
+class BookSessionUseCase
+    implements UseCase<BookSessionResponseEntity, BookSessionParams> {
   final SessionsRepository repository;
 
   BookSessionUseCase(this.repository);
 
   @override
-  Future<Either<Failure, BookSessionResponseEntity>> call(BookSessionParams params) async {
+  Future<Either<Failure, BookSessionResponseEntity>> call(
+    BookSessionParams params,
+  ) async {
     return await repository.bookSession(
       stripePaymentMethodId: params.stripePaymentMethodId,
+      couponCode: params.couponCode,
       date: params.date,
       startTime: params.startTime,
       endTime: params.endTime,

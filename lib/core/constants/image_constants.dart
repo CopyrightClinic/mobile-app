@@ -3,6 +3,13 @@ class ImageConstants {
 
   static const String svg = '$base/svg';
   static const String png = '$base/png';
+  static const String jpg = '$base/jpg';
+
+  // ===================
+  // JPG IMAGES
+  // ===================
+
+  static const String casius = '$jpg/casius.jpg';
 
   // ===================
   // PNG IMAGES

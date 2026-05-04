@@ -27,8 +27,16 @@ class HaroldAiBloc extends Bloc<HaroldAiEvent, HaroldAiState> {
         },
         (evaluationResult) {
           if (evaluationResult.success) {
-            if (evaluationResult.isLegitimate) {
-              emit(HaroldAiSuccess(isUserAuthenticated: isUserAuthenticated, query: event.query, fee: evaluationResult.fee));
+            if (evaluationResult.mayInvolveDispute != null && evaluationResult.mayInvolveDispute!) {
+              emit(
+                HaroldAiSuccess(
+                  isUserAuthenticated: isUserAuthenticated,
+                  query: event.query,
+                  fee: evaluationResult.fee,
+                  userType: evaluationResult.userType,
+                  evaluationId: evaluationResult.id,
+                ),
+              );
             } else {
               emit(HaroldAiFailure(isUserAuthenticated: isUserAuthenticated, query: event.query));
             }

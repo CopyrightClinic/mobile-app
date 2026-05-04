@@ -21,6 +21,9 @@ class CustomBottomSheet extends StatelessWidget {
   final Color? secondaryButtonColor;
   final Color? primaryTextColor;
   final Color? secondaryTextColor;
+  final Widget? content;
+  final bool isPrimaryLoading;
+  final bool isPrimaryEnabled;
 
   const CustomBottomSheet({
     super.key,
@@ -36,131 +39,177 @@ class CustomBottomSheet extends StatelessWidget {
     this.secondaryButtonColor,
     this.primaryTextColor,
     this.secondaryTextColor,
-  }) : assert(iconPath != null || customIcon != null, 'Either iconPath or customIcon must be provided');
+    this.content,
+    this.isPrimaryLoading = false,
+    this.isPrimaryEnabled = true,
+  }) : assert(
+         iconPath != null || customIcon != null,
+         'Either iconPath or customIcon must be provided',
+       );
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xFF16181E),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: AppTheme.customBackgroundGradient,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(DimensionConstants.radius20Px.r),
-            topRight: Radius.circular(DimensionConstants.radius20Px.r),
-          ),
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 45.w,
-              height: 4.h,
-              margin: EdgeInsets.only(top: DimensionConstants.gap12Px.h),
-              decoration: BoxDecoration(color: context.white, borderRadius: BorderRadius.circular(2.r)),
-            ),
-
-            SizedBox(height: DimensionConstants.gap32Px.h),
-
-            if (customIcon != null)
-              customIcon!
-            else if (iconPath != null)
-              GlobalImage(
-                assetPath: iconPath!,
-                width: DimensionConstants.gap48Px.w,
-                height: DimensionConstants.gap48Px.h,
-                loadingSize: DimensionConstants.gap40Px.w,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.9,
+          ),
+          child: SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: AppTheme.customBackgroundGradient,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(DimensionConstants.radius20Px.r),
+                  topRight: Radius.circular(DimensionConstants.radius20Px.r),
+                ),
               ),
-
-            SizedBox(height: DimensionConstants.gap24Px.h),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TranslatedText(
-                    title,
-                    style: TextStyle(
-                      color: context.darkTextPrimary,
-                      fontSize: DimensionConstants.font20Px.f,
-                      fontWeight: FontWeight.w600,
-                      height: 1.2,
+                  Container(
+                    width: 45.w,
+                    height: 4.h,
+                    margin: EdgeInsets.only(top: DimensionConstants.gap12Px.h),
+                    decoration: BoxDecoration(
+                      color: context.white,
+                      borderRadius: BorderRadius.circular(2.r),
                     ),
-                    textAlign: TextAlign.center,
                   ),
 
-                  if (subtitle != null) ...[
-                    SizedBox(height: DimensionConstants.gap12Px.h),
-                    TranslatedText(
-                      subtitle!,
-                      style: TextStyle(
-                        color: context.darkTextSecondary,
-                        fontSize: DimensionConstants.font14Px.f,
-                        fontWeight: FontWeight.w400,
-                        height: 1.4,
+                  SizedBox(height: DimensionConstants.gap32Px.h),
+
+                  if (customIcon != null)
+                    customIcon!
+                  else if (iconPath != null)
+                    GlobalImage(
+                      assetPath: iconPath!,
+                      width: DimensionConstants.gap48Px.w,
+                      height: DimensionConstants.gap48Px.h,
+                      loadingSize: DimensionConstants.gap40Px.w,
+                    ),
+
+                  SizedBox(height: DimensionConstants.gap24Px.h),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: DimensionConstants.gap24Px.w,
+                    ),
+                    child: Column(
+                      children: [
+                        TranslatedText(
+                          title,
+                          style: TextStyle(
+                            color: context.darkTextPrimary,
+                            fontSize: DimensionConstants.font20Px.f,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+
+                        if (subtitle != null) ...[
+                          SizedBox(height: DimensionConstants.gap12Px.h),
+                          TranslatedText(
+                            subtitle!,
+                            style: TextStyle(
+                              color: context.darkTextSecondary,
+                              fontSize: DimensionConstants.font14Px.f,
+                              fontWeight: FontWeight.w400,
+                              height: 1.4,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  if (content != null) ...[
+                    SizedBox(height: DimensionConstants.gap20Px.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: DimensionConstants.gap24Px.w,
                       ),
-                      textAlign: TextAlign.center,
+                      child: content!,
                     ),
                   ],
-                ],
-              ),
-            ),
 
-            SizedBox(height: DimensionConstants.gap32Px.h),
+                  SizedBox(height: DimensionConstants.gap32Px.h),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: onSecondaryPressed,
-                      backgroundColor: secondaryButtonColor ?? context.buttonSecondary,
-                      textColor: secondaryTextColor ?? context.darkTextPrimary,
-                      borderColor: context.buttonSecondary,
-                      borderWidth: 1,
-                      borderRadius: 50.r,
-                      height: 48.h,
-                      padding: 0,
-                      child: TranslatedText(
-                        secondaryButtonText,
-                        style: TextStyle(
-                          fontSize: DimensionConstants.font16Px.f,
-                          fontWeight: FontWeight.w600,
-                          color: secondaryTextColor ?? context.darkTextPrimary,
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: DimensionConstants.gap24Px.w,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: CustomButton(
+                            onPressed:
+                                isPrimaryLoading ? null : onSecondaryPressed,
+                            backgroundColor:
+                                secondaryButtonColor ?? context.buttonSecondary,
+                            textColor:
+                                secondaryTextColor ?? context.darkTextPrimary,
+                            borderColor: context.buttonSecondary,
+                            borderWidth: 1,
+                            borderRadius: 50.r,
+                            height: 48.h,
+                            padding: 0,
+                            child: TranslatedText(
+                              secondaryButtonText,
+                              style: TextStyle(
+                                fontSize: DimensionConstants.font16Px.f,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    secondaryTextColor ??
+                                    context.darkTextPrimary,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+
+                        SizedBox(width: DimensionConstants.gap12Px.w),
+
+                        Expanded(
+                          child: CustomButton(
+                            onPressed:
+                                isPrimaryLoading || !isPrimaryEnabled
+                                    ? null
+                                    : onPrimaryPressed,
+                            isLoading: isPrimaryLoading,
+                            backgroundColor: primaryButtonColor ?? context.red,
+                            textColor: primaryTextColor ?? Colors.white,
+                            borderRadius: 50.r,
+                            height: 48.h,
+                            padding: 0,
+                            child: TranslatedText(
+                              primaryButtonText,
+                              style: TextStyle(
+                                fontSize: DimensionConstants.font16Px.f,
+                                fontWeight: FontWeight.w600,
+                                color: primaryTextColor ?? Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
-                  SizedBox(width: DimensionConstants.gap12Px.w),
-
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: onPrimaryPressed,
-                      backgroundColor: primaryButtonColor ?? context.red,
-                      textColor: primaryTextColor ?? Colors.white,
-                      borderRadius: 50.r,
-                      height: 48.h,
-                      padding: 0,
-                      child: TranslatedText(
-                        primaryButtonText,
-                        style: TextStyle(
-                          fontSize: DimensionConstants.font16Px.f,
-                          fontWeight: FontWeight.w600,
-                          color: primaryTextColor ?? Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+                  SizedBox(height: DimensionConstants.gap24Px.h),
+                  SizedBox(height: MediaQuery.of(context).padding.bottom),
                 ],
               ),
             ),
-
-            SizedBox(height: DimensionConstants.gap24Px.h),
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
-          ],
+          ),
         ),
       ),
     );
@@ -180,6 +229,9 @@ class CustomBottomSheet extends StatelessWidget {
     Color? secondaryButtonColor,
     Color? primaryTextColor,
     Color? secondaryTextColor,
+    Widget? content,
+    bool isPrimaryLoading = false,
+    bool isPrimaryEnabled = true,
     bool isDismissible = true,
     bool enableDrag = true,
   }) {
@@ -198,6 +250,9 @@ class CustomBottomSheet extends StatelessWidget {
             secondaryButtonColor: secondaryButtonColor,
             primaryTextColor: primaryTextColor,
             secondaryTextColor: secondaryTextColor,
+            content: content,
+            isPrimaryLoading: isPrimaryLoading,
+            isPrimaryEnabled: isPrimaryEnabled,
           ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,

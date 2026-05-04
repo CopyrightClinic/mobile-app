@@ -57,6 +57,8 @@ class SessionModel {
   final AttorneyModel attorney;
   @JsonKey(name: 'session_fee')
   final SessionFeeModel? sessionFee;
+  @JsonKey(name: 'sessionRequest')
+  final Map<String, dynamic>? sessionRequest;
   @JsonKey(name: 'createdAt')
   final DateTime createdAt;
   @JsonKey(name: 'updatedAt')
@@ -76,6 +78,7 @@ class SessionModel {
     this.cancelTimeExpired,
     required this.attorney,
     this.sessionFee,
+    this.sessionRequest,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -106,6 +109,7 @@ class SessionModel {
       cancelTimeExpired: cancelTimeExpired,
       attorney: attorney.toEntity(),
       sessionFee: effectiveFee?.toEntity(),
+      sessionRequest: sessionRequest,
       createdAt: createdAt,
       updatedAt: updatedAt,
       holdAmount: holdAmount,
@@ -136,6 +140,7 @@ class SessionModel {
                 currency: entity.sessionFee!.currency,
               )
               : null,
+      sessionRequest: entity.sessionRequest,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     );
