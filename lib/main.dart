@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'app.dart';
 import 'di.dart' as di;
+import 'core/analytics/application/analytics_initializer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:device_preview/device_preview.dart';
 import 'core/constants/language_constants.dart';
@@ -20,7 +21,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(
+    fileName: const String.fromEnvironment(
+      'DOTENV_FILENAME',
+      defaultValue: '.env',
+    ),
+  );
 
   await Firebase.initializeApp();
 
@@ -30,12 +36,17 @@ void main() async {
 
   await EasyLocalization.ensureInitialized();
   await di.init();
+  await di.sl<AnalyticsInitializer>().initialize();
 
   Stripe.publishableKey = Config.stripePublishableKey;
   Stripe.merchantIdentifier = Config.merchantIdentifier;
   await Stripe.instance.applySettings();
 
-  HydratedBloc.storage = await HydratedStorage.build(storageDirectory: HydratedStorageDirectory((await getTemporaryDirectory()).path));
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: HydratedStorageDirectory(
+      (await getTemporaryDirectory()).path,
+    ),
+  );
   runApp(
     DevicePreview(
       enabled: false,

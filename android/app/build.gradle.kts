@@ -1,5 +1,6 @@
 import java.util.Properties
 import java.io.FileInputStream
+import java.nio.charset.StandardCharsets
 
 plugins {
     id("com.android.application")
@@ -13,6 +14,13 @@ val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
+
+val dotenvProperties = Properties()
+val dotenvFile = rootProject.projectDir.parentFile?.resolve(".env")
+if (dotenvFile != null && dotenvFile.exists()) {
+    dotenvFile.reader(StandardCharsets.UTF_8).use { dotenvProperties.load(it) }
+}
+fun envString(name: String): String = dotenvProperties.getProperty(name)?.trim()?.removeSurrounding("\"").orEmpty()
 
 android {
     namespace = "com.cassius.copyrightclinic"
@@ -47,6 +55,13 @@ android {
             abiFilters.add("arm64-v8a")
             // abiFilters.add("armeabi-v7a")
         }
+
+        val facebookAppId = envString("META_APP_ID")
+        val facebookClientToken = envString("META_CLIENT_TOKEN")
+        resValue("string", "facebook_app_id", facebookAppId)
+        resValue("string", "facebook_client_token", facebookClientToken)
+        resValue("string", "fb_login_protocol_scheme", "fb$facebookAppId")
+        resValue("string", "facebook_app_name", "Copyright Clinic")
     }
 
     signingConfigs {

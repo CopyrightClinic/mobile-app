@@ -39,6 +39,23 @@
 	<string>Copyright Clinic uses the microphone to convert your speech to text for easier input and having virtual consultation sessions with attorneys. </string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Copyright Clinic needs access to your photo library to attach relevant documents and images to your copyright case.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Copyright Clinic uses this identifier to measure advertising performance on supported networks and to keep subscription pricing sustainable.</string>
+	<key>FacebookAppID</key>
+	<string>$(META_APP_ID)</string>
+	<key>FacebookClientToken</key>
+	<string>$(META_CLIENT_TOKEN)</string>
+	<key>FacebookDisplayName</key>
+	<string>Copyright Clinic</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb$(META_APP_ID)</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Copyright Clinic uses speech recognition to convert your voice to text for
 			describing copyright issues.</string>

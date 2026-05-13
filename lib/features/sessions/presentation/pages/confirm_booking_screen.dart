@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
+import '../../../../di.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -40,6 +44,23 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final fee = widget.params.fee;
+      unawaited(
+        sl<AnalyticsManager>().track(
+          InitiateCheckoutAnalyticsEvent(
+            InitiateCheckoutPayload(
+              checkoutId:
+                  '${widget.params.sessionDate.toIso8601String()}_${widget.params.timeSlot}',
+              currencyCode: fee.currency,
+              value: fee.totalFee.toDouble(),
+              itemCount: 1,
+              primaryItemName: 'consultation_session',
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -55,6 +76,21 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         } else if (state.hasSuccess &&
             state.lastOperation == SessionsOperation.bookSession &&
             state.bookSessionResponse != null) {
+          final response = state.bookSessionResponse!;
+          final fee = widget.params.fee;
+          unawaited(
+            sl<AnalyticsManager>().track(
+              PurchaseAnalyticsEvent(
+                PurchasePayload(
+                  transactionId: response.data.sessionRequest.id,
+                  currencyCode: fee.currency,
+                  value: fee.totalFee.toDouble(),
+                  itemId: response.data.sessionRequest.id,
+                  itemName: 'paid_consultation',
+                ),
+              ),
+            ),
+          );
           SnackBarUtils.showSuccess(
             context,
             AppStrings.sessionBookedSuccessfully.tr(),
