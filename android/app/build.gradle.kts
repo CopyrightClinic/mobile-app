@@ -25,7 +25,7 @@ fun envString(name: String): String = dotenvProperties.getProperty(name)?.trim()
 android {
     namespace = "com.cassius.copyrightclinic"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -122,6 +122,7 @@ dependencies {
     implementation("androidx.multidex:multidex:2.0.1")
     // Downgraded to 6.5.10 for better Compose compatibility
     implementation("us.zoom.meetingsdk:zoomsdk:6.5.10")
+    implementation("com.github.tiktok:tiktok-business-android-sdk:1.5.0")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))

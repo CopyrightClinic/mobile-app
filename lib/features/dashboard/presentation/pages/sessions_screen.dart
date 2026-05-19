@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -266,6 +267,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   void _joinSessionDirectly(BuildContext context, String sessionId) {
+    logAnalytics(
+      AnalyticsEvents.sessionJoinClick,
+      parameters: {'session_id': sessionId, 'source': 'sessions_tab'},
+    );
     final zoomBloc = sl<ZoomBloc>();
     ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }

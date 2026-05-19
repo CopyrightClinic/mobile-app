@@ -59,6 +59,8 @@
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Copyright Clinic uses speech recognition to convert your voice to text for
 			describing copyright issues.</string>
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

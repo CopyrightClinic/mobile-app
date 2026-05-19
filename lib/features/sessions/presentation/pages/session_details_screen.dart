@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -21,7 +20,6 @@ import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/services/bottom_sheet_service.dart';
-import '../../../../core/analytics/analytics.dart';
 import '../../../../di.dart';
 import '../../domain/entities/session_details_entity.dart';
 import '../bloc/session_details_bloc.dart';
@@ -110,23 +108,27 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                   current.sessionDetails != null,
           listener: (context, state) {
             final details = state.sessionDetails!;
-            unawaited(
-              sl<AnalyticsManager>().track(
-                ViewContentAnalyticsEvent(
-                  ViewContentPayload(
-                    subject: ViewContentSubject.sessionDetails,
-                    contentId: details.id,
-                    contentName: details.attorney.name,
-                    contentCategory: 'session',
-                    attributes: {'attorney_id': details.attorney.id},
-                  ),
-                ),
-              ),
+            logAnalytics(
+              AnalyticsEvents.viewContent,
+              parameters: {
+                'content_id': details.id,
+                'content_type': 'session_details',
+                'content_name': details.attorney.name,
+                'content_category': 'session',
+                'attorney_id': details.attorney.id,
+              },
             );
           },
         ),
         BlocListener<SessionDetailsBloc, SessionDetailsState>(
           listener: (context, state) {
+            if (state.lastOperation == SessionDetailsOperation.unlockSummary &&
+                state.successMessage != null) {
+              logAnalytics(
+                AnalyticsEvents.summaryUnlockSuccess,
+                parameters: {'session_id': widget.sessionId},
+              );
+            }
             if (state.successMessage != null) {
               SnackBarUtils.showSuccess(context, state.successMessage!);
             } else if (state.errorMessage != null) {
@@ -896,6 +898,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
 
   void _onJoinSession() {
     final sessionId = widget.sessionId;
+    logAnalytics(
+      AnalyticsEvents.sessionJoinClick,
+      parameters: {'session_id': sessionId},
+    );
     final zoomBloc = sl<ZoomBloc>();
     ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }

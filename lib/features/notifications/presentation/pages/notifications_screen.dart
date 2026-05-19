@@ -15,6 +15,7 @@ import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../config/routes/app_routes.dart';
+import '../../../../core/analytics/analytics.dart';
 import '../../../../core/utils/enumns/api/notifications_enums.dart';
 import '../../../sessions/presentation/pages/params/session_details_screen_params.dart';
 import '../../../sessions/presentation/pages/params/extend_session_screen_params.dart';
@@ -149,6 +150,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (!notification.isRead) {
       _notificationBloc.add(MarkNotificationAsRead(notificationId: notification.id));
     }
+
+    logAnalytics(
+      AnalyticsEvents.notificationOpened,
+      parameters: {
+        'notification_type': notification.type.name,
+        'notification_id': notification.id,
+        'source': 'in_app_notifications_list',
+      },
+    );
 
     switch (notification.type) {
       case NotificationType.sessionAccepted:

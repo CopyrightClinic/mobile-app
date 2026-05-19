@@ -1,22 +1,23 @@
 import 'package:flutter/foundation.dart';
 
-import '../domain/analytics_event.dart';
-import '../infrastructure/mapping/analytics_dispatch_mapper.dart';
-import '../infrastructure/providers/analytics_provider.dart';
-import 'analytics_debug_sink.dart';
+import '../domain/analytics_events.dart';
+import '../infrastructure/sanitization/analytics_parameter_sanitizer.dart';
+import '../infrastructure/services/analytics_platform_service.dart';
+import '../infrastructure/services/firebase_analytics_service.dart';
+import '../infrastructure/services/meta_analytics_service.dart';
+import '../infrastructure/services/tiktok_analytics_service.dart';
 import 'analytics_install_gate.dart';
 
 final class AnalyticsManager {
   AnalyticsManager({
-    required List<AnalyticsProvider> providers,
-    required AnalyticsDebugSink debugSink,
+    required FirebaseAnalyticsService firebase,
+    required TikTokAnalyticsService tiktok,
+    required MetaAnalyticsService meta,
     required AnalyticsInstallGate installGate,
-  }) : _providers = List<AnalyticsProvider>.unmodifiable(providers),
-       _debugSink = debugSink,
+  }) : _platforms = <AnalyticsPlatformService>[firebase, tiktok, meta],
        _installGate = installGate;
 
-  final List<AnalyticsProvider> _providers;
-  final AnalyticsDebugSink _debugSink;
+  final List<AnalyticsPlatformService> _platforms;
   final AnalyticsInstallGate _installGate;
   bool _installBootstrapScheduled = false;
 
@@ -37,72 +38,49 @@ final class AnalyticsManager {
       );
     }
     if (shouldEmitInstall) {
-      await track(const AppInstallAnalyticsEvent());
+      await logEvent(AnalyticsEvents.appInstall);
     }
-    await track(const AppOpenAnalyticsEvent(fromBackground: false));
+    await logEvent(
+      AnalyticsEvents.appOpen,
+      parameters: const <String, dynamic>{'from_background': false},
+    );
   }
 
-  Future<void> track(AnalyticsEvent event) async {
+  Future<void> logEvent(
+    String eventName, {
+    Map<String, dynamic>? parameters,
+  }) async {
+    final normalized = AnalyticsParameterSanitizer.normalizeEventName(eventName);
     if (!kReleaseMode) {
-      debugPrint('[analytics] track_begin type=${event.type.name}');
+      debugPrint('[analytics] log_event name=$normalized');
     }
-    final mapped = AnalyticsDispatchMapper.map(event);
-    Object? firstError;
-    StackTrace? firstStack;
-    var providerDispatchOkCount = 0;
-    for (final provider in _providers) {
-      if (!provider.isEnabled) {
+    for (final platform in _platforms) {
+      if (!platform.isEnabled) {
         if (!kReleaseMode) {
           debugPrint(
-            '[analytics] track_skip type=${event.type.name} provider=${provider.id} reason=disabled',
-          );
-        }
-        continue;
-      }
-      if (!provider.hasMappedWork(mapped)) {
-        if (!kReleaseMode) {
-          debugPrint(
-            '[analytics] track_skip type=${event.type.name} provider=${provider.id} reason=no_mapping',
+            '[analytics] log_event_skip name=$normalized platform=${platform.runtimeType}',
           );
         }
         continue;
       }
       try {
-        await provider.dispatch(mapped);
-        providerDispatchOkCount++;
+        await platform.logEvent(normalized, parameters: parameters);
         if (!kReleaseMode) {
           debugPrint(
-            '[analytics] track_ok type=${event.type.name} provider=${provider.id}',
+            '[analytics] log_event_ok name=$normalized platform=${platform.runtimeType}',
           );
         }
       } catch (error, stack) {
-        firstError ??= error;
-        firstStack ??= stack;
         if (!kReleaseMode) {
           debugPrint(
-            '[analytics] track_error type=${event.type.name} provider=${provider.id} error=$error',
+            '[analytics] log_event_error name=$normalized platform=${platform.runtimeType} error=$error',
           );
           debugPrintStack(
             stackTrace: stack,
-            label: '[analytics] track_error stack',
+            label: '[analytics] log_event_error',
           );
         }
       }
     }
-    if (!kReleaseMode) {
-      if (firstError == null) {
-        debugPrint('[analytics] track_complete type=${event.type.name} ok');
-      } else {
-        debugPrint(
-          '[analytics] track_complete type=${event.type.name} had_provider_errors',
-        );
-      }
-      if (providerDispatchOkCount == 0) {
-        debugPrint(
-          '[analytics] track_note type=${event.type.name} no_provider_invoked (all disabled or no_mapping for this event)',
-        );
-      }
-    }
-    _debugSink.onDispatch(event, firstError, firstStack);
   }
 }

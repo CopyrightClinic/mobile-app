@@ -110,6 +110,17 @@
 -keepclassmembers class coil.** { *; }
 -dontwarn coil.**
 
+# TikTok Business SDK
+-keep class com.tiktok.** { *; }
+-dontwarn com.tiktok.**
+
+# Firebase Analytics (required for release minify)
+-keep class com.google.firebase.analytics.** { *; }
+-keep class com.google.android.gms.measurement.** { *; }
+-keep class com.google.android.gms.internal.measurement.** { *; }
+-keepattributes *Annotation*
+-dontwarn com.google.firebase.analytics.**
+
 # Kotlin metadata and reflection (required by Compose)
 -keep class kotlin.Metadata { *; }
 -keepclassmembers class kotlin.Metadata { *; }

@@ -79,13 +79,12 @@ import 'features/notifications/domain/usecases/clear_all_notifications_usecase.d
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'core/services/fcm_service.dart';
 import 'config/app_config/config.dart';
-import 'core/analytics/application/analytics_debug_sink.dart';
 import 'core/analytics/application/analytics_initializer.dart';
 import 'core/analytics/application/analytics_install_gate.dart';
 import 'core/analytics/application/analytics_manager.dart';
-import 'core/analytics/infrastructure/providers/firebase_analytics_provider.dart';
-import 'core/analytics/infrastructure/providers/meta_analytics_provider.dart';
-import 'core/analytics/infrastructure/providers/tiktok_analytics_provider.dart';
+import 'core/analytics/infrastructure/services/firebase_analytics_service.dart';
+import 'core/analytics/infrastructure/services/meta_analytics_service.dart';
+import 'core/analytics/infrastructure/services/tiktok_analytics_service.dart';
 
 final sl = GetIt.instance;
 
@@ -145,22 +144,25 @@ Future<void> init() async {
   sl.registerLazySingleton<FirebaseAnalytics>(() => FirebaseAnalytics.instance);
   sl.registerLazySingleton(AnalyticsInstallGate.new);
   sl.registerLazySingleton(
-    () => AnalyticsDebugSink(enabled: Config.analyticsVerboseDebug),
+    () => FirebaseAnalyticsService(
+      analytics: sl(),
+      enabled: Config.analyticsFirebaseEnabled,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MetaAnalyticsService(
+      appEvents: sl(),
+      enabled: Config.analyticsMetaEnabled,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => TikTokAnalyticsService(enabled: Config.analyticsTikTokEnabled),
   );
   sl.registerLazySingleton<AnalyticsManager>(
     () => AnalyticsManager(
-      providers: [
-        FirebaseAnalyticsProvider(
-          analytics: sl(),
-          enabled: Config.analyticsFirebaseEnabled,
-        ),
-        MetaAnalyticsProvider(
-          appEvents: sl(),
-          enabled: Config.analyticsMetaEnabled,
-        ),
-        TikTokAnalyticsProvider(enabled: Config.analyticsTikTokEnabled),
-      ],
-      debugSink: sl(),
+      firebase: sl(),
+      tiktok: sl(),
+      meta: sl(),
       installGate: sl(),
     ),
   );

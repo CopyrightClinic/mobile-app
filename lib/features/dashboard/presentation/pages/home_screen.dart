@@ -1,3 +1,4 @@
+import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -42,6 +43,17 @@ class _HomeScreenState extends State<HomeScreen> {
     _profileBloc = context.read<ProfileBloc>();
     _sessionsBloc.add(const LoadUserSessions());
     _profileBloc.add(const GetProfileRequested());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      logAnalytics(
+        AnalyticsEvents.viewContent,
+        parameters: const {
+          'content_id': 'home_dashboard',
+          'content_type': 'home_dashboard',
+          'content_name': 'Home Dashboard',
+        },
+      );
+    });
   }
 
   @override
@@ -362,6 +374,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _joinSessionDirectly(BuildContext context, String sessionId) {
+    logAnalytics(
+      AnalyticsEvents.sessionJoinClick,
+      parameters: {'session_id': sessionId, 'source': 'home_dashboard'},
+    );
     final zoomBloc = sl<ZoomBloc>();
     ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }

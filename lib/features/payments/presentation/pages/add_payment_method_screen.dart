@@ -1,3 +1,4 @@
+import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:copyright_clinic_flutter/di.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -78,6 +79,13 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
       bloc: _paymentBloc,
       listener: (context, state) {
         if (state is PaymentMethodAdded) {
+          logAnalytics(
+            AnalyticsEvents.addPaymentInfo,
+            parameters: {
+              'payment_type': 'card',
+              'source': widget.from.name,
+            },
+          );
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
           if (widget.from == PaymentMethodFrom.auth) {
             _handleAuthFlowCompletion(context);

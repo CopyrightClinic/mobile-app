@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -154,28 +152,31 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
       bloc: sl<HaroldAiBloc>(),
       listener: (context, state) {
         if (state is HaroldAiSuccess) {
-          unawaited(
-            sl<AnalyticsManager>().track(
-              SearchAnalyticsEvent(
-                SearchPayload(
-                  context: SearchContext.haroldLegalIntake,
-                  searchTerm: state.query,
-                ),
-              ),
-            ),
+          logAnalytics(
+            AnalyticsEvents.search,
+            parameters: {
+              'search_term': state.query,
+              'search_context': 'harold_legal_intake',
+            },
+          );
+          logAnalytics(
+            AnalyticsEvents.haroldResultViewed,
+            parameters: {
+              'outcome': 'success',
+              if (state.evaluationId != null)
+                'evaluation_id': state.evaluationId!,
+              'query_length': state.query.length,
+            },
           );
           if (state.evaluationId != null) {
-            unawaited(
-              sl<AnalyticsManager>().track(
-                ViewContentAnalyticsEvent(
-                  ViewContentPayload(
-                    subject: ViewContentSubject.haroldLegalQuery,
-                    contentId: state.evaluationId!,
-                    contentName: 'harold_evaluation',
-                    attributes: {'query_length': state.query.length.toString()},
-                  ),
-                ),
-              ),
+            logAnalytics(
+              AnalyticsEvents.viewContent,
+              parameters: {
+                'content_id': state.evaluationId!,
+                'content_type': 'harold_legal_query',
+                'content_name': 'harold_evaluation',
+                'query_length': state.query.length,
+              },
             );
           }
           HaroldNavigationService.handleHaroldResult(
@@ -188,6 +189,20 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
             evaluationId: state.evaluationId,
           );
         } else if (state is HaroldAiFailure) {
+          logAnalytics(
+            AnalyticsEvents.search,
+            parameters: {
+              'search_term': state.query,
+              'search_context': 'harold_legal_intake',
+            },
+          );
+          logAnalytics(
+            AnalyticsEvents.haroldResultViewed,
+            parameters: {
+              'outcome': 'failure',
+              'query_length': state.query.length,
+            },
+          );
           HaroldNavigationService.handleHaroldResult(
             context: context,
             isSuccess: false,

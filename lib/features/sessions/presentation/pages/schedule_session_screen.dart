@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -185,6 +186,16 @@ class _ScheduleSessionScreenState extends State<ScheduleSessionScreen> {
 
   void _onContinueToPayment(SessionsState scheduleState) {
     if (scheduleState.selectedTimeSlot != null && scheduleState.availability?.fee != null) {
+      final fee = scheduleState.availability!.fee;
+      logAnalytics(
+        AnalyticsEvents.selectSessionSlot,
+        parameters: {
+          'session_date': scheduleState.selectedDate!.toIso8601String(),
+          'time_slot': scheduleState.selectedTimeSlot!,
+          'currency': fee.currency,
+          'value': fee.totalFee.toDouble(),
+        },
+      );
       context.push(
         AppRoutes.selectPaymentMethodRouteName,
         extra: SelectPaymentMethodScreenParams(

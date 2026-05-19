@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
@@ -113,14 +111,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is CompleteProfileSuccess) {
-            unawaited(
-              sl<AnalyticsManager>().track(
-                CompleteRegistrationAnalyticsEvent(
-                  const CompleteRegistrationPayload(
-                    method: RegistrationMethod.phone,
-                  ),
-                ),
-              ),
+            logAnalytics(
+              AnalyticsEvents.completeRegistration,
+              parameters: const {'method': 'phone'},
             );
             SnackBarUtils.showSuccess(context, state.message);
             context.read<ProfileBloc>().add(const GetProfileRequested());

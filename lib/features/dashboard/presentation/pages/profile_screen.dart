@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/analytics/analytics.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -40,6 +41,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _authBloc = context.read<AuthBloc>();
     _profileBloc = context.read<ProfileBloc>();
     _profileBloc.add(const GetProfileRequested());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      logAnalytics(
+        AnalyticsEvents.viewContent,
+        parameters: const {
+          'content_id': 'user_account_profile',
+          'content_type': 'user_account_profile',
+          'content_name': 'User Profile',
+        },
+      );
+    });
   }
 
   @override

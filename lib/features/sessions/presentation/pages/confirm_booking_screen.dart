@@ -1,13 +1,9 @@
-import 'dart:async';
-
+import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
-
-import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
-import '../../../../di.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -46,19 +42,17 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
     _sessionsBloc = context.read<SessionsBloc>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final fee = widget.params.fee;
-      unawaited(
-        sl<AnalyticsManager>().track(
-          InitiateCheckoutAnalyticsEvent(
-            InitiateCheckoutPayload(
-              checkoutId:
-                  '${widget.params.sessionDate.toIso8601String()}_${widget.params.timeSlot}',
-              currencyCode: fee.currency,
-              value: fee.totalFee.toDouble(),
-              itemCount: 1,
-              primaryItemName: 'consultation_session',
-            ),
-          ),
-        ),
+      logAnalytics(
+        AnalyticsEvents.initiateCheckout,
+        parameters: {
+          'checkout_id':
+              '${widget.params.sessionDate.toIso8601String()}_${widget.params.timeSlot}',
+          'currency': fee.currency,
+          'value': fee.totalFee.toDouble(),
+          'item_count': 1,
+          'content_type': 'consultation',
+          'item_name': 'consultation_session',
+        },
       );
     });
   }
@@ -78,18 +72,16 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
             state.bookSessionResponse != null) {
           final response = state.bookSessionResponse!;
           final fee = widget.params.fee;
-          unawaited(
-            sl<AnalyticsManager>().track(
-              PurchaseAnalyticsEvent(
-                PurchasePayload(
-                  transactionId: response.data.sessionRequest.id,
-                  currencyCode: fee.currency,
-                  value: fee.totalFee.toDouble(),
-                  itemId: response.data.sessionRequest.id,
-                  itemName: 'paid_consultation',
-                ),
-              ),
-            ),
+          logAnalytics(
+            AnalyticsEvents.purchase,
+            parameters: {
+              'transaction_id': response.data.sessionRequest.id,
+              'currency': fee.currency,
+              'value': fee.totalFee.toDouble(),
+              'item_id': response.data.sessionRequest.id,
+              'item_name': 'paid_consultation',
+              'quantity': 1,
+            },
           );
           SnackBarUtils.showSuccess(
             context,
@@ -98,6 +90,10 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           context.go(AppRoutes.bookingRequestSentRouteName);
         } else if (state.hasError &&
             state.lastOperation == SessionsOperation.bookSession) {
+          logAnalytics(
+            AnalyticsEvents.paymentFailed,
+            parameters: {'source': 'confirm_booking'},
+          );
           SnackBarUtils.showError(context, state.errorMessage!);
         }
       },

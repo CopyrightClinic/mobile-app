@@ -4,18 +4,18 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'app.dart';
 import 'di.dart' as di;
 import 'core/analytics/application/analytics_initializer.dart';
+import 'core/analytics/infrastructure/firebase/firebase_app_bootstrap.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:device_preview/device_preview.dart';
 import 'core/constants/language_constants.dart';
 import 'config/app_config/config.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  await ensureFirebaseInitialized();
 }
 
 void main() async {
@@ -28,7 +28,7 @@ void main() async {
     ),
   );
 
-  await Firebase.initializeApp();
+  await ensureFirebaseInitialized();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
