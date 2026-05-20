@@ -13,10 +13,11 @@
 		4310E7B82E954C01008E0DEB /* zoomcml.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4310E7B72E954C01008E0DEB /* zoomcml.xcframework */; };
 		4310E7B92E954C01008E0DEB /* zoomcml.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4310E7B72E954C01008E0DEB /* zoomcml.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		436D76242F339556006E2637 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 436D76232F339556006E2637 /* GoogleService-Info.plist */; };
-		43B937742E9528D6009E6FFA /* MobileRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43B937702E95289D009E6FFA /* MobileRTC.xcframework */; };
-		43B937752E9528D6009E6FFA /* MobileRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 43B937702E95289D009E6FFA /* MobileRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		43B937792E95291F009E6FFA /* MobileRTCResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 43B937782E95291F009E6FFA /* MobileRTCResources.bundle */; };
 		43B9377B2E953F89009E6FFA /* ZoomBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B9377A2E953F89009E6FFA /* ZoomBridge.swift */; };
+		46890F9D2FBC949100FFD77B /* MobileRTCResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 46890F992FBC949100FFD77B /* MobileRTCResources.bundle */; };
+		46890F9E2FBC949100FFD77B /* MobileRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46890F982FBC949100FFD77B /* MobileRTC.xcframework */; };
+		46890F9F2FBC949100FFD77B /* zoomcml.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46890F9B2FBC949100FFD77B /* zoomcml.xcframework */; };
+		46890FA02FBC949100FFD77B /* MobileRTCScreenShare.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46890F9A2FBC949100FFD77B /* MobileRTCScreenShare.xcframework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -42,7 +43,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				43B937752E9528D6009E6FFA /* MobileRTC.xcframework in Embed Frameworks */,
 				4310E7B92E954C01008E0DEB /* zoomcml.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -61,9 +61,11 @@
 		4310E7B72E954C01008E0DEB /* zoomcml.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = zoomcml.xcframework; path = ZoomSDK/zoomcml.xcframework; sourceTree = "<group>"; };
 		436717BB2EA2C162004C7C19 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		436D76232F339556006E2637 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		43B937702E95289D009E6FFA /* MobileRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = MobileRTC.xcframework; sourceTree = "<group>"; };
-		43B937782E95291F009E6FFA /* MobileRTCResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MobileRTCResources.bundle; sourceTree = "<group>"; };
 		43B9377A2E953F89009E6FFA /* ZoomBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomBridge.swift; sourceTree = "<group>"; };
+		46890F982FBC949100FFD77B /* MobileRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = MobileRTC.xcframework; sourceTree = "<group>"; };
+		46890F992FBC949100FFD77B /* MobileRTCResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MobileRTCResources.bundle; sourceTree = "<group>"; };
+		46890F9A2FBC949100FFD77B /* MobileRTCScreenShare.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = MobileRTCScreenShare.xcframework; sourceTree = "<group>"; };
+		46890F9B2FBC949100FFD77B /* zoomcml.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = zoomcml.xcframework; sourceTree = "<group>"; };
 		48FBBF3658ED7A6CDA2F8B25 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		67FB980952330DF6EF6DDF3F /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -95,7 +97,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43B937742E9528D6009E6FFA /* MobileRTC.xcframework in Frameworks */,
+				46890F9E2FBC949100FFD77B /* MobileRTC.xcframework in Frameworks */,
+				46890F9F2FBC949100FFD77B /* zoomcml.xcframework in Frameworks */,
+				46890FA02FBC949100FFD77B /* MobileRTCScreenShare.xcframework in Frameworks */,
 				4310E7B82E954C01008E0DEB /* zoomcml.xcframework in Frameworks */,
 				B675A06F6620D849CEE32E29 /* Pods_Runner.framework in Frameworks */,
 			);
@@ -125,11 +129,13 @@
 			path = RunnerTests;
 			sourceTree = "<group>";
 		};
-		43B9376F2E95287A009E6FFA /* ZoomSDK */ = {
+		46890F9C2FBC949100FFD77B /* ZoomSDK */ = {
 			isa = PBXGroup;
 			children = (
-				43B937702E95289D009E6FFA /* MobileRTC.xcframework */,
-				43B937782E95291F009E6FFA /* MobileRTCResources.bundle */,
+				46890F982FBC949100FFD77B /* MobileRTC.xcframework */,
+				46890F992FBC949100FFD77B /* MobileRTCResources.bundle */,
+				46890F9A2FBC949100FFD77B /* MobileRTCScreenShare.xcframework */,
+				46890F9B2FBC949100FFD77B /* zoomcml.xcframework */,
 			);
 			path = ZoomSDK;
 			sourceTree = "<group>";
@@ -149,7 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				43B9377A2E953F89009E6FFA /* ZoomBridge.swift */,
-				43B9376F2E95287A009E6FFA /* ZoomSDK */,
+				46890F9C2FBC949100FFD77B /* ZoomSDK */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -291,8 +297,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43B937792E95291F009E6FFA /* MobileRTCResources.bundle in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
+				46890F9D2FBC949100FFD77B /* MobileRTCResources.bundle in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,

@@ -503,5 +503,8 @@
   "sessionExtendError": "Failed to extend session. Please try again.",
   "unableToOpenNotification": "Unable to open notification",
   "unableToOpenPrivacyPolicy": "Unable to open privacy policy",
-  "unableToOpenTermsAndConditions": "Unable to open terms and conditions"
+  "unableToOpenTermsAndConditions": "Unable to open terms and conditions",
+  "pleaseEnterAtLeast200Characters": "Please enter at least 150 characters",
+  "enterAValidQueryToContinue": "Enter a valid query to continue",
+  "cassiusTitusDescriptionUpdated": "Cassius Titus is an experienced attorney who built Copyright Clinic to make fast, reliable legal guidance accessible to every creator right when they need it most. Now.\n\nAfter 25 years of working with creators—ranging from tech product innovators at multibillion-dollar companies to individual musicians making their first demos—and seeing how often legal uncertainty slows them down or puts their work at risk, Cassius Titus set out to change how legal support is delivered.\n\nHe founded Copyright Clinic to bridge a simple but persistent gap: creators need access to real legal guidance in real time—not after delays, gatekeeping, or high retainers.\n\nThe platform connects creators directly with highly skilled copyright attorneys through live consultations, making it easier to understand rights, resolve issues, and move forward with confidence in a fast-changing digital world."
 }

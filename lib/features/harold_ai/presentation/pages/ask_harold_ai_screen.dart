@@ -27,8 +27,7 @@ class AskHaroldAiScreen extends StatefulWidget {
   State<AskHaroldAiScreen> createState() => _AskHaroldAiScreenState();
 }
 
-class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
-    with TickerProviderStateMixin {
+class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProviderStateMixin {
   static const int _maxQueryLength = 500;
 
   final TextEditingController _textController = TextEditingController();
@@ -43,13 +42,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
   }
 
   void _setupAnimations() {
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
+    _animationController = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this);
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
     _animationController.repeat(reverse: true);
   }
 
@@ -83,10 +77,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
     if (combined.length > _maxQueryLength) {
       combined = combined.substring(0, _maxQueryLength);
     }
-    _textController.value = TextEditingValue(
-      text: combined,
-      selection: TextSelection.collapsed(offset: combined.length),
-    );
+    _textController.value = TextEditingValue(text: combined, selection: TextSelection.collapsed(offset: combined.length));
   }
 
   void _toggleVoiceInput() async {
@@ -101,20 +92,13 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
     _isListeningNotifier.value = true;
 
     try {
-      final result = await SystemSpeech.startSpeech(
-        prompt: AppStrings.describeYourCopyrightIssuePrompt.tr(),
-        locale: 'en-US',
-        maxSeconds: 120,
-      );
+      final result = await SystemSpeech.startSpeech(prompt: AppStrings.describeYourCopyrightIssuePrompt.tr(), locale: 'en-US', maxSeconds: 120);
 
       if (result != null && result.isNotEmpty) {
         _appendVoiceText(result);
       }
     } catch (e) {
-      String errorMessage = tr(
-        AppStrings.speechRecognitionGenericError,
-        namedArgs: {'error': e.toString()},
-      );
+      String errorMessage = tr(AppStrings.speechRecognitionGenericError, namedArgs: {'error': e.toString()});
 
       final errorString = e.toString();
       if (errorString.contains('network') ||
@@ -122,8 +106,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
           errorString.contains('connection') ||
           errorString.contains('speech_not_available')) {
         errorMessage = tr(AppStrings.speechRecognitionNetworkError);
-      } else if (errorString.contains('Siri and Dictation are disabled') ||
-          errorString.contains('enable Dictation in Settings')) {
+      } else if (errorString.contains('Siri and Dictation are disabled') || errorString.contains('enable Dictation in Settings')) {
         errorMessage = tr(AppStrings.speechRecognitionDisabledError);
       }
 
@@ -152,19 +135,12 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
       bloc: sl<HaroldAiBloc>(),
       listener: (context, state) {
         if (state is HaroldAiSuccess) {
-          logAnalytics(
-            AnalyticsEvents.search,
-            parameters: {
-              'search_term': state.query,
-              'search_context': 'harold_legal_intake',
-            },
-          );
+          logAnalytics(AnalyticsEvents.search, parameters: {'search_term': state.query, 'search_context': 'harold_legal_intake'});
           logAnalytics(
             AnalyticsEvents.haroldResultViewed,
             parameters: {
               'outcome': 'success',
-              if (state.evaluationId != null)
-                'evaluation_id': state.evaluationId!,
+              if (state.evaluationId != null) 'evaluation_id': state.evaluationId!,
               'query_length': state.query.length,
             },
           );
@@ -189,20 +165,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
             evaluationId: state.evaluationId,
           );
         } else if (state is HaroldAiFailure) {
-          logAnalytics(
-            AnalyticsEvents.search,
-            parameters: {
-              'search_term': state.query,
-              'search_context': 'harold_legal_intake',
-            },
-          );
-          logAnalytics(
-            AnalyticsEvents.haroldResultViewed,
-            parameters: {
-              'outcome': 'failure',
-              'query_length': state.query.length,
-            },
-          );
+          logAnalytics(AnalyticsEvents.search, parameters: {'search_term': state.query, 'search_context': 'harold_legal_intake'});
+          logAnalytics(AnalyticsEvents.haroldResultViewed, parameters: {'outcome': 'failure', 'query_length': state.query.length});
           HaroldNavigationService.handleHaroldResult(
             context: context,
             isSuccess: false,
@@ -215,37 +179,24 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
       },
       child: CustomScaffold(
         extendBodyBehindAppBar: true,
-        appBar: CustomAppBar(
-          leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w),
-          leading: const CustomBackButton(),
-        ),
+        appBar: CustomAppBar(leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w), leading: const CustomBackButton()),
         body: SafeArea(
           child: Column(
             children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: DimensionConstants.gap16Px.w,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: DimensionConstants.gap16Px.h),
                       TranslatedText(
                         AppStrings.askHaroldAI,
-                        style: TextStyle(
-                          color: context.darkTextPrimary,
-                          fontSize: DimensionConstants.font24Px.f,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
                       ),
                       TranslatedText(
                         AppStrings.describeYourCopyrightIssue,
-                        style: TextStyle(
-                          color: context.darkTextSecondary,
-                          fontSize: DimensionConstants.font14Px.f,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
                       ),
                       SizedBox(height: DimensionConstants.gap16Px.h),
                       Expanded(child: _buildTextInputField()),
@@ -269,13 +220,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
         return Container(
           padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
           decoration: BoxDecoration(
-            color:
-                isLoading
-                    ? context.filledBgDark.withValues(alpha: 0.5)
-                    : context.filledBgDark,
-            borderRadius: BorderRadius.circular(
-              DimensionConstants.radius12Px.r,
-            ),
+            color: isLoading ? context.filledBgDark.withValues(alpha: 0.5) : context.filledBgDark,
+            borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
           ),
           child: Column(
             children: [
@@ -288,20 +234,14 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   style: TextStyle(
-                    color:
-                        isLoading
-                            ? context.darkTextPrimary.withValues(alpha: 0.5)
-                            : context.darkTextPrimary,
+                    color: isLoading ? context.darkTextPrimary.withValues(alpha: 0.5) : context.darkTextPrimary,
                     fontSize: DimensionConstants.font16Px.f,
                     fontWeight: FontWeight.w400,
                   ),
                   decoration: InputDecoration(
                     hintText: AppStrings.describe.tr(),
                     hintStyle: TextStyle(
-                      color:
-                          isLoading
-                              ? context.darkTextSecondary.withValues(alpha: 0.5)
-                              : context.darkTextSecondary,
+                      color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
                       fontSize: DimensionConstants.font16Px.f,
                       fontWeight: FontWeight.w400,
                     ),
@@ -319,9 +259,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
                 builder: (context, value, _) {
                   final atLimit = value.text.length >= _maxQueryLength;
                   return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: DimensionConstants.gap8Px.h,
-                    ),
+                    padding: EdgeInsets.only(bottom: DimensionConstants.gap8Px.h),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -329,10 +267,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
                         Text(
                           '${value.text.length}/$_maxQueryLength',
                           style: TextStyle(
-                            color:
-                                atLimit
-                                    ? context.red
-                                    : context.darkTextSecondary,
+                            color: atLimit ? context.red : context.darkTextSecondary,
                             fontSize: DimensionConstants.font12Px.f,
                             fontWeight: FontWeight.w500,
                           ),
@@ -396,26 +331,9 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
                         color:
                             isListening
                                 ? context.primary
-                                : (isEnabled
-                                    ? context.darkTextPrimary.withValues(
-                                      alpha: 0.15,
-                                    )
-                                    : context.darkTextPrimary.withValues(
-                                      alpha: 0.08,
-                                    )),
+                                : (isEnabled ? context.darkTextPrimary.withValues(alpha: 0.15) : context.darkTextPrimary.withValues(alpha: 0.08)),
                         shape: BoxShape.circle,
-                        boxShadow:
-                            isListening
-                                ? [
-                                  BoxShadow(
-                                    color: context.primary.withValues(
-                                      alpha: 0.3,
-                                    ),
-                                    blurRadius: 20,
-                                    spreadRadius: 5,
-                                  ),
-                                ]
-                                : null,
+                        boxShadow: isListening ? [BoxShadow(color: context.primary.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 5)] : null,
                       ),
                       child: Stack(
                         alignment: Alignment.center,
@@ -424,21 +342,12 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
                             Container(
                               width: 24.d,
                               height: 24.d,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.3),
-                                shape: BoxShape.circle,
-                              ),
+                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle),
                             ),
                           Icon(
                             isListening ? Icons.stop : Icons.mic,
                             color:
-                                isListening
-                                    ? Colors.white
-                                    : (isEnabled
-                                        ? context.darkTextPrimary
-                                        : context.darkTextPrimary.withValues(
-                                          alpha: 0.5,
-                                        )),
+                                isListening ? Colors.white : (isEnabled ? context.darkTextPrimary : context.darkTextPrimary.withValues(alpha: 0.5)),
                             size: 24.d,
                           ),
                         ],
@@ -456,10 +365,12 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen>
 
   void _onSubmit() {
     if (_isValidInput()) {
+      if (_textController.text.trim().length < 150) {
+        SnackBarUtils.showError(context, AppStrings.pleaseEnterAtLeast200Characters.tr());
+        return;
+      }
       FocusScope.of(context).unfocus();
-      context.read<HaroldAiBloc>().add(
-        SubmitHaroldQuery(query: _textController.text.trim()),
-      );
+      context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim()));
     }
   }
 }

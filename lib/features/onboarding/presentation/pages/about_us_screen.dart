@@ -39,7 +39,7 @@ class AboutUsScreen extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [_buildCassiusTitusCard(), SizedBox(height: DimensionConstants.gap30Px), _buildTeamSection()],
+                      children: [_buildCassiusTitusCard(), SizedBox(height: DimensionConstants.gap30Px)],
                     ),
                   ),
                 ),
@@ -76,9 +76,13 @@ class AboutUsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: DimensionConstants.gap10Px.h),
-                  TranslatedText(
-                    AppStrings.cassiusTitusDescription,
-                    style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TranslatedText(
+                      AppStrings.cassiusTitusDescriptionUpdated,
+                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+                      textAlign: TextAlign.start,
+                    ),
                   ),
                 ],
               ),

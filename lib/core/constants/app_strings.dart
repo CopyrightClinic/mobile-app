@@ -16,6 +16,7 @@ class AppStrings {
   static const aboutUs = 'aboutUs';
   static const learnAboutUsAndOurTeam = 'learnAboutUsAndOurTeam';
   static const cassiusTitusDescription = 'cassiusTitusDescription';
+  static const cassiusTitusDescriptionUpdated = 'cassiusTitusDescriptionUpdated';
   static const sarahChen = 'sarahChen';
   static const michaelRoss = 'michaelRoss';
   static const emmaWilson = 'emmaWilson';
@@ -312,6 +313,7 @@ class AppStrings {
   static const failedToEvaluateQuery = 'failedToEvaluateQuery';
   static const haroldAiEvaluationNotSuccessful =
       'haroldAiEvaluationNotSuccessful';
+ 
   static const unexpectedErrorOccurred = 'unexpectedErrorOccurred';
   static const unexpectedErrorOccurredWhileEvaluatingQuery =
       'unexpectedErrorOccurredWhileEvaluatingQuery';
@@ -620,4 +622,6 @@ class AppStrings {
   static const unableToOpenNotification = 'unableToOpenNotification';
   static const unableToOpenPrivacyPolicy = 'unableToOpenPrivacyPolicy';
   static const unableToOpenTermsAndConditions = 'unableToOpenTermsAndConditions';
+  static const pleaseEnterAtLeast200Characters = 'pleaseEnterAtLeast200Characters';
+  static const enterAValidQueryToContinue = 'enterAValidQueryToContinue';
 }
