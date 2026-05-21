@@ -1,4 +1,5 @@
 import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
+import 'package:copyright_clinic_flutter/core/constants/image_constants.dart';
 import 'package:copyright_clinic_flutter/di.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,13 +80,7 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
       bloc: _paymentBloc,
       listener: (context, state) {
         if (state is PaymentMethodAdded) {
-          logAnalytics(
-            AnalyticsEvents.addPaymentInfo,
-            parameters: {
-              'payment_type': 'card',
-              'source': widget.from.name,
-            },
-          );
+          logAnalytics(AnalyticsEvents.addPaymentInfo, parameters: {'payment_type': 'card', 'source': widget.from.name});
           SnackBarUtils.showSuccess(context, AppStrings.paymentMethodAdded.tr());
           if (widget.from == PaymentMethodFrom.auth) {
             _handleAuthFlowCompletion(context);
@@ -150,8 +145,35 @@ class _AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> with Va
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: DimensionConstants.gap20Px.h),
+
+                          Row(
+                            children: [
+                              Image.asset(ImageConstants.securePayments, width: 50.w, height: 50.h, fit: BoxFit.contain),
+                              SizedBox(width: DimensionConstants.gap10Px.w),
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TranslatedText(
+                                        AppStrings.securePayments,
+                                        style: TextStyle(
+                                          fontSize: DimensionConstants.font14Px.f,
+                                          fontWeight: FontWeight.w500,
+                                          color: context.darkTextPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: DimensionConstants.gap20Px.h),
+
                           CustomTextField(
                             label: AppStrings.nameOnCard,
+                            
                             placeholder: AppStrings.enterFullNameAsShownOnCard,
                             controller: _nameController,
                             focusNode: _nameFocusNode,

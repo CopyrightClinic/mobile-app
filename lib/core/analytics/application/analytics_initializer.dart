@@ -66,7 +66,7 @@ final class AnalyticsInitializer {
       await TikTokEventsSdk.initSdk(
         androidAppId: "com.cassius.copyrightclinic",
         tikTokAndroidId: Config.tikTokAndroidAppId,
-        iosAppId: 'com.cassius.copyrightclinic',
+        iosAppId: Config.tikTokIosAppleAppStoreId,
         tiktokIosId: Platform.isIOS ? Config.tikTokIosTikTokAppId : '',
         isDebugMode: Config.analyticsTikTokDebug,
         logLevel: Config.analyticsTikTokVerboseLogs ? TikTokLogLevel.debug : TikTokLogLevel.info,
@@ -80,10 +80,12 @@ final class AnalyticsInitializer {
         ),
         iosOptions: TikTokIosOptions(
           accessToken: Config.tikTokIosAccessTokenForSdk.isEmpty ? null : Config.tikTokIosAccessTokenForSdk,
-          disableAutomaticTracking: true,
-          displayAtt: false,
-          externalConsentTimestamp: _iso8601UtcWholeSecondsZulu(DateTime.now().toUtc()),
-          externalConsentStatus: consentStatus,
+           disableAutomaticTracking: false,
+
+    displayAtt: false,
+    externalConsentTimestamp:
+        _iso8601UtcWholeSecondsZulu(DateTime.now().toUtc()),
+    externalConsentStatus: consentStatus,
         ),
       );
       await TikTokEventsSdk.startTrack();

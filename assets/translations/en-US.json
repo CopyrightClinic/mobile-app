@@ -142,6 +142,7 @@
   "phoneNumberRequired": "Phone number is required",
   "addPaymentMethod": "Add Payment Method",
   "nameOnCard": "Name on card",
+  "securePayment": "Your card details will be secured and encrypted in stripe's services.",
   "enterFullNameAsShownOnCard": "Enter full name as shown on card",
   "cardNumber": "Card Number",
   "cardDetails": "Card Details",

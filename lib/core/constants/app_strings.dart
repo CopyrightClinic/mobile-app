@@ -175,6 +175,7 @@ class AppStrings {
   // Payment Strings
   static const addPaymentMethod = 'addPaymentMethod';
   static const nameOnCard = 'nameOnCard';
+  static const securePayments = 'securePayment';
   static const enterFullNameAsShownOnCard = 'enterFullNameAsShownOnCard';
   static const cardNumber = 'cardNumber';
   static const cardDetails = 'cardDetails';

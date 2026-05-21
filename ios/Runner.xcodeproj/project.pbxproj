@@ -14,13 +14,14 @@
 		4310E7B92E954C01008E0DEB /* zoomcml.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4310E7B72E954C01008E0DEB /* zoomcml.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		436D76242F339556006E2637 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 436D76232F339556006E2637 /* GoogleService-Info.plist */; };
 		43B9377B2E953F89009E6FFA /* ZoomBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B9377A2E953F89009E6FFA /* ZoomBridge.swift */; };
-		46978F942FBDCF6200DCFC75 /* MobileRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46978F8D2FBDCF6200DCFC75 /* MobileRTC.xcframework */; };
 		46978F952FBDCF6200DCFC75 /* MobileRTCResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 46978F8E2FBDCF6200DCFC75 /* MobileRTCResources.bundle */; };
+		46978F962FBDD3E500DCFC75 /* MobileRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46978F8D2FBDCF6200DCFC75 /* MobileRTC.xcframework */; };
+		46978F972FBDD3E500DCFC75 /* MobileRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 46978F8D2FBDCF6200DCFC75 /* MobileRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		46978F982FBDD3E700DCFC75 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48FBBF3658ED7A6CDA2F8B25 /* Pods_Runner.framework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		B675A06F6620D849CEE32E29 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48FBBF3658ED7A6CDA2F8B25 /* Pods_Runner.framework */; };
 		CD1595764A3B7105C19414B6 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFCA528311B0AEBADB76DB2 /* Pods_RunnerTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				4310E7B92E954C01008E0DEB /* zoomcml.xcframework in Embed Frameworks */,
+				46978F972FBDD3E500DCFC75 /* MobileRTC.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -93,9 +95,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46978F962FBDD3E500DCFC75 /* MobileRTC.xcframework in Frameworks */,
 				4310E7B82E954C01008E0DEB /* zoomcml.xcframework in Frameworks */,
-				46978F942FBDCF6200DCFC75 /* MobileRTC.xcframework in Frameworks */,
-				B675A06F6620D849CEE32E29 /* Pods_Runner.framework in Frameworks */,
+				46978F982FBDD3E700DCFC75 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,13 +349,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -368,13 +366,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
