@@ -18,6 +18,7 @@ import 'features/profile/presentation/bloc/profile_bloc.dart';
 import 'features/speech_to_text/presentation/bloc/speech_to_text_bloc.dart';
 import 'features/harold_ai/presentation/bloc/harold_ai_bloc.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
+import 'core/analytics/application/analytics_startup_coordinator.dart';
 import 'di.dart';
 
 class MyApp extends StatefulWidget {
@@ -28,10 +29,22 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late final AnalyticsStartupCoordinator _analyticsStartupCoordinator;
+
   @override
   void initState() {
     super.initState();
+    _analyticsStartupCoordinator = AnalyticsStartupCoordinator();
     PushNotificationHandler().initialize();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _analyticsStartupCoordinator.start();
+    });
+  }
+
+  @override
+  void dispose() {
+    _analyticsStartupCoordinator.stop();
+    super.dispose();
   }
 
   @override

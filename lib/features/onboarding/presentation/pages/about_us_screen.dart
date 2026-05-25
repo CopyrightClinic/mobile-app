@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../widgets/onboarding_background.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
-import '../widgets/gradient_border_painter.dart';
 import '../widgets/custom_back_button.dart';
 
 class AboutUsScreen extends StatelessWidget {
@@ -20,72 +19,80 @@ class AboutUsScreen extends StatelessWidget {
       appBar: CustomAppBar(leading: OnboardingCustomBackButton(), leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w)),
       body: OnboardingBackground(
         child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: DimensionConstants.gap10Px.h),
-                TranslatedText(
-                  AppStrings.aboutUs,
-                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
-                ),
-                TranslatedText(
-                  AppStrings.learnAboutUsAndOurTeam,
-                  style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
-                ),
-                SizedBox(height: DimensionConstants.gap24Px.h),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [_buildCassiusTitusCard(), SizedBox(height: DimensionConstants.gap30Px)],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: DimensionConstants.gap10Px.h),
+                    TranslatedText(
+                      AppStrings.aboutUs,
+                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
                     ),
-                  ),
+                    TranslatedText(
+                      AppStrings.learnAboutUsAndOurTeam,
+                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+                    ),
+                    SizedBox(height: DimensionConstants.gap24Px.h),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Expanded(child: _buildCassiusSection()),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCassiusTitusCard() {
-    return SizedBox(
-      width: double.infinity,
+  EdgeInsets get _cassiusSectionMargin => EdgeInsets.symmetric(horizontal: DimensionConstants.gap12Px.w, vertical: DimensionConstants.gap12Px.h);
 
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20.r),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
-          child: CustomPaint(
-            painter: RoundedGradientBorderPainter(backgroundColor: Colors.black.withValues(alpha: 0.4), borderRadius: 20.r),
-            child: Container(
-              padding: EdgeInsets.all(DimensionConstants.gap15Px),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.r)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 99.w,
-                    height: 99.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: const DecorationImage(image: AssetImage(ImageConstants.casius), fit: BoxFit.cover),
-                    ),
-                  ),
-                  SizedBox(height: DimensionConstants.gap10Px.h),
-                  SizedBox(
-                    width: double.infinity,
-                    child: TranslatedText(
-                      AppStrings.cassiusTitusDescriptionUpdated,
-                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                ],
+  Widget _buildCassiusSection() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final margin = _cassiusSectionMargin;
+        final contentWidth = constraints.maxWidth - margin.horizontal - 16.w;
+        final contentHeight = constraints.maxHeight - margin.vertical - 12.h;
+
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Center(
+              child: Padding(
+                padding: margin,
+                child: Image.asset(
+                  ImageConstants.casius,
+                  width: contentWidth,
+                  height: contentHeight,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.topCenter,
+                  filterQuality: FilterQuality.high,
+                ),
               ),
+            ),
+            Positioned(left: margin.left, right: margin.right, top: margin.top, bottom: margin.bottom, child: _buildDescriptionOverlay()),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDescriptionOverlay() {
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+        child: Container(
+          color: Colors.black.withValues(alpha: 0.35),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap20Px.w, vertical: DimensionConstants.gap20Px.h),
+            child: TranslatedText(
+              AppStrings.cassiusTitusDescriptionUpdated,
+              style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+              textAlign: TextAlign.start,
             ),
           ),
         ),
@@ -133,12 +140,6 @@ class AboutUsScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: DimensionConstants.gap8Px.h),
-        // TranslatedText(
-        //   member['name'] ?? '',
-        //   style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w600),
-        //   textAlign: TextAlign.center,
-        // ),
-        // SizedBox(height: DimensionConstants.gap2Px.h),
         TranslatedText(
           member['title'] ?? '',
           style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font12Px.f, fontWeight: FontWeight.w600),

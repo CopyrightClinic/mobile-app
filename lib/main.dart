@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'app.dart';
 import 'di.dart' as di;
-import 'core/analytics/application/analytics_initializer.dart';
 import 'core/analytics/infrastructure/firebase/firebase_app_bootstrap.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:device_preview/device_preview.dart';
@@ -36,7 +35,6 @@ void main() async {
 
   await EasyLocalization.ensureInitialized();
   await di.init();
-  await di.sl<AnalyticsInitializer>().initialize();
 
   Stripe.publishableKey = Config.stripePublishableKey;
   Stripe.merchantIdentifier = Config.merchantIdentifier;
