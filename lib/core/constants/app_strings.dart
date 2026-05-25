@@ -15,6 +15,7 @@ class AppStrings {
   // About Us Screen
   static const aboutUs = 'aboutUs';
   static const learnAboutUsAndOurTeam = 'learnAboutUsAndOurTeam';
+  static const cassiusTitusName = 'Cassius Titus';
   static const cassiusTitusDescription = 'cassiusTitusDescription';
   static const cassiusTitusDescriptionUpdated = 'cassiusTitusDescriptionUpdated';
   static const sarahChen = 'sarahChen';
