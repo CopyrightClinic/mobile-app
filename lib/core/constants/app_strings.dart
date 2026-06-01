@@ -15,9 +15,9 @@ class AppStrings {
   // About Us Screen
   static const aboutUs = 'aboutUs';
   static const learnAboutUsAndOurTeam = 'learnAboutUsAndOurTeam';
-  static const cassiusTitusName = 'Cassius Titus';
   static const cassiusTitusDescription = 'cassiusTitusDescription';
   static const cassiusTitusDescriptionUpdated = 'cassiusTitusDescriptionUpdated';
+  static const teamDescription = 'teamDescription';
   static const sarahChen = 'sarahChen';
   static const michaelRoss = 'michaelRoss';
   static const emmaWilson = 'emmaWilson';
@@ -49,14 +49,12 @@ class AppStrings {
   static const emailIsRequired = 'emailIsRequired';
   static const pleaseEnterAValidEmail = 'pleaseEnterAValidEmail';
   static const passwordIsRequired = 'passwordIsRequired';
-  static const passwordMustBeAtLeastXCharacters =
-      'passwordMustBeAtLeastXCharacters';
+  static const passwordMustBeAtLeastXCharacters = 'passwordMustBeAtLeastXCharacters';
   static const passwordNoSpaces = 'passwordNoSpaces';
   static const passwordMustContainUppercase = 'passwordMustContainUppercase';
   static const passwordMustContainLowercase = 'passwordMustContainLowercase';
   static const passwordMustContainDigit = 'passwordMustContainDigit';
-  static const passwordMustContainSpecialChar =
-      'passwordMustContainSpecialChar';
+  static const passwordMustContainSpecialChar = 'passwordMustContainSpecialChar';
   static const confirmPasswordIsRequired = 'confirmPasswordIsRequired';
   static const passwordsDoNotMatch = 'passwordsDoNotMatch';
   static const nameIsRequired = 'nameIsRequired';
@@ -132,19 +130,14 @@ class AppStrings {
 
   // Complete Profile Validation
   static const fullNameIsRequired = 'fullNameIsRequired';
-  static const fullNameMustBeAtLeast2Characters =
-      'fullNameMustBeAtLeast2Characters';
+  static const fullNameMustBeAtLeast2Characters = 'fullNameMustBeAtLeast2Characters';
   static const fullNameCanOnlyContainLetters = 'fullNameCanOnlyContainLetters';
-  static const fullNameCannotExceed100Characters =
-      'fullNameCannotExceed100Characters';
+  static const fullNameCannotExceed100Characters = 'fullNameCannotExceed100Characters';
   static const phoneNumberIsRequired = 'phoneNumberIsRequired';
-  static const phoneNumberMustBeAtLeast10Digits =
-      'phoneNumberMustBeAtLeast10Digits';
+  static const phoneNumberMustBeAtLeast10Digits = 'phoneNumberMustBeAtLeast10Digits';
   static const addressIsRequired = 'addressIsRequired';
-  static const addressMustBeAtLeast10Characters =
-      'addressMustBeAtLeast10Characters';
-  static const addressCannotExceed500Characters =
-      'addressCannotExceed500Characters';
+  static const addressMustBeAtLeast10Characters = 'addressMustBeAtLeast10Characters';
+  static const addressCannotExceed500Characters = 'addressCannotExceed500Characters';
 
   // Other UI Elements
   static const viewThemePreview = 'viewThemePreview';
@@ -159,13 +152,11 @@ class AppStrings {
   static const musicLicensing = 'musicLicensing';
   static const musicLicensingDescription = 'musicLicensingDescription';
   static const visualArtistsRights = 'visualArtistsRights';
-  static const visualArtistsRightsDescription =
-      'visualArtistsRightsDescription';
+  static const visualArtistsRightsDescription = 'visualArtistsRightsDescription';
   static const videoAndMedia = 'videoAndMedia';
   static const videoAndMediaDescription = 'videoAndMediaDescription';
   static const artificialIntelligence = 'artificialIntelligence';
-  static const artificialIntelligenceDescription =
-      'artificialIntelligenceDescription';
+  static const artificialIntelligenceDescription = 'artificialIntelligenceDescription';
   static const writers = 'writers';
   static const writersDescription = 'writersDescription';
 
@@ -201,8 +192,7 @@ class AppStrings {
   static const expirationDateIsRequired = 'expirationDateIsRequired';
   static const cvvIsRequired = 'cvvIsRequired';
   static const cardholderNameIsRequired = 'cardholderNameIsRequired';
-  static const cardholderNameCannotExceed100Characters =
-      'cardholderNameCannotExceed100Characters';
+  static const cardholderNameCannotExceed100Characters = 'cardholderNameCannotExceed100Characters';
   static const noPaymentMethods = 'noPaymentMethods';
   static const tapToAdd = 'tapToAdd';
   static const noPaymentMethodsYet = 'noPaymentMethodsYet';
@@ -251,10 +241,8 @@ class AppStrings {
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
   static const joinSession = 'joinSession';
-  static const joinAvailable10MinutesBeforeSession =
-      'joinAvailable10MinutesBeforeSession';
-  static const summaryAvailable1HourAfterSession =
-      'summaryAvailable1HourAfterSession';
+  static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
+  static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
   static const youCanRequestUntil = 'youCanRequestUntil';
   static const summaryRequestExpired = 'summaryRequestExpired';
   static const charged = 'charged';
@@ -306,19 +294,16 @@ class AppStrings {
   static const pleaseSignUpOrLogInToViewIt = 'pleaseSignUpOrLogInToViewIt';
   static const haroldCanConnectYou = 'haroldCanConnectYou';
   static const haroldConsultationDescription = 'haroldConsultationDescription';
-  static const haroldConsultationDescriptionDynamic =
-      'haroldConsultationDescriptionDynamic';
+  static const haroldConsultationDescriptionDynamic = 'haroldConsultationDescriptionDynamic';
   static const haroldSuccessOriginalInputLabel = 'haroldSuccessOriginalInputLabel';
   static const scheduleAppointment = 'scheduleAppointment';
   static const yourMatterFallsOutsideScope = 'yourMatterFallsOutsideScope';
   static const goToHome = 'goToHome';
   static const failedToEvaluateQuery = 'failedToEvaluateQuery';
-  static const haroldAiEvaluationNotSuccessful =
-      'haroldAiEvaluationNotSuccessful';
- 
+  static const haroldAiEvaluationNotSuccessful = 'haroldAiEvaluationNotSuccessful';
+
   static const unexpectedErrorOccurred = 'unexpectedErrorOccurred';
-  static const unexpectedErrorOccurredWhileEvaluatingQuery =
-      'unexpectedErrorOccurredWhileEvaluatingQuery';
+  static const unexpectedErrorOccurredWhileEvaluatingQuery = 'unexpectedErrorOccurredWhileEvaluatingQuery';
   static const haroldIntakeQ1Prompt = 'haroldIntakeQ1Prompt';
   static const haroldIntakeQ2Prompt = 'haroldIntakeQ2Prompt';
   static const haroldIntakeQ2OptionCreator = 'haroldIntakeQ2OptionCreator';
@@ -343,18 +328,13 @@ class AppStrings {
   static const haroldEvaluationIdMissing = 'haroldEvaluationIdMissing';
   static const speechRecognitionError = 'speechRecognitionError';
   static const speechRecognitionNetworkError = 'speechRecognitionNetworkError';
-  static const speechRecognitionDisabledError =
-      'speechRecognitionDisabledError';
+  static const speechRecognitionDisabledError = 'speechRecognitionDisabledError';
   static const speechRecognitionGenericError = 'speechRecognitionGenericError';
   static const speechRecognitionNotAvailable = 'speechRecognitionNotAvailable';
-  static const speechRecognitionPermissionDenied =
-      'speechRecognitionPermissionDenied';
-  static const speechRecognitionPermissionRestricted =
-      'speechRecognitionPermissionRestricted';
-  static const speechRecognitionPermissionNotDetermined =
-      'speechRecognitionPermissionNotDetermined';
-  static const speechRecognitionPermissionUnknown =
-      'speechRecognitionPermissionUnknown';
+  static const speechRecognitionPermissionDenied = 'speechRecognitionPermissionDenied';
+  static const speechRecognitionPermissionRestricted = 'speechRecognitionPermissionRestricted';
+  static const speechRecognitionPermissionNotDetermined = 'speechRecognitionPermissionNotDetermined';
+  static const speechRecognitionPermissionUnknown = 'speechRecognitionPermissionUnknown';
   static const microphonePermissionDenied = 'microphonePermissionDenied';
   static const audioSessionError = 'audioSessionError';
   static const recognitionRequestError = 'recognitionRequestError';
@@ -378,8 +358,7 @@ class AppStrings {
   static const sun = 'sun';
   // Payment Error Messages
   static const failedToProcessPaymentMethod = 'failedToProcessPaymentMethod';
-  static const failedToCreatePaymentMethodGeneric =
-      'failedToCreatePaymentMethodGeneric';
+  static const failedToCreatePaymentMethodGeneric = 'failedToCreatePaymentMethodGeneric';
 
   // Profile Screen Additional Strings
   static const other = 'other';
@@ -395,8 +374,7 @@ class AppStrings {
   static const failedToLoadSessions = 'failedToLoadSessions';
   static const failedToRefreshSessions = 'failedToRefreshSessions';
   static const failedToCancelSession = 'failedToCancelSession';
-  static const failedToLoadSessionAvailability =
-      'failedToLoadSessionAvailability';
+  static const failedToLoadSessionAvailability = 'failedToLoadSessionAvailability';
   static const sessionCancelledSuccessfully = 'sessionCancelledSuccessfully';
   static const failedToBookSession = 'failedToBookSession';
   static const sessionBookedSuccessfully = 'sessionBookedSuccessfully';
@@ -418,29 +396,23 @@ class AppStrings {
   static const mastercard = 'mastercard';
   static const amex = 'amex';
   static const discover = 'discover';
-  static const paymentMethodDeletedSuccessfully =
-      'paymentMethodDeletedSuccessfully';
+  static const paymentMethodDeletedSuccessfully = 'paymentMethodDeletedSuccessfully';
 
   // Additional localization strings
   static const paymentSuccessful = 'paymentSuccessful';
   static const userRequestedCancellation = 'userRequestedCancellation';
   static const failedToLoadImage = 'failedToLoadImage';
   static const retryText = 'retryText';
-  static const failedToScheduleSessionGeneric =
-      'failedToScheduleSessionGeneric';
+  static const failedToScheduleSessionGeneric = 'failedToScheduleSessionGeneric';
   static const failedToFetchUserSessions = 'failedToFetchUserSessions';
   static const failedToFetchUpcomingSessions = 'failedToFetchUpcomingSessions';
-  static const failedToFetchCompletedSessions =
-      'failedToFetchCompletedSessions';
+  static const failedToFetchCompletedSessions = 'failedToFetchCompletedSessions';
   static const failedToFetchSession = 'failedToFetchSession';
   static const failedToCancelSessionGeneric = 'failedToCancelSessionGeneric';
   static const failedToJoinSession = 'failedToJoinSession';
-  static const failedToFetchSessionAvailability =
-      'failedToFetchSessionAvailability';
-  static const failedToLoadPaymentMethodsGeneric =
-      'failedToLoadPaymentMethodsGeneric';
-  static const failedToDeletePaymentMethodGeneric =
-      'failedToDeletePaymentMethodGeneric';
+  static const failedToFetchSessionAvailability = 'failedToFetchSessionAvailability';
+  static const failedToLoadPaymentMethodsGeneric = 'failedToLoadPaymentMethodsGeneric';
+  static const failedToDeletePaymentMethodGeneric = 'failedToDeletePaymentMethodGeneric';
   static const failedToGetTimezone = 'failedToGetTimezone';
   static const failedToSend = 'failedToSend';
   static const failedToReceive = 'failedToReceive';
@@ -514,8 +486,7 @@ class AppStrings {
   static const zoomInitializing = 'zoomInitializing';
   static const connectingToMeeting = 'connectingToMeeting';
   static const pleaseWait = 'pleaseWait';
-  static const areYouSureYouWantToLeaveMeeting =
-      'areYouSureYouWantToLeaveMeeting';
+  static const areYouSureYouWantToLeaveMeeting = 'areYouSureYouWantToLeaveMeeting';
   static const leave = 'leave';
 
   // Zoom Error Messages
@@ -551,8 +522,7 @@ class AppStrings {
   static const allNotificationsMarkedAsRead = 'allNotificationsMarkedAsRead';
   static const clearAll = 'clearAll';
   static const confirmClearAllNotifications = 'confirmClearAllNotifications';
-  static const confirmClearAllNotificationsDescription =
-      'confirmClearAllNotificationsDescription';
+  static const confirmClearAllNotificationsDescription = 'confirmClearAllNotificationsDescription';
   static const failedToMarkAllAsRead = 'failedToMarkAllAsRead';
   static const failedToClearNotifications = 'failedToClearNotifications';
   static const unknownError = 'unknownError';
@@ -564,10 +534,8 @@ class AppStrings {
   static const payToRequestSummary = 'payToRequestSummary';
   static const requestSummaryDeadline = 'requestSummaryDeadline';
   static const summaryReviewInProgress = 'summaryReviewInProgress';
-  static const adminReviewInProgressDescription =
-      'adminReviewInProgressDescription';
-  static const attorneyReviewInProgressDescription =
-      'attorneyReviewInProgressDescription';
+  static const adminReviewInProgressDescription = 'adminReviewInProgressDescription';
+  static const attorneyReviewInProgressDescription = 'attorneyReviewInProgressDescription';
   static const yourSummaryIsReady = 'yourSummaryIsReady';
   static const viewSummary = 'viewSummary';
   static const downloadPDF = 'downloadPDF';
@@ -577,31 +545,23 @@ class AppStrings {
   static const summaryUnlockRequested = 'summaryUnlockRequested';
 
   // Speech Recognition Error Messages
-  static const failedToInitializeSpeechRecognition =
-      'failedToInitializeSpeechRecognition';
-  static const failedToStartSpeechRecognition =
-      'failedToStartSpeechRecognition';
+  static const failedToInitializeSpeechRecognition = 'failedToInitializeSpeechRecognition';
+  static const failedToStartSpeechRecognition = 'failedToStartSpeechRecognition';
   static const failedToStopSpeechRecognition = 'failedToStopSpeechRecognition';
-  static const failedToPauseSpeechRecognition =
-      'failedToPauseSpeechRecognition';
-  static const failedToResumeSpeechRecognition =
-      'failedToResumeSpeechRecognition';
-  static const speechRecognitionErrorOccurred =
-      'speechRecognitionErrorOccurred';
-  static const describeYourCopyrightIssuePrompt =
-      'describeYourCopyrightIssuePrompt';
+  static const failedToPauseSpeechRecognition = 'failedToPauseSpeechRecognition';
+  static const failedToResumeSpeechRecognition = 'failedToResumeSpeechRecognition';
+  static const speechRecognitionErrorOccurred = 'speechRecognitionErrorOccurred';
+  static const describeYourCopyrightIssuePrompt = 'describeYourCopyrightIssuePrompt';
   static const addYourRatingAndReview = 'addYourRatingAndReview';
   static const addACommentOptional = 'addACommentOptional';
   static const theAttorneyWasVeryHelpful = 'theAttorneyWasVeryHelpful';
-  static const ratingReviewSubmittedSuccessfully =
-      'ratingReviewSubmittedSuccessfully';
+  static const ratingReviewSubmittedSuccessfully = 'ratingReviewSubmittedSuccessfully';
   static const failedToSubmitFeedback = 'failedToSubmitFeedback';
 
   static const loadingMore = 'loadingMore';
   static const failedToLoadMoreSessions = 'failedToLoadMoreSessions';
   static const confirmPurchase = 'confirmPurchase';
-  static const professionallyReviewedSummaryDescription =
-      'professionallyReviewedSummaryDescription';
+  static const professionallyReviewedSummaryDescription = 'professionallyReviewedSummaryDescription';
   static const forSessionSummary = 'forSessionSummary';
   static const selectPaymentMethod = 'selectPaymentMethod';
   static const confirmAndPay = 'confirmAndPay';
