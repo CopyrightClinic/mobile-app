@@ -309,7 +309,8 @@ class AppStrings {
   static const haroldIntakeQ2OptionCreator = 'haroldIntakeQ2OptionCreator';
   static const haroldIntakeQ2OptionAccused = 'haroldIntakeQ2OptionAccused';
   static const haroldIntakeQ2OptionUnsure = 'haroldIntakeQ2OptionUnsure';
-  static const haroldIntakeQ3Prompt = 'haroldIntakeQ3Prompt';
+  static const haroldIntakeQ3InventionPrompt = 'haroldIntakeQ3InventionPrompt';
+  static const haroldIntakeQ3TrademarkPrompt = 'haroldIntakeQ3TrademarkPrompt';
   static const haroldIntakeQ4CreatorPrompt = 'haroldIntakeQ4CreatorPrompt';
   static const haroldIntakeQ4AccusedPrompt = 'haroldIntakeQ4AccusedPrompt';
   static const haroldIntakeQ4UnsurePrompt = 'haroldIntakeQ4UnsurePrompt';
