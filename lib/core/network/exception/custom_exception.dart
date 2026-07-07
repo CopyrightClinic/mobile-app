@@ -127,6 +127,9 @@ class CustomException implements Exception {
               statusCode: error.response?.statusCode,
               message: error.response?.statusMessage ?? 'Unknown error',
             );
+          case DioExceptionType.transformTimeout:
+            // TODO: Handle this case.
+            throw UnimplementedError();
         }
       } else {
         return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: AppStrings.errorUnrecognized);
