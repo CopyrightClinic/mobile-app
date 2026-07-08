@@ -288,14 +288,14 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     SwitchToUpcoming event,
     Emitter<SessionsState> emit,
   ) {
-    emit(state.copyWith(currentTab: SessionsTab.upcoming));
+    emit(state.copyWith(currentTab: SessionsTab.upcoming, clearSuccess: true, clearError: true));
   }
 
   Future<void> _onSwitchToCompleted(
     SwitchToCompleted event,
     Emitter<SessionsState> emit,
   ) async {
-    emit(state.copyWith(currentTab: SessionsTab.completed));
+    emit(state.copyWith(currentTab: SessionsTab.completed, clearSuccess: true, clearError: true));
 
     if (!state.hasCompletedData) {
       emit(state.copyWith(isLoadingSessions: true, clearError: true));
@@ -338,7 +338,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     SwitchToPending event,
     Emitter<SessionsState> emit,
   ) async {
-    emit(state.copyWith(currentTab: SessionsTab.pending));
+    emit(state.copyWith(currentTab: SessionsTab.pending, clearSuccess: true, clearError: true));
 
     if (!state.hasPendingData) {
       emit(state.copyWith(isLoadingSessions: true, clearError: true));
@@ -374,7 +374,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     SwitchToCancelled event,
     Emitter<SessionsState> emit,
   ) async {
-    emit(state.copyWith(currentTab: SessionsTab.cancelled));
+    emit(state.copyWith(currentTab: SessionsTab.cancelled, clearSuccess: true, clearError: true));
 
     if (!state.hasCancelledData) {
       emit(state.copyWith(isLoadingSessions: true, clearError: true));

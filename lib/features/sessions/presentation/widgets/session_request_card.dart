@@ -14,8 +14,9 @@ import '../../domain/entities/user_session_request_entity.dart';
 class SessionRequestCard extends StatelessWidget {
   final UserSessionRequestEntity request;
   final VoidCallback? onCancel;
+  final VoidCallback? onReschedule;
 
-  const SessionRequestCard({super.key, required this.request, this.onCancel});
+  const SessionRequestCard({super.key, required this.request, this.onCancel, this.onReschedule});
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +102,25 @@ class SessionRequestCard extends StatelessWidget {
                 padding: DimensionConstants.gap12Px.d,
                 child: TranslatedText(
                   AppStrings.cancelSession,
+                  style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+                ),
+              ),
+            ),
+          ],
+
+          if (onReschedule != null) ...[
+            SizedBox(height: DimensionConstants.gap16Px.h),
+            SizedBox(
+              width: double.infinity,
+              child: CustomButton(
+                onPressed: onReschedule,
+                backgroundColor: context.buttonSecondary,
+                disabledBackgroundColor: context.buttonDisabled,
+                textColor: context.darkTextPrimary,
+                borderRadius: DimensionConstants.radius52Px.r,
+                padding: DimensionConstants.gap12Px.d,
+                child: TranslatedText(
+                  AppStrings.rescheduleSession,
                   style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                 ),
               ),

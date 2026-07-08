@@ -246,6 +246,7 @@ class AppStrings {
   static const somethingWentWrong = 'somethingWentWrong';
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
+  static const rescheduleSession = 'rescheduleSession';
   static const joinSession = 'joinSession';
   static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
   static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
@@ -263,6 +264,9 @@ class AppStrings {
   static const reason = 'reason';
   static const enterCancellationReason = 'enterCancellationReason';
   static const pleaseEnterCancellationReason = 'pleaseEnterCancellationReason';
+  static const authorizationHoldTitle = 'authorizationHoldTitle';
+  static const authorizationHoldMessage = 'authorizationHoldMessage';
+  static const gotIt = 'gotIt';
   static const joiningSession = 'joiningSession';
   static const session = 'session';
   static const today = 'today';

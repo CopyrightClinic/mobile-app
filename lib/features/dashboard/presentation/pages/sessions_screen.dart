@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
+import '../../../../config/theme/app_theme.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
@@ -13,6 +14,7 @@ import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_bottomsheet.dart';
+import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/services/bottom_sheet_service.dart';
@@ -229,6 +231,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
     }
 
     final isPendingTab = state.currentTab == SessionsTab.pending;
+    final isCancelledTab = state.currentTab == SessionsTab.cancelled;
 
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -239,6 +242,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
         return SessionRequestCard(
           request: request,
           onCancel: isPendingTab ? () => _showCancelRequestBottomSheet(request) : null,
+          onReschedule: isCancelledTab ? () => context.push(AppRoutes.askHaroldAiRouteName) : null,
         );
       },
     );
@@ -345,12 +349,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 final hasReason = reason.trim().isNotEmpty;
 
                 return CustomBottomSheet(
-                  customIcon: Icon(
-                    Icons.cancel_outlined,
-                    color: context.darkTextPrimary,
-                    size: DimensionConstants.gap30Px.w,
-                  ),
-                  title: AppStrings.cancelSessionTitle,
                   primaryButtonText: AppStrings.cancelSession,
                   secondaryButtonText: AppStrings.keepSession,
                   isPrimaryLoading: isSubmitting,
@@ -383,8 +381,13 @@ class _SessionsScreenState extends State<SessionsScreen> {
                     );
                     if (!mounted) return;
                     isSubmittingNotifier.value = false;
-                    if (resultState.hasSuccess && bottomSheetContext.mounted) {
-                      Navigator.of(bottomSheetContext).pop();
+                    if (resultState.hasSuccess) {
+                      if (bottomSheetContext.mounted) {
+                        Navigator.of(bottomSheetContext).pop();
+                      }
+                      if (mounted) {
+                        _showAuthorizationHoldDialog();
+                      }
                     }
                   },
                 );
@@ -397,6 +400,86 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
     reasonNotifier.dispose();
     isSubmittingNotifier.dispose();
+  }
+
+  Future<void> _showAuthorizationHoldDialog() {
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+          clipBehavior: Clip.antiAlias,
+          insetPadding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap24Px.h),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(dialogContext).size.height * 0.8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF16181E),
+                borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: AppTheme.customBackgroundGradient,
+                  borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r),
+                ),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.info_outline, color: context.darkTextPrimary, size: DimensionConstants.gap40Px.w),
+                      SizedBox(height: DimensionConstants.gap20Px.h),
+                      TranslatedText(
+                        AppStrings.authorizationHoldTitle,
+                        style: TextStyle(
+                          color: context.darkTextPrimary,
+                          fontSize: DimensionConstants.font20Px.f,
+                          fontWeight: FontWeight.w600,
+                          height: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: DimensionConstants.gap12Px.h),
+                      TranslatedText(
+                        AppStrings.authorizationHoldMessage,
+                        style: TextStyle(
+                          color: context.darkTextSecondary,
+                          fontSize: DimensionConstants.font14Px.f,
+                          fontWeight: FontWeight.w400,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: DimensionConstants.gap24Px.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          backgroundColor: context.primary,
+                          textColor: Colors.white,
+                          borderRadius: 50.r,
+                          height: 48.h,
+                          padding: 0,
+                          child: TranslatedText(
+                            AppStrings.gotIt,
+                            style: TextStyle(
+                              fontSize: DimensionConstants.font16Px.f,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _joinSessionDirectly(BuildContext context, String sessionId) {
