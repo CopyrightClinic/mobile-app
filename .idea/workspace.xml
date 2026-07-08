@@ -10,17 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/translations/en-US.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/translations/en-US.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/image_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/image_constants.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/utils/enumns/ui/sessions_tab.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/utils/enumns/ui/sessions_tab.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/sessions_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/sessions_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/onboarding/presentation/pages/about_us_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/onboarding/presentation/pages/about_us_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_event.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_event.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/widgets/sessions_tab_selector.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/widgets/sessions_tab_selector.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,17 +123,17 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart</url>
-          <line>36</line>
+          <line>37</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart</url>
-          <line>48</line>
+          <line>67</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart</url>
-          <line>62</line>
+          <line>81</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">

@@ -259,6 +259,10 @@ class AppStrings {
   static const cancelSessionTitle = 'cancelSessionTitle';
   static const cancelSessionMessage = 'cancelSessionMessage';
   static const keepSession = 'keepSession';
+  static const cancellationReason = 'cancellationReason';
+  static const reason = 'reason';
+  static const enterCancellationReason = 'enterCancellationReason';
+  static const pleaseEnterCancellationReason = 'pleaseEnterCancellationReason';
   static const joiningSession = 'joiningSession';
   static const session = 'session';
   static const today = 'today';

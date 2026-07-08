@@ -13,6 +13,7 @@ import '../models/paginated_sessions_model.dart';
 import '../models/unlock_summary_request_model.dart';
 import '../models/unlock_summary_response_model.dart';
 import '../models/cancel_session_response_model.dart';
+import '../models/cancel_session_request_response_model.dart';
 import '../models/extend_session_request_model.dart';
 import '../models/extend_session_response_model.dart';
 import 'sessions_mock_data_source.dart';
@@ -42,6 +43,10 @@ abstract class SessionsRemoteDataSource {
   });
   Future<CancelSessionResponseModel> cancelSession(
     String sessionId,
+    String reason,
+  );
+  Future<CancelSessionRequestResponseModel> cancelSessionRequest(
+    String requestId,
     String reason,
   );
   Future<SessionModel> joinSession(String sessionId);
@@ -185,6 +190,21 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       ),
       data: {},
       converter: (json) => CancelSessionResponseModel.fromJson(json.data),
+    );
+  }
+
+  @override
+  Future<CancelSessionRequestResponseModel> cancelSessionRequest(
+    String requestId,
+    String reason,
+  ) async {
+    return await apiService.postData<CancelSessionRequestResponseModel>(
+      endpoint: ApiEndpoint.sessions(
+        SessionsEndpoint.CANCEL_SESSION_REQUEST,
+        sessionId: requestId,
+      ),
+      data: {'reason': reason},
+      converter: (json) => CancelSessionRequestResponseModel.fromJson(json.data),
     );
   }
 

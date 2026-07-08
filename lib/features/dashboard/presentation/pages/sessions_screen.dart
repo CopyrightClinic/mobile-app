@@ -12,6 +12,8 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/custom_bottomsheet.dart';
+import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/services/bottom_sheet_service.dart';
 import '../../../../di.dart';
@@ -23,6 +25,7 @@ import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/presentation/widgets/session_request_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
+import '../../../sessions/domain/entities/user_session_request_entity.dart';
 import '../../../zoom/presentation/bloc/zoom_bloc.dart';
 import '../../../zoom/presentation/widgets/zoom_connection_dialog.dart';
 
@@ -96,7 +99,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
         listener: (context, state) {
           if (state.hasError) {
             SnackBarUtils.showError(context, state.errorMessage!);
-          } else if (state.hasSuccess && state.lastOperation == SessionsOperation.cancelSession) {
+          } else if (state.hasSuccess &&
+              (state.lastOperation == SessionsOperation.cancelSession ||
+                  state.lastOperation == SessionsOperation.cancelSessionRequest)) {
             SnackBarUtils.showSuccess(context, state.successMessage!);
           }
         },
@@ -231,7 +236,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
       padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
       itemBuilder: (context, index) {
         final request = requests[index];
-        return SessionRequestCard(request: request, onCancel: isPendingTab ? () {} : null);
+        return SessionRequestCard(
+          request: request,
+          onCancel: isPendingTab ? () => _showCancelRequestBottomSheet(request) : null,
+        );
       },
     );
   }
@@ -316,6 +324,79 @@ class _SessionsScreenState extends State<SessionsScreen> {
       isDismissible: false,
       enableDrag: false,
     );
+  }
+
+  Future<void> _showCancelRequestBottomSheet(UserSessionRequestEntity request) async {
+    final reasonNotifier = ValueNotifier<String>('');
+    final isSubmittingNotifier = ValueNotifier<bool>(false);
+
+    await BottomSheetService.show<void>(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      builder: (bottomSheetContext) {
+        return ValueListenableBuilder<bool>(
+          valueListenable: isSubmittingNotifier,
+          builder: (context, isSubmitting, _) {
+            return ValueListenableBuilder<String>(
+              valueListenable: reasonNotifier,
+              builder: (context, reason, __) {
+                final hasReason = reason.trim().isNotEmpty;
+
+                return CustomBottomSheet(
+                  customIcon: Icon(
+                    Icons.cancel_outlined,
+                    color: context.darkTextPrimary,
+                    size: DimensionConstants.gap30Px.w,
+                  ),
+                  title: AppStrings.cancelSessionTitle,
+                  primaryButtonText: AppStrings.cancelSession,
+                  secondaryButtonText: AppStrings.keepSession,
+                  isPrimaryLoading: isSubmitting,
+                  isPrimaryEnabled: hasReason,
+                  content: CustomTextField(
+                    label: AppStrings.reason,
+                    placeholder: AppStrings.enterCancellationReason,
+                    maxLines: 2,
+                    onChanged: (value) {
+                      reasonNotifier.value = value;
+                    },
+                  ),
+                  onSecondaryPressed: () {
+                    Navigator.of(bottomSheetContext).pop();
+                  },
+                  onPrimaryPressed: () async {
+                    final trimmedReason = reason.trim();
+                    if (trimmedReason.isEmpty) {
+                      SnackBarUtils.showError(
+                        context,
+                        AppStrings.pleaseEnterCancellationReason.tr(),
+                      );
+                      return;
+                    }
+
+                    isSubmittingNotifier.value = true;
+                    _sessionsBloc.add(CancelSessionRequestSubmitted(requestId: request.id, reason: trimmedReason));
+                    final resultState = await _sessionsBloc.stream.firstWhere(
+                      (state) => state.lastOperation == SessionsOperation.cancelSessionRequest && !state.isProcessingCancel,
+                    );
+                    if (!mounted) return;
+                    isSubmittingNotifier.value = false;
+                    if (resultState.hasSuccess && bottomSheetContext.mounted) {
+                      Navigator.of(bottomSheetContext).pop();
+                    }
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+
+    reasonNotifier.dispose();
+    isSubmittingNotifier.dispose();
   }
 
   void _joinSessionDirectly(BuildContext context, String sessionId) {

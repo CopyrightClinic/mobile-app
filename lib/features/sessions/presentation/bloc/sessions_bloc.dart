@@ -3,6 +3,7 @@ import '../../../../core/utils/timezone_helper.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
+import '../../domain/usecases/cancel_session_request_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
 import '../../domain/usecases/get_user_session_requests_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
@@ -15,6 +16,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   final GetUserSessionsUseCase getUserSessionsUseCase;
   final GetUserSessionRequestsUseCase getUserSessionRequestsUseCase;
   final CancelSessionUseCase cancelSessionUseCase;
+  final CancelSessionRequestUseCase cancelSessionRequestUseCase;
   final GetSessionAvailabilityUseCase getSessionAvailabilityUseCase;
   final BookSessionUseCase bookSessionUseCase;
   final ExtendSessionUseCase extendSessionUseCase;
@@ -23,6 +25,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     required this.getUserSessionsUseCase,
     required this.getUserSessionRequestsUseCase,
     required this.cancelSessionUseCase,
+    required this.cancelSessionRequestUseCase,
     required this.getSessionAvailabilityUseCase,
     required this.bookSessionUseCase,
     required this.extendSessionUseCase,
@@ -35,6 +38,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<SwitchToPending>(_onSwitchToPending);
     on<SwitchToCancelled>(_onSwitchToCancelled);
     on<CancelSessionRequested>(_onCancelSessionRequested);
+    on<CancelSessionRequestSubmitted>(_onCancelSessionRequestSubmitted);
     on<ScheduleSessionRequested>(_onScheduleSessionRequested);
     on<InitializeScheduleSession>(_onInitializeScheduleSession);
     on<DateSelected>(_onDateSelected);
@@ -116,61 +120,87 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     RefreshSessions event,
     Emitter<SessionsState> emit,
   ) async {
-    if (state.hasData) {
+    if (!state.hasData) {
+      await _onLoadUserSessions(const LoadUserSessions(), emit);
+      return;
+    }
+
+    if (state.currentTab == SessionsTab.pending || state.currentTab == SessionsTab.cancelled) {
       final String timezone = await TimezoneHelper.getUserTimezone();
-      final upcomingResult = await getUserSessionsUseCase(
-        GetUserSessionsParams(
-          timezone: timezone,
-          status: 'upcoming',
-          page: 1,
-          limit: 10,
-        ),
-      );
-      final completedResult = await getUserSessionsUseCase(
-        GetUserSessionsParams(
-          timezone: timezone,
-          status: 'completed',
-          page: 1,
-          limit: 10,
-        ),
+      final isPendingTab = state.currentTab == SessionsTab.pending;
+      final result = await getUserSessionRequestsUseCase(
+        GetUserSessionRequestsParams(timezone: timezone, status: isPendingTab ? 'pending' : 'canceled'),
       );
 
-      await upcomingResult.fold(
-        (failure) async => emit(
+      result.fold(
+        (failure) => emit(
           state.copyWith(
             errorMessage: failure.message ?? AppStrings.failedToRefreshSessions,
             lastOperation: SessionsOperation.loadSessions,
           ),
         ),
-        (upcomingPaginated) async {
-          await completedResult.fold(
-            (failure) async => emit(
-              state.copyWith(
-                errorMessage:
-                    failure.message ?? AppStrings.failedToRefreshSessions,
-                lastOperation: SessionsOperation.loadSessions,
-              ),
-            ),
-            (completedPaginated) async {
-              emit(
-                state.copyWith(
-                  upcomingSessions: upcomingPaginated.sessions,
-                  completedSessions: completedPaginated.sessions,
-                  currentUpcomingPage: upcomingPaginated.page,
-                  currentCompletedPage: completedPaginated.page,
-                  hasMoreUpcoming: upcomingPaginated.hasMore,
-                  hasMoreCompleted: completedPaginated.hasMore,
-                  clearError: true,
-                  clearSuccess: true,
-                ),
-              );
-            },
+        (requests) {
+          emit(
+            isPendingTab
+                ? state.copyWith(pendingRequests: requests, clearError: true, clearSuccess: true)
+                : state.copyWith(cancelledRequests: requests, clearError: true, clearSuccess: true),
           );
         },
       );
-    } else {
-      await _onLoadUserSessions(const LoadUserSessions(), emit);
+      return;
     }
+
+    final String timezone = await TimezoneHelper.getUserTimezone();
+    final upcomingResult = await getUserSessionsUseCase(
+      GetUserSessionsParams(
+        timezone: timezone,
+        status: 'upcoming',
+        page: 1,
+        limit: 10,
+      ),
+    );
+    final completedResult = await getUserSessionsUseCase(
+      GetUserSessionsParams(
+        timezone: timezone,
+        status: 'completed',
+        page: 1,
+        limit: 10,
+      ),
+    );
+
+    await upcomingResult.fold(
+      (failure) async => emit(
+        state.copyWith(
+          errorMessage: failure.message ?? AppStrings.failedToRefreshSessions,
+          lastOperation: SessionsOperation.loadSessions,
+        ),
+      ),
+      (upcomingPaginated) async {
+        await completedResult.fold(
+          (failure) async => emit(
+            state.copyWith(
+              errorMessage:
+                  failure.message ?? AppStrings.failedToRefreshSessions,
+              lastOperation: SessionsOperation.loadSessions,
+            ),
+          ),
+          (completedPaginated) async {
+            emit(
+              state.copyWith(
+                upcomingSessions: upcomingPaginated.sessions,
+                completedSessions: completedPaginated.sessions,
+                currentUpcomingPage: upcomingPaginated.page,
+                currentCompletedPage: completedPaginated.page,
+                hasMoreUpcoming: upcomingPaginated.hasMore,
+                hasMoreCompleted: completedPaginated.hasMore,
+                clearError: true,
+                clearSuccess: true,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _onLoadMoreSessions(
@@ -412,6 +442,62 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
           ),
         );
         await _onRefreshSessions(const RefreshSessions(), emit);
+      },
+    );
+  }
+
+  Future<void> _onCancelSessionRequestSubmitted(
+    CancelSessionRequestSubmitted event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isProcessingCancel: true,
+        cancellingSessionId: event.requestId,
+        clearError: true,
+        clearSuccess: true,
+      ),
+    );
+
+    final result = await cancelSessionRequestUseCase(
+      CancelSessionRequestParams(requestId: event.requestId, reason: event.reason),
+    );
+
+    await result.fold(
+      (failure) async => emit(
+        state.copyWith(
+          isProcessingCancel: false,
+          errorMessage: failure.message ?? AppStrings.failedToCancelSession,
+          lastOperation: SessionsOperation.cancelSessionRequest,
+          clearCancellingSessionId: true,
+        ),
+      ),
+      (response) async {
+        emit(
+          state.copyWith(
+            isProcessingCancel: false,
+            successMessage: response.message ?? AppStrings.sessionCancelledSuccessfully,
+            lastOperation: SessionsOperation.cancelSessionRequest,
+            clearCancellingSessionId: true,
+          ),
+        );
+
+        final String timezone = await TimezoneHelper.getUserTimezone();
+        final pendingResult = await getUserSessionRequestsUseCase(
+          GetUserSessionRequestsParams(timezone: timezone, status: 'pending'),
+        );
+        pendingResult.fold((_) {}, (requests) {
+          emit(state.copyWith(pendingRequests: requests));
+        });
+
+        if (state.hasCancelledData) {
+          final cancelledResult = await getUserSessionRequestsUseCase(
+            GetUserSessionRequestsParams(timezone: timezone, status: 'canceled'),
+          );
+          cancelledResult.fold((_) {}, (requests) {
+            emit(state.copyWith(cancelledRequests: requests));
+          });
+        }
       },
     );
   }

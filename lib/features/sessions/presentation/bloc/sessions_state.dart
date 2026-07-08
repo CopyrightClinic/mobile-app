@@ -5,7 +5,7 @@ import '../../domain/entities/user_session_request_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 
-enum SessionsOperation { loadSessions, cancelSession, joinSession, scheduleSession, bookSession, loadAvailability, extendSession }
+enum SessionsOperation { loadSessions, cancelSession, cancelSessionRequest, joinSession, scheduleSession, bookSession, loadAvailability, extendSession }
 
 class SessionsState extends Equatable {
   final List<SessionEntity>? upcomingSessions;

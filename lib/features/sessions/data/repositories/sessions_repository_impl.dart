@@ -7,6 +7,7 @@ import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_details_entity.dart';
 import '../../domain/entities/submit_feedback_response_entity.dart';
 import '../../domain/entities/cancel_session_response_entity.dart';
+import '../../domain/entities/cancel_session_request_response_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/entities/paginated_sessions_entity.dart';
@@ -148,6 +149,23 @@ class SessionsRepositoryImpl implements SessionsRepository {
   ) async {
     try {
       final response = await remoteDataSource.cancelSession(sessionId, reason);
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(
+        ServerFailure('${AppStrings.failedToCancelSessionGeneric}: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, CancelSessionRequestResponseEntity>> cancelSessionRequest(
+    String requestId,
+    String reason,
+  ) async {
+    try {
+      final response = await remoteDataSource.cancelSessionRequest(requestId, reason);
       return Right(response.toEntity());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));

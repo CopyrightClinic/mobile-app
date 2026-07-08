@@ -45,6 +45,16 @@ class CancelSessionRequested extends SessionsEvent {
   List<Object> get props => [sessionId, reason];
 }
 
+class CancelSessionRequestSubmitted extends SessionsEvent {
+  final String requestId;
+  final String reason;
+
+  const CancelSessionRequestSubmitted({required this.requestId, required this.reason});
+
+  @override
+  List<Object> get props => [requestId, reason];
+}
+
 class JoinSessionRequested extends SessionsEvent {
   final String sessionId;
 

@@ -6,6 +6,7 @@ import '../entities/user_session_request_entity.dart';
 import '../entities/session_details_entity.dart';
 import '../entities/submit_feedback_response_entity.dart';
 import '../entities/cancel_session_response_entity.dart';
+import '../entities/cancel_session_request_response_entity.dart';
 import '../entities/session_availability_entity.dart';
 import '../entities/book_session_response_entity.dart';
 import '../entities/unlock_summary_response_entity.dart';
@@ -36,6 +37,10 @@ abstract class SessionsRepository {
   });
   Future<Either<Failure, CancelSessionResponseEntity>> cancelSession(
     String sessionId,
+    String reason,
+  );
+  Future<Either<Failure, CancelSessionRequestResponseEntity>> cancelSessionRequest(
+    String requestId,
     String reason,
   );
   Future<Either<Failure, SessionEntity>> joinSession(String sessionId);

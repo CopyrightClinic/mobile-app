@@ -34,6 +34,7 @@ import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
 import 'features/sessions/domain/usecases/get_user_session_requests_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
+import 'features/sessions/domain/usecases/cancel_session_request_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_details_usecase.dart';
 import 'features/sessions/domain/usecases/submit_session_feedback_usecase.dart';
 import 'features/sessions/domain/usecases/unlock_session_summary_usecase.dart';
@@ -235,6 +236,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionRequestsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => CancelSessionRequestUseCase(sl()));
   sl.registerLazySingleton(() => GetSessionDetailsUseCase(sl()));
   sl.registerLazySingleton(() => SubmitSessionFeedbackUseCase(sl()));
   sl.registerLazySingleton(() => UnlockSessionSummaryUseCase(sl()));
@@ -293,6 +295,7 @@ Future<void> init() async {
       getUserSessionsUseCase: sl(),
       getUserSessionRequestsUseCase: sl(),
       cancelSessionUseCase: sl(),
+      cancelSessionRequestUseCase: sl(),
       getSessionAvailabilityUseCase: sl(),
       bookSessionUseCase: sl(),
       extendSessionUseCase: sl(),
