@@ -20,6 +20,7 @@ import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
 import '../../../sessions/presentation/widgets/sessions_tab_selector.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
+import '../../../sessions/presentation/widgets/session_request_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../zoom/presentation/bloc/zoom_bloc.dart';
@@ -55,6 +56,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
   void _onScroll() {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.9) {
       final state = _sessionsBloc.state;
+      if (state.currentTab != SessionsTab.upcoming && state.currentTab != SessionsTab.completed) {
+        return;
+      }
+
       final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
       final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
       final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
@@ -102,12 +107,18 @@ class _SessionsScreenState extends State<SessionsScreen> {
               children: [
                 if (state.hasUpcomingData) ...[
                   SessionsTabSelector(
-                    isUpcomingSelected: state.currentTab == SessionsTab.upcoming,
-                    onUpcomingTap: () {
-                      _sessionsBloc.add(const SwitchToUpcoming());
-                    },
-                    onCompletedTap: () {
-                      _sessionsBloc.add(const SwitchToCompleted());
+                    currentTab: state.currentTab,
+                    onTabSelected: (tab) {
+                      switch (tab) {
+                        case SessionsTab.upcoming:
+                          _sessionsBloc.add(const SwitchToUpcoming());
+                        case SessionsTab.completed:
+                          _sessionsBloc.add(const SwitchToCompleted());
+                        case SessionsTab.pending:
+                          _sessionsBloc.add(const SwitchToPending());
+                        case SessionsTab.cancelled:
+                          _sessionsBloc.add(const SwitchToCancelled());
+                      }
                     },
                   ),
                 ],
@@ -122,8 +133,13 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   Widget _buildContent(BuildContext context, SessionsState state) {
-    final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
-    final hasData = isUpcomingTab ? state.hasUpcomingData : state.hasCompletedData;
+    final isRequestsTab = state.currentTab == SessionsTab.pending || state.currentTab == SessionsTab.cancelled;
+    final hasData = switch (state.currentTab) {
+      SessionsTab.upcoming => state.hasUpcomingData,
+      SessionsTab.completed => state.hasCompletedData,
+      SessionsTab.pending => state.hasPendingData,
+      SessionsTab.cancelled => state.hasCancelledData,
+    };
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -146,70 +162,106 @@ class _SessionsScreenState extends State<SessionsScreen> {
           }
 
           if (hasData) {
-            final sessions = state.currentSessions;
-
-            if (sessions.isEmpty) {
-              return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.6,
-                    child: _buildEmptyState(context, state.currentTab == SessionsTab.upcoming),
-                  ),
-                ],
-              );
-            }
-
-            final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
-            final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
-
-            return ListView.builder(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: sessions.length + (hasMore ? 1 : 0),
-              padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
-              itemBuilder: (context, index) {
-                if (index == sessions.length) {
-                  return Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
-                      child: isLoadingMore ? CircularProgressIndicator(color: context.primary) : const SizedBox.shrink(),
-                    ),
-                  );
-                }
-
-                final session = sessions[index];
-                return SessionCard(
-                  session: session,
-                  onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
-                  onJoin: session.isUpcoming ? () => _joinSessionDirectly(context, session.id) : null,
-                );
-              },
-            );
+            return isRequestsTab ? _buildRequestsList(context, state) : _buildSessionsList(context, state);
           }
 
           return ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, true))],
+            children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, SessionsTab.upcoming))],
           );
         },
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, bool isUpcoming) {
+  Widget _buildSessionsList(BuildContext context, SessionsState state) {
+    final sessions = state.currentSessions;
+
+    if (sessions.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, state.currentTab))],
+      );
+    }
+
+    final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
+    final isLoadingMore = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
+    final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
+
+    return ListView.builder(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: sessions.length + (hasMore ? 1 : 0),
+      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
+      itemBuilder: (context, index) {
+        if (index == sessions.length) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap16Px.h),
+              child: isLoadingMore ? CircularProgressIndicator(color: context.primary) : const SizedBox.shrink(),
+            ),
+          );
+        }
+
+        final session = sessions[index];
+        return SessionCard(
+          session: session,
+          onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
+          onJoin: session.isUpcoming ? () => _joinSessionDirectly(context, session.id) : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildRequestsList(BuildContext context, SessionsState state) {
+    final requests = state.currentRequests;
+
+    if (requests.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, state.currentTab))],
+      );
+    }
+
+    final isPendingTab = state.currentTab == SessionsTab.pending;
+
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: requests.length,
+      padding: EdgeInsets.symmetric(vertical: DimensionConstants.gap20Px.h),
+      itemBuilder: (context, index) {
+        final request = requests[index];
+        return SessionRequestCard(request: request, onCancel: isPendingTab ? () {} : null);
+      },
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, SessionsTab tab) {
+    final title = switch (tab) {
+      SessionsTab.upcoming => AppStrings.noUpcomingSessions,
+      SessionsTab.completed => AppStrings.noCompletedSessions,
+      SessionsTab.pending => AppStrings.noPendingSessions,
+      SessionsTab.cancelled => AppStrings.noCancelledSessions,
+    };
+    final description = switch (tab) {
+      SessionsTab.upcoming => AppStrings.noSessionsYet,
+      SessionsTab.completed => AppStrings.completedSessionsDescription,
+      SessionsTab.pending => AppStrings.pendingSessionsDescription,
+      SessionsTab.cancelled => AppStrings.cancelledSessionsDescription,
+    };
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.event_note_outlined, size: DimensionConstants.gap64Px.w, color: context.darkTextSecondary),
         SizedBox(height: DimensionConstants.gap24Px.h),
         TranslatedText(
-          isUpcoming ? AppStrings.noUpcomingSessions : AppStrings.noCompletedSessions,
+          title,
           style: TextStyle(fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w500, color: context.darkTextPrimary),
         ),
         SizedBox(height: DimensionConstants.gap8Px.h),
         TranslatedText(
-          isUpcoming ? AppStrings.noSessionsYet : AppStrings.completedSessionsDescription,
+          description,
           style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
         ),
       ],

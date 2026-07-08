@@ -56,6 +56,8 @@ class ApiEndpoint {
     switch (endpoint) {
       case SessionsEndpoint.USER_SESSIONS:
         return '/user/sessions';
+      case SessionsEndpoint.USER_SESSION_REQUESTS:
+        return '/session-requests/mine';
       case SessionsEndpoint.SESSION_DETAILS:
         return '/user/session-details';
       case SessionsEndpoint.SESSION_FEEDBACK:

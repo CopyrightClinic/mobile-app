@@ -2,6 +2,7 @@
 
 enum SessionsEndpoint {
   USER_SESSIONS, // GET /user/sessions
+  USER_SESSION_REQUESTS, // GET /session-requests/mine
   SESSION_DETAILS, // GET /user/session-details
   SESSION_FEEDBACK, // PATCH /user/session/feedback
   SESSIONS_AVAILABILITY, // GET /sessions-availability

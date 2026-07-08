@@ -4,6 +4,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
 import '../../domain/usecases/cancel_session_usecase.dart';
 import '../../domain/usecases/get_user_sessions_usecase.dart';
+import '../../domain/usecases/get_user_session_requests_usecase.dart';
 import '../../domain/usecases/get_session_availability_usecase.dart';
 import '../../domain/usecases/book_session_usecase.dart';
 import '../../domain/usecases/extend_session_usecase.dart';
@@ -12,6 +13,7 @@ import 'sessions_state.dart';
 
 class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   final GetUserSessionsUseCase getUserSessionsUseCase;
+  final GetUserSessionRequestsUseCase getUserSessionRequestsUseCase;
   final CancelSessionUseCase cancelSessionUseCase;
   final GetSessionAvailabilityUseCase getSessionAvailabilityUseCase;
   final BookSessionUseCase bookSessionUseCase;
@@ -19,6 +21,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
 
   SessionsBloc({
     required this.getUserSessionsUseCase,
+    required this.getUserSessionRequestsUseCase,
     required this.cancelSessionUseCase,
     required this.getSessionAvailabilityUseCase,
     required this.bookSessionUseCase,
@@ -29,6 +32,8 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     on<LoadMoreSessions>(_onLoadMoreSessions);
     on<SwitchToUpcoming>(_onSwitchToUpcoming);
     on<SwitchToCompleted>(_onSwitchToCompleted);
+    on<SwitchToPending>(_onSwitchToPending);
+    on<SwitchToCancelled>(_onSwitchToCancelled);
     on<CancelSessionRequested>(_onCancelSessionRequested);
     on<ScheduleSessionRequested>(_onScheduleSessionRequested);
     on<InitializeScheduleSession>(_onInitializeScheduleSession);
@@ -174,21 +179,18 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
   ) async {
     if (!state.hasData) return;
 
-    final isUpcomingTab = state.currentTab == SessionsTab.upcoming;
-    final hasMore =
-        isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
-    final isAlreadyLoading =
-        isUpcomingTab
-            ? state.isLoadingMoreUpcoming
-            : state.isLoadingMoreCompleted;
+    final currentTab = state.currentTab;
+    if (currentTab != SessionsTab.upcoming && currentTab != SessionsTab.completed) {
+      return;
+    }
+
+    final isUpcomingTab = currentTab == SessionsTab.upcoming;
+    final hasMore = isUpcomingTab ? state.hasMoreUpcoming : state.hasMoreCompleted;
+    final isAlreadyLoading = isUpcomingTab ? state.isLoadingMoreUpcoming : state.isLoadingMoreCompleted;
 
     if (!hasMore || isAlreadyLoading) return;
 
-    final nextPage =
-        (isUpcomingTab
-            ? state.currentUpcomingPage
-            : state.currentCompletedPage) +
-        1;
+    final nextPage = (isUpcomingTab ? state.currentUpcomingPage : state.currentCompletedPage) + 1;
 
     if (isUpcomingTab) {
       emit(state.copyWith(isLoadingMoreUpcoming: true, clearError: true));
@@ -197,11 +199,10 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
     }
 
     final String timezone = await TimezoneHelper.getUserTimezone();
-    final status = isUpcomingTab ? 'upcoming' : 'completed';
     final result = await getUserSessionsUseCase(
       GetUserSessionsParams(
         timezone: timezone,
-        status: status,
+        status: currentTab.apiValue,
         page: nextPage,
         limit: 10,
       ),
@@ -213,8 +214,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
           emit(
             state.copyWith(
               isLoadingMoreUpcoming: false,
-              errorMessage:
-                  failure.message ?? AppStrings.failedToLoadMoreSessions,
+              errorMessage: failure.message ?? AppStrings.failedToLoadMoreSessions,
               lastOperation: SessionsOperation.loadSessions,
             ),
           );
@@ -222,8 +222,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
           emit(
             state.copyWith(
               isLoadingMoreCompleted: false,
-              errorMessage:
-                  failure.message ?? AppStrings.failedToLoadMoreSessions,
+              errorMessage: failure.message ?? AppStrings.failedToLoadMoreSessions,
               lastOperation: SessionsOperation.loadSessions,
             ),
           );
@@ -231,13 +230,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
       },
       (paginatedSessions) {
         if (isUpcomingTab) {
-          final updatedSessions = [
-            ...state.upcomingSessions!,
-            ...paginatedSessions.sessions,
-          ];
           emit(
             state.copyWith(
-              upcomingSessions: updatedSessions,
+              upcomingSessions: [...state.upcomingSessions!, ...paginatedSessions.sessions],
               currentUpcomingPage: paginatedSessions.page,
               hasMoreUpcoming: paginatedSessions.hasMore,
               isLoadingMoreUpcoming: false,
@@ -245,13 +240,9 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
             ),
           );
         } else {
-          final updatedSessions = [
-            ...state.completedSessions!,
-            ...paginatedSessions.sessions,
-          ];
           emit(
             state.copyWith(
-              completedSessions: updatedSessions,
+              completedSessions: [...state.completedSessions!, ...paginatedSessions.sessions],
               currentCompletedPage: paginatedSessions.page,
               hasMoreCompleted: paginatedSessions.hasMore,
               isLoadingMoreCompleted: false,
@@ -303,6 +294,78 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
               completedSessions: paginatedSessions.sessions,
               currentCompletedPage: paginatedSessions.page,
               hasMoreCompleted: paginatedSessions.hasMore,
+              isLoadingSessions: false,
+              clearError: true,
+              lastOperation: SessionsOperation.loadSessions,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _onSwitchToPending(
+    SwitchToPending event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(state.copyWith(currentTab: SessionsTab.pending));
+
+    if (!state.hasPendingData) {
+      emit(state.copyWith(isLoadingSessions: true, clearError: true));
+
+      final String timezone = await TimezoneHelper.getUserTimezone();
+      final result = await getUserSessionRequestsUseCase(
+        GetUserSessionRequestsParams(timezone: timezone, status: 'pending'),
+      );
+
+      result.fold(
+        (failure) => emit(
+          state.copyWith(
+            isLoadingSessions: false,
+            errorMessage: failure.message ?? AppStrings.failedToLoadSessions,
+            lastOperation: SessionsOperation.loadSessions,
+          ),
+        ),
+        (requests) {
+          emit(
+            state.copyWith(
+              pendingRequests: requests,
+              isLoadingSessions: false,
+              clearError: true,
+              lastOperation: SessionsOperation.loadSessions,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _onSwitchToCancelled(
+    SwitchToCancelled event,
+    Emitter<SessionsState> emit,
+  ) async {
+    emit(state.copyWith(currentTab: SessionsTab.cancelled));
+
+    if (!state.hasCancelledData) {
+      emit(state.copyWith(isLoadingSessions: true, clearError: true));
+
+      final String timezone = await TimezoneHelper.getUserTimezone();
+      final result = await getUserSessionRequestsUseCase(
+        GetUserSessionRequestsParams(timezone: timezone, status: 'canceled'),
+      );
+
+      result.fold(
+        (failure) => emit(
+          state.copyWith(
+            isLoadingSessions: false,
+            errorMessage: failure.message ?? AppStrings.failedToLoadSessions,
+            lastOperation: SessionsOperation.loadSessions,
+          ),
+        ),
+        (requests) {
+          emit(
+            state.copyWith(
+              cancelledRequests: requests,
               isLoadingSessions: false,
               clearError: true,
               lastOperation: SessionsOperation.loadSessions,

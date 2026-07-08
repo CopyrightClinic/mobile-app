@@ -2,6 +2,7 @@ import '../../../../core/network/api_service/api_service.dart';
 import '../../../../core/network/endpoints/api_endpoints.dart';
 import '../../../../core/utils/enumns/api/sessions_enums.dart';
 import '../models/session_model.dart';
+import '../models/user_session_request_model.dart';
 import '../models/session_details_model.dart';
 import '../models/session_availability_model.dart';
 import '../models/book_session_request_model.dart';
@@ -22,6 +23,10 @@ abstract class SessionsRemoteDataSource {
     String? timezone,
     int? page,
     int? limit,
+  });
+  Future<List<UserSessionRequestModel>> getUserSessionRequests({
+    required String timezone,
+    String? status,
   });
   Future<List<SessionModel>> getUpcomingSessions();
   Future<List<SessionModel>> getCompletedSessions();
@@ -86,6 +91,22 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       queryParams: queryParams.isNotEmpty ? queryParams : null,
       headers: headers.isNotEmpty ? headers : null,
       converter: (json) => PaginatedSessionsModel.fromJson(json),
+    );
+  }
+
+  @override
+  Future<List<UserSessionRequestModel>> getUserSessionRequests({
+    required String timezone,
+    String? status,
+  }) async {
+    final Map<String, dynamic> queryParams = {};
+    if (status != null) queryParams['status'] = status;
+
+    return await apiService.getCollectionData<UserSessionRequestModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.USER_SESSION_REQUESTS),
+      queryParams: queryParams.isNotEmpty ? queryParams : null,
+      headers: {'Timezone': timezone},
+      converter: (json) => UserSessionRequestModel.fromJson(json),
     );
   }
 

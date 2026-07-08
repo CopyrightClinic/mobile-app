@@ -27,6 +27,14 @@ class SwitchToCompleted extends SessionsEvent {
   const SwitchToCompleted();
 }
 
+class SwitchToPending extends SessionsEvent {
+  const SwitchToPending();
+}
+
+class SwitchToCancelled extends SessionsEvent {
+  const SwitchToCancelled();
+}
+
 class CancelSessionRequested extends SessionsEvent {
   final String sessionId;
   final String reason;

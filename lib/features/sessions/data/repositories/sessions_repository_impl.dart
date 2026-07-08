@@ -10,6 +10,7 @@ import '../../domain/entities/cancel_session_response_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/entities/paginated_sessions_entity.dart';
+import '../../domain/entities/user_session_request_entity.dart';
 import '../../domain/entities/unlock_summary_response_entity.dart';
 import '../../domain/entities/extend_session_response_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
@@ -35,6 +36,24 @@ class SessionsRepositoryImpl implements SessionsRepository {
         limit: limit,
       );
       return Right(paginatedSessions.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.failedToFetchUserSessions}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<UserSessionRequestEntity>>> getUserSessionRequests({
+    required String timezone,
+    String? status,
+  }) async {
+    try {
+      final sessionRequests = await remoteDataSource.getUserSessionRequests(
+        timezone: timezone,
+        status: status,
+      );
+      return Right(sessionRequests.map((request) => request.toEntity()).toList());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
 import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/user_session_request_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 
@@ -9,6 +10,8 @@ enum SessionsOperation { loadSessions, cancelSession, joinSession, scheduleSessi
 class SessionsState extends Equatable {
   final List<SessionEntity>? upcomingSessions;
   final List<SessionEntity>? completedSessions;
+  final List<UserSessionRequestEntity>? pendingRequests;
+  final List<UserSessionRequestEntity>? cancelledRequests;
   final SessionsTab currentTab;
   final bool isLoadingSessions;
   final bool isLoadingMoreUpcoming;
@@ -36,6 +39,8 @@ class SessionsState extends Equatable {
   const SessionsState({
     this.upcomingSessions,
     this.completedSessions,
+    this.pendingRequests,
+    this.cancelledRequests,
     this.currentTab = SessionsTab.upcoming,
     this.isLoadingSessions = false,
     this.isLoadingMoreUpcoming = false,
@@ -63,6 +68,8 @@ class SessionsState extends Equatable {
 
   bool get hasUpcomingData => upcomingSessions != null;
   bool get hasCompletedData => completedSessions != null;
+  bool get hasPendingData => pendingRequests != null;
+  bool get hasCancelledData => cancelledRequests != null;
   bool get hasData => upcomingSessions != null && completedSessions != null;
   bool get hasError => errorMessage != null;
   bool get hasSuccess => successMessage != null;
@@ -78,10 +85,26 @@ class SessionsState extends Equatable {
       isProcessingExtension;
 
   List<SessionEntity> get currentSessions {
-    if (currentTab == SessionsTab.upcoming) {
-      return upcomingSessions ?? [];
-    } else {
-      return completedSessions ?? [];
+    switch (currentTab) {
+      case SessionsTab.upcoming:
+        return upcomingSessions ?? [];
+      case SessionsTab.completed:
+        return completedSessions ?? [];
+      case SessionsTab.pending:
+      case SessionsTab.cancelled:
+        return [];
+    }
+  }
+
+  List<UserSessionRequestEntity> get currentRequests {
+    switch (currentTab) {
+      case SessionsTab.pending:
+        return pendingRequests ?? [];
+      case SessionsTab.cancelled:
+        return cancelledRequests ?? [];
+      case SessionsTab.upcoming:
+      case SessionsTab.completed:
+        return [];
     }
   }
 
@@ -101,6 +124,8 @@ class SessionsState extends Equatable {
   SessionsState copyWith({
     List<SessionEntity>? upcomingSessions,
     List<SessionEntity>? completedSessions,
+    List<UserSessionRequestEntity>? pendingRequests,
+    List<UserSessionRequestEntity>? cancelledRequests,
     SessionsTab? currentTab,
     bool? isLoadingSessions,
     bool? isLoadingMoreUpcoming,
@@ -134,6 +159,8 @@ class SessionsState extends Equatable {
     return SessionsState(
       upcomingSessions: upcomingSessions ?? this.upcomingSessions,
       completedSessions: completedSessions ?? this.completedSessions,
+      pendingRequests: pendingRequests ?? this.pendingRequests,
+      cancelledRequests: cancelledRequests ?? this.cancelledRequests,
       currentTab: currentTab ?? this.currentTab,
       isLoadingSessions: isLoadingSessions ?? this.isLoadingSessions,
       isLoadingMoreUpcoming: isLoadingMoreUpcoming ?? this.isLoadingMoreUpcoming,
@@ -164,6 +191,8 @@ class SessionsState extends Equatable {
   List<Object?> get props => [
     upcomingSessions,
     completedSessions,
+    pendingRequests,
+    cancelledRequests,
     currentTab,
     isLoadingSessions,
     isLoadingMoreUpcoming,

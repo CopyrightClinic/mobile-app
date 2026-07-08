@@ -32,6 +32,7 @@ import 'features/sessions/data/datasources/sessions_remote_data_source.dart';
 import 'features/sessions/data/repositories/sessions_repository_impl.dart';
 import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
+import 'features/sessions/domain/usecases/get_user_session_requests_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_details_usecase.dart';
 import 'features/sessions/domain/usecases/submit_session_feedback_usecase.dart';
@@ -232,6 +233,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetPaymentMethodsUseCase(sl()));
   sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
+  sl.registerLazySingleton(() => GetUserSessionRequestsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
   sl.registerLazySingleton(() => GetSessionDetailsUseCase(sl()));
   sl.registerLazySingleton(() => SubmitSessionFeedbackUseCase(sl()));
@@ -289,6 +291,7 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => SessionsBloc(
       getUserSessionsUseCase: sl(),
+      getUserSessionRequestsUseCase: sl(),
       cancelSessionUseCase: sl(),
       getSessionAvailabilityUseCase: sl(),
       bookSessionUseCase: sl(),

@@ -43,7 +43,7 @@ class AboutUsScreen extends StatelessWidget {
                       children: [
                         _buildCassiusTitusCard(name: ImageConstants.casius, description: AppStrings.cassiusTitusDescriptionUpdated),
                         SizedBox(height: DimensionConstants.gap30Px),
-                        _buildCassiusTitusCard(name: ImageConstants.characterFemale, description: AppStrings.teamDescription, isCircle: true),
+                        _buildCassiusTitusCard(name: ImageConstants.lawyerImage, description: AppStrings.teamDescription, isCircle: true),
                       ],
                     ),
                   ),

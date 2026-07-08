@@ -234,8 +234,14 @@ class AppStrings {
   // Sessions Screen
   static const upcoming = 'upcoming';
   static const completed = 'completed';
+  static const pending = 'pending';
+  static const cancelled = 'cancelled';
   static const noCompletedSessions = 'noCompletedSessions';
   static const completedSessionsDescription = 'completedSessionsDescription';
+  static const noPendingSessions = 'noPendingSessions';
+  static const pendingSessionsDescription = 'pendingSessionsDescription';
+  static const noCancelledSessions = 'noCancelledSessions';
+  static const cancelledSessionsDescription = 'cancelledSessionsDescription';
   static const noSessionsYet = 'noSessionsYet';
   static const somethingWentWrong = 'somethingWentWrong';
   static const retry = 'retry';
