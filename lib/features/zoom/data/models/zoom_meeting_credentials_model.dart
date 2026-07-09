@@ -21,7 +21,7 @@ class ZoomMeetingCredentialsModel {
   final int? role;
 
   @JsonKey(name: 'userName')
-  final String userName;
+  final String? userName;
 
   @JsonKey(name: 'userEmail')
   final String? userEmail;
@@ -32,7 +32,7 @@ class ZoomMeetingCredentialsModel {
     required this.meetingNumber,
     required this.password,
     this.role,
-    required this.userName,
+    this.userName,
     this.userEmail,
   });
 

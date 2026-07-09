@@ -124,7 +124,7 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
         try {
           await zoomService.initZoomWithJwt(credentials.signature);
 
-          await zoomService.joinMeeting(meetingNumber: credentials.meetingNumber, passcode: credentials.password, displayName: credentials.userName);
+          await zoomService.joinMeeting(meetingNumber: credentials.meetingNumber, passcode: credentials.password, displayName: credentials.userName?? "");
         } on PlatformException catch (e) {
           String errorMessage = AppStrings.zoomErrorJoinFailed;
 
@@ -140,7 +140,7 @@ class ZoomBloc extends Bloc<ZoomEvent, ZoomState> {
               break;
             case 'NOT_INITIALIZED':
               await zoomService.initZoomWithJwt(credentials.signature);
-              add(JoinMeetingRequested(meetingNumber: credentials.meetingNumber, passcode: credentials.password, displayName: credentials.userName));
+              add(JoinMeetingRequested(meetingNumber: credentials.meetingNumber, passcode: credentials.password, displayName: credentials.userName ?? ""));
               return;
             default:
               if (e.message != null) {
