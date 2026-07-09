@@ -1,0 +1,195 @@
+sections:
+  - id: title_description
+    title: Proper Title and Description
+    description: PR title and description should clearly explain what changed, why, and how.
+    checks:
+      - Title is self-explanatory.
+      - Description explains what changed.
+      - Description explains why it changed.
+      - Description explains how it was implemented.
+      - UI evidence and testing notes are included where applicable.
+
+  - id: single_responsibility
+    title: Single Responsibility
+    description: PR should focus on one feature, bug fix, or improvement.
+    checks:
+      - PR has one clear purpose.
+      - PR avoids unrelated file changes.
+      - PR does not mix unrelated refactoring, UI, logic, and bug fixes.
+      - Formatting-only changes are not mixed with feature work.
+
+  - id: clean_scalable_architecture
+    title: Clean and Scalable Architecture
+    description: PR should respect the existing project architecture and should not break the established code structure.
+    checks:
+      - Analyzes and follows the existing project scope, code structure, and architecture.
+      - Does not bypass the established architecture.
+      - Supports scalable architectures such as MVVM, Clean Architecture, MVC, MVP, Singleton, or MVI where applicable.
+      - Keeps UI, state management, business logic, data sources, models, repositories, managers, services, and utilities separated.
+      - Does not introduce tight coupling between unrelated features.
+      - Does not place business logic inside widgets or build methods.
+      - New files are placed in the correct feature/layer folders.
+      - Uses existing architectural patterns consistently.
+
+  - id: production_safe_crash_free
+    title: Production-Safe and Crash-Free Code
+    description: Code should avoid preventable runtime crashes and unsafe assumptions.
+    checks:
+      - Avoids unsafe force unwrap using !.
+      - Avoids unsafe casts using as unless fully guaranteed.
+      - Handles null values safely.
+      - Guards against empty lists, invalid indexes, and invalid states.
+      - Does not assume API data, navigation arguments, local storage, or remote config values are always valid.
+      - Handles lifecycle edge cases safely.
+      - Uses mounted checks after async operations before using context.
+      - Disposes controllers, focus nodes, streams, listeners, and animation controllers properly.
+
+  - id: managers_services
+    title: Managers and Services
+    description: Dependent and reusable logic should be handled through proper manager and service classes.
+    checks:
+      - Uses managers/services for shared preferences, API, database, cache, permissions, notifications, files, and similar reusable dependencies.
+      - Does not duplicate API, storage, database, permission, or cache logic inside widgets.
+      - Does not call low-level platform/storage/network APIs directly from UI when a manager/service exists.
+      - Managers/services have focused responsibilities.
+      - Avoids God classes that manage unrelated concerns.
+      - Reuses existing managers/services instead of creating duplicate implementations.
+      - Accesses managers/services consistently with the project architecture.
+
+  - id: graceful_error_handling
+    title: Graceful Error Handling
+    description: Errors should be handled gracefully without crashing the app or exposing sensitive details.
+    checks:
+      - Uses try/catch around risky operations.
+      - Shows user-friendly error messages.
+      - Does not expose stack traces, tokens, or internal errors in UI.
+      - Handles network, parsing, permission, platform, database, and storage errors.
+      - Provides fallback UI for failed states.
+      - Avoids silent failures.
+      - Avoids infinite loaders when operations fail.
+
+  - id: model_mapping_defaults
+    title: Model Mapping with Default Values
+    description: API data should be mapped into strongly typed models with safe default values.
+    checks:
+      - Avoids raw Map<String, dynamic> usage directly in UI.
+      - Uses strongly typed models.
+      - Provides default values during JSON parsing.
+      - Handles nullable fields safely.
+      - Avoids force casts in fromJson.
+      - Keeps mapping logic inside model or data layer.
+      - UI consumes typed models instead of raw API maps.
+      - Safely parses lists, nested objects, enums, booleans, numbers, and dates.
+
+  - id: const_constructors_widgets
+    title: Const Constructors and Const Widgets
+    description: Const constructors and const widgets should be used wherever possible.
+    checks:
+      - Widgets have const constructors where possible.
+      - Immutable models or value objects use const constructors where possible.
+      - Build methods use const widgets for static widget trees.
+      - Static EdgeInsets, SizedBox, Text, Icon, and similar widgets use const where possible.
+      - Avoids unnecessary object recreation during rebuilds.
+
+  - id: enums_sealed_classes
+    title: Enums / Sealed Classes
+    description: Enums and sealed classes should be used instead of hardcoded conditions.
+    checks:
+      - Uses enums for fixed statuses, roles, filters, tabs, types, actions, and conditions.
+      - Uses sealed classes for complex UI, API, or state cases where appropriate.
+      - Avoids hardcoded string comparisons in UI and business logic.
+      - Avoids repeated condition strings such as active, pending, completed, and error.
+      - Maps backend values into typed enums safely.
+      - Handles unknown enum values safely.
+      - Avoids spreading backend status strings directly across widgets.
+
+  - id: utils_helper_classes
+    title: Utils and Helper Classes
+    description: Hardcoded values and duplicated utility logic should be moved into reusable utils/helper classes with const identifiers.
+    checks:
+      - Avoids hardcoded sizes, paddings, margins, DateTime formatters, UI strings, and color codes inside widgets.
+      - Uses reusable classes for app sizes, paddings, margins, radius, durations, strings, theme tokens, validators, formatters, extensions, and date/time handling.
+      - Uses const identifiers where possible.
+      - Avoids duplicated date/time formatting logic.
+      - Avoids unsafe DateTime.parse without fallback handling.
+      - Keeps helper methods focused and reusable.
+      - Does not place business logic inside generic utility classes.
+
+  - id: theme_values_design_system
+    title: Theme Values and Design System Usage
+    description: UI should use theme values and shared design-system constants instead of hardcoded values.
+    checks:
+      - Uses Theme.of(context), colorScheme, and textTheme for colors and typography.
+      - Avoids hardcoded colors, font sizes, radius, shadows, and spacing.
+      - Avoids direct usage of Colors.black, Colors.white, Colors.red unless justified.
+      - Uses shared constants for spacing, radius, dimensions, and durations.
+      - Supports dark mode where applicable.
+      - Keeps UI styling consistent with the app design system.
+
+  - id: state_management
+    title: State Management
+    description: State should be predictable, testable, and maintainable.
+    checks:
+      - Uses the project-approved state management approach.
+      - Avoids unnecessary setState usage.
+      - Does not store business logic inside widgets.
+      - Handles loading, success, empty, and error states.
+      - Avoids duplicated state flags where typed state is better.
+      - Disposes controllers, streams, focus nodes, and listeners properly.
+      - Does not mix multiple state management approaches in the same feature unless the architecture requires it.
+
+  - id: naming_conventions
+    title: Naming Conventions
+    description: Code should follow Dart, Flutter, and project naming conventions.
+    checks:
+      - Classes, enums, and extensions use PascalCase.
+      - Variables, methods, and parameters use camelCase.
+      - Files and folders use snake_case.
+      - Names are meaningful and self-explanatory.
+      - Naming follows existing project conventions.
+
+  - id: unused_code_debug_logs
+    title: Unused Code, Debug Logs, and Imports
+    description: PR should not contain dead code, unused imports, temporary debugging artifacts, or unnecessary comments.
+    checks:
+      - Removes unused imports.
+      - Removes commented-out code.
+      - Removes unused variables and methods.
+      - Removes print statements (replace with debugPrint if logging is necessary, otherwise remove).
+      - debugPrint and log are allowed and must not be flagged as violations.
+      - Removes test-only code before merging.
+      - TODOs include context or tracking reference.
+      - Removes duplicated comments that do not add value.
+
+  - id: reusable_code
+    title: Reusable Code
+    description: Frequently used components should be separated to reduce duplication and dependency.
+    checks:
+      - Creates reusable components for frequently used buttons, text widgets, app bars, text fields, dialogs, bottom sheets, empty/error/loading widgets, cards, and list items.
+      - Extracts repeated business logic into services, managers, helpers, or extensions.
+      - Avoids copy-pasted UI blocks.
+      - Avoids copy-pasted validation, formatting, navigation, and API handling logic.
+      - Reuses existing shared components before creating new ones.
+      - Keeps reusable components configurable but not over-engineered.
+      - Prefers composition over large condition-heavy widgets.
+
+  - id: folder_structure
+    title: Folder Structure
+    description: Files should follow the existing project architecture and folder structure.
+    checks:
+      - Follows existing project folder structure.
+      - Uses feature-based, MVVM, clean architecture, MVC, MVP, singleton, or MVI structure consistently as applicable.
+      - Does not place services, models, managers, utilities, or business logic inside UI folders.
+      - Avoids dumping unrelated files into common/shared folders.
+      - File locations are predictable and maintainable.
+
+  - id: ui_responsiveness_overflow
+    title: UI Responsiveness and Overflow Safety
+    description: UI should work safely across different devices, content lengths, and screen sizes.
+    checks:
+      - Avoids RenderFlex overflow.
+      - Handles long text, empty values, and small screens.
+      - Uses Expanded, Flexible, SingleChildScrollView, Wrap, or responsive layouts where needed.
+      - Avoids fixed widths and heights unless required.
+      - Supports dynamic content safely.
+      - Respects safe areas.
