@@ -115,6 +115,7 @@ class BookSessionRequested extends SessionsEvent {
   final String startTime;
   final String endTime;
   final String summary;
+  final String query;
   final String timezone;
 
   const BookSessionRequested({
@@ -124,6 +125,7 @@ class BookSessionRequested extends SessionsEvent {
     required this.startTime,
     required this.endTime,
     required this.summary,
+    required this.query,
     required this.timezone,
   });
 
@@ -135,6 +137,7 @@ class BookSessionRequested extends SessionsEvent {
     startTime,
     endTime,
     summary,
+    query,
     timezone,
   ];
 }

@@ -214,6 +214,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   }) async {
     try {
@@ -224,6 +225,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
         startTime: startTime,
         endTime: endTime,
         summary: summary,
+        query: query,
         timezone: timezone,
       );
       return Right(response.toEntity());

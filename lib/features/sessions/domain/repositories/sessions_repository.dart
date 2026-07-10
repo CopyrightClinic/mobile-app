@@ -54,6 +54,7 @@ abstract class SessionsRepository {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   });
   Future<Either<Failure, UnlockSummaryResponseEntity>> unlockSessionSummary({

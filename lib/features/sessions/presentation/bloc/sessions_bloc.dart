@@ -640,6 +640,7 @@ class SessionsBloc extends Bloc<SessionsEvent, SessionsState> {
         startTime: event.startTime,
         endTime: event.endTime,
         summary: event.summary,
+        query: event.query,
         timezone: event.timezone,
       ),
     );

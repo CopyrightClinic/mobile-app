@@ -58,6 +58,7 @@ abstract class SessionsRemoteDataSource {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   });
   Future<UnlockSummaryResponseModel> unlockSessionSummary({
@@ -237,6 +238,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   }) async {
     final request = BookSessionRequestModel(
@@ -245,6 +247,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       date: date,
       slot: BookSessionSlotModel(start: startTime, end: endTime),
       summary: summary,
+      originalInput: query,
     );
     return await apiService.postData<BookSessionResponseModel>(
       endpoint: ApiEndpoint.sessions(SessionsEndpoint.BOOK_SESSION),
