@@ -1,0 +1,28 @@
+[config]
+model = "gpt-4.1-mini"
+fallback_models = ["gpt-4o"]
+
+[pr_reviewer]
+require_score_review = false
+require_tests_review = true
+require_security_review = true
+require_focused_review = false
+extra_instructions = """
+This is a Flutter project written in Dart, using flutter_bloc/hydrated_bloc for state management.
+Pay attention to Bloc/Cubit event and state handling, stream/subscription disposal, async lifecycle safety (mounted checks after await), and pubspec.yaml/platform (Android Gradle, iOS Podfile) changes.
+"""
+
+[pr_description]
+publish_labels = true
+add_original_user_description = true
+
+[pr_code_suggestions]
+num_code_suggestions = 4
+extra_instructions = """
+Prefer suggestions aligned with Dart idioms (null-safety, sealed classes/enums, const constructors) and the project's flutter_bloc patterns over ad-hoc setState or business logic in widgets.
+"""
+
+[github_action_config]
+auto_review = true
+auto_describe = true
+auto_improve = false

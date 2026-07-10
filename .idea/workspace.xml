@@ -9,18 +9,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/datasources/sessions_remote_data_source.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/datasources/sessions_remote_data_source.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/models/book_session_request_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/models/book_session_request_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/models/book_session_request_model.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/models/book_session_request_model.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/domain/repositories/sessions_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/domain/repositories/sessions_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/domain/usecases/book_session_usecase.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/domain/usecases/book_session_usecase.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_event.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/bloc/sessions_event.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/pages/confirm_booking_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/pages/confirm_booking_screen.dart" afterDir="false" />
-    </list>
+    <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

@@ -9,8 +9,9 @@ const BASE_REF = process.env.BASE_REF || 'dev';
 const PR_TITLE = process.env.PR_TITLE || '';
 const PR_BODY = process.env.PR_BODY || '';
 
-const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
 const MARKER = '<!-- flutter-pr-compliance-review -->';
+
 
 const BEST_PRACTICE_SECTIONS = [
   {
