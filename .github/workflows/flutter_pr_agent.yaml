@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - develop
+      - feat/develop/google-analytics-v3
 
 permissions:
   contents: read
