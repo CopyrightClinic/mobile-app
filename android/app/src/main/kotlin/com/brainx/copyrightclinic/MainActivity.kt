@@ -1,4 +1,4 @@
-package com.cassius.copyrightclinic
+package com.brainx.copyrightclinic
 
 import android.Manifest
 import android.app.Activity

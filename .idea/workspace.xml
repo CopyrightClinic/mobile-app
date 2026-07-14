@@ -9,7 +9,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="" />
+    <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/google-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/kotlin/com/brainx/copyrightclinic/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/kotlin/com/brainx/copyrightclinic/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/kotlin/com/brainx/copyrightclinic/ZoomBridge.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/kotlin/com/brainx/copyrightclinic/ZoomBridge.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/analytics/infrastructure/firebase/firebase_app_bootstrap.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/analytics/infrastructure/firebase/firebase_app_bootstrap.dart" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,7 +41,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feat/develop/google-analytics-v3" />
+        <entry key="$PROJECT_DIR$" value="feat/clientChanges" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -67,7 +74,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feat/clientChanges",
+    "git-widget-placeholder": "fix/testNotifications",
     "io.flutter.project.isFirstOpen": "true",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
