@@ -30,7 +30,7 @@ jobs:
       - name: Run Flutter compliance review
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
-          OPENAI_MODEL: gpt-4o-mini
+          OPENAI_MODEL: gpt-4.1-mini
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
