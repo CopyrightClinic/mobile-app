@@ -132,14 +132,14 @@ class SessionDetailsEntity extends Equatable {
     final now = DateTime.now();
     final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
     final oneHourAfterSession = sessionEnd.add(const Duration(hours: 1));
-    final fifteenDaysAfterSession = sessionEnd.add(const Duration(days: 15));
+    final fortyEightHoursAfterSession = sessionEnd.add(const Duration(hours: 48));
 
-    return (now.isAfter(oneHourAfterSession) || now.isAtSameMomentAs(oneHourAfterSession)) && now.isBefore(fifteenDaysAfterSession);
+    return (now.isAfter(oneHourAfterSession) || now.isAtSameMomentAs(oneHourAfterSession)) && now.isBefore(fortyEightHoursAfterSession);
   }
 
   DateTime get summaryRequestDeadline {
     final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
-    return sessionEnd.add(const Duration(days: 15));
+    return sessionEnd.add(const Duration(hours: 48));
   }
 
   bool get hasSummaryRequestExpired {
