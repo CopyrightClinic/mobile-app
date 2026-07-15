@@ -1,3 +1,4 @@
+import '../../../../core/utils/enumns/ui/session_request_status.dart';
 import '../../domain/entities/user_session_request_entity.dart';
 
 class SessionRequestHoldModel {
@@ -76,7 +77,7 @@ class UserSessionRequestModel {
       requestedDate: requestedDate,
       startTime: startTime,
       endTime: endTime,
-      status: status,
+      status: SessionRequestStatus.fromString(status),
       summary: summary,
       isFreeSession: isFreeSession,
       couponCode: couponCode,

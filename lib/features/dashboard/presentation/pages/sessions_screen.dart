@@ -185,9 +185,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
     final sessions = state.currentSessions;
 
     if (sessions.isEmpty) {
-      return ListView(
+      return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, state.currentTab))],
+        child: SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, state.currentTab)),
       );
     }
 
@@ -224,9 +224,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
     final requests = state.currentRequests;
 
     if (requests.isEmpty) {
-      return ListView(
+      return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: [SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, state.currentTab))],
+        child: SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: _buildEmptyState(context, state.currentTab)),
       );
     }
 
@@ -457,7 +457,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                         child: CustomButton(
                           onPressed: () => Navigator.of(dialogContext).pop(),
                           backgroundColor: context.primary,
-                          textColor: Colors.white,
+                          textColor: context.white,
                           borderRadius: 50.r,
                           height: 48.h,
                           padding: 0,
@@ -466,7 +466,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                             style: TextStyle(
                               fontSize: DimensionConstants.font16Px.f,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: context.white,
                             ),
                           ),
                         ),
