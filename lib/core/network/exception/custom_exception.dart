@@ -27,6 +27,9 @@ class CustomException implements Exception {
     : statusCode = statusCode ?? 500,
       name = exceptionType.name;
 
+  @override
+  String toString() => message;
+
   factory CustomException.fromDioException(Exception error) {
     if (error is CustomException) {
       return error;

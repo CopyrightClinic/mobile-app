@@ -175,6 +175,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case NotificationType.refundIssued:
       case NotificationType.sessionExtensionApproved:
       case NotificationType.sessionExtensionDeclined:
+      case NotificationType.sessionCancelled:
         break;
     }
   }

@@ -9,6 +9,7 @@ import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/network/api_service/api_service.dart';
+import '../../../../core/network/exception/custom_exception.dart';
 import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
@@ -465,6 +466,16 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
         AppStrings.couponAppliedSuccessfully.tr(),
       );
       return true;
+    } on CustomException catch (e) {
+      logAnalytics(
+        AnalyticsEvents.couponFailed,
+        parameters: {
+          'coupon_code': couponCode,
+          'reason': e.message,
+        },
+      );
+      SnackBarUtils.showError(context, e.message);
+      return false;
     } catch (e) {
       logAnalytics(
         AnalyticsEvents.couponFailed,
@@ -473,7 +484,7 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
           'reason': e.toString(),
         },
       );
-      SnackBarUtils.showError(context, e.toString());
+      SnackBarUtils.showError(context, AppStrings.invalidCouponCode.tr());
       return false;
     }
   }
