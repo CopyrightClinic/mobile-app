@@ -1,21 +1,37 @@
 import '../../domain/entities/user_session_request_entity.dart';
 
 class SessionRequestHoldModel {
-  final double amount;
+  final double sessionFee;
+  final double processingFee;
+  final double totalAmount;
   final String currency;
   final String status;
 
-  const SessionRequestHoldModel({required this.amount, required this.currency, required this.status});
+  const SessionRequestHoldModel({
+    required this.sessionFee,
+    required this.processingFee,
+    required this.totalAmount,
+    required this.currency,
+    required this.status,
+  });
 
   factory SessionRequestHoldModel.fromJson(Map<String, dynamic> json) {
     return SessionRequestHoldModel(
-      amount: (json['amount'] as num).toDouble(),
+      sessionFee: (json['sessionFee'] as num? ?? 0).toDouble(),
+      processingFee: (json['processingFee'] as num? ?? 0).toDouble(),
+      totalAmount: (json['totalAmount'] as num? ?? 0).toDouble(),
       currency: json['currency'] as String,
       status: json['status'] as String,
     );
   }
 
-  SessionRequestHoldEntity toEntity() => SessionRequestHoldEntity(amount: amount, currency: currency, status: status);
+  SessionRequestHoldEntity toEntity() => SessionRequestHoldEntity(
+    sessionFee: sessionFee,
+    processingFee: processingFee,
+    totalAmount: totalAmount,
+    currency: currency,
+    status: status,
+  );
 }
 
 class UserSessionRequestModel {

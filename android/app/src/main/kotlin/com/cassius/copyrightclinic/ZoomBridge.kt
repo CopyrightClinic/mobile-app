@@ -1,4 +1,4 @@
-package com.brainx.copyrightclinic
+package com.cassius.copyrightclinic
 
 import android.content.Context
 import android.util.Log

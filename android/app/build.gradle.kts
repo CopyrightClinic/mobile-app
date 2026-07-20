@@ -23,7 +23,7 @@ if (dotenvFile != null && dotenvFile.exists()) {
 fun envString(name: String): String = dotenvProperties.getProperty(name)?.trim()?.removeSurrounding("\"").orEmpty()
 
 android {
-    namespace = "com.brainx.copyrightclinic"
+    namespace = "com.cassius.copyrightclinic"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -40,7 +40,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.brainx.copyrightclinic"
+        applicationId = "com.cassius.copyrightclinic"
         minSdk = 29
         targetSdk = 36
         versionCode = flutter.versionCode

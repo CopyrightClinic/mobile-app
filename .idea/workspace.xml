@@ -12,12 +12,27 @@
     <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/network/exception/custom_exception.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/network/exception/custom_exception.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/utils/enumns/api/notifications_enums.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/utils/enumns/api/notifications_enums.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/notifications/data/models/notification_data_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/notifications/data/models/notification_data_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/notifications/presentation/pages/notifications_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/notifications/presentation/pages/notifications_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/notifications/presentation/widgets/notification_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/notifications/presentation/widgets/notification_card.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/presentation/pages/select_payment_method_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/presentation/pages/select_payment_method_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/google-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/kotlin/com/cassius/copyrightclinic/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/kotlin/com/cassius/copyrightclinic/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/kotlin/com/cassius/copyrightclinic/ZoomBridge.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/kotlin/com/cassius/copyrightclinic/ZoomBridge.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/translations/en-US.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/translations/en-US.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/copyright_clinic_flutter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/copyright_clinic_flutter.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_strings.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/network/interceptors/refresh_token_interceptor.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/services/fcm_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/services/fcm_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/utils/mixin/validator.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/utils/mixin/validator.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/di.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/di.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/sessions_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/sessions_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/harold_ai/presentation/pages/harold_success_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/harold_ai/presentation/pages/harold_success_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/models/session_details_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/models/session_details_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/models/session_details_model.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/models/session_details_model.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/models/user_session_request_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/models/user_session_request_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/sessions/domain/entities/session_details_entity.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/domain/entities/session_details_entity.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/sessions/domain/entities/user_session_request_entity.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/domain/entities/user_session_request_entity.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,11 +139,6 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart</url>
-          <line>37</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart</url>
           <line>67</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
@@ -181,6 +191,11 @@
           <url>file://$PROJECT_DIR$/lib/features/sessions/presentation/widgets/session_request_card.dart</url>
           <line>78</line>
           <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/sessions/data/repositories/sessions_repository_impl.dart</url>
+          <line>38</line>
+          <option name="timeStamp" value="15" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

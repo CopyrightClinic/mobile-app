@@ -229,6 +229,7 @@ class AppStrings {
   static const logout = 'logout';
   static const confirmLogout = 'confirmLogout';
   static const areYouSureLogout = 'areYouSureLogout';
+  static const sessionExpired = 'sessionExpired';
   static const cancel = 'cancel';
 
   // Sessions Screen

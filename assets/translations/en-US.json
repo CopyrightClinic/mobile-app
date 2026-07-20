@@ -202,6 +202,7 @@
   "logout": "Logout",
   "confirmLogout": "Confirm Logout",
   "areYouSureLogout": "Are you sure you want to logout?",
+  "sessionExpired": "Your session has expired. Please log in again.",
   "cancel": "Cancel",
   "upcoming": "Upcoming",
   "completed": "Completed",
