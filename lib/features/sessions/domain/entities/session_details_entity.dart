@@ -182,10 +182,17 @@ class SessionDetailsEntity extends Equatable {
 
   DateTime get scheduledDateTime {
     try {
-      final dateTime = DateTime.parse('${scheduledDate}T$startTime');
-      return dateTime;
+      return DateTime.parse('${scheduledDate}T$startTime');
     } catch (e) {
       return DateTime.now();
+    }
+  }
+
+  DateTime get endDateTime {
+    try {
+      return DateTime.parse('${scheduledDate}T$endTime');
+    } catch (e) {
+      return scheduledDateTime.add(Duration(minutes: durationMinutes));
     }
   }
 }

@@ -64,6 +64,14 @@ class UserSessionRequestEntity extends Equatable {
     }
   }
 
+  DateTime get endDateTime {
+    try {
+      return DateTime.parse('${requestedDate}T$endTime');
+    } catch (e) {
+      return scheduledDateTime;
+    }
+  }
+
   String get formattedDuration {
     try {
       final start = DateTime.parse('${requestedDate}T$startTime');

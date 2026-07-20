@@ -21,13 +21,14 @@ class SessionDateTimeUtils {
     return DateFormat(timeFormat).format(dateTime).toUpperCase();
   }
 
-  static String formatSessionDate(DateTime date) {
+  static String formatSessionDate(DateTime date, {DateTime? endDateTime}) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final sessionDate = DateTime(date.year, date.month, date.day);
 
     final startTime = _formatTime(date);
-    final endTime = _formatTime(date.add(const Duration(minutes: sessionDurationMinutes)));
+    final end = endDateTime ?? date.add(const Duration(minutes: sessionDurationMinutes));
+    final endTime = _formatTime(end);
     final timeRange = '$startTime ${AppStrings.to.tr()} $endTime';
 
     if (sessionDate == today) {
