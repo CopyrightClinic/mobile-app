@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/utils/enumns/ui/session_request_status.dart';
+
 class SessionRequestHoldEntity extends Equatable {
   final double sessionFee;
   final double processingFee;
@@ -24,7 +26,7 @@ class UserSessionRequestEntity extends Equatable {
   final String requestedDate;
   final String startTime;
   final String endTime;
-  final String status;
+  final SessionRequestStatus status;
   final String? summary;
   final bool isFreeSession;
   final String? couponCode;
@@ -52,9 +54,9 @@ class UserSessionRequestEntity extends Equatable {
     required this.updatedAt,
   });
 
-  bool get isPending => status == 'pending';
+  bool get isPending => status.isPending;
 
-  bool get isCanceled => status == 'canceled';
+  bool get isCanceled => status.isCanceled;
 
   DateTime get scheduledDateTime {
     try {
