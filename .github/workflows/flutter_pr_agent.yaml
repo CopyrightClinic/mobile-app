@@ -7,6 +7,7 @@ on:
       - main
       - develop
       - feat/develop/google-analytics-v3
+      - feat/clientChanges
 
 permissions:
   contents: read

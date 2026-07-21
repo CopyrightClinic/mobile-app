@@ -9,12 +9,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/sessions_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/dashboard/presentation/pages/sessions_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/data/models/user_session_request_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/data/models/user_session_request_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/sessions/domain/entities/user_session_request_entity.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/sessions/domain/entities/user_session_request_entity.dart" afterDir="false" />
-    </list>
+    <list default="true" id="2aabbcca-1dd5-4f7f-8842-a812f1a7b47a" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
