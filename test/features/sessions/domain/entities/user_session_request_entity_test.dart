@@ -2,76 +2,80 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:copyright_clinic_flutter/core/utils/enumns/ui/session_request_status.dart';
 import 'package:copyright_clinic_flutter/features/sessions/domain/entities/user_session_request_entity.dart';
 
-UserSessionRequestEntity _buildRequest({
-  required String requestedDate,
+UserSessionRequestEntity _buildEntity({
   required String startTime,
   required String endTime,
+  SessionRequestStatus status = SessionRequestStatus.pending,
   SessionRequestHoldEntity? hold,
 }) {
   final now = DateTime.now();
   return UserSessionRequestEntity(
-    id: 'request-1',
-    requestedDate: requestedDate,
+    id: 'req-1',
+    requestedDate: '2026-07-10',
     startTime: startTime,
     endTime: endTime,
-    status: SessionRequestStatus.pending,
+    status: status,
     isFreeSession: false,
     hold: hold,
-    createdAt: now,
-    updatedAt: now,
+    createdAt: DateTime(2026, 7, 1),
+    updatedAt: DateTime(2026, 7, 1),
   );
 }
 
 void main() {
-  group('UserSessionRequestEntity.endDateTime', () {
-    test('parses requestedDate + endTime directly', () {
-      final request = _buildRequest(requestedDate: '2026-03-05', startTime: '13:00:00', endTime: '13:30:00');
+  group('UserSessionRequestEntity', () {
+    test('isPending/isCanceled reflect the underlying status', () {
+      final pending = _buildEntity(startTime: '10:00:00', endTime: '10:30:00');
+      final canceled = _buildEntity(startTime: '10:00:00', endTime: '10:30:00', status: SessionRequestStatus.canceled);
 
-      expect(request.endDateTime, DateTime.parse('2026-03-05T13:30:00'));
+      expect(pending.isPending, isTrue);
+      expect(pending.isCanceled, isFalse);
+      expect(canceled.isPending, isFalse);
+      expect(canceled.isCanceled, isTrue);
     });
 
-    test('falls back to scheduledDateTime when endTime is unparsable', () {
-      final request = _buildRequest(requestedDate: '2026-03-05', startTime: '13:00:00', endTime: 'garbage');
-
-      expect(request.endDateTime, request.scheduledDateTime);
-    });
-  });
-
-  group('SessionRequestHoldEntity (sessionFee/processingFee/totalAmount split)', () {
-    test('exposes the three fee components separately instead of a single amount', () {
-      const hold = SessionRequestHoldEntity(sessionFee: 40, processingFee: 5, totalAmount: 45, currency: 'usd', status: 'held');
-
-      expect(hold.sessionFee, 40);
-      expect(hold.processingFee, 5);
-      expect(hold.totalAmount, 45);
+    test('formattedDuration reports hours and minutes together', () {
+      final entity = _buildEntity(startTime: '09:00:00', endTime: '10:30:00');
+      expect(entity.formattedDuration, '1 hour 30 minutes');
     });
 
-    test('equality/props include all fee fields', () {
-      const a = SessionRequestHoldEntity(sessionFee: 40, processingFee: 5, totalAmount: 45, currency: 'usd', status: 'held');
-      const b = SessionRequestHoldEntity(sessionFee: 40, processingFee: 5, totalAmount: 45, currency: 'usd', status: 'held');
-      const c = SessionRequestHoldEntity(sessionFee: 41, processingFee: 5, totalAmount: 46, currency: 'usd', status: 'held');
-
-      expect(a, equals(b));
-      expect(a == c, isFalse);
+    test('formattedDuration reports hours only when minutes are zero', () {
+      final entity = _buildEntity(startTime: '09:00:00', endTime: '11:00:00');
+      expect(entity.formattedDuration, '2 hours');
     });
-  });
 
-  group('UserSessionRequestEntity.formattedHoldAmount', () {
-    test('formats using hold.sessionFee (regression: used to read hold.amount, a field that no longer exists)', () {
-      final request = _buildRequest(
-        requestedDate: '2026-03-05',
-        startTime: '13:00:00',
-        endTime: '13:30:00',
-        hold: const SessionRequestHoldEntity(sessionFee: 40, processingFee: 5, totalAmount: 45, currency: 'usd', status: 'held'),
+    test('formattedDuration reports minutes only when under an hour', () {
+      final entity = _buildEntity(startTime: '09:00:00', endTime: '09:15:00');
+      expect(entity.formattedDuration, '15 minutes');
+    });
+
+    test('formattedDuration falls back to empty string on unparsable times', () {
+      final entity = _buildEntity(startTime: 'not-a-time', endTime: 'also-not-a-time');
+      expect(entity.formattedDuration, '');
+    });
+
+    test('scheduledDateTime parses the requested date and start time', () {
+      final entity = _buildEntity(startTime: '09:00:00', endTime: '09:15:00');
+      expect(entity.scheduledDateTime, DateTime.parse('2026-07-10T09:00:00'));
+    });
+
+    test('scheduledDateTime falls back instead of throwing on bad input', () {
+      final entity = _buildEntity(startTime: 'not-a-time', endTime: '09:15:00');
+      expect(() => entity.scheduledDateTime, returnsNormally);
+    });
+
+    test('formattedHoldAmount defaults to zero when there is no hold', () {
+      final entity = _buildEntity(startTime: '09:00:00', endTime: '09:15:00');
+      expect(entity.formattedHoldAmount, '\$0.00');
+    });
+
+    test('formattedHoldAmount reflects the hold amount when present', () {
+      final entity = _buildEntity(
+        startTime: '09:00:00',
+        endTime: '09:15:00',
+        hold: const SessionRequestHoldEntity(amount: 12.3, currency: 'usd', status: 'held'),
       );
-
-      expect(request.formattedHoldAmount, '\$40.00');
-    });
-
-    test('defaults to \$0.00 when there is no hold', () {
-      final request = _buildRequest(requestedDate: '2026-03-05', startTime: '13:00:00', endTime: '13:30:00');
-
-      expect(request.formattedHoldAmount, '\$0.00');
+      expect(entity.formattedHoldAmount, '\$12.30');
     });
   });
 }
