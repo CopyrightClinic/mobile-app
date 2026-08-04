@@ -49,7 +49,7 @@ class AvailabilityDayModel {
   Map<String, dynamic> toJson() => _$AvailabilityDayModelToJson(this);
 
   AvailabilityDayEntity toEntity() {
-    return AvailabilityDayEntity(date: DateTime.parse(date), weekday: weekday, slots: slots.map((slot) => slot.toEntity()).toList());
+    return AvailabilityDayEntity(date: DateTime.parse(date).toLocal(), weekday: weekday, slots: slots.map((slot) => slot.toEntity()).toList());
   }
 }
 
@@ -65,7 +65,7 @@ class TimeSlotModel {
   Map<String, dynamic> toJson() => _$TimeSlotModelToJson(this);
 
   TimeSlotEntity toEntity() {
-    return TimeSlotEntity(start: DateTime.parse(start), end: DateTime.parse(end));
+    return TimeSlotEntity(start: DateTime.parse(start).toLocal(), end: DateTime.parse(end).toLocal());
   }
 }
 
