@@ -112,8 +112,11 @@ class HaroldIntakeCubit extends Cubit<HaroldIntakeState> {
     final q1 = answersById[HaroldIntakeQuestionIds.q1CreativeExpression];
     if (q1 == HaroldIntakeOptionIds.no) return AppStrings.haroldIntakeTerminationNotCopyright;
 
-    final q3 = answersById[HaroldIntakeQuestionIds.q3IpBoundary];
-    if (q3 == HaroldIntakeOptionIds.yes) return AppStrings.haroldIntakeTerminationNotCopyright;
+    final q3Invention = answersById[HaroldIntakeQuestionIds.q3InventionBoundary];
+    if (q3Invention == HaroldIntakeOptionIds.yes) return AppStrings.haroldIntakeTerminationNotCopyright;
+
+    final q3Trademark = answersById[HaroldIntakeQuestionIds.q3TrademarkBoundary];
+    if (q3Trademark == HaroldIntakeOptionIds.yes) return AppStrings.haroldIntakeTerminationNotCopyright;
 
     return null;
   }
@@ -141,8 +144,18 @@ class HaroldIntakeCubit extends Cubit<HaroldIntakeState> {
         ],
       ),
       HaroldIntakeStep(
-        id: HaroldIntakeQuestionIds.q3IpBoundary,
-        promptKey: AppStrings.haroldIntakeQ3Prompt,
+        id: HaroldIntakeQuestionIds.q3InventionBoundary,
+        promptKey: AppStrings.haroldIntakeQ3InventionPrompt,
+        type: HaroldIntakeQuestionType.singleChoice,
+        options: const [
+          HaroldIntakeOption(id: HaroldIntakeOptionIds.yes, labelKey: AppStrings.yes),
+          HaroldIntakeOption(id: HaroldIntakeOptionIds.no, labelKey: AppStrings.no),
+          HaroldIntakeOption(id: HaroldIntakeOptionIds.notSure, labelKey: AppStrings.notSure),
+        ],
+      ),
+      HaroldIntakeStep(
+        id: HaroldIntakeQuestionIds.q3TrademarkBoundary,
+        promptKey: AppStrings.haroldIntakeQ3TrademarkPrompt,
         type: HaroldIntakeQuestionType.singleChoice,
         options: const [
           HaroldIntakeOption(id: HaroldIntakeOptionIds.yes, labelKey: AppStrings.yes),

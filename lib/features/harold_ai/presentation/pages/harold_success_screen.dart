@@ -36,7 +36,7 @@ class HaroldSuccessScreen extends StatelessWidget {
   String _getFormattedPrice() {
     if (params.fee != null) {
       final currency = params.fee!.currency == 'USD' ? '\$' : params.fee!.currency;
-      return '$currency${params.fee!.totalFee.toStringAsFixed(2)}';
+      return '$currency${params.fee!.sessionFee.toStringAsFixed(2)}';
     }
     return '\$99';
   }

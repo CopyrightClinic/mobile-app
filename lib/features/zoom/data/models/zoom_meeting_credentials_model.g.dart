@@ -14,7 +14,7 @@ ZoomMeetingCredentialsModel _$ZoomMeetingCredentialsModelFromJson(
   meetingNumber: json['meetingNumber'] as String,
   password: json['password'] as String,
   role: (json['role'] as num?)?.toInt(),
-  userName: json['userName'] as String,
+  userName: json['userName'] as String?,
   userEmail: json['userEmail'] as String?,
 );
 

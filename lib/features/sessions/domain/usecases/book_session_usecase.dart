@@ -12,6 +12,7 @@ class BookSessionParams extends Equatable {
   final String startTime;
   final String endTime;
   final String summary;
+  final String query;
   final String timezone;
 
   const BookSessionParams({
@@ -21,6 +22,7 @@ class BookSessionParams extends Equatable {
     required this.startTime,
     required this.endTime,
     required this.summary,
+    required this.query,
     required this.timezone,
   });
 
@@ -32,6 +34,7 @@ class BookSessionParams extends Equatable {
     startTime,
     endTime,
     summary,
+    query,
     timezone,
   ];
 }
@@ -53,6 +56,7 @@ class BookSessionUseCase
       startTime: params.startTime,
       endTime: params.endTime,
       summary: params.summary,
+      query: params.query,
       timezone: params.timezone,
     );
   }

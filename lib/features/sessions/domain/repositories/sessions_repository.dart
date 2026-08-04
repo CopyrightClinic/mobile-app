@@ -2,9 +2,11 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/session_entity.dart';
 import '../entities/paginated_sessions_entity.dart';
+import '../entities/user_session_request_entity.dart';
 import '../entities/session_details_entity.dart';
 import '../entities/submit_feedback_response_entity.dart';
 import '../entities/cancel_session_response_entity.dart';
+import '../entities/cancel_session_request_response_entity.dart';
 import '../entities/session_availability_entity.dart';
 import '../entities/book_session_response_entity.dart';
 import '../entities/unlock_summary_response_entity.dart';
@@ -16,6 +18,10 @@ abstract class SessionsRepository {
     String? timezone,
     int? page,
     int? limit,
+  });
+  Future<Either<Failure, List<UserSessionRequestEntity>>> getUserSessionRequests({
+    required String timezone,
+    String? status,
   });
   Future<Either<Failure, List<SessionEntity>>> getUpcomingSessions();
   Future<Either<Failure, List<SessionEntity>>> getCompletedSessions();
@@ -33,6 +39,10 @@ abstract class SessionsRepository {
     String sessionId,
     String reason,
   );
+  Future<Either<Failure, CancelSessionRequestResponseEntity>> cancelSessionRequest(
+    String requestId,
+    String reason,
+  );
   Future<Either<Failure, SessionEntity>> joinSession(String sessionId);
   Future<Either<Failure, SessionAvailabilityEntity>> getSessionAvailability(
     String timezone,
@@ -44,6 +54,7 @@ abstract class SessionsRepository {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   });
   Future<Either<Failure, UnlockSummaryResponseEntity>> unlockSessionSummary({

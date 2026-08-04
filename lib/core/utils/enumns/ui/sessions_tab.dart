@@ -2,7 +2,9 @@ import '../../../constants/app_strings.dart';
 
 enum SessionsTab {
   upcoming,
-  completed;
+  completed,
+  pending,
+  cancelled;
 
   static SessionsTab fromString(String tab) {
     switch (tab.toLowerCase()) {
@@ -10,6 +12,10 @@ enum SessionsTab {
         return SessionsTab.upcoming;
       case 'completed':
         return SessionsTab.completed;
+      case 'pending':
+        return SessionsTab.pending;
+      case 'cancelled':
+        return SessionsTab.cancelled;
       default:
         return SessionsTab.upcoming;
     }
@@ -21,6 +27,10 @@ enum SessionsTab {
         return AppStrings.upcoming;
       case SessionsTab.completed:
         return AppStrings.completed;
+      case SessionsTab.pending:
+        return AppStrings.pending;
+      case SessionsTab.cancelled:
+        return AppStrings.cancelled;
     }
   }
 
@@ -30,10 +40,18 @@ enum SessionsTab {
         return 'upcoming';
       case SessionsTab.completed:
         return 'completed';
+      case SessionsTab.pending:
+        return 'pending';
+      case SessionsTab.cancelled:
+        return 'cancelled';
     }
   }
 
   bool get isUpcoming => this == SessionsTab.upcoming;
 
   bool get isCompleted => this == SessionsTab.completed;
+
+  bool get isPending => this == SessionsTab.pending;
+
+  bool get isCancelled => this == SessionsTab.cancelled;
 }

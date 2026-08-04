@@ -353,6 +353,7 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                     Text(
                       SessionDateTimeUtils.formatSessionDate(
                         session.scheduledDateTime,
+                        endDateTime: session.endDateTime,
                       ),
                       style: TextStyle(
                         fontSize: DimensionConstants.font14Px.f,

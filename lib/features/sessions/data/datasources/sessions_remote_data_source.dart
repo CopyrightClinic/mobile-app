@@ -2,6 +2,7 @@ import '../../../../core/network/api_service/api_service.dart';
 import '../../../../core/network/endpoints/api_endpoints.dart';
 import '../../../../core/utils/enumns/api/sessions_enums.dart';
 import '../models/session_model.dart';
+import '../models/user_session_request_model.dart';
 import '../models/session_details_model.dart';
 import '../models/session_availability_model.dart';
 import '../models/book_session_request_model.dart';
@@ -12,6 +13,7 @@ import '../models/paginated_sessions_model.dart';
 import '../models/unlock_summary_request_model.dart';
 import '../models/unlock_summary_response_model.dart';
 import '../models/cancel_session_response_model.dart';
+import '../models/cancel_session_request_response_model.dart';
 import '../models/extend_session_request_model.dart';
 import '../models/extend_session_response_model.dart';
 import 'sessions_mock_data_source.dart';
@@ -22,6 +24,10 @@ abstract class SessionsRemoteDataSource {
     String? timezone,
     int? page,
     int? limit,
+  });
+  Future<List<UserSessionRequestModel>> getUserSessionRequests({
+    required String timezone,
+    String? status,
   });
   Future<List<SessionModel>> getUpcomingSessions();
   Future<List<SessionModel>> getCompletedSessions();
@@ -39,6 +45,10 @@ abstract class SessionsRemoteDataSource {
     String sessionId,
     String reason,
   );
+  Future<CancelSessionRequestResponseModel> cancelSessionRequest(
+    String requestId,
+    String reason,
+  );
   Future<SessionModel> joinSession(String sessionId);
   Future<SessionAvailabilityModel> getSessionAvailability(String timezone);
   Future<BookSessionResponseModel> bookSession({
@@ -48,6 +58,7 @@ abstract class SessionsRemoteDataSource {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   });
   Future<UnlockSummaryResponseModel> unlockSessionSummary({
@@ -86,6 +97,22 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       queryParams: queryParams.isNotEmpty ? queryParams : null,
       headers: headers.isNotEmpty ? headers : null,
       converter: (json) => PaginatedSessionsModel.fromJson(json),
+    );
+  }
+
+  @override
+  Future<List<UserSessionRequestModel>> getUserSessionRequests({
+    required String timezone,
+    String? status,
+  }) async {
+    final Map<String, dynamic> queryParams = {};
+    if (status != null) queryParams['status'] = status;
+
+    return await apiService.getCollectionData<UserSessionRequestModel>(
+      endpoint: ApiEndpoint.sessions(SessionsEndpoint.USER_SESSION_REQUESTS),
+      queryParams: queryParams.isNotEmpty ? queryParams : null,
+      headers: {'Timezone': timezone},
+      converter: (json) => UserSessionRequestModel.fromJson(json),
     );
   }
 
@@ -168,6 +195,21 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
   }
 
   @override
+  Future<CancelSessionRequestResponseModel> cancelSessionRequest(
+    String requestId,
+    String reason,
+  ) async {
+    return await apiService.postData<CancelSessionRequestResponseModel>(
+      endpoint: ApiEndpoint.sessions(
+        SessionsEndpoint.CANCEL_SESSION_REQUEST,
+        sessionId: requestId,
+      ),
+      data: {'reason': reason},
+      converter: (json) => CancelSessionRequestResponseModel.fromJson(json.data),
+    );
+  }
+
+  @override
   Future<SessionModel> joinSession(String sessionId) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final allSessions = SessionsMockDataSource.getMockSessions();
@@ -196,6 +238,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   }) async {
     final request = BookSessionRequestModel(
@@ -204,6 +247,7 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       date: date,
       slot: BookSessionSlotModel(start: startTime, end: endTime),
       summary: summary,
+      originalInput: query,
     );
     return await apiService.postData<BookSessionResponseModel>(
       endpoint: ApiEndpoint.sessions(SessionsEndpoint.BOOK_SESSION),

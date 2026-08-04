@@ -11,7 +11,7 @@ import 'custom_button.dart';
 class CustomBottomSheet extends StatelessWidget {
   final String? iconPath;
   final Widget? customIcon;
-  final String title;
+  final String? title;
   final String? subtitle;
   final String primaryButtonText;
   final String secondaryButtonText;
@@ -29,7 +29,7 @@ class CustomBottomSheet extends StatelessWidget {
     super.key,
     this.iconPath,
     this.customIcon,
-    required this.title,
+    this.title,
     this.subtitle,
     required this.primaryButtonText,
     required this.secondaryButtonText,
@@ -42,10 +42,7 @@ class CustomBottomSheet extends StatelessWidget {
     this.content,
     this.isPrimaryLoading = false,
     this.isPrimaryEnabled = true,
-  }) : assert(
-         iconPath != null || customIcon != null,
-         'Either iconPath or customIcon must be provided',
-       );
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -84,53 +81,56 @@ class CustomBottomSheet extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: DimensionConstants.gap32Px.h),
+                  if (customIcon != null || iconPath != null) ...[
+                    SizedBox(height: DimensionConstants.gap32Px.h),
+                    if (customIcon != null)
+                      customIcon!
+                    else if (iconPath != null)
+                      GlobalImage(
+                        assetPath: iconPath!,
+                        width: DimensionConstants.gap48Px.w,
+                        height: DimensionConstants.gap48Px.h,
+                        loadingSize: DimensionConstants.gap40Px.w,
+                      ),
+                  ],
 
-                  if (customIcon != null)
-                    customIcon!
-                  else if (iconPath != null)
-                    GlobalImage(
-                      assetPath: iconPath!,
-                      width: DimensionConstants.gap48Px.w,
-                      height: DimensionConstants.gap48Px.h,
-                      loadingSize: DimensionConstants.gap40Px.w,
-                    ),
-
-                  SizedBox(height: DimensionConstants.gap24Px.h),
-
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: DimensionConstants.gap24Px.w,
-                    ),
-                    child: Column(
-                      children: [
-                        TranslatedText(
-                          title,
-                          style: TextStyle(
-                            color: context.darkTextPrimary,
-                            fontSize: DimensionConstants.font20Px.f,
-                            fontWeight: FontWeight.w600,
-                            height: 1.2,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-
-                        if (subtitle != null) ...[
-                          SizedBox(height: DimensionConstants.gap12Px.h),
-                          TranslatedText(
-                            subtitle!,
-                            style: TextStyle(
-                              color: context.darkTextSecondary,
-                              fontSize: DimensionConstants.font14Px.f,
-                              fontWeight: FontWeight.w400,
-                              height: 1.4,
+                  if (title != null || subtitle != null) ...[
+                    SizedBox(height: DimensionConstants.gap24Px.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: DimensionConstants.gap24Px.w,
+                      ),
+                      child: Column(
+                        children: [
+                          if (title != null)
+                            TranslatedText(
+                              title!,
+                              style: TextStyle(
+                                color: context.darkTextPrimary,
+                                fontSize: DimensionConstants.font20Px.f,
+                                fontWeight: FontWeight.w600,
+                                height: 1.2,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
+
+                          if (subtitle != null) ...[
+                            SizedBox(height: DimensionConstants.gap12Px.h),
+                            TranslatedText(
+                              subtitle!,
+                              style: TextStyle(
+                                color: context.darkTextSecondary,
+                                fontSize: DimensionConstants.font14Px.f,
+                                fontWeight: FontWeight.w400,
+                                height: 1.4,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
 
                   if (content != null) ...[
                     SizedBox(height: DimensionConstants.gap20Px.h),
@@ -219,7 +219,7 @@ class CustomBottomSheet extends StatelessWidget {
     required BuildContext context,
     String? iconPath,
     Widget? customIcon,
-    required String title,
+    String? title,
     String? subtitle,
     required String primaryButtonText,
     required String secondaryButtonText,

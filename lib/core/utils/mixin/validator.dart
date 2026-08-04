@@ -6,7 +6,7 @@ mixin Validator {
     if (trimmedValue == null || trimmedValue.isEmpty) {
       return tr(AppStrings.emailIsRequired);
     } else if (!RegExp(
-      "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)\$",
+      "^([a-zA-Z0-9_\\-\\.\\+]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)\$",
     ).hasMatch(trimmedValue)) {
       return tr(AppStrings.pleaseEnterAValidEmail);
     }

@@ -41,6 +41,8 @@ class ImageConstants {
   static const String securePayments = '$png/secure-payment.png';
   static const String lawerImage = '$png/lawyers_image.png';
   static const String characterFemale = '$png/character_female.png';
+  static const String lawyerImage = '$png/lawyer_image.png';
+
 
   // ===================
   // SVG ICONS

@@ -56,6 +56,8 @@ class ApiEndpoint {
     switch (endpoint) {
       case SessionsEndpoint.USER_SESSIONS:
         return '/user/sessions';
+      case SessionsEndpoint.USER_SESSION_REQUESTS:
+        return '/session-requests/mine';
       case SessionsEndpoint.SESSION_DETAILS:
         return '/user/session-details';
       case SessionsEndpoint.SESSION_FEEDBACK:
@@ -68,6 +70,8 @@ class ApiEndpoint {
         return '/session-summary';
       case SessionsEndpoint.CANCEL_SESSION:
         return '/sessions/${sessionId ?? ''}/cancel';
+      case SessionsEndpoint.CANCEL_SESSION_REQUEST:
+        return '/session-requests/${sessionId ?? ''}/cancel';
       case SessionsEndpoint.EXTEND_SESSION:
         return '/sessions/${sessionId ?? ''}/request-extension';
     }

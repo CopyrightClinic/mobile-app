@@ -402,6 +402,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         startTime: parsedTimeSlot.startTimeIso,
         endTime: parsedTimeSlot.endTimeIso,
         summary: summary,
+        query: widget.params.query,
         timezone: timezone,
       ),
     );

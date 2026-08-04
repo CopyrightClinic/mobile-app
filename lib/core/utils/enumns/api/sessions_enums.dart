@@ -2,11 +2,13 @@
 
 enum SessionsEndpoint {
   USER_SESSIONS, // GET /user/sessions
+  USER_SESSION_REQUESTS, // GET /session-requests/mine
   SESSION_DETAILS, // GET /user/session-details
   SESSION_FEEDBACK, // PATCH /user/session/feedback
   SESSIONS_AVAILABILITY, // GET /sessions-availability
   BOOK_SESSION, // POST /session-requests/book-session
   SESSION_SUMMARY, // POST /session-summary
   CANCEL_SESSION, // POST /sessions/{sessionId}/cancel
+  CANCEL_SESSION_REQUEST, // POST /session-requests/{id}/cancel
   EXTEND_SESSION, // POST /sessions/{sessionId}/request-extension
 }

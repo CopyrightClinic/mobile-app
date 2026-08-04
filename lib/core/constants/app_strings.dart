@@ -229,17 +229,25 @@ class AppStrings {
   static const logout = 'logout';
   static const confirmLogout = 'confirmLogout';
   static const areYouSureLogout = 'areYouSureLogout';
+  static const sessionExpired = 'sessionExpired';
   static const cancel = 'cancel';
 
   // Sessions Screen
   static const upcoming = 'upcoming';
   static const completed = 'completed';
+  static const pending = 'pending';
+  static const cancelled = 'cancelled';
   static const noCompletedSessions = 'noCompletedSessions';
   static const completedSessionsDescription = 'completedSessionsDescription';
+  static const noPendingSessions = 'noPendingSessions';
+  static const pendingSessionsDescription = 'pendingSessionsDescription';
+  static const noCancelledSessions = 'noCancelledSessions';
+  static const cancelledSessionsDescription = 'cancelledSessionsDescription';
   static const noSessionsYet = 'noSessionsYet';
   static const somethingWentWrong = 'somethingWentWrong';
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
+  static const rescheduleSession = 'rescheduleSession';
   static const joinSession = 'joinSession';
   static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
   static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
@@ -253,6 +261,13 @@ class AppStrings {
   static const cancelSessionTitle = 'cancelSessionTitle';
   static const cancelSessionMessage = 'cancelSessionMessage';
   static const keepSession = 'keepSession';
+  static const cancellationReason = 'cancellationReason';
+  static const reason = 'reason';
+  static const enterCancellationReason = 'enterCancellationReason';
+  static const pleaseEnterCancellationReason = 'pleaseEnterCancellationReason';
+  static const authorizationHoldTitle = 'authorizationHoldTitle';
+  static const authorizationHoldMessage = 'authorizationHoldMessage';
+  static const gotIt = 'gotIt';
   static const joiningSession = 'joiningSession';
   static const session = 'session';
   static const today = 'today';
@@ -309,7 +324,8 @@ class AppStrings {
   static const haroldIntakeQ2OptionCreator = 'haroldIntakeQ2OptionCreator';
   static const haroldIntakeQ2OptionAccused = 'haroldIntakeQ2OptionAccused';
   static const haroldIntakeQ2OptionUnsure = 'haroldIntakeQ2OptionUnsure';
-  static const haroldIntakeQ3Prompt = 'haroldIntakeQ3Prompt';
+  static const haroldIntakeQ3InventionPrompt = 'haroldIntakeQ3InventionPrompt';
+  static const haroldIntakeQ3TrademarkPrompt = 'haroldIntakeQ3TrademarkPrompt';
   static const haroldIntakeQ4CreatorPrompt = 'haroldIntakeQ4CreatorPrompt';
   static const haroldIntakeQ4AccusedPrompt = 'haroldIntakeQ4AccusedPrompt';
   static const haroldIntakeQ4UnsurePrompt = 'haroldIntakeQ4UnsurePrompt';
