@@ -13,6 +13,7 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/utils/ui/snackbar_utils.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
@@ -82,18 +83,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
         titleText: AppStrings.mySessions.tr(),
         automaticallyImplyLeading: false,
         actions: [
-          Container(
-            width: DimensionConstants.gap40Px.d,
-            height: DimensionConstants.gap40Px.d,
-            decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
-            child: InkWell(
-              onTap: () {
-                context.pushNamed(AppRoutes.notificationsRouteName);
-              },
-              borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.d / 2).d),
-              child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).d)),
-            ),
-          ),
+          const NotificationBellButton(),
           SizedBox(width: DimensionConstants.gap16Px),
         ],
       ),
@@ -317,6 +307,14 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
+    var cancelSucceeded = false;
+
+    _sessionsBloc.stream
+        .firstWhere(
+          (state) => state.lastOperation == SessionsOperation.cancelSession && !state.isProcessingCancel,
+        )
+        .then((resultState) => cancelSucceeded = resultState.hasSuccess);
+
     BottomSheetService.show(
       builder:
           (bottomSheetContext) => BlocProvider.value(
@@ -327,7 +325,12 @@ class _SessionsScreenState extends State<SessionsScreen> {
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-    );
+    ).then((_) {
+      if (!mounted) return;
+      if (cancelSucceeded) {
+        _showAuthorizationHoldDialog();
+      }
+    });
   }
 
   Future<void> _showCancelRequestBottomSheet(UserSessionRequestEntity request) async {

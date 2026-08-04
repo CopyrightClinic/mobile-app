@@ -3,14 +3,22 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/utils/enumns/ui/session_request_status.dart';
 
 class SessionRequestHoldEntity extends Equatable {
-  final double amount;
+  final double sessionFee;
+  final double processingFee;
+  final double totalAmount;
   final String currency;
   final String status;
 
-  const SessionRequestHoldEntity({required this.amount, required this.currency, required this.status});
+  const SessionRequestHoldEntity({
+    required this.sessionFee,
+    required this.processingFee,
+    required this.totalAmount,
+    required this.currency,
+    required this.status,
+  });
 
   @override
-  List<Object?> get props => [amount, currency, status];
+  List<Object?> get props => [sessionFee, processingFee, totalAmount, currency, status];
 }
 
 class UserSessionRequestEntity extends Equatable {
@@ -58,6 +66,14 @@ class UserSessionRequestEntity extends Equatable {
     }
   }
 
+  DateTime get endDateTime {
+    try {
+      return DateTime.parse('${requestedDate}T$endTime');
+    } catch (e) {
+      return scheduledDateTime;
+    }
+  }
+
   String get formattedDuration {
     try {
       final start = DateTime.parse('${requestedDate}T$startTime');
@@ -79,7 +95,7 @@ class UserSessionRequestEntity extends Equatable {
     }
   }
 
-  String get formattedHoldAmount => '\$${(hold?.amount ?? 0).toStringAsFixed(2)}';
+  String get formattedHoldAmount => '\$${(hold?.sessionFee ?? 0).toStringAsFixed(2)}';
 
   @override
   List<Object?> get props => [

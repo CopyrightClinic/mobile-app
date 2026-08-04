@@ -11,6 +11,7 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
@@ -86,18 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           titleText: AppStrings.profile.tr(),
           automaticallyImplyLeading: false,
           actions: [
-            Container(
-              width: DimensionConstants.gap40Px.d,
-              height: DimensionConstants.gap40Px.d,
-              decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
-              child: InkWell(
-                onTap: () {
-                  context.pushNamed(AppRoutes.notificationsRouteName);
-                },
-                borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.d / 2).d),
-                child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).d)),
-              ),
-            ),
+            const NotificationBellButton(),
             SizedBox(width: DimensionConstants.gap16Px),
           ],
         ),

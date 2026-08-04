@@ -6,7 +6,14 @@ Future<FirebaseApp> ensureFirebaseInitialized() async {
   if (Firebase.apps.isNotEmpty) {
     return Firebase.app();
   }
-  return Firebase.initializeApp(
-    options: FirebaseManualOptions.currentPlatform,
-  );
+  try {
+    return await Firebase.initializeApp(
+      options: FirebaseManualOptions.currentPlatform,
+    );
+  } on FirebaseException catch (e) {
+    if (e.code == 'duplicate-app') {
+      return Firebase.app();
+    }
+    rethrow;
+  }
 }

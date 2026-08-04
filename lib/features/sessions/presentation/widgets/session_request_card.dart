@@ -44,7 +44,7 @@ class SessionRequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      SessionDateTimeUtils.formatSessionDate(request.scheduledDateTime),
+                      SessionDateTimeUtils.formatSessionDate(request.scheduledDateTime, endDateTime: request.endDateTime),
                       style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
                     ),
                     SizedBox(height: DimensionConstants.gap2Px.h),

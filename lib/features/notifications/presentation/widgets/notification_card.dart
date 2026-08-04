@@ -72,19 +72,28 @@ class NotificationCard extends StatelessWidget {
   }
 
   String _formatTime(DateTime dateTime) {
+    final localTime = (dateTime.isUtc ? dateTime : DateTime.utc(
+      dateTime.year,
+      dateTime.month,
+      dateTime.day,
+      dateTime.hour,
+      dateTime.minute,
+      dateTime.second,
+      dateTime.millisecond,
+    )).toLocal();
     final now = DateTime.now();
-    final difference = now.difference(dateTime);
+    final difference = now.difference(localTime);
 
     if (difference.inMinutes < 1) {
       return AppStrings.justNow.tr();
     } else if (difference.inHours < 1) {
       return '${difference.inMinutes}m ago';
     } else if (difference.inDays < 1) {
-      return DateFormat('h:mm a').format(dateTime);
+      return DateFormat('h:mm a').format(localTime);
     } else if (difference.inDays < 7) {
-      return DateFormat('EEE h:mm a').format(dateTime);
+      return DateFormat('EEE h:mm a').format(localTime);
     } else {
-      return DateFormat('MMM d, h:mm a').format(dateTime);
+      return DateFormat('MMM d, h:mm a').format(localTime);
     }
   }
 }

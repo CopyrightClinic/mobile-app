@@ -8,6 +8,7 @@ UserSessionRequestEntity _buildEntity({
   SessionRequestStatus status = SessionRequestStatus.pending,
   SessionRequestHoldEntity? hold,
 }) {
+  final now = DateTime.now();
   return UserSessionRequestEntity(
     id: 'req-1',
     requestedDate: '2026-07-10',

@@ -28,7 +28,7 @@ SessionDetailsUserModel _$SessionDetailsUserModelFromJson(
   Map<String, dynamic> json,
 ) => SessionDetailsUserModel(
   id: json['id'] as String,
-  name: json['name'] as String,
+  name: json['name'] as String?,
   email: json['email'] as String,
 );
 

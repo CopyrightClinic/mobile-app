@@ -9,6 +9,7 @@ import 'core/network/dio_service.dart';
 import 'core/network/endpoints/api_endpoints.dart';
 import 'core/network/interceptors/api_interceptor.dart';
 import 'core/network/interceptors/logging_interceptor.dart';
+import 'core/network/interceptors/session_expiry_interceptor.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -113,7 +114,7 @@ Future<void> init() async {
         ApiInterceptor(),
         DioCacheInterceptor(options: cacheOptions),
         if (kDebugMode) LoggingInterceptor(),
-        // RefreshTokenInterceptor(dioClient: sl<Dio>()),
+        SessionExpiryInterceptor(),
       ],
     );
   });
@@ -139,7 +140,7 @@ Future<void> init() async {
 
   /// Register FCM Service as a singleton
   sl.registerLazySingleton<FCMService>(
-    () => FCMService(remoteDataSource: sl()),
+    () => FCMService(remoteDataSource: sl(), notificationBloc: sl()),
   );
 
   sl.registerLazySingleton(FacebookAppEvents.new);
