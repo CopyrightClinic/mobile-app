@@ -427,7 +427,7 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               SizedBox(width: DimensionConstants.gap8Px.w),
               Expanded(
                 child: TranslatedText(
-                  AppStrings.recordingConsented,
+                  AppStrings.allMeetingsAreRecorded,
                   style: TextStyle(
                     fontSize: DimensionConstants.font14Px.f,
                     color: context.darkTextSecondary,

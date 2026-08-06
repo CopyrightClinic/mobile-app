@@ -263,6 +263,7 @@ class AppStrings {
   static const keepSession = 'keepSession';
   static const cancellationReason = 'cancellationReason';
   static const reason = 'reason';
+  static const allMeetingsAreRecorded = 'All meetings are recorded. If you wish for the recording to be halted or paused, you can make a request to the attorney during the meeting.';
   static const enterCancellationReason = 'enterCancellationReason';
   static const pleaseEnterCancellationReason = 'pleaseEnterCancellationReason';
   static const authorizationHoldTitle = 'authorizationHoldTitle';
