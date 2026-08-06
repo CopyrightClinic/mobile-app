@@ -73,7 +73,13 @@ void main() {
       final entity = _buildEntity(
         startTime: '09:00:00',
         endTime: '09:15:00',
-        hold: const SessionRequestHoldEntity(amount: 12.3, currency: 'usd', status: 'held'),
+        hold: const SessionRequestHoldEntity(
+          sessionFee: 12.3,
+          processingFee: 0,
+          totalAmount: 12.3,
+          currency: 'usd',
+          status: 'held',
+        ),
       );
       expect(entity.formattedHoldAmount, '\$12.30');
     });

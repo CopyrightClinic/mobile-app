@@ -90,6 +90,8 @@ class PaymentMethodCard extends StatelessWidget {
 
   String _getCardDisplayName() {
     final cardBrand = CardBrand.fromString(paymentMethod.card.brand);
-    return cardBrand.displayName;
+    final name = cardBrand.displayName;
+    if (name.isEmpty) return name;
+    return name[0].toUpperCase() + name.substring(1);
   }
 }

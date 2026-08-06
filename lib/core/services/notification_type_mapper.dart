@@ -24,6 +24,10 @@ class NotificationTypeMapper {
           result = NotificationType.sessionCompleted;
           break;
 
+        case PushNotificationType.sessionRequestExpired:
+          result = NotificationType.sessionRequestExpired;
+          break;
+
         case PushNotificationType.sessionSummaryAvailable:
         case PushNotificationType.refundIssued:
         case PushNotificationType.sessionExtensionPrompt:

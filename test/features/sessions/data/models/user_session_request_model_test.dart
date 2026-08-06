@@ -55,7 +55,13 @@ void main() {
         'summary': 'Copyright question',
         'isFreeSession': true,
         'couponCode': 'SAVE10',
-        'hold': {'amount': 25.5, 'currency': 'usd', 'status': 'held'},
+        'hold': {
+          'sessionFee': 20.0,
+          'processingFee': 5.5,
+          'totalAmount': 25.5,
+          'currency': 'usd',
+          'status': 'held',
+        },
         'expiresAt': '2026-07-11T00:00:00.000Z',
         'canceledAt': null,
         'cancellationReason': null,
@@ -67,7 +73,7 @@ void main() {
 
       expect(model.id, 'req-1');
       expect(model.isFreeSession, isTrue);
-      expect(model.hold?.amount, 25.5);
+      expect(model.hold?.totalAmount, 25.5);
       expect(model.hold?.currency, 'usd');
       expect(model.canceledAt, isNull);
     });
@@ -129,14 +135,22 @@ void main() {
         endTime: '10:30',
         status: 'pending',
         isFreeSession: false,
-        hold: const SessionRequestHoldModel(amount: 10, currency: 'usd', status: 'held'),
+        hold: const SessionRequestHoldModel(
+          sessionFee: 10,
+          processingFee: 2,
+          totalAmount: 12,
+          currency: 'usd',
+          status: 'held',
+        ),
         createdAt: DateTime(2026, 7, 1),
         updatedAt: DateTime(2026, 7, 1),
       );
 
       final entity = model.toEntity();
 
-      expect(entity.hold?.amount, 10);
+      expect(entity.hold?.sessionFee, 10);
+      expect(entity.hold?.processingFee, 2);
+      expect(entity.hold?.totalAmount, 12);
       expect(entity.hold?.currency, 'usd');
       expect(entity.formattedHoldAmount, '\$10.00');
     });

@@ -178,9 +178,25 @@ class PushNotificationHandler {
         _navigateToExtendSession(context, payload.sessionId, payload.totalFee);
         break;
 
+      case PushNotificationType.sessionRequestExpired:
+        Log.i(runtimeType, '🧭 → Navigating to Notifications');
+        _navigateToNotifications(context);
+        break;
+
       case PushNotificationType.refundIssued:
         Log.i(runtimeType, '📋 Refund notification, no navigation (handled by requiresNavigation check)');
         break;
+    }
+  }
+
+  void _navigateToNotifications(BuildContext context) {
+    try {
+      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.notificationsRouteName}');
+      context.push(AppRoutes.notificationsRouteName);
+      Log.i(runtimeType, '✅ Navigation completed successfully');
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Navigation failed: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
     }
   }
 

@@ -7,7 +7,8 @@ enum NotificationType {
   sessionExtensionApproved,
   sessionExtensionDeclined,
   sessionExtensionPrompt,
-  sessionCancelled;
+  sessionCancelled,
+  sessionRequestExpired;
 
   static NotificationType fromString(String value) {
     switch (value.toUpperCase()) {
@@ -29,6 +30,8 @@ enum NotificationType {
         return NotificationType.sessionExtensionPrompt;
       case 'PAYMENT_HOLD_RELEASED':
         return NotificationType.sessionCancelled;
+      case 'SESSION_REQUEST_EXPIRED':
+        return NotificationType.sessionRequestExpired;
       default:
         return NotificationType.sessionReminder;
     }
@@ -54,6 +57,8 @@ enum NotificationType {
         return 'SESSION_EXTENSION_PROMPT';
       case NotificationType.sessionCancelled:
         return 'PAYMENT_HOLD_RELEASED';
+      case NotificationType.sessionRequestExpired:
+        return 'SESSION_REQUEST_EXPIRED';
     }
   }
 }
