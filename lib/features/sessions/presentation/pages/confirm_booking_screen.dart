@@ -338,7 +338,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
                 ),
                 SizedBox(height: DimensionConstants.gap8Px.h),
                 TranslatedText(
-                  AppStrings.paymentSecurityNote,
+                  AppStrings.authorizationHoldMessage,
                   style: TextStyle(
                     color: context.darkTextSecondary,
                     fontSize: DimensionConstants.font14Px.f,
