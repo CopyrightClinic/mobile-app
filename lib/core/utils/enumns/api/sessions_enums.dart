@@ -11,4 +11,5 @@ enum SessionsEndpoint {
   CANCEL_SESSION, // POST /sessions/{sessionId}/cancel
   CANCEL_SESSION_REQUEST, // POST /session-requests/{id}/cancel
   EXTEND_SESSION, // POST /sessions/{sessionId}/request-extension
+  DECLINE_EXTENSION, // POST /sessions/{sessionId}/decline-extension
 }

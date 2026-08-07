@@ -598,6 +598,10 @@ class AppStrings {
   static const payNow = 'payNow';
   static const sessionExtendedSuccess = 'sessionExtendedSuccess';
   static const sessionExtendError = 'sessionExtendError';
+  static const extendYourSession = 'extendYourSession';
+  static const acceptExtension = 'acceptExtension';
+  static const declineExtension = 'declineExtension';
+  static const sessionExtensionDeclineError = 'sessionExtensionDeclineError';
   static const unableToOpenNotification = 'unableToOpenNotification';
   static const unableToOpenPrivacyPolicy = 'unableToOpenPrivacyPolicy';
   static const unableToOpenTermsAndConditions = 'unableToOpenTermsAndConditions';

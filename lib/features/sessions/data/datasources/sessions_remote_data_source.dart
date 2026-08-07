@@ -16,6 +16,7 @@ import '../models/cancel_session_response_model.dart';
 import '../models/cancel_session_request_response_model.dart';
 import '../models/extend_session_request_model.dart';
 import '../models/extend_session_response_model.dart';
+import '../models/decline_extension_response_model.dart';
 import 'sessions_mock_data_source.dart';
 
 abstract class SessionsRemoteDataSource {
@@ -69,6 +70,9 @@ abstract class SessionsRemoteDataSource {
   Future<ExtendSessionResponseModel> extendSession({
     required String sessionId,
     required String paymentMethodId,
+  });
+  Future<DeclineExtensionResponseModel> declineSessionExtension({
+    required String sessionId,
   });
 }
 
@@ -291,6 +295,22 @@ class SessionsRemoteDataSourceImpl implements SessionsRemoteDataSource {
       endpoint: endpoint,
       data: request.toJson(),
       converter: (json) => ExtendSessionResponseModel.fromJson(json.data),
+    );
+  }
+
+  @override
+  Future<DeclineExtensionResponseModel> declineSessionExtension({
+    required String sessionId,
+  }) async {
+    final endpoint = ApiEndpoint.sessions(
+      SessionsEndpoint.DECLINE_EXTENSION,
+      sessionId: sessionId,
+    );
+
+    return await apiService.postData<DeclineExtensionResponseModel>(
+      endpoint: endpoint,
+      data: {},
+      converter: (json) => DeclineExtensionResponseModel.fromJson(json.data),
     );
   }
 }

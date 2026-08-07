@@ -1,10 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../constants/app_strings.dart';
+import '../constants/notification_action_constants.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import '../utils/session_datetime_utils.dart';
-import 'push_notification_handler.dart';
+import 'notification_action_router.dart';
+import 'session_extension_action_service.dart';
 
 class LocalNotificationService {
   static final LocalNotificationService _instance = LocalNotificationService._internal();
@@ -18,40 +23,76 @@ class LocalNotificationService {
     if (_isInitialized) return;
 
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings(requestAlertPermission: true, requestBadgePermission: true, requestSoundPermission: true);
 
-    const initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+    // Permissions are requested by FCMService once the user is authenticated,
+    // so this initialization must stay silent.
+    final iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+      notificationCategories: _notificationCategories(),
+    );
 
-    await _flutterLocalNotificationsPlugin.initialize(initSettings, onDidReceiveNotificationResponse: _onNotificationTapped);
+    final initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+
+    await _flutterLocalNotificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onNotificationTapped,
+      onDidReceiveBackgroundNotificationResponse: onDidReceiveBackgroundNotificationResponse,
+    );
 
     _isInitialized = true;
     Log.i(runtimeType, 'Local notifications initialized');
+
+    await _handleAppLaunchDetails();
+  }
+
+  List<DarwinNotificationCategory> _notificationCategories() {
+    return [
+      DarwinNotificationCategory(
+        NotificationActionConstants.sessionExtensionCategoryId,
+        actions: [
+          DarwinNotificationAction.plain(
+            NotificationActionConstants.acceptExtensionActionId,
+            _localized(AppStrings.acceptExtension, 'Accept'),
+            options: {DarwinNotificationActionOption.foreground},
+          ),
+          DarwinNotificationAction.plain(
+            NotificationActionConstants.declineExtensionActionId,
+            _localized(AppStrings.declineExtension, 'Decline'),
+            options: {DarwinNotificationActionOption.destructive},
+          ),
+        ],
+        options: {DarwinNotificationCategoryOption.hiddenPreviewShowTitle},
+      ),
+    ];
+  }
+
+  /// Picks up an action (or tap) that launched the app from a terminated
+  /// state. flutter_local_notifications does not replay those through
+  /// [_onNotificationTapped].
+  Future<void> _handleAppLaunchDetails() async {
+    try {
+      final details = await _flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+      if (details == null || !details.didNotificationLaunchApp) return;
+
+      final response = details.notificationResponse;
+      if (response == null) return;
+
+      Log.i(runtimeType, '🚀 App launched from local notification (action: ${response.actionId ?? "body tap"})');
+
+      // Deliberately not awaited: the pending navigation is registered
+      // synchronously and startup must not block on any network work.
+      unawaited(NotificationActionRouter.handleResponse(response, isAppLaunch: true));
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Error reading notification launch details: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
   }
 
   void _onNotificationTapped(NotificationResponse response) {
-    Log.i(runtimeType, '👆 ========================================');
-    Log.i(runtimeType, '👆 LOCAL NOTIFICATION TAPPED');
-    Log.i(runtimeType, '👆 ========================================');
-    Log.i(runtimeType, '👆 Response ID: ${response.id}');
-    Log.i(runtimeType, '👆 Action ID: ${response.actionId}');
-
-    if (response.payload != null) {
-      try {
-        Log.i(runtimeType, '👆 Payload: ${response.payload}');
-        final data = jsonDecode(response.payload!);
-        Log.i(runtimeType, '👆 Decoded Data: $data');
-
-        final message = RemoteMessage(data: Map<String, dynamic>.from(data));
-        Log.i(runtimeType, '👆 Forwarding to PushNotificationHandler...');
-        PushNotificationHandler().handleNotificationTap(message);
-      } catch (e, stackTrace) {
-        Log.e(runtimeType, '❌ Error handling local notification tap: $e');
-        Log.e(runtimeType, 'Stack trace: $stackTrace');
-      }
-    } else {
-      Log.w(runtimeType, '⚠️ No payload in notification response');
-    }
-    Log.i(runtimeType, '👆 ========================================');
+    NotificationActionRouter.handleResponse(response);
   }
 
   Future<void> showNotification(RemoteMessage message) async {
@@ -67,18 +108,32 @@ class LocalNotificationService {
       Log.i(runtimeType, '🔔 SHOWING LOCAL NOTIFICATION');
       Log.i(runtimeType, '🔔 ========================================');
 
-      if (notification == null) {
-        Log.w(runtimeType, '⚠️ Notification payload is null, cannot show');
+      final notificationType = _getNotificationType(data);
+      final isExtensionPrompt = notificationType == PushNotificationType.sessionExtensionPrompt;
+
+      final title = notification?.title ?? data['title'] as String?;
+      final body = notification?.body ?? data['body'] as String?;
+
+      if (!isExtensionPrompt && title == null && body == null) {
+        Log.w(runtimeType, '⚠️ Nothing to display for this message, skipping');
         return;
       }
 
-      final notificationType = _getNotificationType(data);
-      Log.i(runtimeType, '🔔 Notification Type: ${notificationType?.toApiString() ?? "Unknown"}');
-      Log.i(runtimeType, '🔔 Title: ${notification.title}');
-      Log.i(runtimeType, '🔔 Body (Original): ${notification.body}');
+      if (isExtensionPrompt) {
+        final sessionId = data['sessionId'] as String?;
+        if (sessionId != null && await SessionExtensionActionService.isDeclined(sessionId)) {
+          Log.i(runtimeType, '🔕 Extension already declined for session $sessionId, suppressing prompt');
+          return;
+        }
+      }
 
-      final localizedBody = await _getLocalizedNotificationBody(notification.body, data, notificationType);
-      Log.i(runtimeType, '🔔 Body (Localized): $localizedBody');
+      Log.i(runtimeType, '🔔 Notification Type: ${notificationType?.toApiString() ?? "Unknown"}');
+      Log.i(runtimeType, '🔔 Title: $title');
+      Log.i(runtimeType, '🔔 Body (Original): $body');
+
+      // The extension prompt is a heading plus two action buttons, no body.
+      final displayTitle = isExtensionPrompt ? _localized(AppStrings.extendYourSession, 'Extend your session') : (title ?? 'Copyright Clinic');
+      final displayBody = isExtensionPrompt ? null : await _getLocalizedNotificationBody(body, data, notificationType);
 
       final androidDetails = _getAndroidNotificationDetails(notificationType);
       final iosDetails = _getIOSNotificationDetails(notificationType);
@@ -88,9 +143,9 @@ class LocalNotificationService {
       Log.i(runtimeType, '🔔 iOS Interruption Level: ${iosDetails.interruptionLevel}');
 
       await _flutterLocalNotificationsPlugin.show(
-        message.hashCode,
-        notification.title ?? 'Copyright Clinic',
-        localizedBody,
+        isExtensionPrompt ? NotificationActionConstants.sessionExtensionNotificationId : message.hashCode,
+        displayTitle,
+        displayBody,
         NotificationDetails(android: androidDetails, iOS: iosDetails),
         payload: jsonEncode(data),
       );
@@ -131,11 +186,48 @@ class LocalNotificationService {
       enableVibration: true,
       playSound: true,
       icon: '@mipmap/ic_launcher',
+      actions: _getAndroidActions(type),
     );
   }
 
+  List<AndroidNotificationAction>? _getAndroidActions(PushNotificationType? type) {
+    if (type != PushNotificationType.sessionExtensionPrompt) return null;
+
+    return [
+      AndroidNotificationAction(
+        NotificationActionConstants.acceptExtensionActionId,
+        _localized(AppStrings.acceptExtension, 'Accept'),
+        showsUserInterface: true,
+        cancelNotification: true,
+      ),
+      AndroidNotificationAction(
+        NotificationActionConstants.declineExtensionActionId,
+        _localized(AppStrings.declineExtension, 'Decline'),
+        showsUserInterface: false,
+        cancelNotification: true,
+      ),
+    ];
+  }
+
   DarwinNotificationDetails _getIOSNotificationDetails(PushNotificationType? type) {
-    return DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true, interruptionLevel: _getIOSInterruptionLevel(type));
+    return DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      interruptionLevel: _getIOSInterruptionLevel(type),
+      categoryIdentifier: type == PushNotificationType.sessionExtensionPrompt ? NotificationActionConstants.sessionExtensionCategoryId : null,
+    );
+  }
+
+  /// easy_localization is not available inside the background isolate, so every
+  /// notification string needs a hardcoded fallback.
+  String _localized(String key, String fallback) {
+    try {
+      final value = key.tr();
+      return value == key ? fallback : value;
+    } catch (_) {
+      return fallback;
+    }
   }
 
   String _getChannelId(PushNotificationType? type) {
@@ -165,6 +257,7 @@ class LocalNotificationService {
 
     switch (type) {
       case PushNotificationType.sessionReminder:
+      case PushNotificationType.sessionExtensionPrompt:
         return Importance.high;
       default:
         return Importance.defaultImportance;
@@ -176,6 +269,7 @@ class LocalNotificationService {
 
     switch (type) {
       case PushNotificationType.sessionReminder:
+      case PushNotificationType.sessionExtensionPrompt:
         return Priority.high;
       default:
         return Priority.defaultPriority;
@@ -187,6 +281,7 @@ class LocalNotificationService {
 
     switch (type) {
       case PushNotificationType.sessionReminder:
+      case PushNotificationType.sessionExtensionPrompt:
         return InterruptionLevel.timeSensitive;
       default:
         return InterruptionLevel.active;
@@ -206,9 +301,9 @@ class LocalNotificationService {
     return activeNotifications.length;
   }
 
-  Future<String> _getLocalizedNotificationBody(String? originalBody, Map<String, dynamic> data, PushNotificationType? notificationType) async {
+  Future<String?> _getLocalizedNotificationBody(String? originalBody, Map<String, dynamic> data, PushNotificationType? notificationType) async {
     if (originalBody == null || originalBody.isEmpty) {
-      return '';
+      return null;
     }
 
     if (notificationType != PushNotificationType.sessionAccepted) {
