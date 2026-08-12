@@ -247,9 +247,11 @@ class AppStrings {
   static const somethingWentWrong = 'somethingWentWrong';
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
+  static const cancellationPolicyNote = 'cancellationPolicyNote';
   static const rescheduleSession = 'rescheduleSession';
   static const joinSession = 'joinSession';
   static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
+  static const joinAvailable10MinutesBeforeSessionDashboard = 'joinAvailable10MinutesBeforeSessionDashboard';
   static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
   static const youCanRequestUntil = 'youCanRequestUntil';
   static const summaryRequestExpired = 'summaryRequestExpired';
@@ -599,8 +601,7 @@ class AppStrings {
   static const sessionExtendedSuccess = 'sessionExtendedSuccess';
   static const sessionExtendError = 'sessionExtendError';
   static const extendYourSession = 'extendYourSession';
-  static const acceptExtension = 'acceptExtension';
-  static const declineExtension = 'declineExtension';
+  static const extendSessionPromptBody = 'extendSessionPromptBody';
   static const sessionExtensionDeclineError = 'sessionExtensionDeclineError';
   static const unableToOpenNotification = 'unableToOpenNotification';
   static const unableToOpenPrivacyPolicy = 'unableToOpenPrivacyPolicy';

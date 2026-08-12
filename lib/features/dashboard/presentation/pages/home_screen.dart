@@ -206,6 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 session: session,
                                 onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
                                 onJoin: session.canJoin ? () => _joinSessionDirectly(context, session.id) : null,
+                                useDashboardJoinText: true,
                               ),
                             );
                           }),

@@ -9,7 +9,6 @@ import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import '../utils/session_datetime_utils.dart';
 import 'notification_action_router.dart';
-import 'session_extension_action_service.dart';
 
 class LocalNotificationService {
   static final LocalNotificationService _instance = LocalNotificationService._internal();
@@ -26,11 +25,10 @@ class LocalNotificationService {
 
     // Permissions are requested by FCMService once the user is authenticated,
     // so this initialization must stay silent.
-    final iosSettings = DarwinInitializationSettings(
+    const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
-      notificationCategories: _notificationCategories(),
     );
 
     final initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
@@ -38,7 +36,6 @@ class LocalNotificationService {
     await _flutterLocalNotificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
-      onDidReceiveBackgroundNotificationResponse: onDidReceiveBackgroundNotificationResponse,
     );
 
     _isInitialized = true;
@@ -47,29 +44,8 @@ class LocalNotificationService {
     await _handleAppLaunchDetails();
   }
 
-  List<DarwinNotificationCategory> _notificationCategories() {
-    return [
-      DarwinNotificationCategory(
-        NotificationActionConstants.sessionExtensionCategoryId,
-        actions: [
-          DarwinNotificationAction.plain(
-            NotificationActionConstants.acceptExtensionActionId,
-            _localized(AppStrings.acceptExtension, 'Accept'),
-            options: {DarwinNotificationActionOption.foreground},
-          ),
-          DarwinNotificationAction.plain(
-            NotificationActionConstants.declineExtensionActionId,
-            _localized(AppStrings.declineExtension, 'Decline'),
-            options: {DarwinNotificationActionOption.destructive},
-          ),
-        ],
-        options: {DarwinNotificationCategoryOption.hiddenPreviewShowTitle},
-      ),
-    ];
-  }
-
-  /// Picks up an action (or tap) that launched the app from a terminated
-  /// state. flutter_local_notifications does not replay those through
+  /// Picks up a tap that launched the app from a terminated state.
+  /// flutter_local_notifications does not replay those through
   /// [_onNotificationTapped].
   Future<void> _handleAppLaunchDetails() async {
     try {
@@ -80,7 +56,7 @@ class LocalNotificationService {
       final response = details.notificationResponse;
       if (response == null) return;
 
-      Log.i(runtimeType, '🚀 App launched from local notification (action: ${response.actionId ?? "body tap"})');
+      Log.i(runtimeType, '🚀 App launched from local notification');
 
       // Deliberately not awaited: the pending navigation is registered
       // synchronously and startup must not block on any network work.
@@ -119,21 +95,14 @@ class LocalNotificationService {
         return;
       }
 
-      if (isExtensionPrompt) {
-        final sessionId = data['sessionId'] as String?;
-        if (sessionId != null && await SessionExtensionActionService.isDeclined(sessionId)) {
-          Log.i(runtimeType, '🔕 Extension already declined for session $sessionId, suppressing prompt');
-          return;
-        }
-      }
-
       Log.i(runtimeType, '🔔 Notification Type: ${notificationType?.toApiString() ?? "Unknown"}');
       Log.i(runtimeType, '🔔 Title: $title');
       Log.i(runtimeType, '🔔 Body (Original): $body');
 
-      // The extension prompt is a heading plus two action buttons, no body.
       final displayTitle = isExtensionPrompt ? _localized(AppStrings.extendYourSession, 'Extend your session') : (title ?? 'Copyright Clinic');
-      final displayBody = isExtensionPrompt ? null : await _getLocalizedNotificationBody(body, data, notificationType);
+      final displayBody = isExtensionPrompt
+          ? _localized(AppStrings.extendSessionPromptBody, 'Click/tap here to extend an additional 30 minutes')
+          : await _getLocalizedNotificationBody(body, data, notificationType);
 
       final androidDetails = _getAndroidNotificationDetails(notificationType);
       final iosDetails = _getIOSNotificationDetails(notificationType);
@@ -186,27 +155,7 @@ class LocalNotificationService {
       enableVibration: true,
       playSound: true,
       icon: '@mipmap/ic_launcher',
-      actions: _getAndroidActions(type),
     );
-  }
-
-  List<AndroidNotificationAction>? _getAndroidActions(PushNotificationType? type) {
-    if (type != PushNotificationType.sessionExtensionPrompt) return null;
-
-    return [
-      AndroidNotificationAction(
-        NotificationActionConstants.acceptExtensionActionId,
-        _localized(AppStrings.acceptExtension, 'Accept'),
-        showsUserInterface: true,
-        cancelNotification: true,
-      ),
-      AndroidNotificationAction(
-        NotificationActionConstants.declineExtensionActionId,
-        _localized(AppStrings.declineExtension, 'Decline'),
-        showsUserInterface: false,
-        cancelNotification: true,
-      ),
-    ];
   }
 
   DarwinNotificationDetails _getIOSNotificationDetails(PushNotificationType? type) {
@@ -215,7 +164,6 @@ class LocalNotificationService {
       presentBadge: true,
       presentSound: true,
       interruptionLevel: _getIOSInterruptionLevel(type),
-      categoryIdentifier: type == PushNotificationType.sessionExtensionPrompt ? NotificationActionConstants.sessionExtensionCategoryId : null,
     );
   }
 
