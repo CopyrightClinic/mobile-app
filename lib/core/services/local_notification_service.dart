@@ -38,10 +38,54 @@ class LocalNotificationService {
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
 
+    await _createNotificationChannels();
+
     _isInitialized = true;
     Log.i(runtimeType, 'Local notifications initialized');
 
     await _handleAppLaunchDetails();
+  }
+
+  /// Pre-creates channels at IMPORTANCE_HIGH so heads-up display works even
+  /// for FCM "notification"-payload messages the OS auto-displays (which
+  /// would otherwise create the channel at a lower default importance).
+  /// Channel importance is immutable once created, so channel IDs here must
+  /// stay in sync with [_getChannelId]/[AndroidManifest.xml]'s
+  /// default_notification_channel_id.
+  Future<void> _createNotificationChannels() async {
+    final androidPlugin = _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin == null) return;
+
+    const channels = [
+      AndroidNotificationChannel(
+        'session_channel_v2',
+        'Session Notifications',
+        description: 'Copyright Clinic notifications',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'payment_channel_v2',
+        'Payment Notifications',
+        description: 'Copyright Clinic notifications',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'default_channel_v2',
+        'Default Notifications',
+        description: 'Copyright Clinic notifications',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      ),
+    ];
+
+    for (final channel in channels) {
+      await androidPlugin.createNotificationChannel(channel);
+    }
   }
 
   /// Picks up a tap that launched the app from a terminated state.
@@ -179,14 +223,14 @@ class LocalNotificationService {
   }
 
   String _getChannelId(PushNotificationType? type) {
-    if (type == null) return 'default_channel';
+    if (type == null) return 'default_channel_v2';
 
     if (type.isSessionRelated) {
-      return 'session_channel';
+      return 'session_channel_v2';
     } else if (type.isPaymentRelated) {
-      return 'payment_channel';
+      return 'payment_channel_v2';
     }
-    return 'default_channel';
+    return 'default_channel_v2';
   }
 
   String _getChannelName(PushNotificationType? type) {
@@ -200,29 +244,9 @@ class LocalNotificationService {
     return 'Default Notifications';
   }
 
-  Importance _getImportance(PushNotificationType? type) {
-    if (type == null) return Importance.defaultImportance;
+  Importance _getImportance(PushNotificationType? type) => Importance.high;
 
-    switch (type) {
-      case PushNotificationType.sessionReminder:
-      case PushNotificationType.sessionExtensionPrompt:
-        return Importance.high;
-      default:
-        return Importance.defaultImportance;
-    }
-  }
-
-  Priority _getPriority(PushNotificationType? type) {
-    if (type == null) return Priority.defaultPriority;
-
-    switch (type) {
-      case PushNotificationType.sessionReminder:
-      case PushNotificationType.sessionExtensionPrompt:
-        return Priority.high;
-      default:
-        return Priority.defaultPriority;
-    }
-  }
+  Priority _getPriority(PushNotificationType? type) => Priority.high;
 
   InterruptionLevel _getIOSInterruptionLevel(PushNotificationType? type) {
     if (type == null) return InterruptionLevel.active;
