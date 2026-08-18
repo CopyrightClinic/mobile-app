@@ -88,9 +88,6 @@ class LocalNotificationService {
     }
   }
 
-  /// Picks up a tap that launched the app from a terminated state.
-  /// flutter_local_notifications does not replay those through
-  /// [_onNotificationTapped].
   Future<void> _handleAppLaunchDetails() async {
     try {
       final details = await _flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
@@ -100,13 +97,11 @@ class LocalNotificationService {
       final response = details.notificationResponse;
       if (response == null) return;
 
-      Log.i(runtimeType, '🚀 App launched from local notification');
 
       // Deliberately not awaited: the pending navigation is registered
       // synchronously and startup must not block on any network work.
       unawaited(NotificationActionRouter.handleResponse(response, isAppLaunch: true));
     } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Error reading notification launch details: $e');
       Log.e(runtimeType, 'Stack trace: $stackTrace');
     }
   }
@@ -124,10 +119,6 @@ class LocalNotificationService {
       final notification = message.notification;
       final data = message.data;
 
-      Log.i(runtimeType, '🔔 ========================================');
-      Log.i(runtimeType, '🔔 SHOWING LOCAL NOTIFICATION');
-      Log.i(runtimeType, '🔔 ========================================');
-
       final notificationType = _getNotificationType(data);
       final isExtensionPrompt = notificationType == PushNotificationType.sessionExtensionPrompt;
 
@@ -135,13 +126,9 @@ class LocalNotificationService {
       final body = notification?.body ?? data['body'] as String?;
 
       if (!isExtensionPrompt && title == null && body == null) {
-        Log.w(runtimeType, '⚠️ Nothing to display for this message, skipping');
         return;
       }
 
-      Log.i(runtimeType, '🔔 Notification Type: ${notificationType?.toApiString() ?? "Unknown"}');
-      Log.i(runtimeType, '🔔 Title: $title');
-      Log.i(runtimeType, '🔔 Body (Original): $body');
 
       final displayTitle = isExtensionPrompt ? _localized(AppStrings.extendYourSession, 'Extend your session') : (title ?? 'Copyright Clinic');
       final displayBody = isExtensionPrompt
@@ -151,9 +138,7 @@ class LocalNotificationService {
       final androidDetails = _getAndroidNotificationDetails(notificationType);
       final iosDetails = _getIOSNotificationDetails(notificationType);
 
-      Log.i(runtimeType, '🔔 Android Channel: ${androidDetails.channelId}');
-      Log.i(runtimeType, '🔔 Android Priority: ${androidDetails.priority}');
-      Log.i(runtimeType, '🔔 iOS Interruption Level: ${iosDetails.interruptionLevel}');
+
 
       await _flutterLocalNotificationsPlugin.show(
         isExtensionPrompt ? NotificationActionConstants.sessionExtensionNotificationId : message.hashCode,
@@ -163,11 +148,8 @@ class LocalNotificationService {
         payload: jsonEncode(data),
       );
 
-      Log.i(runtimeType, '✅ Local notification displayed successfully');
-      Log.i(runtimeType, '🔔 ========================================');
     } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Error showing local notification: $e');
-      Log.e(runtimeType, 'Stack trace: $stackTrace');
+
     }
   }
 
@@ -279,7 +261,6 @@ class LocalNotificationService {
     }
 
     if (notificationType != PushNotificationType.sessionAccepted) {
-      Log.i(runtimeType, '⚠️ Notification type is not SESSION_ACCEPTED, skipping datetime conversion');
       return originalBody;
     }
 
@@ -288,27 +269,16 @@ class LocalNotificationService {
       final startTime = data['startTime'] as String?;
 
       if (scheduledDate == null || startTime == null) {
-        Log.i(runtimeType, '⚠️ No scheduledDate or startTime in data, using original body');
         return originalBody;
       }
 
-      Log.i(runtimeType, '🕐 Converting UTC time to local timezone for SESSION_ACCEPTED');
-      Log.i(runtimeType, '🕐 UTC Date: $scheduledDate');
-      Log.i(runtimeType, '🕐 UTC Time: $startTime');
-
       final utcDateTime = SessionDateTimeUtils.parseUtcDateTime(scheduledDate, startTime);
-      Log.i(runtimeType, '🕐 Parsed UTC DateTime: $utcDateTime');
-
       final localDateTime = utcDateTime.toLocal();
-      Log.i(runtimeType, '🕐 Local DateTime: $localDateTime');
 
       final localizedBody = SessionDateTimeUtils.convertNotificationBodyToLocalTime(originalBody, scheduledDate, startTime);
 
-      Log.i(runtimeType, '🕐 Localized notification body created');
-
       return localizedBody;
     } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Error converting time to local timezone: $e');
       Log.e(runtimeType, 'Stack trace: $stackTrace');
       return originalBody;
     }
