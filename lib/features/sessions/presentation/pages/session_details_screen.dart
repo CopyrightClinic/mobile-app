@@ -427,7 +427,7 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               SizedBox(width: DimensionConstants.gap8Px.w),
               Expanded(
                 child: TranslatedText(
-                  AppStrings.recordingConsented,
+                  AppStrings.allMeetingsAreRecorded,
                   style: TextStyle(
                     fontSize: DimensionConstants.font14Px.f,
                     color: context.darkTextSecondary,
@@ -782,55 +782,59 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
       decoration: BoxDecoration(color: context.bottomNavBarBG),
       child: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: CustomButton(
-                  onPressed:
-                      (session.cancelTimeExpired == true)
-                          ? null
-                          : () => _showCancelDialog(session),
-                  backgroundColor: context.buttonSecondary,
-                  disabledBackgroundColor: context.buttonDisabled,
-                  textColor: context.darkTextPrimary,
-                  borderRadius: DimensionConstants.radius52Px.r,
-                  padding: 12.0,
-                  child: TranslatedText(
-                    AppStrings.cancelSession,
-                    style: TextStyle(
-                      fontSize: DimensionConstants.font16Px.f,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          (session.cancelTimeExpired == true)
-                              ? context.darkTextSecondary
-                              : context.darkTextPrimary,
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    onPressed:
+                        (session.cancelTimeExpired == true)
+                            ? null
+                            : () => _showCancelDialog(session),
+                    backgroundColor: context.buttonSecondary,
+                    disabledBackgroundColor: context.buttonDisabled,
+                    textColor: context.darkTextPrimary,
+                    borderRadius: DimensionConstants.radius52Px.r,
+                    padding: 12.0,
+                    child: TranslatedText(
+                      AppStrings.cancelSession,
+                      style: TextStyle(
+                        fontSize: DimensionConstants.font16Px.f,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            (session.cancelTimeExpired == true)
+                                ? context.darkTextSecondary
+                                : context.darkTextPrimary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: DimensionConstants.gap12Px.w),
-              Expanded(
-                child: CustomButton(
-                  onPressed: session.canJoin ? () => _onJoinSession() : null,
-                  backgroundColor: context.primary,
-                  disabledBackgroundColor: context.buttonDisabled,
-                  textColor: Colors.white,
-                  borderRadius: DimensionConstants.radius52Px.r,
-                  padding: 12.0,
-                  child: TranslatedText(
-                    AppStrings.joinSession,
-                    style: TextStyle(
-                      fontSize: DimensionConstants.font16Px.f,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          session.canJoin
-                              ? Colors.white
-                              : context.darkTextSecondary,
+                SizedBox(width: DimensionConstants.gap12Px.w),
+                Expanded(
+                  child: CustomButton(
+                    onPressed: session.canJoin ? () => _onJoinSession() : null,
+                    backgroundColor: context.primary,
+                    disabledBackgroundColor: context.buttonDisabled,
+                    textColor: Colors.white,
+                    borderRadius: DimensionConstants.radius52Px.r,
+                    padding: 12.0,
+                    child: TranslatedText(
+                      AppStrings.joinSession,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: DimensionConstants.font16Px.f,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            session.canJoin
+                                ? Colors.white
+                                : context.darkTextSecondary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           if (!session.canJoin) ...[
             SizedBox(height: DimensionConstants.gap12Px.h),
@@ -864,15 +868,6 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                 color: context.red,
                 fontWeight: FontWeight.w500,
               ),
-            ),
-            SizedBox(height: DimensionConstants.gap4Px.h),
-            Text(
-              '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
-              style: TextStyle(
-                fontSize: DimensionConstants.font14Px.f,
-                color: context.darkTextSecondary,
-              ),
-              textAlign: TextAlign.center,
             ),
           ],
         ],

@@ -106,13 +106,26 @@ kotlin {
     }
 }
 
+// Zoom SDK 6.5.10 is compiled against Compose foundation 1.6.x and calls
+// HorizontalPager-xYaah8o (Dp/SnapFlingBehavior signature). foundation 1.7.0 renamed
+// that method (HorizontalPager-oI3XNZo: TargetedFlingBehavior + SnapPosition), so any
+// transitive bump to 1.7.x makes Zoom's video-effects screen die with NoSuchMethodError.
+// Stripe 21.6.0 and lifecycle 2.10.0 need compose runtime >= 1.7 (Composer.startReplaceGroup),
+// so only the foundation group is held back -- runtime/ui stay at their resolved versions.
+configurations.all {
+    resolutionStrategy {
+        force(
+            "androidx.compose.foundation:foundation:1.6.8",
+            "androidx.compose.foundation:foundation-android:1.6.8",
+            "androidx.compose.foundation:foundation-layout:1.6.8",
+            "androidx.compose.foundation:foundation-layout-android:1.6.8"
+        )
+    }
+}
+
 dependencies {
-    // Downgraded Compose stack for Zoom SDK 6.5.10 video effects compatibility
-    // Foundation 1.6.8 has compatible HorizontalPager API
-    // Material3 1.2.1 has compatible SheetState API
-    implementation("androidx.compose.runtime:runtime:1.6.8")
-    implementation("androidx.compose.ui:ui:1.6.8")
     implementation("androidx.compose.foundation:foundation:1.6.8")
+    // Material3 1.2.1 has the SheetState API Zoom SDK 6.5.10 was built against
     implementation("androidx.compose.material3:material3:1.2.1")
     
     // Coil image loading library (required by Zoom SDK for waiting room UI)

@@ -70,7 +70,7 @@ class SessionDetailsCard extends StatelessWidget {
               SizedBox(width: DimensionConstants.gap8Px.w),
               Expanded(
                 child: TranslatedText(
-                  AppStrings.recordingConsented,
+                  AppStrings.allMeetingsAreRecorded,
                   style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, color: context.darkTextSecondary),
                 ),
               ),

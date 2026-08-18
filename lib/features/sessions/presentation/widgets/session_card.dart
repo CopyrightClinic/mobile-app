@@ -18,8 +18,9 @@ class SessionCard extends StatelessWidget {
   final SessionEntity session;
   final VoidCallback? onCancel;
   final VoidCallback? onJoin;
+  final bool useDashboardJoinText;
 
-  const SessionCard({super.key, required this.session, this.onCancel, this.onJoin});
+  const SessionCard({super.key, required this.session, this.onCancel, this.onJoin, this.useDashboardJoinText = false});
 
   @override
   Widget build(BuildContext context) {
@@ -98,53 +99,59 @@ class SessionCard extends StatelessWidget {
 
             if (session.isUpcoming) ...[
               SizedBox(height: DimensionConstants.gap16Px.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: (session.cancelTimeExpired == true) ? null : onCancel,
-                      backgroundColor: context.buttonSecondary,
-                      disabledBackgroundColor: context.buttonDisabled,
-                      textColor: context.darkTextPrimary,
-                      borderRadius: DimensionConstants.radius52Px.r,
-                      padding: DimensionConstants.gap12Px.d,
-                      child: TranslatedText(
-                        AppStrings.cancelSession,
-                        style: TextStyle(
-                          fontSize: DimensionConstants.font16Px.f,
-                          fontWeight: FontWeight.w600,
-                          color: (session.cancelTimeExpired == true) ? context.darkTextSecondary : context.darkTextPrimary,
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        onPressed: (session.cancelTimeExpired == true) ? null : onCancel,
+                        backgroundColor: context.buttonSecondary,
+                        disabledBackgroundColor: context.buttonDisabled,
+                        textColor: context.darkTextPrimary,
+                        borderRadius: DimensionConstants.radius52Px.r,
+                        padding: DimensionConstants.gap12Px.d,
+                        child: TranslatedText(
+                          AppStrings.cancelSession,
+                          style: TextStyle(
+                            fontSize: DimensionConstants.font16Px.f,
+                            fontWeight: FontWeight.w600,
+                            color: (session.cancelTimeExpired == true) ? context.darkTextSecondary : context.darkTextPrimary,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: DimensionConstants.gap12Px.w),
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: session.canJoin ? onJoin : null,
-                      backgroundColor: context.primary,
-                      disabledBackgroundColor: context.buttonDisabled,
-                      textColor: Colors.white,
-                      borderRadius: DimensionConstants.radius52Px.r,
-                      padding: DimensionConstants.gap12Px.d,
-                      child: TranslatedText(
-                        AppStrings.joinSession,
-                        style: TextStyle(
-                          fontSize: DimensionConstants.font16Px.f,
-                          fontWeight: FontWeight.w600,
-                          color: session.canJoin ? Colors.white : context.darkTextSecondary,
+                    SizedBox(width: DimensionConstants.gap12Px.w),
+                    Expanded(
+                      child: CustomButton(
+                        onPressed: session.canJoin ? onJoin : null,
+                        backgroundColor: context.primary,
+                        disabledBackgroundColor: context.buttonDisabled,
+                        textColor: Colors.white,
+                        borderRadius: DimensionConstants.radius52Px.r,
+                        padding: DimensionConstants.gap12Px.d,
+                        child: TranslatedText(
+                          AppStrings.joinSession,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: DimensionConstants.font16Px.f,
+                            fontWeight: FontWeight.w600,
+                            color: session.canJoin ? Colors.white : context.darkTextSecondary,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
 
             if (session.isUpcoming && !session.canJoin) ...[
               SizedBox(height: DimensionConstants.gap12Px.h),
               TranslatedText(
-                AppStrings.joinAvailable10MinutesBeforeSession,
+                useDashboardJoinText
+                    ? AppStrings.joinAvailable10MinutesBeforeSessionDashboard
+                    : AppStrings.joinAvailable10MinutesBeforeSession,
                 style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
@@ -164,12 +171,6 @@ class SessionCard extends StatelessWidget {
                 AppStrings.cancellationPeriodExpired,
                 style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.red, fontWeight: FontWeight.w500),
               ),
-              SizedBox(height: DimensionConstants.gap4Px.h),
-              Text(
-                '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
-                style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
-                textAlign: TextAlign.center,
-              ).tr(),
             ],
           ],
         ),

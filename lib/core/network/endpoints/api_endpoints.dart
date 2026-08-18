@@ -74,6 +74,8 @@ class ApiEndpoint {
         return '/session-requests/${sessionId ?? ''}/cancel';
       case SessionsEndpoint.EXTEND_SESSION:
         return '/sessions/${sessionId ?? ''}/request-extension';
+      case SessionsEndpoint.DECLINE_EXTENSION:
+        return '/sessions/${sessionId ?? ''}/decline-extension';
     }
   }
 

@@ -11,6 +11,7 @@ import '../entities/session_availability_entity.dart';
 import '../entities/book_session_response_entity.dart';
 import '../entities/unlock_summary_response_entity.dart';
 import '../entities/extend_session_response_entity.dart';
+import '../entities/decline_extension_response_entity.dart';
 
 abstract class SessionsRepository {
   Future<Either<Failure, PaginatedSessionsEntity>> getUserSessions({
@@ -65,5 +66,8 @@ abstract class SessionsRepository {
   Future<Either<Failure, ExtendSessionResponseEntity>> extendSession({
     required String sessionId,
     required String paymentMethodId,
+  });
+  Future<Either<Failure, DeclineExtensionResponseEntity>> declineSessionExtension({
+    required String sessionId,
   });
 }

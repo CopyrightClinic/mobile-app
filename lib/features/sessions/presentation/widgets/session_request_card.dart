@@ -106,6 +106,12 @@ class SessionRequestCard extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: DimensionConstants.gap8Px.h),
+            TranslatedText(
+              AppStrings.cancellationPolicyNote,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: DimensionConstants.font12Px.f, color: context.darkTextSecondary),
+            ),
           ],
 
           if (onReschedule != null) ...[

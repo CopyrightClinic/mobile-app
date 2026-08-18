@@ -14,6 +14,7 @@ import '../../domain/entities/paginated_sessions_entity.dart';
 import '../../domain/entities/user_session_request_entity.dart';
 import '../../domain/entities/unlock_summary_response_entity.dart';
 import '../../domain/entities/extend_session_response_entity.dart';
+import '../../domain/entities/decline_extension_response_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
 import '../datasources/sessions_remote_data_source.dart';
 
@@ -298,6 +299,30 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(errorMessage));
     } catch (e) {
       return Left(ServerFailure(AppStrings.sessionExtendError));
+    }
+  }
+
+  @override
+  Future<Either<Failure, DeclineExtensionResponseEntity>> declineSessionExtension({
+    required String sessionId,
+  }) async {
+    try {
+      final response = await remoteDataSource.declineSessionExtension(
+        sessionId: sessionId,
+      );
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on DioException catch (e) {
+      String errorMessage = AppStrings.sessionExtensionDeclineError;
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final responseData = e.response!.data as Map<String, dynamic>;
+        errorMessage = responseData['message'] ?? errorMessage;
+      }
+      return Left(ServerFailure(errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(AppStrings.sessionExtensionDeclineError));
     }
   }
 }

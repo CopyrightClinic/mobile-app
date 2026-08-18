@@ -4,6 +4,9 @@ import FirebaseMessaging
 import Flutter
 import Speech
 import UIKit
+// Required so notification action buttons can be handled in a background
+// isolate (see FlutterLocalNotificationsPlugin.setPluginRegistrantCallback).
+import flutter_local_notifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -24,6 +27,10 @@ import UIKit
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     FirebaseApp.configure()
+
+    FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { registry in
+      GeneratedPluginRegistrant.register(with: registry)
+    }
 
     GeneratedPluginRegistrant.register(with: self)
 

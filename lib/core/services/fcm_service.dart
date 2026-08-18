@@ -91,12 +91,10 @@ class FCMService {
       Log.i(runtimeType, '📱 Data Payload: ${message.data}');
       Log.i(runtimeType, '📱 ========================================');
 
-      if (message.notification != null) {
-        _processNotification(message);
-        _localNotificationService.showNotification(message);
-      } else {
-        Log.w(runtimeType, '⚠️ No notification payload, skipping display');
-      }
+      // Data-only messages are handled too: the session extension prompt is
+      // sent that way so it can carry action buttons.
+      _processNotification(message);
+      _localNotificationService.showNotification(message);
     });
   }
 

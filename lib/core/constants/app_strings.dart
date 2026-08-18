@@ -247,9 +247,11 @@ class AppStrings {
   static const somethingWentWrong = 'somethingWentWrong';
   static const retry = 'retry';
   static const cancelSession = 'cancelSession';
+  static const cancellationPolicyNote = 'cancellationPolicyNote';
   static const rescheduleSession = 'rescheduleSession';
   static const joinSession = 'joinSession';
   static const joinAvailable10MinutesBeforeSession = 'joinAvailable10MinutesBeforeSession';
+  static const joinAvailable10MinutesBeforeSessionDashboard = 'joinAvailable10MinutesBeforeSessionDashboard';
   static const summaryAvailable1HourAfterSession = 'summaryAvailable1HourAfterSession';
   static const youCanRequestUntil = 'youCanRequestUntil';
   static const summaryRequestExpired = 'summaryRequestExpired';
@@ -263,6 +265,7 @@ class AppStrings {
   static const keepSession = 'keepSession';
   static const cancellationReason = 'cancellationReason';
   static const reason = 'reason';
+  static const allMeetingsAreRecorded = 'All meetings are recorded. If you wish for the recording to be halted or paused, you can make a request to the attorney during the meeting.';
   static const enterCancellationReason = 'enterCancellationReason';
   static const pleaseEnterCancellationReason = 'pleaseEnterCancellationReason';
   static const authorizationHoldTitle = 'authorizationHoldTitle';
@@ -597,6 +600,9 @@ class AppStrings {
   static const payNow = 'payNow';
   static const sessionExtendedSuccess = 'sessionExtendedSuccess';
   static const sessionExtendError = 'sessionExtendError';
+  static const extendYourSession = 'extendYourSession';
+  static const extendSessionPromptBody = 'extendSessionPromptBody';
+  static const sessionExtensionDeclineError = 'sessionExtensionDeclineError';
   static const unableToOpenNotification = 'unableToOpenNotification';
   static const unableToOpenPrivacyPolicy = 'unableToOpenPrivacyPolicy';
   static const unableToOpenTermsAndConditions = 'unableToOpenTermsAndConditions';

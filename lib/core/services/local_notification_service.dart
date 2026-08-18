@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../constants/app_strings.dart';
+import '../constants/notification_action_constants.dart';
 import '../utils/enumns/push/push_notification_type.dart';
 import '../utils/logger/logger.dart';
 import '../utils/session_datetime_utils.dart';
-import 'push_notification_handler.dart';
+import 'notification_action_router.dart';
 
 class LocalNotificationService {
   static final LocalNotificationService _instance = LocalNotificationService._internal();
@@ -18,40 +22,92 @@ class LocalNotificationService {
     if (_isInitialized) return;
 
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings(requestAlertPermission: true, requestBadgePermission: true, requestSoundPermission: true);
 
-    const initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+    // Permissions are requested by FCMService once the user is authenticated,
+    // so this initialization must stay silent.
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
 
-    await _flutterLocalNotificationsPlugin.initialize(initSettings, onDidReceiveNotificationResponse: _onNotificationTapped);
+    final initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+
+    await _flutterLocalNotificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onNotificationTapped,
+    );
+
+    await _createNotificationChannels();
 
     _isInitialized = true;
     Log.i(runtimeType, 'Local notifications initialized');
+
+    await _handleAppLaunchDetails();
+  }
+
+  /// Pre-creates channels at IMPORTANCE_HIGH so heads-up display works even
+  /// for FCM "notification"-payload messages the OS auto-displays (which
+  /// would otherwise create the channel at a lower default importance).
+  /// Channel importance is immutable once created, so channel IDs here must
+  /// stay in sync with [_getChannelId]/[AndroidManifest.xml]'s
+  /// default_notification_channel_id.
+  Future<void> _createNotificationChannels() async {
+    final androidPlugin = _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin == null) return;
+
+    const channels = [
+      AndroidNotificationChannel(
+        'session_channel_v2',
+        'Session Notifications',
+        description: 'Copyright Clinic notifications',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'payment_channel_v2',
+        'Payment Notifications',
+        description: 'Copyright Clinic notifications',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'default_channel_v2',
+        'Default Notifications',
+        description: 'Copyright Clinic notifications',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      ),
+    ];
+
+    for (final channel in channels) {
+      await androidPlugin.createNotificationChannel(channel);
+    }
+  }
+
+  Future<void> _handleAppLaunchDetails() async {
+    try {
+      final details = await _flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+      if (details == null || !details.didNotificationLaunchApp) return;
+
+      final response = details.notificationResponse;
+      if (response == null) return;
+
+
+      // Deliberately not awaited: the pending navigation is registered
+      // synchronously and startup must not block on any network work.
+      unawaited(NotificationActionRouter.handleResponse(response, isAppLaunch: true));
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
   }
 
   void _onNotificationTapped(NotificationResponse response) {
-    Log.i(runtimeType, '👆 ========================================');
-    Log.i(runtimeType, '👆 LOCAL NOTIFICATION TAPPED');
-    Log.i(runtimeType, '👆 ========================================');
-    Log.i(runtimeType, '👆 Response ID: ${response.id}');
-    Log.i(runtimeType, '👆 Action ID: ${response.actionId}');
-
-    if (response.payload != null) {
-      try {
-        Log.i(runtimeType, '👆 Payload: ${response.payload}');
-        final data = jsonDecode(response.payload!);
-        Log.i(runtimeType, '👆 Decoded Data: $data');
-
-        final message = RemoteMessage(data: Map<String, dynamic>.from(data));
-        Log.i(runtimeType, '👆 Forwarding to PushNotificationHandler...');
-        PushNotificationHandler().handleNotificationTap(message);
-      } catch (e, stackTrace) {
-        Log.e(runtimeType, '❌ Error handling local notification tap: $e');
-        Log.e(runtimeType, 'Stack trace: $stackTrace');
-      }
-    } else {
-      Log.w(runtimeType, '⚠️ No payload in notification response');
-    }
-    Log.i(runtimeType, '👆 ========================================');
+    NotificationActionRouter.handleResponse(response);
   }
 
   Future<void> showNotification(RemoteMessage message) async {
@@ -63,43 +119,37 @@ class LocalNotificationService {
       final notification = message.notification;
       final data = message.data;
 
-      Log.i(runtimeType, '🔔 ========================================');
-      Log.i(runtimeType, '🔔 SHOWING LOCAL NOTIFICATION');
-      Log.i(runtimeType, '🔔 ========================================');
+      final notificationType = _getNotificationType(data);
+      final isExtensionPrompt = notificationType == PushNotificationType.sessionExtensionPrompt;
 
-      if (notification == null) {
-        Log.w(runtimeType, '⚠️ Notification payload is null, cannot show');
+      final title = notification?.title ?? data['title'] as String?;
+      final body = notification?.body ?? data['body'] as String?;
+
+      if (!isExtensionPrompt && title == null && body == null) {
         return;
       }
 
-      final notificationType = _getNotificationType(data);
-      Log.i(runtimeType, '🔔 Notification Type: ${notificationType?.toApiString() ?? "Unknown"}');
-      Log.i(runtimeType, '🔔 Title: ${notification.title}');
-      Log.i(runtimeType, '🔔 Body (Original): ${notification.body}');
 
-      final localizedBody = await _getLocalizedNotificationBody(notification.body, data, notificationType);
-      Log.i(runtimeType, '🔔 Body (Localized): $localizedBody');
+      final displayTitle = isExtensionPrompt ? _localized(AppStrings.extendYourSession, 'Extend your session') : (title ?? 'Copyright Clinic');
+      final displayBody = isExtensionPrompt
+          ? _localized(AppStrings.extendSessionPromptBody, 'Click/tap here to extend an additional 30 minutes')
+          : await _getLocalizedNotificationBody(body, data, notificationType);
 
       final androidDetails = _getAndroidNotificationDetails(notificationType);
       final iosDetails = _getIOSNotificationDetails(notificationType);
 
-      Log.i(runtimeType, '🔔 Android Channel: ${androidDetails.channelId}');
-      Log.i(runtimeType, '🔔 Android Priority: ${androidDetails.priority}');
-      Log.i(runtimeType, '🔔 iOS Interruption Level: ${iosDetails.interruptionLevel}');
+
 
       await _flutterLocalNotificationsPlugin.show(
-        message.hashCode,
-        notification.title ?? 'Copyright Clinic',
-        localizedBody,
+        isExtensionPrompt ? NotificationActionConstants.sessionExtensionNotificationId : message.hashCode,
+        displayTitle,
+        displayBody,
         NotificationDetails(android: androidDetails, iOS: iosDetails),
         payload: jsonEncode(data),
       );
 
-      Log.i(runtimeType, '✅ Local notification displayed successfully');
-      Log.i(runtimeType, '🔔 ========================================');
     } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Error showing local notification: $e');
-      Log.e(runtimeType, 'Stack trace: $stackTrace');
+
     }
   }
 
@@ -135,18 +185,34 @@ class LocalNotificationService {
   }
 
   DarwinNotificationDetails _getIOSNotificationDetails(PushNotificationType? type) {
-    return DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true, interruptionLevel: _getIOSInterruptionLevel(type));
+    return DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      interruptionLevel: _getIOSInterruptionLevel(type),
+    );
+  }
+
+  /// easy_localization is not available inside the background isolate, so every
+  /// notification string needs a hardcoded fallback.
+  String _localized(String key, String fallback) {
+    try {
+      final value = key.tr();
+      return value == key ? fallback : value;
+    } catch (_) {
+      return fallback;
+    }
   }
 
   String _getChannelId(PushNotificationType? type) {
-    if (type == null) return 'default_channel';
+    if (type == null) return 'default_channel_v2';
 
     if (type.isSessionRelated) {
-      return 'session_channel';
+      return 'session_channel_v2';
     } else if (type.isPaymentRelated) {
-      return 'payment_channel';
+      return 'payment_channel_v2';
     }
-    return 'default_channel';
+    return 'default_channel_v2';
   }
 
   String _getChannelName(PushNotificationType? type) {
@@ -160,33 +226,16 @@ class LocalNotificationService {
     return 'Default Notifications';
   }
 
-  Importance _getImportance(PushNotificationType? type) {
-    if (type == null) return Importance.defaultImportance;
+  Importance _getImportance(PushNotificationType? type) => Importance.high;
 
-    switch (type) {
-      case PushNotificationType.sessionReminder:
-        return Importance.high;
-      default:
-        return Importance.defaultImportance;
-    }
-  }
-
-  Priority _getPriority(PushNotificationType? type) {
-    if (type == null) return Priority.defaultPriority;
-
-    switch (type) {
-      case PushNotificationType.sessionReminder:
-        return Priority.high;
-      default:
-        return Priority.defaultPriority;
-    }
-  }
+  Priority _getPriority(PushNotificationType? type) => Priority.high;
 
   InterruptionLevel _getIOSInterruptionLevel(PushNotificationType? type) {
     if (type == null) return InterruptionLevel.active;
 
     switch (type) {
       case PushNotificationType.sessionReminder:
+      case PushNotificationType.sessionExtensionPrompt:
         return InterruptionLevel.timeSensitive;
       default:
         return InterruptionLevel.active;
@@ -206,13 +255,12 @@ class LocalNotificationService {
     return activeNotifications.length;
   }
 
-  Future<String> _getLocalizedNotificationBody(String? originalBody, Map<String, dynamic> data, PushNotificationType? notificationType) async {
+  Future<String?> _getLocalizedNotificationBody(String? originalBody, Map<String, dynamic> data, PushNotificationType? notificationType) async {
     if (originalBody == null || originalBody.isEmpty) {
-      return '';
+      return null;
     }
 
     if (notificationType != PushNotificationType.sessionAccepted) {
-      Log.i(runtimeType, '⚠️ Notification type is not SESSION_ACCEPTED, skipping datetime conversion');
       return originalBody;
     }
 
@@ -221,27 +269,16 @@ class LocalNotificationService {
       final startTime = data['startTime'] as String?;
 
       if (scheduledDate == null || startTime == null) {
-        Log.i(runtimeType, '⚠️ No scheduledDate or startTime in data, using original body');
         return originalBody;
       }
 
-      Log.i(runtimeType, '🕐 Converting UTC time to local timezone for SESSION_ACCEPTED');
-      Log.i(runtimeType, '🕐 UTC Date: $scheduledDate');
-      Log.i(runtimeType, '🕐 UTC Time: $startTime');
-
       final utcDateTime = SessionDateTimeUtils.parseUtcDateTime(scheduledDate, startTime);
-      Log.i(runtimeType, '🕐 Parsed UTC DateTime: $utcDateTime');
-
       final localDateTime = utcDateTime.toLocal();
-      Log.i(runtimeType, '🕐 Local DateTime: $localDateTime');
 
       final localizedBody = SessionDateTimeUtils.convertNotificationBodyToLocalTime(originalBody, scheduledDate, startTime);
 
-      Log.i(runtimeType, '🕐 Localized notification body created');
-
       return localizedBody;
     } catch (e, stackTrace) {
-      Log.e(runtimeType, '❌ Error converting time to local timezone: $e');
       Log.e(runtimeType, 'Stack trace: $stackTrace');
       return originalBody;
     }

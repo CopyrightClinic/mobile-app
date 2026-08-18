@@ -4,7 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
-import '../../../../config/theme/app_theme.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/enumns/ui/sessions_tab.dart';
@@ -15,7 +14,6 @@ import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/custom_bottomsheet.dart';
-import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/services/bottom_sheet_service.dart';
@@ -27,6 +25,7 @@ import '../../../sessions/presentation/widgets/sessions_tab_selector.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/presentation/widgets/session_request_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
+import '../../../sessions/presentation/widgets/authorization_hold_dialog.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/domain/entities/user_session_request_entity.dart';
 import '../../../zoom/presentation/bloc/zoom_bloc.dart';
@@ -328,7 +327,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
     ).then((_) {
       if (!mounted) return;
       if (cancelSucceeded) {
-        _showAuthorizationHoldDialog();
+        AuthorizationHoldDialog.show(context);
       }
     });
   }
@@ -389,7 +388,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                         Navigator.of(bottomSheetContext).pop();
                       }
                       if (mounted) {
-                        _showAuthorizationHoldDialog();
+                        AuthorizationHoldDialog.show(context);
                       }
                     }
                   },
@@ -403,86 +402,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
     reasonNotifier.dispose();
     isSubmittingNotifier.dispose();
-  }
-
-  Future<void> _showAuthorizationHoldDialog() {
-    return showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
-          clipBehavior: Clip.antiAlias,
-          insetPadding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap24Px.w, vertical: DimensionConstants.gap24Px.h),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: MediaQuery.of(dialogContext).size.height * 0.8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF16181E),
-                borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: AppTheme.customBackgroundGradient,
-                  borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r),
-                ),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.info_outline, color: context.darkTextPrimary, size: DimensionConstants.gap40Px.w),
-                      SizedBox(height: DimensionConstants.gap20Px.h),
-                      TranslatedText(
-                        AppStrings.authorizationHoldTitle,
-                        style: TextStyle(
-                          color: context.darkTextPrimary,
-                          fontSize: DimensionConstants.font20Px.f,
-                          fontWeight: FontWeight.w600,
-                          height: 1.2,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: DimensionConstants.gap12Px.h),
-                      TranslatedText(
-                        AppStrings.authorizationHoldMessage,
-                        style: TextStyle(
-                          color: context.darkTextSecondary,
-                          fontSize: DimensionConstants.font14Px.f,
-                          fontWeight: FontWeight.w400,
-                          height: 1.4,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: DimensionConstants.gap24Px.h),
-                      SizedBox(
-                        width: double.infinity,
-                        child: CustomButton(
-                          onPressed: () => Navigator.of(dialogContext).pop(),
-                          backgroundColor: context.primary,
-                          textColor: context.white,
-                          borderRadius: 50.r,
-                          height: 48.h,
-                          padding: 0,
-                          child: TranslatedText(
-                            AppStrings.gotIt,
-                            style: TextStyle(
-                              fontSize: DimensionConstants.font16Px.f,
-                              fontWeight: FontWeight.w600,
-                              color: context.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   void _joinSessionDirectly(BuildContext context, String sessionId) {

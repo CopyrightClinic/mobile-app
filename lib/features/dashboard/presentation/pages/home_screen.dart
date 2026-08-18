@@ -1,6 +1,7 @@
 import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -20,6 +21,7 @@ import '../../../notifications/presentation/bloc/notification_event.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
+import '../../../sessions/presentation/widgets/authorization_hold_dialog.dart';
 import '../../../sessions/presentation/bloc/sessions_bloc.dart';
 import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
@@ -206,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 session: session,
                                 onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
                                 onJoin: session.canJoin ? () => _joinSessionDirectly(context, session.id) : null,
+                                useDashboardJoinText: true,
                               ),
                             );
                           }),
@@ -361,17 +364,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
+    var cancelSucceeded = false;
+
+    _sessionsBloc.stream
+        .firstWhere(
+          (state) => state.lastOperation == SessionsOperation.cancelSession && !state.isProcessingCancel,
+        )
+        .then((resultState) => cancelSucceeded = resultState.hasSuccess);
+
     BottomSheetService.show(
       builder:
           (bottomSheetContext) => BlocProvider.value(
             value: _sessionsBloc,
-            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
           ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-    );
+    ).then((_) {
+      if (!mounted) return;
+      if (cancelSucceeded) {
+        AuthorizationHoldDialog.show(context);
+      }
+    });
   }
 
   void _joinSessionDirectly(BuildContext context, String sessionId) {
