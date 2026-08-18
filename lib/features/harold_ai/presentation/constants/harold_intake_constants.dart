@@ -1,7 +1,8 @@
 class HaroldIntakeQuestionIds {
   static const q1CreativeExpression = 'q1_creative_expression';
   static const q2Situation = 'q2_situation';
-  static const q3IpBoundary = 'q3_ip_boundary';
+  static const q3InventionBoundary = 'q3_invention_boundary';
+  static const q3TrademarkBoundary = 'q3_trademark_boundary';
   static const q4Conditional = 'q4_conditional';
   static const q4OthersInvolved = 'q4_others_involved';
   static const q6Impact = 'q6_impact';

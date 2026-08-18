@@ -7,11 +7,14 @@ import '../../domain/entities/session_entity.dart';
 import '../../domain/entities/session_details_entity.dart';
 import '../../domain/entities/submit_feedback_response_entity.dart';
 import '../../domain/entities/cancel_session_response_entity.dart';
+import '../../domain/entities/cancel_session_request_response_entity.dart';
 import '../../domain/entities/session_availability_entity.dart';
 import '../../domain/entities/book_session_response_entity.dart';
 import '../../domain/entities/paginated_sessions_entity.dart';
+import '../../domain/entities/user_session_request_entity.dart';
 import '../../domain/entities/unlock_summary_response_entity.dart';
 import '../../domain/entities/extend_session_response_entity.dart';
+import '../../domain/entities/decline_extension_response_entity.dart';
 import '../../domain/repositories/sessions_repository.dart';
 import '../datasources/sessions_remote_data_source.dart';
 
@@ -35,6 +38,24 @@ class SessionsRepositoryImpl implements SessionsRepository {
         limit: limit,
       );
       return Right(paginatedSessions.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('${AppStrings.failedToFetchUserSessions}: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<UserSessionRequestEntity>>> getUserSessionRequests({
+    required String timezone,
+    String? status,
+  }) async {
+    try {
+      final sessionRequests = await remoteDataSource.getUserSessionRequests(
+        timezone: timezone,
+        status: status,
+      );
+      return Right(sessionRequests.map((request) => request.toEntity()).toList());
     } on CustomException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
@@ -140,6 +161,23 @@ class SessionsRepositoryImpl implements SessionsRepository {
   }
 
   @override
+  Future<Either<Failure, CancelSessionRequestResponseEntity>> cancelSessionRequest(
+    String requestId,
+    String reason,
+  ) async {
+    try {
+      final response = await remoteDataSource.cancelSessionRequest(requestId, reason);
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(
+        ServerFailure('${AppStrings.failedToCancelSessionGeneric}: $e'),
+      );
+    }
+  }
+
+  @override
   Future<Either<Failure, SessionEntity>> joinSession(String sessionId) async {
     try {
       final session = await remoteDataSource.joinSession(sessionId);
@@ -177,6 +215,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
     required String startTime,
     required String endTime,
     required String summary,
+    required String query,
     required String timezone,
   }) async {
     try {
@@ -187,6 +226,7 @@ class SessionsRepositoryImpl implements SessionsRepository {
         startTime: startTime,
         endTime: endTime,
         summary: summary,
+        query: query,
         timezone: timezone,
       );
       return Right(response.toEntity());
@@ -259,6 +299,30 @@ class SessionsRepositoryImpl implements SessionsRepository {
       return Left(ServerFailure(errorMessage));
     } catch (e) {
       return Left(ServerFailure(AppStrings.sessionExtendError));
+    }
+  }
+
+  @override
+  Future<Either<Failure, DeclineExtensionResponseEntity>> declineSessionExtension({
+    required String sessionId,
+  }) async {
+    try {
+      final response = await remoteDataSource.declineSessionExtension(
+        sessionId: sessionId,
+      );
+      return Right(response.toEntity());
+    } on CustomException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on DioException catch (e) {
+      String errorMessage = AppStrings.sessionExtensionDeclineError;
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final responseData = e.response!.data as Map<String, dynamic>;
+        errorMessage = responseData['message'] ?? errorMessage;
+      }
+      return Left(ServerFailure(errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(AppStrings.sessionExtensionDeclineError));
     }
   }
 }

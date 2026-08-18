@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/analytics/analytics.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
@@ -9,6 +11,7 @@ import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_bottomsheet.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/widgets/global_image.dart';
 import '../../../../core/constants/image_constants.dart';
@@ -39,6 +42,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _authBloc = context.read<AuthBloc>();
     _profileBloc = context.read<ProfileBloc>();
     _profileBloc.add(const GetProfileRequested());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      logAnalytics(
+        AnalyticsEvents.viewContent,
+        parameters: const {
+          'content_id': 'user_account_profile',
+          'content_type': 'user_account_profile',
+          'content_name': 'User Profile',
+        },
+      );
+    });
   }
 
   @override
@@ -74,18 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           titleText: AppStrings.profile.tr(),
           automaticallyImplyLeading: false,
           actions: [
-            Container(
-              width: DimensionConstants.gap40Px.d,
-              height: DimensionConstants.gap40Px.d,
-              decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
-              child: InkWell(
-                onTap: () {
-                  context.pushNamed(AppRoutes.notificationsRouteName);
-                },
-                borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.d / 2).d),
-                child: Center(child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).d)),
-              ),
-            ),
+            const NotificationBellButton(),
             SizedBox(width: DimensionConstants.gap16Px),
           ],
         ),
@@ -208,8 +210,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context.push(AppRoutes.paymentMethodsRouteName);
             },
           ),
-          _buildOptionRow(context, iconPath: ImageConstants.privacyPolicy, title: AppStrings.privacyPolicy, onTap: () {}),
-          _buildOptionRow(context, iconPath: ImageConstants.termsAndConditions, title: AppStrings.termsAndConditions, onTap: () {}, isLast: true),
+          _buildOptionRow(
+            context,
+            iconPath: ImageConstants.privacyPolicy,
+            title: AppStrings.privacyPolicy,
+            onTap: () {
+              _launchPrivacyPolicy();
+            },
+          ),
+          _buildOptionRow(
+            context,
+            iconPath: ImageConstants.termsAndConditions,
+            title: AppStrings.termsAndConditions,
+            onTap: () {
+              _launchTermsAndConditions();
+            },
+            isLast: true,
+          ),
           SizedBox(height: DimensionConstants.gap8Px.h),
         ],
       ),
@@ -350,5 +367,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context.pop();
       },
     );
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    final Uri url = Uri.parse('https://copyrightclinic.com/privacy');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.inAppWebView);
+    } else {
+      if (mounted) {
+        SnackBarUtils.showError(context, AppStrings.unableToOpenPrivacyPolicy.tr());
+      }
+    }
+  }
+
+  Future<void> _launchTermsAndConditions() async {
+    final Uri url = Uri.parse('https://copyrightclinic.com/terms');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.inAppWebView);
+    } else {
+      if (mounted) {
+        SnackBarUtils.showError(context, AppStrings.unableToOpenTermsAndConditions.tr());
+      }
+    }
   }
 }

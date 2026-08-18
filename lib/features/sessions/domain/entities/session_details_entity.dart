@@ -17,10 +17,10 @@ class SessionDetailsAttorneyEntity extends Equatable {
 
 class SessionDetailsUserEntity extends Equatable {
   final String id;
-  final String name;
+  final String? name;
   final String email;
 
-  const SessionDetailsUserEntity({required this.id, required this.name, required this.email});
+  const SessionDetailsUserEntity({required this.id, this.name, required this.email});
 
   @override
   List<Object?> get props => [id, name, email];
@@ -132,14 +132,14 @@ class SessionDetailsEntity extends Equatable {
     final now = DateTime.now();
     final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
     final oneHourAfterSession = sessionEnd.add(const Duration(hours: 1));
-    final fifteenDaysAfterSession = sessionEnd.add(const Duration(days: 15));
+    final fortyEightHoursAfterSession = sessionEnd.add(const Duration(hours: 48));
 
-    return (now.isAfter(oneHourAfterSession) || now.isAtSameMomentAs(oneHourAfterSession)) && now.isBefore(fifteenDaysAfterSession);
+    return (now.isAfter(oneHourAfterSession) || now.isAtSameMomentAs(oneHourAfterSession)) && now.isBefore(fortyEightHoursAfterSession);
   }
 
   DateTime get summaryRequestDeadline {
     final sessionEnd = scheduledDateTime.add(Duration(minutes: durationMinutes));
-    return sessionEnd.add(const Duration(days: 15));
+    return sessionEnd.add(const Duration(hours: 48));
   }
 
   bool get hasSummaryRequestExpired {
@@ -182,10 +182,17 @@ class SessionDetailsEntity extends Equatable {
 
   DateTime get scheduledDateTime {
     try {
-      final dateTime = DateTime.parse('${scheduledDate}T$startTime');
-      return dateTime;
+      return DateTime.parse('${scheduledDate}T$startTime');
     } catch (e) {
       return DateTime.now();
+    }
+  }
+
+  DateTime get endDateTime {
+    try {
+      return DateTime.parse('${scheduledDate}T$endTime');
+    } catch (e) {
+      return scheduledDateTime.add(Duration(minutes: durationMinutes));
     }
   }
 }

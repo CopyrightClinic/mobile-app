@@ -1,7 +1,7 @@
 name: copyright_clinic_flutter
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.0+1
+version: 1.0.4+14
 
 environment:
   sdk: ^3.7.2
@@ -42,6 +42,7 @@ dependencies:
   # Localization
   easy_localization: ^3.0.7+1
   intl: ^0.20.2
+  flutter_native_timezone_latest: ^1.0.0
 
   # Path Provider
   path_provider: ^2.1.5
@@ -70,10 +71,17 @@ dependencies:
   # PDF Generation
   pdf: ^3.11.1
   printing: ^5.13.2
+  
+  # URL Launcher
+  url_launcher: ^6.3.1
   # Firebase
   firebase_core: ^3.6.0
   firebase_messaging: ^15.1.3
   flutter_local_notifications: ^18.0.1
+  firebase_analytics: ^11.6.0
+  facebook_app_events: ^0.27.2
+  app_tracking_transparency: ^2.0.6+1
+  tiktok_events_sdk: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -81,8 +89,13 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   build_runner: ^2.4.8
   json_serializable: ^6.7.1
+  mocktail: ^1.0.5
+  bloc_test: ^10.0.0
 
 flutter:
+  config:
+    enable-swift-package-manager: false
+
   uses-material-design: true
 
   assets:

@@ -1,3 +1,4 @@
+import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,8 +15,24 @@ import '../../../../core/widgets/global_image.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../config/routes/app_routes.dart';
 
-class HaroldSignupScreen extends StatelessWidget {
+class HaroldSignupScreen extends StatefulWidget {
   const HaroldSignupScreen({super.key});
+
+  @override
+  State<HaroldSignupScreen> createState() => _HaroldSignupScreenState();
+}
+
+class _HaroldSignupScreenState extends State<HaroldSignupScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      logAnalytics(
+        AnalyticsEvents.authGateShown,
+        parameters: const {'source': 'harold_ai'},
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -38,7 +38,9 @@ class HaroldFailedScreen extends StatelessWidget {
           width: double.infinity,
           child: Column(
             children: [
-              GlobalImage(assetPath: ImageConstants.haroldFailed, width: 157.w, height: 380.h, fit: BoxFit.contain),
+              Flexible(
+                child: GlobalImage(assetPath: ImageConstants.haroldFailed, width: 157.w, height: 380.h, fit: BoxFit.contain),
+              ),
               SizedBox(height: DimensionConstants.gap26Px.h),
               TranslatedText(
                 params.overrideMessageKey ?? AppStrings.yourMatterFallsOutsideScope,

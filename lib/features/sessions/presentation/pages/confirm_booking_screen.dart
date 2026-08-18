@@ -1,8 +1,8 @@
+import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -40,6 +40,21 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final fee = widget.params.fee;
+      logAnalytics(
+        AnalyticsEvents.initiateCheckout,
+        parameters: {
+          'checkout_id':
+              '${widget.params.sessionDate.toIso8601String()}_${widget.params.timeSlot}',
+          'currency': fee.currency,
+          'value': fee.totalFee.toDouble(),
+          'item_count': 1,
+          'content_type': 'consultation',
+          'item_name': 'consultation_session',
+        },
+      );
+    });
   }
 
   @override
@@ -55,6 +70,19 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         } else if (state.hasSuccess &&
             state.lastOperation == SessionsOperation.bookSession &&
             state.bookSessionResponse != null) {
+          final response = state.bookSessionResponse!;
+          final fee = widget.params.fee;
+          logAnalytics(
+            AnalyticsEvents.purchase,
+            parameters: {
+              'transaction_id': response.data.sessionRequest.id,
+              'currency': fee.currency,
+              'value': fee.totalFee.toDouble(),
+              'item_id': response.data.sessionRequest.id,
+              'item_name': 'paid_consultation',
+              'quantity': 1,
+            },
+          );
           SnackBarUtils.showSuccess(
             context,
             AppStrings.sessionBookedSuccessfully.tr(),
@@ -62,6 +90,10 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           context.go(AppRoutes.bookingRequestSentRouteName);
         } else if (state.hasError &&
             state.lastOperation == SessionsOperation.bookSession) {
+          logAnalytics(
+            AnalyticsEvents.paymentFailed,
+            parameters: {'source': 'confirm_booking'},
+          );
           SnackBarUtils.showError(context, state.errorMessage!);
         }
       },
@@ -306,7 +338,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
                 ),
                 SizedBox(height: DimensionConstants.gap8Px.h),
                 TranslatedText(
-                  AppStrings.paymentSecurityNote,
+                  AppStrings.authorizationHoldMessage,
                   style: TextStyle(
                     color: context.darkTextSecondary,
                     fontSize: DimensionConstants.font14Px.f,
@@ -370,6 +402,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
         startTime: parsedTimeSlot.startTimeIso,
         endTime: parsedTimeSlot.endTimeIso,
         summary: summary,
+        query: widget.params.query,
         timezone: timezone,
       ),
     );

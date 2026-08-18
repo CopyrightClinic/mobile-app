@@ -6,6 +6,10 @@
 *.swp
 .buildlog/
 .history
+.DS_Store
+
+# IDE
+.idea/
 
 
 
@@ -47,6 +51,7 @@ unlinked.ds
 unlinked_spec.ds
 
 .env
+ios/Flutter/Secrets.xcconfig
 
 # Platform-specific folders
 macos/

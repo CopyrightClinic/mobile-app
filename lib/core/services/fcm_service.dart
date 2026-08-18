@@ -1,16 +1,20 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../features/notifications/data/datasources/notification_remote_data_source.dart';
 import '../../features/notifications/data/models/device_token_model.dart';
+import '../../features/notifications/presentation/bloc/notification_bloc.dart';
+import '../../features/notifications/presentation/bloc/notification_event.dart';
 import '../utils/logger/logger.dart';
+import '../utils/storage/user_storage.dart';
 import 'local_notification_service.dart';
 import 'notification_type_mapper.dart';
 
 class FCMService {
   final NotificationRemoteDataSource remoteDataSource;
+  final NotificationBloc notificationBloc;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final LocalNotificationService _localNotificationService = LocalNotificationService();
 
-  FCMService({required this.remoteDataSource});
+  FCMService({required this.remoteDataSource, required this.notificationBloc});
 
   Future<void> initialize() async {
     try {
@@ -87,12 +91,10 @@ class FCMService {
       Log.i(runtimeType, '📱 Data Payload: ${message.data}');
       Log.i(runtimeType, '📱 ========================================');
 
-      if (message.notification != null) {
-        _processNotification(message);
-        _localNotificationService.showNotification(message);
-      } else {
-        Log.w(runtimeType, '⚠️ No notification payload, skipping display');
-      }
+      // Data-only messages are handled too: the session extension prompt is
+      // sent that way so it can carry action buttons.
+      _processNotification(message);
+      _localNotificationService.showNotification(message);
     });
   }
 
@@ -114,12 +116,24 @@ class FCMService {
       if (shouldCreateInApp) {
         final inAppType = NotificationTypeMapper.mapFCMToInApp(type);
         Log.i(runtimeType, '✅ Type $type → In-app: $inAppType (will sync with backend)');
+        _refreshInAppNotifications();
       } else {
         Log.i(runtimeType, '📲 Type $type is push-only (no in-app notification)');
       }
     } catch (e, stackTrace) {
       Log.e(runtimeType, '❌ Error processing notification: $e');
       Log.e(runtimeType, 'Stack trace: $stackTrace');
+    }
+  }
+
+  Future<void> _refreshInAppNotifications() async {
+    try {
+      final user = await UserStorage.getUser();
+      if (user != null) {
+        notificationBloc.add(RefreshNotifications(userId: user.id));
+      }
+    } catch (e) {
+      Log.e(runtimeType, 'Error refreshing in-app notifications: $e');
     }
   }
 

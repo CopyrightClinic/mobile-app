@@ -27,6 +27,9 @@ class CustomException implements Exception {
     : statusCode = statusCode ?? 500,
       name = exceptionType.name;
 
+  @override
+  String toString() => message;
+
   factory CustomException.fromDioException(Exception error) {
     if (error is CustomException) {
       return error;
@@ -127,6 +130,9 @@ class CustomException implements Exception {
               statusCode: error.response?.statusCode,
               message: error.response?.statusMessage ?? 'Unknown error',
             );
+          case DioExceptionType.transformTimeout:
+            // TODO: Handle this case.
+            throw UnimplementedError();
         }
       } else {
         return CustomException(exceptionType: _ExceptionType.UnrecognizedException, message: AppStrings.errorUnrecognized);

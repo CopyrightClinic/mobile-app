@@ -27,6 +27,14 @@ class SwitchToCompleted extends SessionsEvent {
   const SwitchToCompleted();
 }
 
+class SwitchToPending extends SessionsEvent {
+  const SwitchToPending();
+}
+
+class SwitchToCancelled extends SessionsEvent {
+  const SwitchToCancelled();
+}
+
 class CancelSessionRequested extends SessionsEvent {
   final String sessionId;
   final String reason;
@@ -35,6 +43,16 @@ class CancelSessionRequested extends SessionsEvent {
 
   @override
   List<Object> get props => [sessionId, reason];
+}
+
+class CancelSessionRequestSubmitted extends SessionsEvent {
+  final String requestId;
+  final String reason;
+
+  const CancelSessionRequestSubmitted({required this.requestId, required this.reason});
+
+  @override
+  List<Object> get props => [requestId, reason];
 }
 
 class JoinSessionRequested extends SessionsEvent {
@@ -97,6 +115,7 @@ class BookSessionRequested extends SessionsEvent {
   final String startTime;
   final String endTime;
   final String summary;
+  final String query;
   final String timezone;
 
   const BookSessionRequested({
@@ -106,6 +125,7 @@ class BookSessionRequested extends SessionsEvent {
     required this.startTime,
     required this.endTime,
     required this.summary,
+    required this.query,
     required this.timezone,
   });
 
@@ -117,6 +137,7 @@ class BookSessionRequested extends SessionsEvent {
     startTime,
     endTime,
     summary,
+    query,
     timezone,
   ];
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -44,7 +45,10 @@ class SessionDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<SessionDetailsBloc>()..add(LoadSessionDetails(sessionId: params.sessionId)),
+      create:
+          (context) =>
+              sl<SessionDetailsBloc>()
+                ..add(LoadSessionDetails(sessionId: params.sessionId)),
       child: SessionDetailsView(sessionId: params.sessionId),
     );
   }
@@ -82,20 +86,49 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
       listeners: [
         BlocListener<SessionsBloc, SessionsState>(
           listener: (context, state) {
-            if (state.hasSuccess && state.lastOperation == SessionsOperation.cancelSession) {
+            if (state.hasSuccess &&
+                state.lastOperation == SessionsOperation.cancelSession) {
               SnackBarUtils.showSuccess(context, state.successMessage!);
               Future.delayed(const Duration(milliseconds: 300), () {
                 if (context.mounted) {
                   context.pop();
                 }
               });
-            } else if (state.hasError && state.lastOperation == SessionsOperation.cancelSession) {
+            } else if (state.hasError &&
+                state.lastOperation == SessionsOperation.cancelSession) {
               SnackBarUtils.showError(context, state.errorMessage!);
             }
           },
         ),
         BlocListener<SessionDetailsBloc, SessionDetailsState>(
+          listenWhen:
+              (previous, current) =>
+                  !previous.hasData &&
+                  current.hasData &&
+                  current.sessionDetails != null,
           listener: (context, state) {
+            final details = state.sessionDetails!;
+            logAnalytics(
+              AnalyticsEvents.viewContent,
+              parameters: {
+                'content_id': details.id,
+                'content_type': 'session_details',
+                'content_name': details.attorney.name,
+                'content_category': 'session',
+                'attorney_id': details.attorney.id,
+              },
+            );
+          },
+        ),
+        BlocListener<SessionDetailsBloc, SessionDetailsState>(
+          listener: (context, state) {
+            if (state.lastOperation == SessionDetailsOperation.unlockSummary &&
+                state.successMessage != null) {
+              logAnalytics(
+                AnalyticsEvents.summaryUnlockSuccess,
+                parameters: {'session_id': widget.sessionId},
+              );
+            }
             if (state.successMessage != null) {
               SnackBarUtils.showSuccess(context, state.successMessage!);
             } else if (state.errorMessage != null) {
@@ -129,7 +162,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         centerTitle: true,
         title: TranslatedText(
           AppStrings.sessionDetailsTitle,
-          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: context.darkTextPrimary,
+            fontSize: DimensionConstants.font18Px.f,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       body: const Center(child: CircularProgressIndicator()),
@@ -145,7 +182,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         centerTitle: true,
         title: TranslatedText(
           AppStrings.sessionDetailsTitle,
-          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: context.darkTextPrimary,
+            fontSize: DimensionConstants.font18Px.f,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       body: Center(
@@ -154,17 +195,31 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           children: [
             Icon(Icons.error_outline, size: 64, color: context.red),
             SizedBox(height: DimensionConstants.gap16Px.h),
-            Text(message, style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f), textAlign: TextAlign.center),
+            Text(
+              message,
+              style: TextStyle(
+                color: context.darkTextPrimary,
+                fontSize: DimensionConstants.font16Px.f,
+              ),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: DimensionConstants.gap16Px.h),
             CustomButton(
-              onPressed: () => context.read<SessionDetailsBloc>().add(LoadSessionDetails(sessionId: widget.sessionId)),
+              onPressed:
+                  () => context.read<SessionDetailsBloc>().add(
+                    LoadSessionDetails(sessionId: widget.sessionId),
+                  ),
               backgroundColor: context.primary,
               textColor: Colors.white,
               borderRadius: DimensionConstants.radius52Px.r,
               padding: 12.0,
               child: TranslatedText(
                 AppStrings.retry,
-                style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
+                style: TextStyle(
+                  fontSize: DimensionConstants.font16Px.f,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -173,7 +228,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
     );
   }
 
-  Widget _buildSessionDetailsScreen(BuildContext context, SessionDetailsEntity sessionDetails) {
+  Widget _buildSessionDetailsScreen(
+    BuildContext context,
+    SessionDetailsEntity sessionDetails,
+  ) {
     return CustomScaffold(
       extendBodyBehindAppBar: true,
       appBar: CustomAppBar(
@@ -182,21 +240,38 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         centerTitle: true,
         title: TranslatedText(
           AppStrings.sessionDetailsTitle,
-          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font18Px.f, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: context.darkTextPrimary,
+            fontSize: DimensionConstants.font18Px.f,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: DimensionConstants.gap16Px.w),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap12Px.w, vertical: DimensionConstants.gap6Px.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: DimensionConstants.gap12Px.w,
+                vertical: DimensionConstants.gap6Px.h,
+              ),
               decoration: BoxDecoration(
-                color: sessionDetails.isUpcoming ? context.neonBlue.withAlpha(30) : context.neonGreen.withAlpha(30),
-                borderRadius: BorderRadius.circular(DimensionConstants.radius52Px.r),
+                color:
+                    sessionDetails.isUpcoming
+                        ? context.neonBlue.withAlpha(30)
+                        : context.neonGreen.withAlpha(30),
+                borderRadius: BorderRadius.circular(
+                  DimensionConstants.radius52Px.r,
+                ),
               ),
               child: TranslatedText(
-                sessionDetails.isUpcoming ? AppStrings.upcoming : AppStrings.completed,
+                sessionDetails.isUpcoming
+                    ? AppStrings.upcoming
+                    : AppStrings.completed,
                 style: TextStyle(
-                  color: sessionDetails.isUpcoming ? context.neonBlue : context.neonGreen,
+                  color:
+                      sessionDetails.isUpcoming
+                          ? context.neonBlue
+                          : context.neonGreen,
                   fontSize: DimensionConstants.font12Px.f,
                   fontWeight: FontWeight.w500,
                 ),
@@ -212,7 +287,9 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: DimensionConstants.gap16Px.w,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -233,7 +310,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                 ),
               ),
             ),
-            if (sessionDetails.isUpcoming) _buildActionButtons(sessionDetails) else SizedBox(height: DimensionConstants.gap16Px.h),
+            if (sessionDetails.isUpcoming)
+              _buildActionButtons(sessionDetails)
+            else
+              SizedBox(height: DimensionConstants.gap16Px.h),
           ],
         ),
       ),
@@ -241,11 +321,17 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   }
 
   Widget _buildSessionDetailsSection(SessionDetailsEntity session) {
-    final holdAmountText = session.sessionRequest.couponId != null ? '\$0.00' : session.formattedHoldAmount;
+    final holdAmountText =
+        session.sessionRequest.couponId != null
+            ? '\$0.00'
+            : session.formattedHoldAmount;
 
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
+      decoration: BoxDecoration(
+        color: context.filledBgDark,
+        borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
+      ),
       child: Column(
         children: [
           Row(
@@ -265,13 +351,23 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      SessionDateTimeUtils.formatSessionDate(session.scheduledDateTime),
-                      style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+                      SessionDateTimeUtils.formatSessionDate(
+                        session.scheduledDateTime,
+                        endDateTime: session.endDateTime,
+                      ),
+                      style: TextStyle(
+                        fontSize: DimensionConstants.font14Px.f,
+                        fontWeight: FontWeight.w600,
+                        color: context.darkTextPrimary,
+                      ),
                     ),
                     SizedBox(height: DimensionConstants.gap2Px.h),
                     Text(
                       '(${session.formattedDuration} ${AppStrings.session})',
-                      style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+                      style: TextStyle(
+                        fontSize: DimensionConstants.font14Px.f,
+                        color: context.darkTextSecondary,
+                      ),
                     ).tr(),
                   ],
                 ),
@@ -296,12 +392,21 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                 children: [
                   Text(
                     holdAmountText,
-                    style: TextStyle(fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w600, color: context.darkTextPrimary),
+                    style: TextStyle(
+                      fontSize: DimensionConstants.font14Px.f,
+                      fontWeight: FontWeight.w600,
+                      color: context.darkTextPrimary,
+                    ),
                   ),
                   SizedBox(height: DimensionConstants.gap2Px.h),
                   TranslatedText(
-                    session.isCompleted ? AppStrings.charged : AppStrings.holdAmountChargedAfterSession,
-                    style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+                    session.isCompleted
+                        ? AppStrings.charged
+                        : AppStrings.holdAmountChargedAfterSession,
+                    style: TextStyle(
+                      fontSize: DimensionConstants.font14Px.f,
+                      color: context.darkTextSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -322,8 +427,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               SizedBox(width: DimensionConstants.gap8Px.w),
               Expanded(
                 child: TranslatedText(
-                  AppStrings.recordingConsented,
-                  style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+                  AppStrings.allMeetingsAreRecorded,
+                  style: TextStyle(
+                    fontSize: DimensionConstants.font14Px.f,
+                    color: context.darkTextSecondary,
+                  ),
                 ),
               ),
             ],
@@ -335,7 +443,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
 
   Widget _buildRatingReviewSection(SessionDetailsEntity session) {
     if (session.rating != null) {
-      return SubmittedRatingReviewWidget(rating: session.rating!, review: session.review, isExpanded: _isRatingExpanded);
+      return SubmittedRatingReviewWidget(
+        rating: session.rating!,
+        review: session.review,
+        isExpanded: _isRatingExpanded,
+      );
     } else {
       return AddRatingReviewWidget(
         onSubmit: () => _onSubmitRatingReview(session.id),
@@ -355,7 +467,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
 
     if (summaryStatus == null || summaryStatus.isNotRequested) {
       return _buildUnlockSummaryWidget(session);
-    } else if (summaryStatus.isAdminApprovalPending || summaryStatus.isAttorneyReviewPending) {
+    } else if (summaryStatus.isAdminApprovalPending ||
+        summaryStatus.isAttorneyReviewPending) {
       return _buildSummaryReviewInProgressWidget(summaryStatus);
     } else if (summaryStatus.isReadyForUser) {
       return _buildSummaryReadyWidget(session);
@@ -367,7 +480,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   Widget _buildUnlockSummaryWidget(SessionDetailsEntity session) {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
-      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+      decoration: BoxDecoration(
+        color: context.filledBgDark,
+        borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r),
+      ),
       child: Column(
         children: [
           GlobalImage(
@@ -382,31 +498,60 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           SizedBox(height: DimensionConstants.gap16Px.h),
           TranslatedText(
             AppStrings.unlockWrittenSummary,
-            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: context.darkTextPrimary,
+              fontSize: DimensionConstants.font16Px.f,
+              fontWeight: FontWeight.w600,
+            ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: DimensionConstants.gap16Px.h),
           Container(
             width: double.infinity,
             height: 120.h,
-            decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
-            child: Center(child: Icon(Icons.lock_outline, color: context.darkTextSecondary, size: DimensionConstants.gap32Px.w)),
+            decoration: BoxDecoration(
+              color: Colors.black26,
+              borderRadius: BorderRadius.circular(
+                DimensionConstants.radius20Px.r,
+              ),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.lock_outline,
+                color: context.darkTextSecondary,
+                size: DimensionConstants.gap32Px.w,
+              ),
+            ),
           ),
           SizedBox(height: DimensionConstants.gap16Px.h),
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                color: context.darkTextSecondary,
+                fontSize: DimensionConstants.font14Px.f,
+                fontWeight: FontWeight.w400,
+              ),
               children: [
                 TextSpan(text: AppStrings.payToRequestSummary.tr()),
                 TextSpan(text: ' '),
                 if (session.hasSummaryRequestExpired)
-                  TextSpan(text: AppStrings.summaryRequestExpired.tr(), style: TextStyle(color: context.red, fontWeight: FontWeight.w500))
+                  TextSpan(
+                    text: AppStrings.summaryRequestExpired.tr(),
+                    style: TextStyle(
+                      color: context.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
                 else if (!session.canRequestSummary)
-                  TextSpan(text: AppStrings.summaryAvailable1HourAfterSession.tr(), style: const TextStyle(fontWeight: FontWeight.w500))
+                  TextSpan(
+                    text: AppStrings.summaryAvailable1HourAfterSession.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  )
                 else
                   TextSpan(
-                    text: '${AppStrings.youCanRequestUntil.tr()} ${SessionDateTimeUtils.formatSessionDate(session.summaryRequestDeadline)}',
+                    text:
+                        '${AppStrings.youCanRequestUntil.tr()} ${SessionDateTimeUtils.formatSessionDate(session.summaryRequestDeadline)}',
                     style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
               ],
@@ -416,7 +561,8 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           SizedBox(
             width: double.infinity,
             child: CustomButton(
-              onPressed: session.canRequestSummary ? () => _onUnlockSummary() : null,
+              onPressed:
+                  session.canRequestSummary ? () => _onUnlockSummary() : null,
               backgroundColor: context.primary,
               disabledBackgroundColor: context.buttonDisabled,
               textColor: Colors.white,
@@ -427,7 +573,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
                 style: TextStyle(
                   fontSize: DimensionConstants.font16Px.f,
                   fontWeight: FontWeight.w600,
-                  color: session.canRequestSummary ? Colors.white : context.darkTextSecondary,
+                  color:
+                      session.canRequestSummary
+                          ? Colors.white
+                          : context.darkTextSecondary,
                 ),
               ),
             ),
@@ -439,11 +588,16 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
 
   Widget _buildSummaryReviewInProgressWidget(SummaryApprovalStatus status) {
     final descriptionKey =
-        status.isAdminApprovalPending ? AppStrings.adminReviewInProgressDescription : AppStrings.attorneyReviewInProgressDescription;
+        status.isAdminApprovalPending
+            ? AppStrings.adminReviewInProgressDescription
+            : AppStrings.attorneyReviewInProgressDescription;
 
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
-      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+      decoration: BoxDecoration(
+        color: context.filledBgDark,
+        borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r),
+      ),
       child: Column(
         children: [
           GlobalImage(
@@ -458,20 +612,39 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           SizedBox(height: DimensionConstants.gap16Px.h),
           TranslatedText(
             AppStrings.summaryReviewInProgress,
-            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: context.darkTextPrimary,
+              fontSize: DimensionConstants.font16Px.f,
+              fontWeight: FontWeight.w600,
+            ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: DimensionConstants.gap16Px.h),
           Container(
             width: double.infinity,
             height: 120.h,
-            decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
-            child: Center(child: Icon(Icons.lock_outline, color: context.darkTextSecondary, size: DimensionConstants.gap32Px.w)),
+            decoration: BoxDecoration(
+              color: Colors.black26,
+              borderRadius: BorderRadius.circular(
+                DimensionConstants.radius20Px.r,
+              ),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.lock_outline,
+                color: context.darkTextSecondary,
+                size: DimensionConstants.gap32Px.w,
+              ),
+            ),
           ),
           SizedBox(height: DimensionConstants.gap16Px.h),
           TranslatedText(
             descriptionKey,
-            style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+            style: TextStyle(
+              color: context.darkTextSecondary,
+              fontSize: DimensionConstants.font14Px.f,
+              fontWeight: FontWeight.w400,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -482,7 +655,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   Widget _buildSummaryReadyWidget(SessionDetailsEntity session) {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap24Px.w),
-      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+      decoration: BoxDecoration(
+        color: context.filledBgDark,
+        borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r),
+      ),
       child: Column(
         children: [
           GlobalImage(
@@ -497,17 +673,31 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
           SizedBox(height: DimensionConstants.gap16Px.h),
           TranslatedText(
             AppStrings.yourSummaryIsReady,
-            style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: context.darkTextPrimary,
+              fontSize: DimensionConstants.font16Px.f,
+              fontWeight: FontWeight.w600,
+            ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: DimensionConstants.gap16Px.h),
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(DimensionConstants.gap20Px.w),
-            decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(DimensionConstants.radius20Px.r)),
+            decoration: BoxDecoration(
+              color: Colors.black26,
+              borderRadius: BorderRadius.circular(
+                DimensionConstants.radius20Px.r,
+              ),
+            ),
             child: Text(
               session.summary ?? '',
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+              style: TextStyle(
+                color: context.darkTextPrimary,
+                fontSize: DimensionConstants.font14Px.f,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+              ),
               textAlign: TextAlign.left,
             ),
           ),
@@ -522,7 +712,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               padding: 16.0,
               child: TranslatedText(
                 AppStrings.viewSummary,
-                style: TextStyle(fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600, color: Colors.white),
+                style: TextStyle(
+                  fontSize: DimensionConstants.font16Px.f,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -534,11 +728,18 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   Widget _buildNoteSection() {
     return Container(
       padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-      decoration: BoxDecoration(color: context.filledBgDark, borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r)),
+      decoration: BoxDecoration(
+        color: context.filledBgDark,
+        borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline, color: context.orange, size: DimensionConstants.gap20Px.w),
+          Icon(
+            Icons.info_outline,
+            color: context.orange,
+            size: DimensionConstants.gap20Px.w,
+          ),
           SizedBox(width: DimensionConstants.gap12Px.w),
           Expanded(
             child: Column(
@@ -546,12 +747,20 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
               children: [
                 TranslatedText(
                   AppStrings.note,
-                  style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: context.darkTextPrimary,
+                    fontSize: DimensionConstants.font16Px.f,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 SizedBox(height: DimensionConstants.gap8Px.h),
                 TranslatedText(
                   AppStrings.paymentSecurityNote,
-                  style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+                  style: TextStyle(
+                    color: context.darkTextSecondary,
+                    fontSize: DimensionConstants.font14Px.f,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ],
             ),
@@ -567,57 +776,75 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
         left: DimensionConstants.gap16Px.w,
         right: DimensionConstants.gap16Px.w,
         top: DimensionConstants.gap16Px.h,
-        bottom: DimensionConstants.gap16Px.h + MediaQuery.paddingOf(context).bottom,
+        bottom:
+            DimensionConstants.gap16Px.h + MediaQuery.paddingOf(context).bottom,
       ),
       decoration: BoxDecoration(color: context.bottomNavBarBG),
       child: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: CustomButton(
-                  onPressed: (session.cancelTimeExpired == true) ? null : () => _showCancelDialog(session),
-                  backgroundColor: context.buttonSecondary,
-                  disabledBackgroundColor: context.buttonDisabled,
-                  textColor: context.darkTextPrimary,
-                  borderRadius: DimensionConstants.radius52Px.r,
-                  padding: 12.0,
-                  child: TranslatedText(
-                    AppStrings.cancelSession,
-                    style: TextStyle(
-                      fontSize: DimensionConstants.font16Px.f,
-                      fontWeight: FontWeight.w600,
-                      color: (session.cancelTimeExpired == true) ? context.darkTextSecondary : context.darkTextPrimary,
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    onPressed:
+                        (session.cancelTimeExpired == true)
+                            ? null
+                            : () => _showCancelDialog(session),
+                    backgroundColor: context.buttonSecondary,
+                    disabledBackgroundColor: context.buttonDisabled,
+                    textColor: context.darkTextPrimary,
+                    borderRadius: DimensionConstants.radius52Px.r,
+                    padding: 12.0,
+                    child: TranslatedText(
+                      AppStrings.cancelSession,
+                      style: TextStyle(
+                        fontSize: DimensionConstants.font16Px.f,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            (session.cancelTimeExpired == true)
+                                ? context.darkTextSecondary
+                                : context.darkTextPrimary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: DimensionConstants.gap12Px.w),
-              Expanded(
-                child: CustomButton(
-                  onPressed: session.canJoin ? () => _onJoinSession() : null,
-                  backgroundColor: context.primary,
-                  disabledBackgroundColor: context.buttonDisabled,
-                  textColor: Colors.white,
-                  borderRadius: DimensionConstants.radius52Px.r,
-                  padding: 12.0,
-                  child: TranslatedText(
-                    AppStrings.joinSession,
-                    style: TextStyle(
-                      fontSize: DimensionConstants.font16Px.f,
-                      fontWeight: FontWeight.w600,
-                      color: session.canJoin ? Colors.white : context.darkTextSecondary,
+                SizedBox(width: DimensionConstants.gap12Px.w),
+                Expanded(
+                  child: CustomButton(
+                    onPressed: session.canJoin ? () => _onJoinSession() : null,
+                    backgroundColor: context.primary,
+                    disabledBackgroundColor: context.buttonDisabled,
+                    textColor: Colors.white,
+                    borderRadius: DimensionConstants.radius52Px.r,
+                    padding: 12.0,
+                    child: TranslatedText(
+                      AppStrings.joinSession,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: DimensionConstants.font16Px.f,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            session.canJoin
+                                ? Colors.white
+                                : context.darkTextSecondary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           if (!session.canJoin) ...[
             SizedBox(height: DimensionConstants.gap12Px.h),
             TranslatedText(
               AppStrings.joinAvailable10MinutesBeforeSession,
-              style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: DimensionConstants.font14Px.f,
+                color: context.darkTextSecondary,
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -625,7 +852,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
             SizedBox(height: DimensionConstants.gap12Px.h),
             Text(
               '${AppStrings.youCanCancelTill.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
-              style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
+              style: TextStyle(
+                fontSize: DimensionConstants.font14Px.f,
+                color: context.darkTextSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -633,13 +863,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
             SizedBox(height: DimensionConstants.gap12Px.h),
             TranslatedText(
               AppStrings.cancellationPeriodExpired,
-              style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.red, fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: DimensionConstants.gap4Px.h),
-            Text(
-              '${AppStrings.youCouldHaveCanceled.tr()} ${SessionDateTimeUtils.formatCancelTime(session.cancelTime)}.',
-              style: TextStyle(fontSize: DimensionConstants.font14Px.f, color: context.darkTextSecondary),
-              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: DimensionConstants.font14Px.f,
+                color: context.red,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ],
@@ -649,10 +877,14 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
 
   void _showCancelDialog(SessionDetailsEntity session) {
     BottomSheetService.show(
-      builder: (bottomSheetContext) => BlocProvider.value(
-        value: context.read<SessionsBloc>(),
-        child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
-      ),
+      builder:
+          (bottomSheetContext) => BlocProvider.value(
+            value: context.read<SessionsBloc>(),
+            child: CancelSessionBottomSheet(
+              sessionId: session.id,
+              reason: AppStrings.userRequestedCancellation,
+            ),
+          ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
@@ -662,16 +894,24 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
 
   void _onJoinSession() {
     final sessionId = widget.sessionId;
+    logAnalytics(
+      AnalyticsEvents.sessionJoinClick,
+      parameters: {'session_id': sessionId},
+    );
     final zoomBloc = sl<ZoomBloc>();
     ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }
 
   void _onUnlockSummary() {
     BottomSheetService.show(
-      builder: (bottomSheetContext) => MultiBlocProvider(
-        providers: [BlocProvider.value(value: context.read<PaymentBloc>()), BlocProvider.value(value: context.read<SessionDetailsBloc>())],
-        child: UnlockSummaryPaymentBottomSheet(sessionId: widget.sessionId),
-      ),
+      builder:
+          (bottomSheetContext) => MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: context.read<PaymentBloc>()),
+              BlocProvider.value(value: context.read<SessionDetailsBloc>()),
+            ],
+            child: UnlockSummaryPaymentBottomSheet(sessionId: widget.sessionId),
+          ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: true,
@@ -683,7 +923,10 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
     if (session.aiGeneratedSummary != null) {
       context.push(
         AppRoutes.sessionSummaryRouteName,
-        extra: SessionSummaryScreenParams(sessionId: session.id, aiGeneratedSummary: session.aiGeneratedSummary!),
+        extra: SessionSummaryScreenParams(
+          sessionId: session.id,
+          aiGeneratedSummary: session.aiGeneratedSummary!,
+        ),
       );
     }
   }
@@ -691,7 +934,11 @@ class _SessionDetailsViewState extends State<SessionDetailsView> {
   void _onSubmitRatingReview(String sessionId) {
     if (_currentRating > 0) {
       context.read<SessionDetailsBloc>().add(
-        SubmitSessionFeedback(sessionId: sessionId, rating: _currentRating, review: _currentReview.isNotEmpty ? _currentReview : null),
+        SubmitSessionFeedback(
+          sessionId: sessionId,
+          rating: _currentRating,
+          review: _currentReview.isNotEmpty ? _currentReview : null,
+        ),
       );
     }
   }

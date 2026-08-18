@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../domain/services/harold_navigation_service.dart';
@@ -41,7 +42,7 @@ class HaroldAiBloc extends Bloc<HaroldAiEvent, HaroldAiState> {
               emit(HaroldAiFailure(isUserAuthenticated: isUserAuthenticated, query: event.query));
             }
           } else {
-            emit(const HaroldAiError(message: AppStrings.haroldAiEvaluationNotSuccessful));
+            emit( HaroldAiError(message: AppStrings.enterAValidQueryToContinue.tr()));
           }
         },
       );

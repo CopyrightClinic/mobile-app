@@ -1,5 +1,7 @@
+import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -9,12 +11,17 @@ import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
 import '../../../../core/widgets/custom_scaffold.dart';
 import '../../../../core/widgets/global_image.dart';
+import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/translated_text.dart';
 import '../../../../core/services/bottom_sheet_service.dart';
+import '../../../../core/utils/storage/user_storage.dart';
 import '../../../../di.dart';
+import '../../../notifications/presentation/bloc/notification_bloc.dart';
+import '../../../notifications/presentation/bloc/notification_event.dart';
 import '../../../sessions/domain/entities/session_entity.dart';
 import '../../../sessions/presentation/widgets/session_card.dart';
 import '../../../sessions/presentation/widgets/cancel_session_bottom_sheet.dart';
+import '../../../sessions/presentation/widgets/authorization_hold_dialog.dart';
 import '../../../sessions/presentation/bloc/sessions_bloc.dart';
 import '../../../sessions/presentation/bloc/sessions_event.dart';
 import '../../../sessions/presentation/bloc/sessions_state.dart';
@@ -34,14 +41,35 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late SessionsBloc _sessionsBloc;
   late ProfileBloc _profileBloc;
+  late NotificationBloc _notificationBloc;
 
   @override
   void initState() {
     super.initState();
     _sessionsBloc = context.read<SessionsBloc>();
     _profileBloc = context.read<ProfileBloc>();
+    _notificationBloc = context.read<NotificationBloc>();
     _sessionsBloc.add(const LoadUserSessions());
     _profileBloc.add(const GetProfileRequested());
+    _loadNotifications();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      logAnalytics(
+        AnalyticsEvents.viewContent,
+        parameters: const {
+          'content_id': 'home_dashboard',
+          'content_type': 'home_dashboard',
+          'content_name': 'Home Dashboard',
+        },
+      );
+    });
+  }
+
+  Future<void> _loadNotifications() async {
+    final user = await UserStorage.getUser();
+    if (user != null && mounted) {
+      _notificationBloc.add(LoadNotifications(userId: user.id));
+    }
   }
 
   @override
@@ -106,20 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(width: DimensionConstants.gap8Px.w),
-                      Container(
-                        width: DimensionConstants.gap40Px.d,
-                        height: DimensionConstants.gap40Px.d,
-                        decoration: BoxDecoration(color: context.bgDark.withValues(alpha: 0.7), shape: BoxShape.circle),
-                        child: InkWell(
-                          onTap: () {
-                            context.push(AppRoutes.notificationsRouteName);
-                          },
-                          borderRadius: BorderRadius.circular((DimensionConstants.gap40Px.d / 2).w),
-                          child: Center(
-                            child: Icon(Icons.notifications_outlined, color: context.darkTextPrimary, size: (DimensionConstants.gap40Px * 0.5).d),
-                          ),
-                        ),
-                      ),
+                      const NotificationBellButton(),
                     ],
                   ),
 
@@ -193,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 session: session,
                                 onCancel: session.canCancel ? () => _showCancelDialog(context, session) : null,
                                 onJoin: session.canJoin ? () => _joinSessionDirectly(context, session.id) : null,
+                                useDashboardJoinText: true,
                               ),
                             );
                           }),
@@ -348,20 +364,37 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCancelDialog(BuildContext context, SessionEntity session) {
+    var cancelSucceeded = false;
+
+    _sessionsBloc.stream
+        .firstWhere(
+          (state) => state.lastOperation == SessionsOperation.cancelSession && !state.isProcessingCancel,
+        )
+        .then((resultState) => cancelSucceeded = resultState.hasSuccess);
+
     BottomSheetService.show(
       builder:
           (bottomSheetContext) => BlocProvider.value(
             value: _sessionsBloc,
-            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation),
+            child: CancelSessionBottomSheet(sessionId: session.id, reason: AppStrings.userRequestedCancellation.tr()),
           ),
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-    );
+    ).then((_) {
+      if (!mounted) return;
+      if (cancelSucceeded) {
+        AuthorizationHoldDialog.show(context);
+      }
+    });
   }
 
   void _joinSessionDirectly(BuildContext context, String sessionId) {
+    logAnalytics(
+      AnalyticsEvents.sessionJoinClick,
+      parameters: {'session_id': sessionId, 'source': 'home_dashboard'},
+    );
     final zoomBloc = sl<ZoomBloc>();
     ZoomConnectionDialog.show(context, sessionId, zoomBloc);
   }

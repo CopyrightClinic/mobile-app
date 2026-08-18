@@ -25,6 +25,7 @@ BookSessionRequestModel _$BookSessionRequestModelFromJson(
   date: json['date'] as String,
   slot: BookSessionSlotModel.fromJson(json['slot'] as Map<String, dynamic>),
   summary: json['summary'] as String,
+  originalInput: json['originalInput'] as String,
 );
 
 Map<String, dynamic> _$BookSessionRequestModelToJson(
@@ -35,4 +36,5 @@ Map<String, dynamic> _$BookSessionRequestModelToJson(
   'date': instance.date,
   'slot': instance.slot,
   'summary': instance.summary,
+  'originalInput': instance.originalInput,
 };

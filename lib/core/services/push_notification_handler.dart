@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../analytics/analytics.dart';
 import '../../config/routes/app_router.dart';
 import '../../config/routes/app_routes.dart';
 import '../../di.dart';
@@ -72,6 +73,16 @@ class PushNotificationHandler {
       Log.i(runtimeType, '🎯 Amount: ${payload.amount ?? "N/A"}');
       Log.i(runtimeType, '🎯 Notification ID: ${payload.notificationId ?? "N/A"}');
       Log.i(runtimeType, '🎯 Raw Data Keys: ${payload.rawData.keys.toList()}');
+
+      logAnalytics(
+        AnalyticsEvents.notificationOpened,
+        parameters: {
+          'notification_type': payload.type.toApiString(),
+          if (payload.sessionId != null) 'session_id': payload.sessionId!,
+          if (payload.notificationId != null)
+            'notification_id': payload.notificationId!,
+        },
+      );
 
       await _navigateBasedOnType(payload);
 
@@ -167,9 +178,25 @@ class PushNotificationHandler {
         _navigateToExtendSession(context, payload.sessionId, payload.totalFee);
         break;
 
+      case PushNotificationType.sessionRequestExpired:
+        Log.i(runtimeType, '🧭 → Navigating to Notifications');
+        _navigateToNotifications(context);
+        break;
+
       case PushNotificationType.refundIssued:
         Log.i(runtimeType, '📋 Refund notification, no navigation (handled by requiresNavigation check)');
         break;
+    }
+  }
+
+  void _navigateToNotifications(BuildContext context) {
+    try {
+      Log.i(runtimeType, '✅ Using GoRouter.push to: ${AppRoutes.notificationsRouteName}');
+      context.push(AppRoutes.notificationsRouteName);
+      Log.i(runtimeType, '✅ Navigation completed successfully');
+    } catch (e, stackTrace) {
+      Log.e(runtimeType, '❌ Navigation failed: $e');
+      Log.e(runtimeType, 'Stack trace: $stackTrace');
     }
   }
 

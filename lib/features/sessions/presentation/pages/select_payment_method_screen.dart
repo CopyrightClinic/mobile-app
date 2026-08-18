@@ -4,10 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/network/api_service/api_service.dart';
+import '../../../../core/network/exception/custom_exception.dart';
 import '../../../../core/utils/enumns/ui/payment_method.dart';
 import '../../../../core/utils/extensions/responsive_extensions.dart';
 import '../../../../core/utils/extensions/theme_extensions.dart';
@@ -55,6 +57,18 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
     _baseSessionFee = widget.params.fee;
     _sessionFee = _baseSessionFee;
     _paymentBloc.add(const LoadPaymentMethods());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      logAnalytics(
+        AnalyticsEvents.addToCart,
+        parameters: {
+          'session_date': widget.params.sessionDate.toIso8601String(),
+          'time_slot': widget.params.timeSlot,
+          'currency': _sessionFee.currency,
+          'value': _sessionFee.totalFee.toDouble(),
+          'content_type': 'consultation',
+        },
+      );
+    });
   }
 
   @override
@@ -65,6 +79,10 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
           SnackBarUtils.showSuccess(context, AppStrings.paymentSuccessful.tr());
           context.go(AppRoutes.homeRouteName);
         } else if (state is PaymentError) {
+          logAnalytics(
+            AnalyticsEvents.paymentFailed,
+            parameters: {'source': 'select_payment_method'},
+          );
           SnackBarUtils.showError(context, state.message);
         }
       },
@@ -154,6 +172,13 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
       _selectedPaymentMethodId = paymentMethod.id;
       _selectedPaymentMethod = paymentMethod;
     });
+    logAnalytics(
+      AnalyticsEvents.addPaymentInfo,
+      parameters: {
+        'payment_type': paymentMethod.card.brand,
+        'payment_method_id': paymentMethod.id,
+      },
+    );
   }
 
   void _onAddPaymentMethod() {
@@ -405,6 +430,13 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
       if (response['valid'] != true ||
           response['fees'] is! Map<String, dynamic>) {
         final responseMessage = response['message']?.toString();
+        logAnalytics(
+          AnalyticsEvents.couponFailed,
+          parameters: {
+            'coupon_code': couponCode,
+            if (responseMessage != null) 'reason': responseMessage,
+          },
+        );
         SnackBarUtils.showError(
           context,
           responseMessage ?? AppStrings.invalidCouponCode.tr(),
@@ -421,13 +453,38 @@ class _SelectPaymentMethodScreenState extends State<SelectPaymentMethodScreen> {
         _appliedCouponCode = couponCode;
       });
 
+      logAnalytics(
+        AnalyticsEvents.couponApplied,
+        parameters: {
+          'coupon_code': couponCode,
+          'currency': updatedFee.currency,
+          'value': updatedFee.totalFee.toDouble(),
+        },
+      );
       SnackBarUtils.showSuccess(
         context,
         AppStrings.couponAppliedSuccessfully.tr(),
       );
       return true;
+    } on CustomException catch (e) {
+      logAnalytics(
+        AnalyticsEvents.couponFailed,
+        parameters: {
+          'coupon_code': couponCode,
+          'reason': e.message,
+        },
+      );
+      SnackBarUtils.showError(context, e.message);
+      return false;
     } catch (e) {
-      SnackBarUtils.showError(context, e.toString());
+      logAnalytics(
+        AnalyticsEvents.couponFailed,
+        parameters: {
+          'coupon_code': couponCode,
+          'reason': e.toString(),
+        },
+      );
+      SnackBarUtils.showError(context, AppStrings.invalidCouponCode.tr());
       return false;
     }
   }

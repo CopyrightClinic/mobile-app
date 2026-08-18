@@ -1,6 +1,7 @@
 import 'package:copyright_clinic_flutter/core/constants/image_constants.dart';
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/utils/extensions/extensions.dart';
+import 'package:copyright_clinic_flutter/core/widgets/global_image.dart';
 import 'package:copyright_clinic_flutter/core/widgets/translated_text.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,11 @@ class AboutUsScreen extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [_buildCassiusTitusCard(), SizedBox(height: DimensionConstants.gap30Px), _buildTeamSection()],
+                      children: [
+                        _buildCassiusTitusCard(name: ImageConstants.casius, description: AppStrings.cassiusTitusDescriptionUpdated),
+                        SizedBox(height: DimensionConstants.gap30Px),
+                        _buildCassiusTitusCard(name: ImageConstants.lawyerImage, description: AppStrings.teamDescription, isCircle: true),
+                      ],
                     ),
                   ),
                 ),
@@ -51,7 +56,7 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCassiusTitusCard() {
+  Widget _buildCassiusTitusCard({required String name, required String description, bool isCircle = false}) {
     return SizedBox(
       width: double.infinity,
 
@@ -67,18 +72,26 @@ class AboutUsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 99.w,
-                    height: 99.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: const DecorationImage(image: AssetImage(ImageConstants.casius), fit: BoxFit.cover),
+                  if (isCircle)
+                    Container(
+                      width: 99.w,
+                      height: 99.w,
+                      decoration: BoxDecoration(shape: BoxShape.circle, image: DecorationImage(image: AssetImage(name), fit: BoxFit.fill)),
+                    )
+                  else
+                    Container(
+                      width: 99.w,
+                      height: 99.w,
+                      decoration: BoxDecoration(shape: BoxShape.circle, image: DecorationImage(image: AssetImage(name), fit: BoxFit.contain)),
                     ),
-                  ),
                   SizedBox(height: DimensionConstants.gap10Px.h),
-                  TranslatedText(
-                    AppStrings.cassiusTitusDescription,
-                    style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TranslatedText(
+                      description,
+                      style: TextStyle(color: Colors.white, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400, height: 1.5),
+                      textAlign: TextAlign.start,
+                    ),
                   ),
                 ],
               ),

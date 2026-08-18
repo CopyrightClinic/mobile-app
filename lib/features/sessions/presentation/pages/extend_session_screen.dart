@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -68,6 +69,13 @@ class _ExtendSessionViewState extends State<ExtendSessionView> {
       bloc: context.read<SessionsBloc>(),
       listener: (context, state) {
         if (state.hasSuccess && state.lastOperation == SessionsOperation.extendSession) {
+          logAnalytics(
+            AnalyticsEvents.sessionExtended,
+            parameters: {
+              'session_id': widget.sessionId,
+              'value': widget.totalFee,
+            },
+          );
           SnackBarUtils.showSuccess(context, state.successMessage ?? AppStrings.sessionExtendedSuccess);
 
           _restoreZoomMeeting();

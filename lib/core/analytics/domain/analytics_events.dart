@@ -1,0 +1,22 @@
+abstract final class AnalyticsEvents {
+  static const appInstall = 'app_install';
+  static const appOpen = 'app_open';
+  static const completeRegistration = 'complete_registration';
+  static const login = 'login';
+  static const viewContent = 'view_content';
+  static const search = 'search';
+  static const selectSessionSlot = 'select_session_slot';
+  static const addToCart = 'add_to_cart';
+  static const initiateCheckout = 'initiate_checkout';
+  static const addPaymentInfo = 'add_payment_info';
+  static const purchase = 'purchase';
+  static const haroldResultViewed = 'harold_result_viewed';
+  static const authGateShown = 'auth_gate_shown';
+  static const couponApplied = 'coupon_applied';
+  static const couponFailed = 'coupon_failed';
+  static const paymentFailed = 'payment_failed';
+  static const sessionJoinClick = 'session_join_click';
+  static const summaryUnlockSuccess = 'summary_unlock_success';
+  static const sessionExtended = 'session_extended';
+  static const notificationOpened = 'notification_opened';
+}

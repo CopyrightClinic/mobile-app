@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "679420297161",
-    "project_id": "copyright-clinic-c0d97",
-    "storage_bucket": "copyright-clinic-c0d97.firebasestorage.app"
+    "project_number": "782784944283",
+    "project_id": "copyright-clinic-c9d36",
+    "storage_bucket": "copyright-clinic-c9d36.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:679420297161:android:688cfc8c6ff009da947218",
+        "mobilesdk_app_id": "1:782784944283:android:5e4a184f8510f03957ce3e",
         "android_client_info": {
-          "package_name": "com.brainx.copyrightclinic"
+          "package_name": "com.cassius.copyrightclinic"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAzZMZZkBb01EHAyap5Lu74apF8Jwhmt6g"
+          "current_key": "AIzaSyC-1b46Pk_VFRcrP4zQaMl0oTQuC4M7j3Q"
         }
       ],
       "services": {

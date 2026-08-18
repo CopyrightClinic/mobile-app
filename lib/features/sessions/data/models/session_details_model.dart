@@ -39,10 +39,10 @@ class SessionDetailsAttorneyModel {
 @JsonSerializable()
 class SessionDetailsUserModel {
   final String id;
-  final String name;
+  final String? name;
   final String email;
 
-  const SessionDetailsUserModel({required this.id, required this.name, required this.email});
+  const SessionDetailsUserModel({required this.id, this.name, required this.email});
 
   factory SessionDetailsUserModel.fromJson(Map<String, dynamic> json) => _$SessionDetailsUserModelFromJson(json);
   Map<String, dynamic> toJson() => _$SessionDetailsUserModelToJson(this);

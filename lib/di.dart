@@ -1,4 +1,6 @@
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
@@ -7,6 +9,7 @@ import 'core/network/dio_service.dart';
 import 'core/network/endpoints/api_endpoints.dart';
 import 'core/network/interceptors/api_interceptor.dart';
 import 'core/network/interceptors/logging_interceptor.dart';
+import 'core/network/interceptors/session_expiry_interceptor.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -30,13 +33,16 @@ import 'features/sessions/data/datasources/sessions_remote_data_source.dart';
 import 'features/sessions/data/repositories/sessions_repository_impl.dart';
 import 'features/sessions/domain/repositories/sessions_repository.dart';
 import 'features/sessions/domain/usecases/get_user_sessions_usecase.dart';
+import 'features/sessions/domain/usecases/get_user_session_requests_usecase.dart';
 import 'features/sessions/domain/usecases/cancel_session_usecase.dart';
+import 'features/sessions/domain/usecases/cancel_session_request_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_details_usecase.dart';
 import 'features/sessions/domain/usecases/submit_session_feedback_usecase.dart';
 import 'features/sessions/domain/usecases/unlock_session_summary_usecase.dart';
 import 'features/sessions/domain/usecases/get_session_availability_usecase.dart';
 import 'features/sessions/domain/usecases/book_session_usecase.dart';
 import 'features/sessions/domain/usecases/extend_session_usecase.dart';
+import 'features/sessions/domain/usecases/decline_session_extension_usecase.dart';
 import 'features/sessions/presentation/bloc/sessions_bloc.dart';
 import 'features/sessions/presentation/bloc/session_details_bloc.dart';
 import 'features/profile/data/datasources/profile_remote_data_source.dart';
@@ -76,6 +82,13 @@ import 'features/notifications/domain/usecases/mark_notification_as_read_usecase
 import 'features/notifications/domain/usecases/clear_all_notifications_usecase.dart';
 import 'features/notifications/presentation/bloc/notification_bloc.dart';
 import 'core/services/fcm_service.dart';
+import 'config/app_config/config.dart';
+import 'core/analytics/application/analytics_initializer.dart';
+import 'core/analytics/application/analytics_install_gate.dart';
+import 'core/analytics/application/analytics_manager.dart';
+import 'core/analytics/infrastructure/services/firebase_analytics_service.dart';
+import 'core/analytics/infrastructure/services/meta_analytics_service.dart';
+import 'core/analytics/infrastructure/services/tiktok_analytics_service.dart';
 
 final sl = GetIt.instance;
 
@@ -90,7 +103,11 @@ Future<void> init() async {
 
   /// Register Dio Service as a singleton
   sl.registerLazySingleton<DioService>(() {
-    final cacheOptions = CacheOptions(policy: CachePolicy.noCache, maxStale: const Duration(days: 30), store: MemCacheStore());
+    final cacheOptions = CacheOptions(
+      policy: CachePolicy.noCache,
+      maxStale: const Duration(days: 30),
+      store: MemCacheStore(),
+    );
     return DioService(
       dioClient: sl<Dio>(),
       globalCacheOptions: cacheOptions,
@@ -98,7 +115,7 @@ Future<void> init() async {
         ApiInterceptor(),
         DioCacheInterceptor(options: cacheOptions),
         if (kDebugMode) LoggingInterceptor(),
-        // RefreshTokenInterceptor(dioClient: sl<Dio>()),
+        SessionExpiryInterceptor(),
       ],
     );
   });
@@ -110,34 +127,102 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ZoomService(sl<ApiService>()));
 
   // Zoom Data Sources
-  sl.registerLazySingleton<ZoomRemoteDataSource>(() => ZoomRemoteDataSourceImpl(apiService: sl()));
+  sl.registerLazySingleton<ZoomRemoteDataSource>(
+    () => ZoomRemoteDataSourceImpl(apiService: sl()),
+  );
 
   // Zoom Repository
-  sl.registerLazySingleton<ZoomRepository>(() => ZoomRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ZoomRepository>(
+    () => ZoomRepositoryImpl(remoteDataSource: sl()),
+  );
 
   // Zoom Use Cases
   sl.registerLazySingleton(() => GetMeetingCredentialsUseCase(sl()));
 
   /// Register FCM Service as a singleton
-  sl.registerLazySingleton<FCMService>(() => FCMService(remoteDataSource: sl()));
+  sl.registerLazySingleton<FCMService>(
+    () => FCMService(remoteDataSource: sl(), notificationBloc: sl()),
+  );
+
+  sl.registerLazySingleton(FacebookAppEvents.new);
+  sl.registerLazySingleton<FirebaseAnalytics>(() => FirebaseAnalytics.instance);
+  sl.registerLazySingleton(AnalyticsInstallGate.new);
+  sl.registerLazySingleton(
+    () => FirebaseAnalyticsService(
+      analytics: sl(),
+      enabled: Config.analyticsFirebaseEnabled,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => MetaAnalyticsService(
+      appEvents: sl(),
+      enabled: Config.analyticsMetaEnabled,
+    ),
+  );
+  sl.registerLazySingleton(
+    () => TikTokAnalyticsService(enabled: Config.analyticsTikTokEnabled),
+  );
+  sl.registerLazySingleton<AnalyticsManager>(
+    () => AnalyticsManager(
+      firebase: sl(),
+      tiktok: sl(),
+      meta: sl(),
+      installGate: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => AnalyticsInitializer(
+      manager: sl(),
+      meta: sl(),
+      firebaseAnalytics: sl(),
+    ),
+  );
 
   // Data sources
-  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<PaymentRemoteDataSource>(() => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<SessionsRemoteDataSource>(() => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<SpeechToTextLocalDataSource>(() => SpeechToTextLocalDataSourceImpl());
-  sl.registerLazySingleton<HaroldRemoteDataSource>(() => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()));
-  sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(apiService: sl<ApiService>()));
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(apiService: sl<ApiService>()),
+  );
+  sl.registerLazySingleton<PaymentRemoteDataSource>(
+    () => PaymentRemoteDataSourceImpl(apiService: sl<ApiService>()),
+  );
+  sl.registerLazySingleton<SessionsRemoteDataSource>(
+    () => SessionsRemoteDataSourceImpl(apiService: sl<ApiService>()),
+  );
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(apiService: sl<ApiService>()),
+  );
+  sl.registerLazySingleton<SpeechToTextLocalDataSource>(
+    () => SpeechToTextLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<HaroldRemoteDataSource>(
+    () => HaroldRemoteDataSourceImpl(apiService: sl<ApiService>()),
+  );
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(apiService: sl<ApiService>()),
+  );
 
   // Repository
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
-  sl.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(remoteDataSource: sl()));
-  sl.registerLazySingleton<SessionsRepository>(() => SessionsRepositoryImpl(remoteDataSource: sl()));
-  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(remoteDataSource: sl()));
-  sl.registerLazySingleton<SpeechToTextRepository>(() => SpeechToTextRepositoryImpl(localDataSource: sl()));
-  sl.registerLazySingleton<HaroldRepository>(() => HaroldRepositoryImpl(remoteDataSource: sl()));
-  sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<PaymentRepository>(
+    () => PaymentRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<SessionsRepository>(
+    () => SessionsRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<SpeechToTextRepository>(
+    () => SpeechToTextRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<HaroldRepository>(
+    () => HaroldRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(remoteDataSource: sl()),
+  );
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -151,27 +236,38 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetPaymentMethodsUseCase(sl()));
   sl.registerLazySingleton(() => DeletePaymentMethodUseCase(sl()));
   sl.registerLazySingleton(() => GetUserSessionsUseCase(sl()));
+  sl.registerLazySingleton(() => GetUserSessionRequestsUseCase(sl()));
   sl.registerLazySingleton(() => CancelSessionUseCase(sl()));
+  sl.registerLazySingleton(() => CancelSessionRequestUseCase(sl()));
   sl.registerLazySingleton(() => GetSessionDetailsUseCase(sl()));
   sl.registerLazySingleton(() => SubmitSessionFeedbackUseCase(sl()));
   sl.registerLazySingleton(() => UnlockSessionSummaryUseCase(sl()));
   sl.registerLazySingleton(() => BookSessionUseCase(sl()));
   sl.registerLazySingleton(() => ExtendSessionUseCase(sl()));
+  sl.registerLazySingleton(() => DeclineSessionExtensionUseCase(sl()));
   sl.registerLazySingleton(() => InitializeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StartSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => StopSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => PauseSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => ResumeSpeechRecognitionUseCase(sl()));
   sl.registerLazySingleton(() => EvaluateQueryUseCase(repository: sl()));
-  sl.registerLazySingleton(() => CheckHaroldEligibilityUseCase(repository: sl()));
+  sl.registerLazySingleton(
+    () => CheckHaroldEligibilityUseCase(repository: sl()),
+  );
   sl.registerLazySingleton(() => GetSessionAvailabilityUseCase(sl()));
   sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
   sl.registerLazySingleton(() => ChangePasswordUseCase(sl()));
   sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
   sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
-  sl.registerLazySingleton(() => MarkAllNotificationsAsReadUseCase(repository: sl()));
-  sl.registerLazySingleton(() => MarkNotificationAsReadUseCase(repository: sl()));
-  sl.registerLazySingleton(() => ClearAllNotificationsUseCase(repository: sl()));
+  sl.registerLazySingleton(
+    () => MarkAllNotificationsAsReadUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton(
+    () => MarkNotificationAsReadUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton(
+    () => ClearAllNotificationsUseCase(repository: sl()),
+  );
 
   // Bloc
   sl.registerLazySingleton(
@@ -188,13 +284,21 @@ Future<void> init() async {
   );
 
   // Payment Bloc
-  sl.registerLazySingleton(() => PaymentBloc(addPaymentMethodUseCase: sl(), getPaymentMethodsUseCase: sl(), deletePaymentMethodUseCase: sl()));
+  sl.registerLazySingleton(
+    () => PaymentBloc(
+      addPaymentMethodUseCase: sl(),
+      getPaymentMethodsUseCase: sl(),
+      deletePaymentMethodUseCase: sl(),
+    ),
+  );
 
   // Sessions Bloc
   sl.registerLazySingleton(
     () => SessionsBloc(
       getUserSessionsUseCase: sl(),
+      getUserSessionRequestsUseCase: sl(),
       cancelSessionUseCase: sl(),
+      cancelSessionRequestUseCase: sl(),
       getSessionAvailabilityUseCase: sl(),
       bookSessionUseCase: sl(),
       extendSessionUseCase: sl(),
@@ -202,21 +306,42 @@ Future<void> init() async {
   );
 
   // Session Details Bloc
-  sl.registerFactory(() => SessionDetailsBloc(getSessionDetailsUseCase: sl(), submitSessionFeedbackUseCase: sl(), unlockSessionSummaryUseCase: sl()));
+  sl.registerFactory(
+    () => SessionDetailsBloc(
+      getSessionDetailsUseCase: sl(),
+      submitSessionFeedbackUseCase: sl(),
+      unlockSessionSummaryUseCase: sl(),
+    ),
+  );
 
   // Speech to Text Bloc
   sl.registerFactory(
-    () => SpeechToTextBloc(initializeUseCase: sl(), startUseCase: sl(), stopUseCase: sl(), pauseUseCase: sl(), resumeUseCase: sl(), repository: sl()),
+    () => SpeechToTextBloc(
+      initializeUseCase: sl(),
+      startUseCase: sl(),
+      stopUseCase: sl(),
+      pauseUseCase: sl(),
+      resumeUseCase: sl(),
+      repository: sl(),
+    ),
   );
 
   // Harold AI Bloc
   sl.registerLazySingleton(() => HaroldAiBloc(evaluateQueryUseCase: sl()));
 
   // Profile Bloc
-  sl.registerLazySingleton(() => ProfileBloc(updateProfileUseCase: sl(), changePasswordUseCase: sl(), deleteAccountUseCase: sl()));
+  sl.registerLazySingleton(
+    () => ProfileBloc(
+      updateProfileUseCase: sl(),
+      changePasswordUseCase: sl(),
+      deleteAccountUseCase: sl(),
+    ),
+  );
 
   // Zoom Bloc
-  sl.registerFactory(() => ZoomBloc(zoomService: sl(), getMeetingCredentialsUseCase: sl()));
+  sl.registerFactory(
+    () => ZoomBloc(zoomService: sl(), getMeetingCredentialsUseCase: sl()),
+  );
   // Notification Bloc
   sl.registerLazySingleton(
     () => NotificationBloc(

@@ -38,6 +38,11 @@ class ImageConstants {
   static const String snackbarError = '$png/snackbar_error.png';
   static const String visa = '$png/visacard.png';
   static const String mastercard = '$png/mastercard.png';
+  static const String securePayments = '$png/secure-payment.png';
+  static const String lawerImage = '$png/lawyers_image.png';
+  static const String characterFemale = '$png/character_female.png';
+  static const String lawyerImage = '$png/lawyer_image.png';
+
 
   // ===================
   // SVG ICONS

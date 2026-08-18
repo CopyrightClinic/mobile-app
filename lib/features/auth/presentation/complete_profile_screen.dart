@@ -1,3 +1,4 @@
+import 'package:copyright_clinic_flutter/core/analytics/analytics.dart';
 import 'package:copyright_clinic_flutter/core/constants/dimensions.dart';
 import 'package:copyright_clinic_flutter/core/constants/app_strings.dart';
 import 'package:copyright_clinic_flutter/core/utils/enumns/ui/payment_method.dart';
@@ -31,7 +32,8 @@ class CompleteProfileScreen extends StatefulWidget {
   State<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
 }
 
-class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Validator {
+class _CompleteProfileScreenState extends State<CompleteProfileScreen>
+    with Validator {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -39,7 +41,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
   final _fullNameFocusNode = FocusNode();
   final _phoneFocusNode = FocusNode();
   final _addressFocusNode = FocusNode();
-  final GlobalKey<CustomPhoneFieldState> _phoneFieldKey = GlobalKey<CustomPhoneFieldState>();
+  final GlobalKey<CustomPhoneFieldState> _phoneFieldKey =
+      GlobalKey<CustomPhoneFieldState>();
 
   void Function(void Function())? _buttonSetState;
   PhoneNumber? _phoneNumber;
@@ -56,10 +59,18 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
   }
 
   bool get _isFormValid {
-    final fullNameValidation = validateFullName(_fullNameController.text.trim(), tr);
-    final addressValidation = validateAddress(_addressController.text.trim(), tr);
+    final fullNameValidation = validateFullName(
+      _fullNameController.text.trim(),
+      tr,
+    );
+    final addressValidation = validateAddress(
+      _addressController.text.trim(),
+      tr,
+    );
     final isPhoneValid = _phoneFieldKey.currentState?.isValid() ?? false;
-    return fullNameValidation == null && addressValidation == null && isPhoneValid;
+    return fullNameValidation == null &&
+        addressValidation == null &&
+        isPhoneValid;
   }
 
   void _onFieldChanged() {
@@ -72,7 +83,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
       final phoneNumber = _phoneNumber?.phoneNumber ?? '';
       final address = _addressController.text.trim();
 
-      context.read<AuthBloc>().add(CompleteProfileRequested(name: name, phoneNumber: phoneNumber, address: address));
+      context.read<AuthBloc>().add(
+        CompleteProfileRequested(
+          name: name,
+          phoneNumber: phoneNumber,
+          address: address,
+        ),
+      );
 
       _fullNameFocusNode.unfocus();
       _phoneFocusNode.unfocus();
@@ -81,7 +98,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
   }
 
   void _handleSkip() {
-    context.go(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.auth});
+    context.go(
+      AppRoutes.addPaymentMethodRouteName,
+      extra: {'from': PaymentMethodFrom.auth},
+    );
   }
 
   @override
@@ -91,9 +111,16 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is CompleteProfileSuccess) {
+            logAnalytics(
+              AnalyticsEvents.completeRegistration,
+              parameters: const {'method': 'phone'},
+            );
             SnackBarUtils.showSuccess(context, state.message);
             context.read<ProfileBloc>().add(const GetProfileRequested());
-            context.go(AppRoutes.addPaymentMethodRouteName, extra: {'from': PaymentMethodFrom.auth});
+            context.go(
+              AppRoutes.addPaymentMethodRouteName,
+              extra: {'from': PaymentMethodFrom.auth},
+            );
           } else if (state is CompleteProfileError) {
             SnackBarUtils.showError(context, state.message);
           }
@@ -108,7 +135,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
             showBackButton: false,
             title: TranslatedText(
               AppStrings.completeYourProfile,
-              style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: context.darkTextPrimary,
+                fontSize: DimensionConstants.font24Px.f,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             centerTitle: false,
             actions: [
@@ -120,13 +151,22 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                     backgroundColor: context.white,
                     foregroundColor: context.darkTextPrimary,
                     elevation: 0,
-                    padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap20Px.w, vertical: DimensionConstants.gap12Px.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: DimensionConstants.gap20Px.w,
+                      vertical: DimensionConstants.gap12Px.h,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50.r),
+                    ),
                     minimumSize: Size.zero,
                   ),
                   child: TranslatedText(
                     AppStrings.skip,
-                    style: TextStyle(color: context.textPrimary, fontSize: DimensionConstants.font16Px.f, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: context.textPrimary,
+                      fontSize: DimensionConstants.font16Px.f,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -134,7 +174,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
           ),
           body: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+              padding: EdgeInsets.symmetric(
+                horizontal: DimensionConstants.gap16Px.w,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -143,7 +185,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                     SizedBox(height: DimensionConstants.gap20Px.h),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: EdgeInsets.only(bottom: DimensionConstants.gap20Px.h),
+                        padding: EdgeInsets.only(
+                          bottom: DimensionConstants.gap20Px.h,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -153,9 +197,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                               controller: _fullNameController,
                               focusNode: _fullNameFocusNode,
                               keyboardType: TextInputType.name,
-                              inputFormatters: [LengthLimitingTextInputFormatter(100)],
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(100),
+                              ],
                               validator: (value) => validateFullName(value, tr),
-                              onEditingComplete: () => _phoneFocusNode.requestFocus(),
+                              onEditingComplete:
+                                  () => _phoneFocusNode.requestFocus(),
                               onChanged: (value) => _onFieldChanged(),
                             ),
                             SizedBox(height: DimensionConstants.gap20Px.h),
@@ -166,7 +213,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                               placeholder: AppStrings.enterYourPhoneNumber,
                               controller: _phoneController,
                               focusNode: _phoneFocusNode,
-                              onEditingComplete: () => _addressFocusNode.requestFocus(),
+                              onEditingComplete:
+                                  () => _addressFocusNode.requestFocus(),
                               onChanged: (PhoneNumber phoneNumber) {
                                 _phoneNumber = phoneNumber;
                                 _onFieldChanged();
@@ -186,7 +234,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                               keyboardType: TextInputType.streetAddress,
                               maxLines: 3,
                               validator: (value) => validateAddress(value, tr),
-                              onEditingComplete: () => _addressFocusNode.unfocus(),
+                              onEditingComplete:
+                                  () => _addressFocusNode.unfocus(),
                               onChanged: (value) => _onFieldChanged(),
                             ),
                           ],
@@ -201,7 +250,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> with Vali
                         return StatefulBuilder(
                           builder: (context, setState) {
                             _buttonSetState = setState;
-                            return AuthButton(text: AppStrings.save, onPressed: _handleSave, isLoading: isLoading, isEnabled: _isFormValid);
+                            return AuthButton(
+                              text: AppStrings.save,
+                              onPressed: _handleSave,
+                              isLoading: isLoading,
+                              isEnabled: _isFormValid,
+                            );
                           },
                         );
                       },

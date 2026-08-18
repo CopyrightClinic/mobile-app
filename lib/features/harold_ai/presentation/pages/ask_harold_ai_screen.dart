@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../../core/analytics/analytics.dart';
 import '../../../../di.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/dimensions.dart';
@@ -28,6 +29,7 @@ class AskHaroldAiScreen extends StatefulWidget {
 
 class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProviderStateMixin {
   static const int _maxQueryLength = 500;
+  static const double _keyboardTextFieldHeight = 120;
 
   final TextEditingController _textController = TextEditingController();
   late AnimationController _animationController;
@@ -38,6 +40,17 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
   void initState() {
     super.initState();
     _setupAnimations();
+  }
+
+  bool _isKeyboardVisible(BuildContext context) {
+    return MediaQuery.viewInsetsOf(context).bottom > 0;
+  }
+
+  double _maxTextHeightForCard(double cardAreaHeight) {
+    final innerHeight = cardAreaHeight - DimensionConstants.gap16Px.h * 2;
+    final footerHeight = DimensionConstants.gap8Px.h * 2 + DimensionConstants.gap48Px.h;
+    final available = innerHeight - footerHeight;
+    return available.clamp(DimensionConstants.gap48Px.h, _keyboardTextFieldHeight);
   }
 
   void _setupAnimations() {
@@ -76,10 +89,7 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
     if (combined.length > _maxQueryLength) {
       combined = combined.substring(0, _maxQueryLength);
     }
-    _textController.value = TextEditingValue(
-      text: combined,
-      selection: TextSelection.collapsed(offset: combined.length),
-    );
+    _textController.value = TextEditingValue(text: combined, selection: TextSelection.collapsed(offset: combined.length));
   }
 
   void _toggleVoiceInput() async {
@@ -137,6 +147,26 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
       bloc: sl<HaroldAiBloc>(),
       listener: (context, state) {
         if (state is HaroldAiSuccess) {
+          logAnalytics(AnalyticsEvents.search, parameters: {'search_term': state.query, 'search_context': 'harold_legal_intake'});
+          logAnalytics(
+            AnalyticsEvents.haroldResultViewed,
+            parameters: {
+              'outcome': 'success',
+              if (state.evaluationId != null) 'evaluation_id': state.evaluationId!,
+              'query_length': state.query.length,
+            },
+          );
+          if (state.evaluationId != null) {
+            logAnalytics(
+              AnalyticsEvents.viewContent,
+              parameters: {
+                'content_id': state.evaluationId!,
+                'content_type': 'harold_legal_query',
+                'content_name': 'harold_evaluation',
+                'query_length': state.query.length,
+              },
+            );
+          }
           HaroldNavigationService.handleHaroldResult(
             context: context,
             isSuccess: true,
@@ -147,6 +177,8 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
             evaluationId: state.evaluationId,
           );
         } else if (state is HaroldAiFailure) {
+          logAnalytics(AnalyticsEvents.search, parameters: {'search_term': state.query, 'search_context': 'harold_legal_intake'});
+          logAnalytics(AnalyticsEvents.haroldResultViewed, parameters: {'outcome': 'failure', 'query_length': state.query.length});
           HaroldNavigationService.handleHaroldResult(
             context: context,
             isSuccess: false,
@@ -158,110 +190,146 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
         }
       },
       child: CustomScaffold(
+        resizeToAvoidBottomInset: true,
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(leadingPadding: EdgeInsets.only(left: DimensionConstants.gap12Px.w), leading: const CustomBackButton()),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: DimensionConstants.gap16Px.h),
-                      TranslatedText(
-                        AppStrings.askHaroldAI,
-                        style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
-                      ),
-                      TranslatedText(
-                        AppStrings.describeYourCopyrightIssue,
-                        style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
-                      ),
-                      SizedBox(height: DimensionConstants.gap16Px.h),
-                      Expanded(child: _buildTextInputField()),
-                    ],
-                  ),
-                ),
-              ),
-              _buildBottomSection(),
-            ],
-          ),
-        ),
+        body: SafeArea(child: _buildBody(context)),
       ),
     );
   }
 
-  Widget _buildTextInputField() {
+  Widget _buildBody(BuildContext context) {
+    final keyboardVisible = _isKeyboardVisible(context);
+
+    return Column(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: DimensionConstants.gap16Px.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: SingleChildScrollView(
+                    physics: keyboardVisible ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
+                    child: _buildHeader(context, compact: keyboardVisible),
+                  ),
+                ),
+                Expanded(child: _buildTextInputField(keyboardVisible: keyboardVisible)),
+              ],
+            ),
+          ),
+        ),
+        _buildBottomSection(),
+      ],
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, {bool compact = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: compact ? DimensionConstants.gap8Px.h : DimensionConstants.gap16Px.h),
+        TranslatedText(
+          AppStrings.askHaroldAI,
+          style: TextStyle(color: context.darkTextPrimary, fontSize: DimensionConstants.font24Px.f, fontWeight: FontWeight.w700),
+        ),
+        TranslatedText(
+          AppStrings.describeYourCopyrightIssue,
+          style: TextStyle(color: context.darkTextSecondary, fontSize: DimensionConstants.font14Px.f, fontWeight: FontWeight.w400),
+        ),
+        SizedBox(height: compact ? DimensionConstants.gap8Px.h : DimensionConstants.gap16Px.h),
+      ],
+    );
+  }
+
+  Widget _buildTextInputField({required bool keyboardVisible}) {
     return BlocBuilder<HaroldAiBloc, HaroldAiState>(
       builder: (context, haroldState) {
         final isLoading = haroldState is HaroldAiLoading;
 
-        return Container(
-          padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
-          decoration: BoxDecoration(
-            color: isLoading ? context.filledBgDark.withValues(alpha: 0.5) : context.filledBgDark,
-            borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _textController,
-                  enabled: !isLoading,
-                  maxLength: _maxQueryLength,
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  style: TextStyle(
-                    color: isLoading ? context.darkTextPrimary.withValues(alpha: 0.5) : context.darkTextPrimary,
-                    fontSize: DimensionConstants.font16Px.f,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: AppStrings.describe.tr(),
-                    hintStyle: TextStyle(
-                      color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
-                      fontSize: DimensionConstants.font16Px.f,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                    counterText: '',
-                  ),
-                ),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final maxTextHeight = keyboardVisible ? _maxTextHeightForCard(constraints.maxHeight) : null;
+
+            return Container(
+              padding: EdgeInsets.all(DimensionConstants.gap16Px.w),
+              decoration: BoxDecoration(
+                color: isLoading ? context.filledBgDark.withValues(alpha: 0.5) : context.filledBgDark,
+                borderRadius: BorderRadius.circular(DimensionConstants.radius12Px.r),
               ),
-              SizedBox(height: DimensionConstants.gap8Px.h),
-              ValueListenableBuilder<TextEditingValue>(
-                valueListenable: _textController,
-                builder: (context, value, _) {
-                  final atLimit = value.text.length >= _maxQueryLength;
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: DimensionConstants.gap8Px.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${value.text.length}/$_maxQueryLength',
-                          style: TextStyle(
-                            color: atLimit ? context.red : context.darkTextSecondary,
-                            fontSize: DimensionConstants.font12Px.f,
-                            fontWeight: FontWeight.w500,
-                          ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: maxTextHeight ?? double.infinity),
+                      child: _buildDescriptionTextField(context: context, isLoading: isLoading),
+                    ),
+                  ),
+                  SizedBox(height: DimensionConstants.gap8Px.h),
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _textController,
+                    builder: (context, value, _) {
+                      final atLimit = value.text.length >= _maxQueryLength;
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: DimensionConstants.gap8Px.h),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${value.text.length}/$_maxQueryLength',
+                              style: TextStyle(
+                                color: atLimit ? context.red : context.darkTextSecondary,
+                                fontSize: DimensionConstants.font12Px.f,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            _buildVoiceButton(),
+                          ],
                         ),
-                        _buildVoiceButton(),
-                      ],
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
+    );
+  }
+
+  Widget _buildDescriptionTextField({required BuildContext context, required bool isLoading}) {
+    return TextField(
+      key: const ValueKey('harold_description_field'),
+      controller: _textController,
+      enabled: !isLoading,
+      maxLength: _maxQueryLength,
+      maxLines: null,
+      expands: true,
+      textAlignVertical: TextAlignVertical.top,
+      scrollPadding: EdgeInsets.only(bottom: DimensionConstants.gap120Px.h),
+      style: TextStyle(
+        color: isLoading ? context.darkTextPrimary.withValues(alpha: 0.5) : context.darkTextPrimary,
+        fontSize: DimensionConstants.font16Px.f,
+        fontWeight: FontWeight.w400,
+      ),
+      decoration: InputDecoration(
+        hintText: AppStrings.describe.tr(),
+        hintStyle: TextStyle(
+          color: isLoading ? context.darkTextSecondary.withValues(alpha: 0.5) : context.darkTextSecondary,
+          fontSize: DimensionConstants.font16Px.f,
+          fontWeight: FontWeight.w400,
+        ),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        contentPadding: EdgeInsets.zero,
+        counterText: '',
+      ),
     );
   }
 
@@ -345,6 +413,10 @@ class _AskHaroldAiScreenState extends State<AskHaroldAiScreen> with TickerProvid
 
   void _onSubmit() {
     if (_isValidInput()) {
+      if (_textController.text.trim().length < 150) {
+        SnackBarUtils.showError(context, AppStrings.pleaseEnterAtLeast200Characters.tr());
+        return;
+      }
       FocusScope.of(context).unfocus();
       context.read<HaroldAiBloc>().add(SubmitHaroldQuery(query: _textController.text.trim()));
     }

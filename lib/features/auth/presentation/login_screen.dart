@@ -15,6 +15,7 @@ import '../../../core/widgets/translated_text.dart';
 import '../../../core/utils/ui/snackbar_utils.dart';
 import '../../../core/utils/mixin/validator.dart';
 import '../../../config/routes/app_routes.dart';
+import '../../../core/analytics/analytics.dart';
 import '../../../di.dart';
 import '../../../core/services/fcm_service.dart';
 import '../../harold_ai/domain/services/harold_navigation_service.dart';
@@ -82,6 +83,10 @@ class _LoginScreenState extends State<LoginScreen> with Validator {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
+          logAnalytics(
+            AnalyticsEvents.login,
+            parameters: const {'method': 'email'},
+          );
           SnackBarUtils.showSuccess(context, state.message);
           sl<FCMService>().initialize();
           context.read<ProfileBloc>().add(const GetProfileRequested());

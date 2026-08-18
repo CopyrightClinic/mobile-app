@@ -22,6 +22,7 @@ class BookSessionRequestModel {
   final String date;
   final BookSessionSlotModel slot;
   final String summary;
+  final String originalInput;
 
   const BookSessionRequestModel({
     required this.stripePaymentMethodId,
@@ -29,6 +30,7 @@ class BookSessionRequestModel {
     required this.date,
     required this.slot,
     required this.summary,
+    required this.originalInput,
   });
 
   factory BookSessionRequestModel.fromJson(Map<String, dynamic> json) =>

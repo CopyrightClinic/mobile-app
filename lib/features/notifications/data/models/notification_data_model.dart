@@ -16,6 +16,8 @@ abstract class NotificationDataModel {
       case NotificationType.sessionExtensionApproved:
       case NotificationType.sessionExtensionDeclined:
       case NotificationType.sessionExtensionPrompt:
+      case NotificationType.sessionCancelled:
+      case NotificationType.sessionRequestExpired:
         return SessionNotificationData.fromJson(json);
       case NotificationType.refundIssued:
         return PaymentNotificationData.fromJson(json);

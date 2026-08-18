@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/analytics/analytics.dart';
 import '../../../../config/routes/app_routes.dart';
 import '../../../../config/theme/app_theme.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -303,6 +304,14 @@ class _UnlockSummaryPaymentBottomSheetState extends State<UnlockSummaryPaymentBo
       _selectedPaymentMethodId = paymentMethod.id;
       _selectedPaymentMethod = paymentMethod;
     });
+    logAnalytics(
+      AnalyticsEvents.addPaymentInfo,
+      parameters: {
+        'payment_type': paymentMethod.card.brand,
+        'payment_method_id': paymentMethod.id,
+        'source': 'unlock_summary',
+      },
+    );
   }
 
   void _onAddPaymentMethod() {
